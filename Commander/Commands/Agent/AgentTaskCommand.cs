@@ -1,4 +1,7 @@
 ﻿using ApiModels.Response;
+using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,17 +28,17 @@ namespace Commander.Commands.Agent
         }
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
-        protected override void InnerExecute(Executor executor, string parms)
+        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
             var agent = executor.CurrentAgent;
-            var response = executor.CommModule.TaskAgent(agent.Metadata.Id, this.Name, parms).Result;
+            var response = comm.TaskAgent(agent.Metadata.Id, this.Name, parms).Result;
             if (!response.IsSuccessStatusCode)
             {
-                Terminal.WriteError("An error occured : " + response.StatusCode);
+                terminal.WriteError("An error occured : " + response.StatusCode);
                 return;
             }
 
-            Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+            terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
     }
 

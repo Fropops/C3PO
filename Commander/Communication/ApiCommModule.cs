@@ -1,6 +1,7 @@
 ﻿using ApiModels.Requests;
 using ApiModels.Response;
 using Commander.Models;
+using Commander.Terminal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -12,9 +13,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Commander
+namespace Commander.Communication
 {
-    public class ApiCommModule
+    public class ApiCommModule : ICommModule
     {
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
@@ -29,17 +30,19 @@ namespace Commander
         protected ConcurrentDictionary<string, AgentTask> _tasks = new ConcurrentDictionary<string, AgentTask>();
         protected ConcurrentDictionary<string, AgentTaskResult> _results = new ConcurrentDictionary<string, AgentTaskResult>();
 
+        private ITerminal Terminal;
 
-
-        public ApiCommModule(string connectAddress, int connectPort)
+        public ApiCommModule(ITerminal terminal, string connectAddress, int connectPort)
         {
+            this.Terminal = terminal;
+
             ConnectAddress=connectAddress;
             ConnectPort=connectPort;
+
+            this.UpdateConfig();
         }
 
-
-
-        public void Init()
+        public void UpdateConfig()
         {
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 5);
@@ -70,9 +73,9 @@ namespace Commander
                     this.IsConnected = true;
                     if (!_connectionNotified)
                     {
-                        Terminal.Instance.Interrupt();
-                        Terminal.WriteSuccess($"Commander connected to {this.ConnectAddress}:{this.ConnectPort}.");
-                        Terminal.Instance.Restore();
+                        this.Terminal.Interrupt();
+                        this.Terminal.WriteSuccess($"Commander connected to {this.ConnectAddress}:{this.ConnectPort}.");
+                        this.Terminal.Restore();
                         this._connectionNotified = true;
                     }
                     this._connectionErrorNotified = false;
@@ -87,14 +90,14 @@ namespace Commander
                         if (!this._connectionErrorNotified)
                         {
                             this.IsConnected = false;
-                            Terminal.Instance.Interrupt();
-                            Terminal.WriteError($"Commander cannot connect to {this.ConnectAddress}:{this.ConnectPort}!");
-                            Terminal.Instance.Restore();
+                            this.Terminal.Interrupt();
+                            this.Terminal.WriteError($"Commander cannot connect to {this.ConnectAddress}:{this.ConnectPort}!");
+                            this.Terminal.Restore();
                             this._connectionErrorNotified = true;
                         }
                     }
                     else
-                        Terminal.WriteError(e.ToString());
+                        this.Terminal.WriteError(e.ToString());
                 }
 
                 await Task.Delay(5000);
@@ -177,9 +180,9 @@ namespace Commander
 
         private void PrintEndedTaskResult(AgentTaskResult res)
         {
-            Terminal.Instance.Interrupt();
-            this._tasks[res.Id].Print(res);
-            Terminal.Instance.Restore();
+            Terminal.Interrupt();
+            this._tasks[res.Id].Print(res, this.Terminal);
+            Terminal.Restore();
         }
 
         int lastRunningCount = 0;
@@ -188,11 +191,11 @@ namespace Commander
             if (tasks.Count == 0 && lastRunningCount == 0)
                 return;
 
-            Terminal.Instance.CanHandleInput = false;
+            Terminal.CanHandleInput = false;
 
             Terminal.SaveCursorPosition();
             Terminal.SetCursorPosition(0, 0);
-            Terminal.DrawBackGround(Terminal.DefaultBackGroundColor, lastRunningCount);
+            Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount);
 
             lastRunningCount = tasks.Count + 2;
             if (tasks.Any())
@@ -221,11 +224,11 @@ namespace Commander
                     Terminal.Write("-");
             }
 
-            Terminal.SetForeGroundColor(Terminal.DefaultForeGroundColor);
-            Terminal.SetBackGroundColor(Terminal.DefaultBackGroundColor);
+            Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
+            Terminal.SetBackGroundColor(TerminalConstants.DefaultBackGroundColor);
             Terminal.ResetCursorPosition();
 
-            Terminal.Instance.CanHandleInput = true;
+            Terminal.CanHandleInput = true;
         }
 
         private async Task UpdateListeners()

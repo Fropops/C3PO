@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -30,7 +33,7 @@ namespace Commander.Commands.Agent
             };
 
 
-        protected override async Task<bool> HandleCommand(ViewTasksCommandOptions options)
+        protected override async Task<bool> HandleCommand(ViewTasksCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
             var results = new SharpSploitResultList<ViewTaskResult>();
 
@@ -38,21 +41,21 @@ namespace Commander.Commands.Agent
             if (options.index.HasValue)
             {
                 //Show Result of the Task
-                var task = this.Executor.CommModule.GetTasks(this.Executor.CurrentAgent.Metadata.Id).Skip(options.index.Value).FirstOrDefault();
+                var task = comm.GetTasks(executor.CurrentAgent.Metadata.Id).Skip(options.index.Value).FirstOrDefault();
                 if(task == null)
                 {
-                    Terminal.WriteError($"No task at index {options.index}");
+                    terminal.WriteError($"No task at index {options.index}");
                     return true;
                 }
 
-                var result = this.Executor.CommModule.GetTaskResult(task.Id);
+                var result = comm.GetTaskResult(task.Id);
                 if (result == null)
                 {
-                    Terminal.WriteInfo($"Task : {task.Command} is queued.");
+                    terminal.WriteInfo($"Task : {task.Command} is queued.");
                 }
                 else
                 {
-                    task.Print(result);
+                    task.Print(result, terminal);
                 }
                 
                 
@@ -61,11 +64,11 @@ namespace Commander.Commands.Agent
             else
             {
                 int take = options.Top ?? 10;
-                var result = this.Executor.CommModule.GetTasks(this.Executor.CurrentAgent.Metadata.Id).Take(take);
+                var result = comm.GetTasks(executor.CurrentAgent.Metadata.Id).Take(take);
 
                 if (result.Count() == 0)
                 {
-                    Terminal.WriteInfo("No Tasks.");
+                    terminal.WriteInfo("No Tasks.");
                     return true;
                 }
 
@@ -82,7 +85,7 @@ namespace Commander.Commands.Agent
                     index++;
                 }
 
-                Terminal.WriteLine(results.ToString());
+                terminal.WriteLine(results.ToString());
 
                 return true;
             }

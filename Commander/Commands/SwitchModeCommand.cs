@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,13 +15,13 @@ namespace Commander.Commands
         public override ExecutorMode AvaliableIn => ExecutorMode.None;
 
         public abstract ExecutorMode TargetMode { get; }
-        protected override void InnerExecute(Executor executor, string parms)
+        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
             executor.Mode = TargetMode;
             if (TargetMode  == ExecutorMode.None)
-                executor.SetPrompt(Executor.DefaultPrompt);
+                terminal.Prompt = Terminal.Terminal.DefaultPrompt;
             else
-                executor.SetPrompt($"${this.TargetMode}> ");
+                terminal.Prompt = $"${this.TargetMode}> ";
         }
     }
 

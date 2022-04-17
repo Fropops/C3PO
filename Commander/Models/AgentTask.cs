@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
@@ -26,15 +27,15 @@ namespace Commander.Models
             }
         }
 
-        public void Print(AgentTaskResult result)
+        public void Print(AgentTaskResult result, ITerminal terminal)
         {
-            Terminal.WriteInfo($"Task {this.Id}");
-            Terminal.WriteInfo($"Cmd = {this.FullCommand}");
+            terminal.WriteInfo($"Task {this.Id}");
+            terminal.WriteInfo($"Cmd = {this.FullCommand}");
             if (!result.Completed)
-                Terminal.WriteInfo($"Task is still running ({result.Completion}%)");
-            Terminal.WriteInfo($"-------------------------------------------");
+                terminal.WriteInfo($"Task is still running ({result.Completion}%)");
+            terminal.WriteInfo($"-------------------------------------------");
             if (!string.IsNullOrEmpty(result.Result))
-                Terminal.WriteLine(result.Result);
+                terminal.WriteLine(result.Result);
         }
     }
 }

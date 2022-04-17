@@ -77,7 +77,7 @@ namespace TeamServer.Models
 
         public async Task<IActionResult> DownloadChunk()
         {
-
+            return Ok();
         }
     }
 }

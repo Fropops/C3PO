@@ -1,20 +1,23 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Threading;
 
 namespace Commander
 {
     class Program
     {
-        public static ApiCommModule s_apiCommModule;
+
 
         static void Main(string[] args)
         {
-            s_apiCommModule = new ApiCommModule("192.168.56.1", 5000);
-            s_apiCommModule.Init();
-
-            var exec = new Executor();
-            exec.Init(s_apiCommModule);
-
+            var terminal = new Terminal.Terminal();
+            ServiceProvider.RegisterSingleton<ITerminal>(terminal);
+            var apiCommModule = new ApiCommModule(terminal, "192.168.56.1", 5000);
+            ServiceProvider.RegisterSingleton<ICommModule>(apiCommModule);
+            var exec = new Executor.Executor(terminal, apiCommModule);
+            ServiceProvider.RegisterSingleton<IExecutor>(exec);
 
             exec.Start();
 

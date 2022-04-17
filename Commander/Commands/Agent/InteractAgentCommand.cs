@@ -1,4 +1,7 @@
 ﻿using ApiModels.Response;
+using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,20 +33,20 @@ namespace Commander.Commands.Agent
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
-        protected override async Task<bool> HandleCommand(InteractAgentCommandOptions options)
+        protected override async Task<bool> HandleCommand(InteractAgentCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
-            var agent = this.Executor.CommModule.GetAgent(options.index);
+            var agent = comm.GetAgent(options.index);
             
             if(agent == null)
             {
-                Terminal.WriteError($"No agent with index {options.index} found.");
+                terminal.WriteError($"No agent with index {options.index} found.");
                 return false;
             }
 
-            this.Executor.CurrentAgent = agent;
-            this.Executor.Mode = ExecutorMode.AgentInteraction;
+            executor.CurrentAgent = agent;
+            executor.Mode = ExecutorMode.AgentInteraction;
 
-            this.Executor.SetPrompt($"${ExecutorMode.Agent} {agent.Metadata.UserName}@{agent.Metadata.Hostname}> ");
+            terminal.Prompt = $"${ExecutorMode.Agent} {agent.Metadata.UserName}@{agent.Metadata.Hostname}> ";
 
             return true;
         }

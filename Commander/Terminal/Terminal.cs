@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Commander
+namespace Commander.Terminal
 {
-    public partial class Terminal
+    public partial class Terminal : ITerminal
     {
-        public static Terminal Instance { get; } = new Terminal();
+        public const string DefaultPrompt = "$> ";
 
         public event EventHandler<string> InputValidated;
         public ConsoleColor DefaultColor { get; set; } = Console.ForegroundColor;
@@ -17,6 +17,11 @@ namespace Commander
         CancellationTokenSource _token = new CancellationTokenSource();
 
         public bool CanHandleInput { get; set; } = true;
+
+        public Terminal()
+        {
+            Console.TreatControlCAsInput = true;
+        }
         public async Task Start()
         {
             while (!_token.IsCancellationRequested)
@@ -30,10 +35,10 @@ namespace Commander
                     }
                     catch (Exception e)
                     {
-                        Terminal.WriteLine();
-                        Terminal.WriteError("Terminal Error :");
-                        Terminal.WriteError("----------------");
-                        Terminal.WriteError(e.ToString());
+                        this.WriteLine();
+                        this.WriteError("Terminal Error :");
+                        this.WriteError("----------------");
+                        this.WriteError(e.ToString());
                         this.CanHandleInput = true;
                     }
                 }
@@ -48,10 +53,7 @@ namespace Commander
         private List<string> _history = new List<string>();
         private int _historyPosition = 0;
 
-        private Terminal()
-        {
-            Console.TreatControlCAsInput = true;
-        }
+       
 
         public string Prompt { get; set; } = "$> ";
 

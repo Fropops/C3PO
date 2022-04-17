@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander
+namespace Commander.Terminal
 {
 
     public enum TerminalMessageType
@@ -17,18 +17,7 @@ namespace Commander
 
     public partial class Terminal
     {
-
-
-        public const ConsoleColor PromptColor = ConsoleColor.Yellow;
-        public const ConsoleColor SuccessColor = ConsoleColor.Green;
-        public const ConsoleColor ErrorColor = ConsoleColor.Red;
-        public const ConsoleColor InfoColor = ConsoleColor.Cyan;
-
-        public static ConsoleColor DefaultBackGroundColor = Console.BackgroundColor;
-        public static ConsoleColor DefaultForeGroundColor = Console.ForegroundColor;
-
-
-        public void InnerWriteLine(params string[] strs)
+        private void InnerWriteLine(params string[] strs)
         {
             foreach (var str in strs)
                 Console.Write(str);
@@ -41,13 +30,13 @@ namespace Commander
             {
 
                 case TerminalMessageType.Success:
-                    Console.ForegroundColor = SuccessColor;
+                    Console.ForegroundColor = TerminalConstants.SuccessColor;
                     break;
                 case TerminalMessageType.Error:
-                    Console.ForegroundColor = ErrorColor;
+                    Console.ForegroundColor = TerminalConstants.ErrorColor;
                     break;
                 case TerminalMessageType.Info:
-                    Console.ForegroundColor = InfoColor;
+                    Console.ForegroundColor = TerminalConstants.InfoColor;
                     break;
                 default:
                     Console.ForegroundColor = this.DefaultColor;
@@ -61,60 +50,60 @@ namespace Commander
 
         public void WritePrompt()
         {
-            Console.ForegroundColor = PromptColor;
+            Console.ForegroundColor = TerminalConstants.PromptColor;
             Console.Write(this.Prompt);
             Console.ForegroundColor = this.DefaultColor;
 
         }
 
-        public static void WriteSuccess(params string[] parm)
+        public void WriteSuccess(params string[] parm)
         {
-            Instance.WriteLine(TerminalMessageType.Success, parm);
+            this.WriteLine(TerminalMessageType.Success, parm);
         }
-        public static void WriteError(params string[] parm)
+        public void WriteError(params string[] parm)
         {
-            Instance.WriteLine(TerminalMessageType.Error, parm);
+            this.WriteLine(TerminalMessageType.Error, parm);
         }
-        public static void WriteInfo(params string[] parm)
+        public void WriteInfo(params string[] parm)
         {
-            Instance.WriteLine(TerminalMessageType.Info, parm);
+            this.WriteLine(TerminalMessageType.Info, parm);
         }
 
-        public static void WriteLine()
+        public void WriteLine()
         {
             Console.WriteLine();
         }
 
-        public static void Write(string text)
+        public void Write(string text)
         {
             Console.Write(text);
         }
 
-        public static void WriteLine(params string[] parm)
+        public void WriteLine(params string[] parm)
         {
-            Instance.InnerWriteLine(parm);
+            this.InnerWriteLine(parm);
         }
 
-        private static int CursorLeftSave;
-        private static int CursorTopSave;
+        private int CursorLeftSave;
+        private int CursorTopSave;
 
-        public static void SaveCursorPosition()
+        public void SaveCursorPosition()
         {
             CursorLeftSave = Console.GetCursorPosition().Left;
             CursorTopSave = Console.GetCursorPosition().Top;
         }
 
-        public static void ResetCursorPosition()
+        public void ResetCursorPosition()
         {
             Console.SetCursorPosition(CursorLeftSave, CursorTopSave);
         }
 
-        public static void SetCursorPosition(int left, int top)
+        public void SetCursorPosition(int left, int top)
         {
             Console.SetCursorPosition(left, Console.WindowTop + top);
         }
 
-        public static void DrawBackGround(ConsoleColor color, int height)
+        public void DrawBackGround(ConsoleColor color, int height)
         {
             var consoleWidth = Console.WindowWidth;
             Console.BackgroundColor = color;
@@ -124,15 +113,15 @@ namespace Commander
                     Console.Write(' ');
                 Console.WriteLine();
             }
-            Console.BackgroundColor = DefaultBackGroundColor;
+            Console.BackgroundColor = TerminalConstants.DefaultBackGroundColor;
         }
 
-        public static void SetForeGroundColor(ConsoleColor color)
+        public void SetForeGroundColor(ConsoleColor color)
         {
             Console.ForegroundColor = color;
         }
 
-        public static void SetBackGroundColor(ConsoleColor color)
+        public void SetBackGroundColor(ConsoleColor color)
         {
             Console.BackgroundColor = color;
         }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +15,7 @@ namespace Commander.Commands
         public override string Name => "help";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        protected override void InnerExecute(Executor executor, string parms)
+        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
             var results = new SharpSploitResultList<HelpResult>();
 
@@ -34,8 +37,8 @@ namespace Commander.Commands
                 });
             }
 
-            Terminal.WriteLine("Available commands :");
-            Terminal.WriteLine(results.ToString());
+            terminal.WriteLine("Available commands :");
+            terminal.WriteLine(results.ToString());
 
             if (mode == ExecutorMode.AgentInteraction)
             {
@@ -48,9 +51,9 @@ namespace Commander.Commands
                         Description = string.Empty,
                     });
                 }
-                Terminal.WriteLine();
-                Terminal.WriteLine("Commands on the agent :");
-                Terminal.WriteLine(results.ToString());
+                terminal.WriteLine();
+                terminal.WriteLine("Commands on the agent :");
+                terminal.WriteLine(results.ToString());
             }
 
             

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -12,18 +15,17 @@ namespace Commander.Commands
     {
         private RootCommand _command;
         public abstract RootCommand Command { get; }
-        protected Executor Executor { get; set; }
 
-
-        public override void Execute(Executor executor, string parms)
+        public override void Execute(string parms)
         {
-            InnerExecute(executor, parms);
+            var executor = ServiceProvider.GetService<IExecutor>();
+            var terminal = ServiceProvider.GetService<ITerminal>();
+            var comm = ServiceProvider.GetService<ICommModule>();
+            InnerExecute(terminal, executor, comm, parms);
         }
 
-        protected override void InnerExecute(Executor executor, string parms)
+        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
-            this.Executor = executor;
-
             if (this._command == null)
             {
                 this._command = this.Command;
@@ -33,16 +35,19 @@ namespace Commander.Commands
 
             var res = _command.Invoke(parms);
             if (res > 0)
-                this.Executor.InputHandled(this, false);
+                executor.InputHandled(this, false);
         }
 
         private async void HandleCommandWrapper(T options)
         {
-            bool result = await this.HandleCommand(options);
-            this.Executor.InputHandled(this, result);
+            var executor = ServiceProvider.GetService<IExecutor>();
+            var terminal = ServiceProvider.GetService<ITerminal>();
+            var comm = ServiceProvider.GetService<ICommModule>();
+            bool result = await this.HandleCommand(options, terminal, executor, comm);
+            executor.InputHandled(this, result);
         }
 
-        protected abstract Task<bool> HandleCommand(T options);
+        protected abstract Task<bool> HandleCommand(T options, ITerminal terminal, IExecutor executor, ICommModule comm);
     }
 
 

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -26,17 +29,17 @@ namespace Commander.Commands.Listener
             };
 
 
-        protected override async Task<bool> HandleCommand(ListListenersCommandOptions options)
+        protected override async Task<bool> HandleCommand(ListListenersCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
             var results = new SharpSploitResultList<ListListenersResult>();
 
             if (options.verbose)
-                Terminal.WriteLine("Hello from verbose output!");
+                terminal.WriteLine("Hello from verbose output!");
 
-            var result = this.Executor.CommModule.GetListeners();
+            var result = comm.GetListeners();
             if (result.Count() == 0)
             {
-                Terminal.WriteInfo("No Listeners running.");
+                terminal.WriteInfo("No Listeners running.");
                 return true;
             }
 
@@ -53,7 +56,7 @@ namespace Commander.Commands.Listener
                 index++;
             }
 
-            Terminal.WriteLine(results.ToString());
+            terminal.WriteLine(results.ToString());
 
             return true;
         }

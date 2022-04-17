@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -26,16 +29,16 @@ namespace Commander.Commands.Agent
             };
 
 
-        protected override async Task<bool> HandleCommand(ListAgentsCommandOptions options)
+        protected override async Task<bool> HandleCommand(ListAgentsCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
             var results = new SharpSploitResultList<ListAgentResult>();
 
-            var result = this.Executor.CommModule.GetAgents();
+            var result = comm.GetAgents();
 
 
             if (result.Count() == 0)
             {
-                Terminal.WriteLine("No Agents running.");
+                terminal.WriteLine("No Agents running.");
                 return true;
             }
 
@@ -55,7 +58,7 @@ namespace Commander.Commands.Agent
                 index++;
             }
 
-            Terminal.WriteLine(results.ToString());
+            terminal.WriteLine(results.ToString());
 
             return true;
         }

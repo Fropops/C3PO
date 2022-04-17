@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,10 +15,10 @@ namespace Commander.Commands.Listener
         public override string Name => "home";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        protected override void InnerExecute(Executor executor, string parms)
+        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
             executor.Mode = ExecutorMode.None;
-            executor.SetPrompt(Executor.DefaultPrompt);
+            terminal.Prompt = Terminal.Terminal.DefaultPrompt;
         }
     }
 }

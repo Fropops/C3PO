@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +15,7 @@ namespace Commander.Commands.Listener
         public override string Name => "back";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        protected override void InnerExecute(Executor executor, string parms)
+        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
             switch(executor.Mode)
             {
@@ -28,9 +31,9 @@ namespace Commander.Commands.Listener
             }
 
             if (executor.Mode  == ExecutorMode.None)
-                executor.SetPrompt(Executor.DefaultPrompt);
+                terminal.Prompt = Terminal.Terminal.DefaultPrompt;
             else
-                executor.SetPrompt($"${executor.Mode}> ");
+                terminal.Prompt = $"${executor.Mode}> ";
 
         }
     }

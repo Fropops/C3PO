@@ -1,4 +1,7 @@
 ﻿using ApiModels.Response;
+using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -32,19 +35,19 @@ namespace Commander.Commands.Listener
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
-        protected override async Task<bool> HandleCommand(CreateListenersCommandOptions options)
+        protected override async Task<bool> HandleCommand(CreateListenersCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
-            var result = await this.Executor.CommModule.CreateListener(options.name, options.port ?? 80);
+            var result = await comm.CreateListener(options.name, options.port ?? 80);
             if (!result.IsSuccessStatusCode)
             {
-               Terminal.WriteError("An error occured : " + result.StatusCode);
+                terminal.WriteError("An error occured : " + result.StatusCode);
                 return false;
             }
 
             var json = await result.Content.ReadAsStringAsync();
             var listener = JsonConvert.DeserializeObject<ListenerResponse>(json);
 
-            Terminal.WriteSuccess($"Listener {listener.Name} started on port {listener.BindPort}.");
+            terminal.WriteSuccess($"Listener {listener.Name} started on port {listener.BindPort}.");
             return true;
         }
     }

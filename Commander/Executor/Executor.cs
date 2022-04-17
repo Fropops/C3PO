@@ -2,7 +2,9 @@
 using Commander.Commands;
 using Commander.Commands.Agent;
 using Commander.Commands.Listener;
+using Commander.Communication;
 using Commander.Models;
+using Commander.Terminal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +13,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Commander
+namespace Commander.Executor
 {
-    public enum ExecutorMode
-    {
-        None,
-        Listener,
-        Agent,
-        AgentInteraction,
-        All,
-    }
-    public class Executor
-    {
-
-        
+   
+    public class Executor : IExecutor
+    {    
         public ExecutorMode Mode { get; set; } = ExecutorMode.None;
 
         public bool IsRunning
@@ -36,7 +29,8 @@ namespace Commander
         }
 
         public Agent CurrentAgent { get; set; }
-        public ApiCommModule CommModule { get; set; }
+        private ICommModule CommModule { get; set; }
+        public ITerminal Terminal { get; set; }
 
         private Dictionary<ExecutorMode, List<ExecutorCommand>> _commands = new Dictionary<ExecutorMode, List<ExecutorCommand>>();
 
@@ -44,18 +38,19 @@ namespace Commander
 
         public bool IsBusy { get; private set; }
 
-        public const string DefaultPrompt = "$> ";
-        public void Init(ApiCommModule module)
+        public Executor(ITerminal terminal, ICommModule commModule)
         {
-            Terminal.Instance.InputValidated += Instance_InputValidated;
-            this.CommModule = module;
+            this.CommModule = commModule;
+            this.Terminal = terminal;
+
             this.LoadCommands();
 
-            this.PrintHeader();
-;
-            Terminal.Instance.Prompt = DefaultPrompt;
-            Terminal.Instance.NewLine(false);
+            //suscribe to events
+            this.Terminal.InputValidated += Instance_InputValidated;
+
+            this.Terminal.NewLine(false);
         }
+       
 
         private void Instance_InputValidated(object sender, string e)
         {
@@ -74,9 +69,9 @@ namespace Commander
             this.HandleInput(command, parms);
         }
 
-        public void PrintHeader()
+        private void PrintHeader()
         {
-            Terminal.WriteLine("C2Sharp Commander!");
+            this.Terminal.WriteLine("C2Sharp Commander!");
         }
 
         public void LoadCommands()
@@ -130,7 +125,7 @@ namespace Commander
 
         public void HandleInput(string input, string parms)
         {
-            Terminal.Instance.CanHandleInput = false;
+            this.Terminal.CanHandleInput = false;
             string error = $"Command {input} is unknow.";
 
             var cmd = this.GetCommandInMode(this.Mode, input);
@@ -145,24 +140,24 @@ namespace Commander
                 }
                 else
                 {
-                    Terminal.WriteError(error);
+                    this.Terminal.WriteError(error);
                     this.InputHandled(null, false);
                     return;
                 }
             }
 
-            cmd.Execute(this, parms);
+            cmd.Execute(parms);
         }
 
         public void InputHandled(ExecutorCommand cmd, bool cmdResult)
         {
-            Terminal.Instance.CanHandleInput = true;
-            Terminal.Instance.NewLine(false);
+            this.Terminal.CanHandleInput = true;
+            this.Terminal.NewLine(false);
         }
 
         public void Start()
         {
-            Terminal.Instance.Start();
+            this.Terminal.Start();
             this.CommModule.Start();
         }
 
@@ -170,14 +165,8 @@ namespace Commander
         {
             this._tokenSource.Cancel();
             this.CommModule.Stop();
-            Terminal.Instance.stop();
+            this.Terminal.stop();
         }
-
-        public void SetPrompt(string prompt)
-        {
-            Terminal.Instance.Prompt = prompt;
-        }
-
 
     }
 }

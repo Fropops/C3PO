@@ -48,9 +48,107 @@ namespace Commander.Executor
             //suscribe to events
             this.Terminal.InputValidated += Instance_InputValidated;
 
+            this.CommModule.ConnectionStatusChanged +=CommModule_ConnectionStatusChanged;
+            this.CommModule.RunningTaskChanged += CommModule_RunningTaskChanged;
+            this.CommModule.TaskResultUpdated += CommModule_TaskResultUpdated;
+            //end events
+
             this.Terminal.NewLine(false);
         }
-       
+
+        private void CommModule_TaskResultUpdated(object sender, AgentTaskResult res)
+        {
+            var task = this.CommModule.GetTask(res.Id);
+            if (this.CurrentAgent == null || task.AgentId != this.CurrentAgent.Metadata.Id)
+                return;
+            
+            this.Terminal.Interrupt();
+            task.Print(res, this.Terminal);
+            this.Terminal.Restore();
+        }
+
+        int lastRunningCount = 0;
+
+        private void CommModule_RunningTaskChanged(object sender, List<AgentTask> tasks)
+        {
+            if(this.CurrentAgent == null)
+            {
+                if(lastRunningCount != 0)
+                {
+                    Terminal.CanHandleInput = false;
+                    Terminal.SaveCursorPosition();
+                    Terminal.SetCursorPosition(0, 0);
+                    Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount + 1);
+                    Terminal.ResetCursorPosition();
+                    Terminal.CanHandleInput = true;
+                }
+                return;
+            }
+            tasks = tasks.Where(t => t.AgentId == this.CurrentAgent.Metadata.Id).ToList();
+            if (tasks.Count == 0 && lastRunningCount == 0)
+                return;
+
+            Terminal.CanHandleInput = false;
+
+            Terminal.SaveCursorPosition();
+            Terminal.SetCursorPosition(0, 0);
+            Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount + 1);
+
+            lastRunningCount = tasks.Count;
+            if (tasks.Any())
+            {
+                Terminal.SetCursorPosition(0, 0);
+                Terminal.DrawBackGround(ConsoleColor.Cyan, tasks.Count + 1);
+
+                Terminal.SetBackGroundColor(ConsoleColor.Cyan);
+                Terminal.SetForeGroundColor(ConsoleColor.Black);
+
+                Terminal.SetCursorPosition(0, 0);
+                Terminal.WriteLine("Running Commands :");
+                int index = 0;
+                foreach (var task in tasks.OrderBy(t => t.RequestDate))
+                {
+                    index++;
+                    int completion = 0;
+                    var res = this.CommModule.GetTaskResult(task.Id);
+                    if (res != null)
+                        completion = res.Completion;
+
+                    Terminal.Write($" #{index} {task.FullCommand} - {completion}%");
+                    Terminal.WriteLine();
+                }
+            }
+
+            Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
+            Terminal.SetBackGroundColor(TerminalConstants.DefaultBackGroundColor);
+            Terminal.ResetCursorPosition();
+
+            Terminal.CanHandleInput = true;
+        }
+
+        private void CommModule_ConnectionStatusChanged(object sender, ConnectionStatus e)
+        {
+            string status = string.Empty;
+            this.Terminal.Interrupt();
+            switch(e)
+            {
+                case ConnectionStatus.Connected:
+                    {
+                        status = $"Commander is now connected to {this.CommModule.ConnectAddress}:{this.CommModule.ConnectPort}.";
+                        this.Terminal.WriteSuccess(status);
+                    }
+                    break;
+                default:
+                    {
+                        status = $"Commander cannot connect to {this.CommModule.ConnectAddress}:{this.CommModule.ConnectPort}.";
+                        this.Terminal.WriteError(status);
+                    }
+                    break;
+
+            }
+
+            this.Terminal.Restore();
+        }
 
         private void Instance_InputValidated(object sender, string e)
         {

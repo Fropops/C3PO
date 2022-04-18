@@ -17,6 +17,13 @@ namespace Commander.Communication
 {
     public class ApiCommModule : ICommModule
     {
+        public event EventHandler<ConnectionStatus> ConnectionStatusChanged;
+
+        public event EventHandler<List<AgentTask>> RunningTaskChanged;
+
+        public event EventHandler<AgentTaskResult> TaskResultUpdated;
+
+
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
 
@@ -50,10 +57,7 @@ namespace Commander.Communication
             _client.DefaultRequestHeaders.Clear();
         }
 
-        bool IsConnected { get; set; }
-        bool _connectionNotified;
-        bool _connectionErrorNotified;
-
+        public ConnectionStatus ConnectionStatus { get; set; }
 
         bool firstLoad = true;
 
@@ -70,30 +74,22 @@ namespace Commander.Communication
                     await this.UpdateTasks();
                     await this.UpdateResults();
 
-                    this.IsConnected = true;
-                    if (!_connectionNotified)
+                    if (this.ConnectionStatus != ConnectionStatus.Connected)
                     {
-                        this.Terminal.Interrupt();
-                        this.Terminal.WriteSuccess($"Commander connected to {this.ConnectAddress}:{this.ConnectPort}.");
-                        this.Terminal.Restore();
-                        this._connectionNotified = true;
+                        this.ConnectionStatus = ConnectionStatus.Connected;
+                        this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                     }
-                    this._connectionErrorNotified = false;
-
+                  
                     firstLoad = false;
                 }
                 catch (Exception e)
                 {
                     if ((e.InnerException != null && e.InnerException is TimeoutException) || e is HttpRequestException)
                     {
-                        this._connectionNotified = false;
-                        if (!this._connectionErrorNotified)
+                        if (this.ConnectionStatus != ConnectionStatus.Disconnected)
                         {
-                            this.IsConnected = false;
-                            this.Terminal.Interrupt();
-                            this.Terminal.WriteError($"Commander cannot connect to {this.ConnectAddress}:{this.ConnectPort}!");
-                            this.Terminal.Restore();
-                            this._connectionErrorNotified = true;
+                            this.ConnectionStatus = ConnectionStatus.Disconnected;
+                            this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                         }
                     }
                     else
@@ -149,9 +145,9 @@ namespace Commander.Communication
                 //new respone or response change detected
 
                 if(!_results.ContainsKey(res.Id)) // new response
-                { 
-                    if(res.Completed && !firstLoad)
-                        this.PrintEndedTaskResult(res);
+                {
+                    if (res.Completed && !firstLoad)
+                        this.TaskResultUpdated?.Invoke(this, res);
                 }
                 else
                 {
@@ -162,7 +158,7 @@ namespace Commander.Communication
                         || res.Completion != existing.Completion)
                     {
                         if (res.Completed && !firstLoad)
-                            this.PrintEndedTaskResult(res);
+                            this.TaskResultUpdated?.Invoke(this, res);
                     }
                 }
 
@@ -174,62 +170,14 @@ namespace Commander.Communication
                     return current;
                 });
 
-                PrintRunningCommands(this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || !this._results[t.Id].Completed).ToList());
+                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || !this._results[t.Id].Completed).ToList();
+                this.RunningTaskChanged?.Invoke(this, running);
             }
         }
 
-        private void PrintEndedTaskResult(AgentTaskResult res)
-        {
-            Terminal.Interrupt();
-            this._tasks[res.Id].Print(res, this.Terminal);
-            Terminal.Restore();
-        }
+       
 
-        int lastRunningCount = 0;
-        private void PrintRunningCommands(List<AgentTask> tasks)
-        {
-            if (tasks.Count == 0 && lastRunningCount == 0)
-                return;
-
-            Terminal.CanHandleInput = false;
-
-            Terminal.SaveCursorPosition();
-            Terminal.SetCursorPosition(0, 0);
-            Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount);
-
-            lastRunningCount = tasks.Count + 2;
-            if (tasks.Any())
-            {
-                Terminal.SetCursorPosition(0, 0);
-                Terminal.DrawBackGround(ConsoleColor.Cyan, tasks.Count + 2);
-
-                Terminal.SetBackGroundColor(ConsoleColor.Cyan);
-                Terminal.SetForeGroundColor(ConsoleColor.Black);
-
-                Terminal.SetCursorPosition(0, 0);
-                Terminal.WriteLine("Running Commands :");
-                int index = 0;
-                foreach (var task in tasks.OrderBy(t => t.RequestDate))
-                {
-                    index++;
-                    int completion = 0;
-                    if (this._results.ContainsKey(task.Id))
-                        completion = this._results[task.Id].Completion;
-
-                    Terminal.Write($" #{index} {task.FullCommand} - {completion}%");
-                    Terminal.WriteLine();
-                }
-
-                for (int i = 0; i < Console.WindowWidth; ++i)
-                    Terminal.Write("-");
-            }
-
-            Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
-            Terminal.SetBackGroundColor(TerminalConstants.DefaultBackGroundColor);
-            Terminal.ResetCursorPosition();
-
-            Terminal.CanHandleInput = true;
-        }
+       
 
         private async Task UpdateListeners()
         {

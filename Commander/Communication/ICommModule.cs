@@ -10,9 +10,16 @@ namespace Commander.Communication
 {
     public interface ICommModule
     {
+        event EventHandler<ConnectionStatus> ConnectionStatusChanged;
+        event EventHandler<List<AgentTask>> RunningTaskChanged;
+        event EventHandler<AgentTaskResult> TaskResultUpdated;
+
         Task Start();
         void Stop();
         void UpdateConfig();
+
+        string ConnectAddress { get; set; }
+        int ConnectPort { get; set; }
 
         List<Agent> GetAgents();
 

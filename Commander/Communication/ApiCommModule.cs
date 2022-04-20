@@ -23,6 +23,7 @@ namespace Commander.Communication
 
         public event EventHandler<AgentTaskResult> TaskResultUpdated;
 
+        public event EventHandler AgentsUpdated;
 
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
@@ -55,6 +56,14 @@ namespace Commander.Communication
             _client.Timeout = new TimeSpan(0, 0, 5);
             _client.BaseAddress = new Uri($"http://{this.ConnectAddress}:{this.ConnectPort}");
             _client.DefaultRequestHeaders.Clear();
+
+            this._agents.Clear();
+            this._tasks.Clear();
+            this._results.Clear();
+            this._listeners.Clear();
+
+            this.ConnectionStatus = ConnectionStatus.Disconnected;
+            this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
         }
 
         public ConnectionStatus ConnectionStatus { get; set; }
@@ -232,7 +241,7 @@ namespace Commander.Communication
                 });
             }
 
-
+            this.AgentsUpdated?.Invoke(this, new EventArgs());
         }
 
         public void Stop()

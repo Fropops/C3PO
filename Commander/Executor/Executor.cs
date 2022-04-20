@@ -51,9 +51,18 @@ namespace Commander.Executor
             this.CommModule.ConnectionStatusChanged +=CommModule_ConnectionStatusChanged;
             this.CommModule.RunningTaskChanged += CommModule_RunningTaskChanged;
             this.CommModule.TaskResultUpdated += CommModule_TaskResultUpdated;
+            this.CommModule.AgentsUpdated +=CommModule_AgentsUpdated;
             //end events
 
             this.Terminal.NewLine(false);
+        }
+
+        private void CommModule_AgentsUpdated(object sender, EventArgs e)
+        {
+            if(this.CurrentAgent != null)
+            {
+                this.CurrentAgent = this.CommModule.GetAgent(this.CurrentAgent.Metadata.Id);
+            }
         }
 
         private void CommModule_TaskResultUpdated(object sender, AgentTaskResult res)

@@ -51,7 +51,7 @@ namespace Commander.Commands.Agent
                 {
                     Index = index,
                     Id = agent.Metadata.Id,
-                    LastSeen = agent.LastSeen,
+                    LastSeen = agent.LastSeen.ToLocalTime(),
                     UserName = agent.Metadata.UserName,
                     HostName = agent.Metadata.Hostname
                 });

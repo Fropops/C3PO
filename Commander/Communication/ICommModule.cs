@@ -13,7 +13,7 @@ namespace Commander.Communication
         event EventHandler<ConnectionStatus> ConnectionStatusChanged;
         event EventHandler<List<AgentTask>> RunningTaskChanged;
         event EventHandler<AgentTaskResult> TaskResultUpdated;
-
+        event EventHandler AgentsUpdated;
         Task Start();
         void Stop();
         void UpdateConfig();

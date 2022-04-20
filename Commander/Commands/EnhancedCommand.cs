@@ -14,6 +14,8 @@ namespace Commander.Commands
     public abstract class EnhancedCommand<T> : ExecutorCommand
     {
         private RootCommand _command;
+
+        private bool _isCommandCorrectlyExecuting = false;
         public abstract RootCommand Command { get; }
 
         public override void Execute(string parms)
@@ -24,7 +26,7 @@ namespace Commander.Commands
             InnerExecute(terminal, executor, comm, parms);
         }
 
-        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
+        protected async override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
         {
             if (this._command == null)
             {
@@ -36,10 +38,15 @@ namespace Commander.Commands
             var res = _command.Invoke(parms);
             if (res > 0)
                 executor.InputHandled(this, false);
+
+            await Task.Delay(2000);
+            if (!this._isCommandCorrectlyExecuting) //prevent blocking when Handler is not called
+                executor.InputHandled(this, false);
         }
 
         private async void HandleCommandWrapper(T options)
         {
+            this._isCommandCorrectlyExecuting = true;
             var executor = ServiceProvider.GetService<IExecutor>();
             var terminal = ServiceProvider.GetService<ITerminal>();
             var comm = ServiceProvider.GetService<ICommModule>();

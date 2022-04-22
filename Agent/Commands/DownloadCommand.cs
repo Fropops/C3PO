@@ -21,6 +21,7 @@ namespace Agent.Commands
             }
 
             var fileName = task.SplittedArgs[0];
+
             var fileContent = commm.Download(fileName, a =>
             {
                 result.Completion = a;
@@ -34,7 +35,7 @@ namespace Agent.Commands
             }
             else
             {
-                path = Path.Combine(Environment.CurrentDirectory, fileName);
+                path = Path.Combine(Environment.CurrentDirectory, Path.GetFileName(fileName));
             }
 
             using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))

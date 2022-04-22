@@ -108,6 +108,22 @@ namespace Agent.Models
             return response.Deserialize<FileChunk>();
         }
 
+        private async Task SetupUpload(FileDescriptor fileDesc)
+        {
+            var content = new StringContent(Encoding.UTF8.GetString(fileDesc.Serialize()), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync("/SetupUpload", content);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+        private async Task PostFileChunk(FileChunk chunk)
+        {
+            var content = new StringContent(Encoding.UTF8.GetString(chunk.Serialize()), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync("/UploadChunk", content);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
 
         public override async Task<Byte[]> Download(string filename, Action<int> OnCompletionChanged = null)
         {
@@ -133,5 +149,59 @@ namespace Agent.Models
 
             }
         }
+
+        public const int ChunkSize = 10000;
+
+        public override async Task Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
+        {
+
+            var desc = new FileDescriptor()
+            {
+                Length = fileBytes.Length,
+                ChunkSize = ChunkSize,
+                Id = Guid.NewGuid().ToString(),
+                Name = filename
+            };
+
+            var chunks = new List<FileChunk>();
+
+            int index = 0;
+            using (var ms = new MemoryStream(fileBytes))
+            {
+                
+                var buffer = new byte[ChunkSize];
+                int numBytesToRead = (int)ms.Length;
+
+                while (numBytesToRead > 0)
+                {
+
+                    int n = ms.Read(buffer, 0, ChunkSize);
+                    //var data =
+                    var chunk = new FileChunk()
+                    {
+                        FileId = desc.Id,
+                        Data = System.Convert.ToBase64String(buffer.Take(n).ToArray()),
+                        Index = index,
+                    };
+                    chunks.Add(chunk);
+                    numBytesToRead -= n;
+
+                    index++;
+                }
+            }
+
+            desc.ChunkCount = chunks.Count;
+
+            await SetupUpload(desc);
+
+            index = 0;
+            foreach (var chunk in chunks)
+            {
+                await PostFileChunk(chunk);
+                OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
+                index++;
+            }
+        }
+
     }
 }

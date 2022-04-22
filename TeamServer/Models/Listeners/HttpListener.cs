@@ -55,6 +55,8 @@ namespace TeamServer.Models
                 e.MapControllerRoute("/", "/", new { Controller = "HttpListener", Action = "HandleImplant" });
                 e.MapControllerRoute("SetupDownload", "/SetupDownload", new { Controller = "HttpListener", Action = "SetupDownload" });
                 e.MapControllerRoute("DownloadChunk", "/DownloadChunk", new { Controller = "HttpListener", Action = "DownloadChunk" });
+                e.MapControllerRoute("SetupUpload", "/SetupUpload", new { Controller = "HttpListener", Action = "SetupUpload" });
+                e.MapControllerRoute("UploadChunk", "/UploadChunk", new { Controller = "HttpListener", Action = "UploadChunk" });
             });
         }
 

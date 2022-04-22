@@ -18,6 +18,7 @@ namespace TeamServer.Services
         }
 
         public static Dictionary<string, FileDescriptor> DownloadCache = new Dictionary<string, FileDescriptor>();
+        public static Dictionary<string, FileDescriptor> UploadCache = new Dictionary<string, FileDescriptor>();
         public const int ChunkSize = 10240; //10kB
 
         public string GetFullPath(string fileName)
@@ -32,12 +33,25 @@ namespace TeamServer.Services
 
         
 
-        public FileDescriptor GetFile(string id)
+        public FileDescriptor GetFileToDownload(string id)
         {
             if (!DownloadCache.ContainsKey(id))
                 return null;
 
             return DownloadCache[id];
+        }
+
+        public FileDescriptor GetFileToUpload(string id)
+        {
+            if (!UploadCache.ContainsKey(id))
+                return null;
+
+            return UploadCache[id];
+        }
+
+        public void AddFileToUpload(FileDescriptor desc)
+        {
+            UploadCache.Add(desc.Id, desc);
         }
         public FileDescriptor CreateFileDescriptor(string filePath)
         {
@@ -65,11 +79,10 @@ namespace TeamServer.Services
                 {
                     
                     int n = fs.Read(buffer, 0, FileService.ChunkSize);
-                    //var data =
                     var chunk = new FileChunk()
                     {
                         FileId = desc.Id,
-                        Data = System.Convert.ToBase64String(buffer),
+                        Data = System.Convert.ToBase64String(buffer.Take(n).ToArray()),
                         Index = index,
                     };
                     desc.Chunks.Add(chunk);
@@ -91,6 +104,17 @@ namespace TeamServer.Services
             foreach(var id in DownloadCache.Keys.ToList())
             {
                 if(DownloadCache[id].IsDownloaded)
+                {
+                    DownloadCache.Remove(id);
+                }
+            }
+        }
+
+        public void CleanUploaded()
+        {
+            foreach (var id in UploadCache.Keys.ToList())
+            {
+                if (DownloadCache[id].IsUploaded)
                 {
                     DownloadCache.Remove(id);
                 }
@@ -125,6 +149,37 @@ namespace TeamServer.Services
             }
 
             return results;
+        }
+
+
+        public void SaveUploadedFile(FileDescriptor desc, string path)
+        {
+
+            byte[] fileBytes = null;
+            using (var ms = new MemoryStream())
+            {
+                foreach (var chunk in desc.Chunks.OrderBy(c => c.Index))
+                {
+                    var bytes = Convert.FromBase64String(chunk.Data);
+                    ms.Write(bytes, 0, bytes.Length);
+                }
+
+                fileBytes =  ms.ToArray();
+
+            }
+
+            var dirName = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dirName))
+                Directory.CreateDirectory(dirName);
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                fs.Write(fileBytes, 0, fileBytes.Length);
+            }
+        }
+
+        public string GetAgentPath(string agentId, string fileName)
+        {
+            return this.GetFullPath(Path.Combine("Agent", agentId, fileName));
         }
     }
 }

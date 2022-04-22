@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
+    <Compile Include="Commands\UploadCommand.cs" />
     <Compile Include="Commands\DownloadCommand.cs" />
     <Compile Include="Commands\ExecuteAssemblyCommand.cs" />
     <Compile Include="Commands\Internal\Execute.cs" />

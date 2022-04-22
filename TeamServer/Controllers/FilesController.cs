@@ -47,7 +47,7 @@ namespace TeamServer.Controllers
         [HttpGet("Download/{id}/{chunkIndex}")]
         public IActionResult GetFileChunk(string id, int chunkIndex)
         {
-            var desc = _fileService.GetFile(id);
+            var desc = _fileService.GetFileToDownload(id);
             if(chunkIndex < 0 || chunkIndex >= desc.ChunkCount)
                 return NotFound();
 

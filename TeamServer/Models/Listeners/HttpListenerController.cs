@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using TeamServer.Models.File;
 using TeamServer.Services;
 
 namespace TeamServer.Models
@@ -96,7 +97,7 @@ namespace TeamServer.Models
 
         public IActionResult DownloadChunk(string id, int index)
         {
-            var desc = _fileService.GetFile(id);
+            var desc = _fileService.GetFileToDownload(id);
             if (index < 0 || index >= desc.ChunkCount)
                 return NotFound();
 
@@ -112,5 +113,38 @@ namespace TeamServer.Models
                 Index = chunck.Index,
             });
         }
+
+        #region Upload
+        public IActionResult SetupUpload([FromBody] FileDescriptor desc)
+        {
+            if (string.IsNullOrEmpty(desc.Id))
+                return NotFound();
+
+            _fileService.AddFileToUpload(desc);
+            return Ok();
+        }
+
+        public IActionResult UploadChunk([FromBody] FileChunk chunk)
+        {
+            var desc = _fileService.GetFileToUpload(chunk.FileId);
+            if (desc == null)
+                return NotFound();
+
+            var metadata = ExtractMetadata(HttpContext.Request.Headers);
+            if (metadata == null)
+                return NotFound();
+
+            desc.Chunks.Add(chunk);
+            if(desc.IsUploaded)
+            {
+                var fileName = _fileService.GetAgentPath(metadata.Id, desc.Name);
+                _fileService.SaveUploadedFile(desc, fileName);
+            }
+
+            _fileService.CleanDownloaded();
+
+            return Ok();
+        }
+        #endregion
     }
 }

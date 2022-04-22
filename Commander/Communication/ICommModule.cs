@@ -34,6 +34,7 @@ namespace Commander.Communication
 
         Task<HttpResponseMessage> GetFileDescriptor(string filename);
         Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex);
+        Task<HttpResponseMessage> GetFiles(string path);
 
     }
 }

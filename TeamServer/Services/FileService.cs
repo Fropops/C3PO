@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ApiModels.Response;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,8 +24,10 @@ namespace TeamServer.Services
         {
             var root = _configuration.GetValue<string>("FileSystemRoot");
 
-            fileName.Replace("..", string.Empty); //sanitize the input
-            return Path.Combine(root, fileName);
+            var actualPath = Path.Combine(root, fileName.Replace("..", string.Empty));
+            if (!actualPath.StartsWith(root))
+                actualPath = Path.Combine(root, Path.GetFileName(fileName));
+            return actualPath;
         }
 
         
@@ -92,6 +95,36 @@ namespace TeamServer.Services
                     DownloadCache.Remove(id);
                 }
             }
+        }
+
+        public List<FileFolderListResponse> List(string fullPath)
+        {
+            var results = new List<FileFolderListResponse>();
+            var directories = Directory.GetDirectories(fullPath);
+            foreach (var dir in directories)
+            {
+                var dirInfo = new DirectoryInfo(dir);
+                results.Add(new FileFolderListResponse()
+                {
+                    Name = dirInfo.Name,
+                    Length = 0,
+                    IsFile = false,
+                });
+            }
+
+            var files = Directory.GetFiles(fullPath);
+            foreach (var file in files)
+            {
+                var fileInfo = new FileInfo(file);
+                results.Add(new FileFolderListResponse()
+                {
+                    Name = Path.GetFileName(fileInfo.FullName),
+                    Length = fileInfo.Length,
+                    IsFile = true,
+                });
+            }
+
+            return results;
         }
     }
 }

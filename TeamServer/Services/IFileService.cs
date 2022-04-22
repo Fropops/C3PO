@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ApiModels.Response;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,5 +13,7 @@ namespace TeamServer.Services
         FileDescriptor GetFile(string id);
         FileDescriptor CreateFileDescriptor(string filePath);
         void CleanDownloaded();
+
+        List<FileFolderListResponse> List(string fullPath);
     }
 }

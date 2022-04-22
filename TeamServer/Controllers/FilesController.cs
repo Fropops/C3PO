@@ -65,5 +65,16 @@ namespace TeamServer.Controllers
         }
 
 
+        [HttpGet("List/{path}")]
+        public IActionResult List(string path)
+        {
+            var decoded = System.Web.HttpUtility.UrlDecode(path).Trim();
+            var fullPath = _fileService.GetFullPath(decoded);
+            if (!Directory.Exists(fullPath))
+                return NotFound();
+            var files = _fileService.List(fullPath);
+            return Ok(files);
+        }
+
     }
 }

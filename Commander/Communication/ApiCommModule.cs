@@ -332,5 +332,11 @@ namespace Commander.Communication
         {
             return await _client.GetAsync($"/Files/Download/{id}/{chunkIndex}");
         }
+
+        public async Task<HttpResponseMessage> GetFiles(string path)
+        {
+            var encoded = System.Web.HttpUtility.UrlEncode(path);
+            return await _client.GetAsync($"/Files/List/{encoded}");
+        }
     }
 }

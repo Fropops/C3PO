@@ -30,7 +30,7 @@ namespace Commander
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("remotefile", "name of the file to download"),
-                new Option<string>(new[] { "outfile" }, "local file name to be saved to."),
+                new Argument<string>( "outFile", () => string.Empty, "local file name to be saved to."),
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 

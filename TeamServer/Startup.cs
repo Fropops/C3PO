@@ -38,6 +38,7 @@ namespace TeamServer
 
             services.AddSingleton<IListenerService, ListenerService>();
             services.AddSingleton<IAgentService, AgentService>();
+            services.AddSingleton<IFileService, FileService>();
 
         }
 
@@ -67,9 +68,10 @@ namespace TeamServer
         {
             var listenerService = app.ApplicationServices.GetService<IListenerService>();
             var agentService = app.ApplicationServices.GetService<IAgentService>();
+            var fileService = app.ApplicationServices.GetService<IFileService>();
 
             var listener = new HttpListener("Default Listener", 8080);
-            listener.Init(agentService);
+            listener.Init(agentService, fileService);
             listener.Start();
 
             listenerService.AddListener(listener);

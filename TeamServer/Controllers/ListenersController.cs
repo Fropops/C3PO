@@ -16,11 +16,13 @@ namespace TeamServer.Controllers
     {
         private readonly IListenerService _listenerService;
         private readonly IAgentService _agentService;
+        private readonly IFileService _fileService;
 
-        public ListenersController(IListenerService listenerService, IAgentService agentService)
+        public ListenersController(IListenerService listenerService, IAgentService agentService, IFileService fileService)
         {
             this._listenerService = listenerService;
             _agentService=agentService;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -44,7 +46,7 @@ namespace TeamServer.Controllers
         public IActionResult StartListener([FromBody] StartHttpListenerRequest request)
         {
             var listener = new HttpListener(request.Name, request.BindPort);
-            listener.Init(this._agentService);
+            listener.Init(this._agentService, this._fileService);
             listener.Start();
 
             _listenerService.AddListener(listener);

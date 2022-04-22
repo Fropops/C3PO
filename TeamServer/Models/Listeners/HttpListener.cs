@@ -44,6 +44,7 @@ namespace TeamServer.Models
             //    mvcOptions.
             //});
             service.AddSingleton(this._agentService);
+            service.AddSingleton(this._fileService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)
@@ -52,6 +53,8 @@ namespace TeamServer.Models
             app.UseEndpoints(e =>
             {
                 e.MapControllerRoute("/", "/", new { Controller = "HttpListener", Action = "HandleImplant" });
+                e.MapControllerRoute("SetupDownload", "/SetupDownload", new { Controller = "HttpListener", Action = "SetupDownload" });
+                e.MapControllerRoute("DownloadChunk", "/DownloadChunk", new { Controller = "HttpListener", Action = "DownloadChunk" });
             });
         }
 

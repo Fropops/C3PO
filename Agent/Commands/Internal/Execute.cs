@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace Agent.Commands.Internal
 {
     public static class ExecuteHelper
     {
-       public static string ExecuteCommand(string fileName, string arguments)
+        public static string ExecuteCommand(string fileName, string arguments)
         {
             var startInfo = new ProcessStartInfo()
             {
@@ -41,6 +42,36 @@ namespace Agent.Commands.Internal
             process.WaitForExit();
 
             return output;
+        }
+
+        public static string ExecuteAssembly(byte[] asm, string[] arguments = null)
+        {
+            if (arguments is null)
+                arguments = new string[] { };
+
+            var currentOut = Console.Out;
+            var currentError = Console.Out;
+            using (var ms = new MemoryStream())
+            using (var sw = new StreamWriter(ms))
+            {
+                Console.SetOut(sw);
+                Console.SetError(sw);
+                sw.AutoFlush = true;
+                
+
+                var assembly = Assembly.Load(asm);
+                assembly.EntryPoint.Invoke(null, new object[] { arguments });
+
+                Console.Out.Flush();
+                Console.Error.Flush();
+
+                Console.SetOut(currentOut);
+                Console.SetError(currentError);
+
+                var output = Encoding.UTF8.GetString(ms.ToArray());
+
+                return output;
+            }
         }
     }
 }

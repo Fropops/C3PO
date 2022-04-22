@@ -32,5 +32,8 @@ namespace Commander.Communication
         IEnumerable<Listener> GetListeners();
         Task<HttpResponseMessage> TaskAgent(string id, string cmd, string parms);
 
+        Task<HttpResponseMessage> GetFileDescriptor(string filename, int filetype);
+        Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex);
+
     }
 }

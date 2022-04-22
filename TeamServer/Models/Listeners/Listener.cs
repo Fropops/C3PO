@@ -13,6 +13,7 @@ namespace TeamServer.Models
         public virtual int BindPort { get; protected set; }
 
         protected IAgentService _agentService;
+        protected IFileService _fileService;
 
         public Listener(string name, int bindPort)
         {
@@ -20,9 +21,10 @@ namespace TeamServer.Models
             this.BindPort = bindPort;
         }
 
-        public void Init(IAgentService service)
+        public void Init(IAgentService service, IFileService fileService)
         {
             this._agentService = service;
+            this._fileService = fileService;
         }
 
         public abstract Task Start();

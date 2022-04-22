@@ -9,6 +9,12 @@ namespace Agent.Models
 {
     public abstract class CommModule
     {
+        //public abstract Task<FileDescriptor> SetupDownload(int filetype, string filename);
+
+        //public abstract Task<FileChunk> GetFileChunk( string id, int chunckIndex);
+
+        public abstract Task<Byte[]> Download(int filetype, string filename, Action<int> OnCompletionChanged = null);
+
         public abstract Task Start();
         public abstract void Stop();
 

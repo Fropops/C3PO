@@ -95,9 +95,9 @@ namespace Agent.Models
             _tokenSource.Cancel();
         }
 
-        private async Task<FileDescriptor> SetupDownload(int filetype, string filename)
+        private async Task<FileDescriptor> SetupDownload(string filename)
         {
-            var response = await _client.GetByteArrayAsync($"/SetupDownload?filetype={filetype}&filename={filename}");
+            var response = await _client.GetByteArrayAsync($"/SetupDownload?filename={filename}");
             //var json = Encoding.UTF8.GetString(response);
             return response.Deserialize<FileDescriptor>();
         }
@@ -109,9 +109,9 @@ namespace Agent.Models
         }
 
 
-        public override async Task<Byte[]> Download(int filetype, string filename, Action<int> OnCompletionChanged = null)
+        public override async Task<Byte[]> Download(string filename, Action<int> OnCompletionChanged = null)
         {
-            var desc = await this.SetupDownload(filetype, filename);
+            var desc = await this.SetupDownload(filename);
             var chunks = new List<FileChunk>();
 
             for (int index = 0; index < desc.ChunkCount; ++index)

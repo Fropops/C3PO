@@ -20,12 +20,6 @@ namespace Commander
 
         public string outfile { get; set; }
         public bool verbose { get; set; }
-        
-        public bool assembly { get; set; }
-
-        public bool portable { get; set; }
-
-        public bool custom { get; set; }
     }
     public class GetCommand : EnhancedCommand<CreateListenersCommandOptions>
     {
@@ -37,20 +31,13 @@ namespace Commander
             {
                 new Argument<string>("remotefile", "name of the file to download"),
                 new Option<string>(new[] { "outfile" }, "local file name to be saved to."),
-                new Option(new[] { "--portable", "-p" }, "Take file in the portable folder."),
-                new Option(new[] { "--custom", "-c" }, "Take file in the custom folder."),
-                new Option(new[] { "--assmbly", "-a" }, "Take file in the assembly folder."),
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
         protected override async Task<bool> HandleCommand(CreateListenersCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
-            int type = 0;
-            if (options.custom) type = 0;
-            if (options.assembly) type = 1;
-            if (options.portable) type = 2;
 
-            var result = await comm.GetFileDescriptor(options.remotefile, type);
+            var result = await comm.GetFileDescriptor(options.remotefile);
             if (!result.IsSuccessStatusCode)
             {
                 if(result.StatusCode == System.Net.HttpStatusCode.NotFound)

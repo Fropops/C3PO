@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,31 +10,24 @@ namespace TeamServer.Services
 {
     public class FileService : IFileService
     {
+        private readonly IConfiguration _configuration;
+        public FileService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public static Dictionary<string, FileDescriptor> DownloadCache = new Dictionary<string, FileDescriptor>();
         public const int ChunkSize = 10240; //10kB
 
-        public string GetFullPath(FileType filetype, string fileName)
+        public string GetFullPath(string fileName)
         {
-            string path;
-            switch (filetype)
-            {
-                case FileType.Custom:
-                    {
-                        path = @"e:\Share\tmp\Custom\";
-                    }
-                    break;
-                case FileType.Assembly:
-                    {
-                        path = @"e:\Share\tmp\Assembly\";
-                    }
-                    break;
+            var root = _configuration.GetValue<string>("FileSystemRoot");
 
-                default:
-                    return null;
-            }
-
-            return Path.Combine(path, fileName);
+            fileName.Replace("..", string.Empty); //sanitize the input
+            return Path.Combine(root, fileName);
         }
+
+        
 
         public FileDescriptor GetFile(string id)
         {

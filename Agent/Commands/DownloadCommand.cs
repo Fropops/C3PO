@@ -21,7 +21,7 @@ namespace Agent.Commands
             }
 
             var fileName = task.SplittedArgs[0];
-            var fileContent = commm.Download(0, fileName, a =>
+            var fileContent = commm.Download(fileName, a =>
             {
                 result.Completion = a;
                 commm.SendResult(result);

@@ -37,7 +37,10 @@ namespace Commander.Commands
 
             var res = _command.Invoke(parms);
             if (res > 0)
+            {
                 executor.InputHandled(this, false);
+                return;
+            }
 
             await Task.Delay(2000);
             if (!this._isCommandCorrectlyExecuting) //prevent blocking when Handler is not called

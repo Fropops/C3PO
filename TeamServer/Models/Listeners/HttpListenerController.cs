@@ -73,9 +73,10 @@ namespace TeamServer.Models
             return JsonConvert.DeserializeObject<AgentMetadata>(json);
         }
 
-        public IActionResult SetupDownload(int filetype, string filename)
+        public IActionResult SetupDownload(string filename)
         {
-            string fullPath = this._fileService.GetFullPath((FileType)filetype, filename);
+            var decoded = System.Web.HttpUtility.UrlDecode(filename);
+            string fullPath = this._fileService.GetFullPath(decoded);
             if (string.IsNullOrEmpty(fullPath))
                 return NotFound();
 

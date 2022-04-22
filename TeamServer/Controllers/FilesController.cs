@@ -22,10 +22,11 @@ namespace TeamServer.Controllers
 
 
 
-        [HttpGet("SetupDownload/{filetype}/{filename}")]
-        public IActionResult GetFileDescriptor(FileType filetype, string filename)
+        [HttpGet("SetupDownload/{filename}")]
+        public IActionResult GetFileDescriptor(string filename)
         {
-            string fullPath = this._fileService.GetFullPath(filetype, filename);
+            var decoded = System.Web.HttpUtility.UrlDecode(filename);
+            string fullPath = this._fileService.GetFullPath(decoded);
             if(string.IsNullOrEmpty(fullPath))
                 return NotFound();
 

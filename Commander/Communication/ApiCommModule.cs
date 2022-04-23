@@ -239,6 +239,8 @@ namespace Commander.Communication
                     current.LastSeen = agent.LastSeen;
                     return current;
                 });
+
+                //this._agents[agent.Metadata.Id].Metadata.AvailableCommands = agent.Metadata.AvailableCommands;
             }
 
             this.AgentsUpdated?.Invoke(this, new EventArgs());

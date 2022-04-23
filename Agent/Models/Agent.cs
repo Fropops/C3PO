@@ -33,6 +33,27 @@ namespace Agent.Models
             this._metadata.AvailableCommands = this._commands.Select(c => c.Name).ToArray();
         }
 
+        public int LoadCommands(Assembly module)
+        {
+            int count = 0;
+            foreach (var type in module.GetTypes())
+            {
+                if (type.IsSubclassOf(typeof(AgentCommand)))
+                {
+                    var instance = Activator.CreateInstance(type) as AgentCommand;
+                    if (!_commands.Any(c => c.Name == instance.Name))
+                    {
+                        _commands.Add(instance);
+                        count++;
+                    }
+                }
+            }
+
+            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).ToArray();
+            this._communicator.Init(this._metadata);
+            return count;
+        }
+
         public Agent(AgentMetadata metadata, CommModule comm)
         {
             _metadata = metadata;

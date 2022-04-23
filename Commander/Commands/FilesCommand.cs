@@ -39,7 +39,13 @@ namespace Commander.Commands
             //if (options.path == "/")
             //    options.path = " ";
 
-            var result = await comm.GetFiles(options.path);
+            var path = options.path;
+            if (executor.Mode == ExecutorMode.AgentInteraction && !path.StartsWith("/"))
+            {
+                path = "Agent/" + executor.CurrentAgent.Metadata.Id + path;
+            }
+
+                var result = await comm.GetFiles(path);
             if (!result.IsSuccessStatusCode)
             {
                 if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -52,9 +58,12 @@ namespace Commander.Commands
             var json = await result.Content.ReadAsStringAsync();
             var files = JsonConvert.DeserializeObject<FileFolderListResponse[]>(json);
 
-            var path = options.path;
+            
+
+
             if (string.IsNullOrEmpty(path.Trim()))
                 path = "/";
+
             terminal.WriteSuccess($"Content of {path}");
             var index = 0;
             foreach (var file in files.OrderBy(f => f.IsFile).ThenBy(f => f.Name))

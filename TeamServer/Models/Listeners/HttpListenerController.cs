@@ -38,6 +38,7 @@ namespace TeamServer.Models
             }
 
             agent.CheckIn();
+            agent.Metadata.AvailableCommands = metadata.AvailableCommands;
 
             if(HttpContext.Request.Method == "POST")
             {

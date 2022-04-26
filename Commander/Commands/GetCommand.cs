@@ -36,8 +36,14 @@ namespace Commander
 
         protected override async Task<bool> HandleCommand(GetCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
+            var path = options.remotefile;
+            if (executor.Mode == ExecutorMode.AgentInteraction && !path.StartsWith("/"))
+            {
+                path = "Agent/" + executor.CurrentAgent.Metadata.Id  + "/" + path;
+            }
 
-            var result = await comm.GetFileDescriptor(options.remotefile);
+
+            var result = await comm.GetFileDescriptor(path);
             if (!result.IsSuccessStatusCode)
             {
                 if(result.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -66,7 +72,6 @@ namespace Commander
                 chunks.Add(chunk);
             }
 
-            string path = string.Empty;
             if(!string.IsNullOrEmpty(options.outfile))
             {
                 path = options.outfile;

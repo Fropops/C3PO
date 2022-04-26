@@ -42,7 +42,7 @@ namespace Commander.Commands
             var path = options.path;
             if (executor.Mode == ExecutorMode.AgentInteraction && !path.StartsWith("/"))
             {
-                path = "Agent/" + executor.CurrentAgent.Metadata.Id + path;
+                path = "Agent/" + executor.CurrentAgent.Metadata.Id + "/" + path;
             }
 
                 var result = await comm.GetFiles(path);

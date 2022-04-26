@@ -22,7 +22,7 @@ namespace Agent
         {
             GenerateMetadata();
 
-            s_commModule = new HttpCommModule("localhost", 8080);
+            s_commModule = new HttpCommModule("13.38.61.75", 80);
             //s_commModule = new HttpCommModule("192.168.56.102", 8080);
             //s_commModule = new HttpCommModule("15.188.8.236", 80);
             

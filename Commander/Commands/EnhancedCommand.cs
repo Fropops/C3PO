@@ -49,12 +49,23 @@ namespace Commander.Commands
 
         private async void HandleCommandWrapper(T options)
         {
-            this._isCommandCorrectlyExecuting = true;
             var executor = ServiceProvider.GetService<IExecutor>();
             var terminal = ServiceProvider.GetService<ITerminal>();
             var comm = ServiceProvider.GetService<ICommModule>();
-            bool result = await this.HandleCommand(options, terminal, executor, comm);
-            executor.InputHandled(this, result);
+            bool result = false;
+            try
+            {
+                this._isCommandCorrectlyExecuting = true;
+                result = await this.HandleCommand(options, terminal, executor, comm);
+            }
+            catch(Exception ex)
+            {
+                terminal.WriteError(ex.ToString());
+            }
+            finally
+            {
+                executor.InputHandled(this, result);
+            }
         }
 
         protected abstract Task<bool> HandleCommand(T options, ITerminal terminal, IExecutor executor, ICommModule comm);

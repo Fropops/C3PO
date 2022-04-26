@@ -16,7 +16,7 @@ namespace Commander.Commands.Agent
 
     public class StatusCommand : EnhancedCommand<StatusCommandOptions>
     {
-        public override string Description => "List & Change Commander settings";
+        public override string Description => "Show current agent status";
         public override string Name => "status";
 
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;

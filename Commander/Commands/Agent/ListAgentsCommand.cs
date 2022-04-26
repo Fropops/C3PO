@@ -72,9 +72,21 @@ namespace Commander.Commands.Agent
             public string UserName { get; set; }
             public string HostName { get; set; }
 
+            public string Actif
+            {
+                get
+                {
+                    if (this.LastSeen.AddSeconds(30) > DateTime.UtcNow)
+                        return "Yes";
+                    else
+                        return "No";
+                }
+            }
+
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
+                new SharpSploitResultProperty { Name = nameof(Actif), Value = Actif },
                 new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
                 new SharpSploitResultProperty { Name = nameof(UserName), Value = UserName },
                 new SharpSploitResultProperty { Name = nameof(HostName), Value = HostName },

@@ -171,6 +171,10 @@ namespace TeamServer.Services
             var dirName = Path.GetDirectoryName(path);
             if (!Directory.Exists(dirName))
                 Directory.CreateDirectory(dirName);
+
+            if (Directory.Exists(path))
+                throw new Exception("Destination is a directory !");
+
             using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 fs.Write(fileBytes, 0, fileBytes.Length);

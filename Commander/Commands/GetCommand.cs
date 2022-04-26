@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace Commander
 {
-    public class CreateListenersCommandOptions
+    public class GetCommandOptions
     {
         public string remotefile { get; set; }
 
         public string outfile { get; set; }
         public bool verbose { get; set; }
     }
-    public class GetCommand : EnhancedCommand<CreateListenersCommandOptions>
+    public class GetCommand : EnhancedCommand<GetCommandOptions>
     {
         public override string Description => "Download a ile from the TeamServer";
         public override string Name => "get";
@@ -34,7 +34,7 @@ namespace Commander
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
-        protected override async Task<bool> HandleCommand(CreateListenersCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected override async Task<bool> HandleCommand(GetCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
         {
 
             var result = await comm.GetFileDescriptor(options.remotefile);

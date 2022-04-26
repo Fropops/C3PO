@@ -1,4 +1,5 @@
-﻿using Commander.Models;
+﻿using ApiModels.Response;
+using Commander.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,9 @@ namespace Commander.Communication
         Task<HttpResponseMessage> GetFileDescriptor(string filename);
         Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex);
         Task<HttpResponseMessage> GetFiles(string path);
+
+        Task<HttpResponseMessage> PushFileChunk(FileChunckResponse chuck);
+        Task<HttpResponseMessage> PushFileDescriptor(FileDescriptorResponse desc);
 
     }
 }

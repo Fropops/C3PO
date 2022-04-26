@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamServer.Models;
+using TeamServer.Models.File;
 using TeamServer.Services;
 namespace TeamServer.Controllers
 {
@@ -74,6 +75,43 @@ namespace TeamServer.Controllers
                 return NotFound();
             var files = _fileService.List(fullPath);
             return Ok(files);
+        }
+
+
+        [HttpPost("SetupUpload")]
+        public IActionResult PostFileDescriptor([FromBody] FileDescriptor desc)
+        {
+            if (string.IsNullOrEmpty(desc.Id))
+                return NotFound();
+
+            _fileService.AddFileToUpload(desc);
+            return Ok();
+        }
+
+        [HttpPost("Upload")]
+        public IActionResult PostFileChunk([FromBody] FileChunk chunk)
+        {
+            try
+            {
+                var desc = _fileService.GetFileToUpload(chunk.FileId);
+                if (desc == null)
+                    return NotFound();
+
+                desc.Chunks.Add(chunk);
+                if (desc.IsUploaded)
+                {
+                    var fileName = _fileService.GetFullPath(desc.Name);
+                    _fileService.SaveUploadedFile(desc, fileName);
+                }
+
+                _fileService.CleanDownloaded();
+
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return this.Problem(ex.ToString());
+            }
         }
 
     }

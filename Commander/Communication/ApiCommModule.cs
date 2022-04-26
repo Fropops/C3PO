@@ -88,7 +88,7 @@ namespace Commander.Communication
                         this.ConnectionStatus = ConnectionStatus.Connected;
                         this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                     }
-                  
+
                     firstLoad = false;
                 }
                 catch (Exception e)
@@ -113,7 +113,7 @@ namespace Commander.Communication
         private async Task UpdateTasks()
         {
             var response = await _client.GetStringAsync("/Tasks/");
-            
+
             var tasksResponse = JsonConvert.DeserializeObject<IEnumerable<AgentTaskResponse>>(response);
 
             foreach (var tr in tasksResponse)
@@ -153,7 +153,7 @@ namespace Commander.Communication
 
                 //new respone or response change detected
 
-                if(!_results.ContainsKey(res.Id)) // new response
+                if (!_results.ContainsKey(res.Id)) // new response
                 {
                     if (res.Completed && !firstLoad)
                         this.TaskResultUpdated?.Invoke(this, res);
@@ -184,9 +184,9 @@ namespace Commander.Communication
             }
         }
 
-       
 
-       
+
+
 
         private async Task UpdateListeners()
         {
@@ -333,6 +333,19 @@ namespace Commander.Communication
         public async Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex)
         {
             return await _client.GetAsync($"/Files/Download/{id}/{chunkIndex}");
+        }
+
+        public async Task<HttpResponseMessage> PushFileDescriptor(FileDescriptorResponse desc)
+        {
+            var requestContent = JsonConvert.SerializeObject(desc);
+
+            return await _client.PostAsync($"/Files/SetupUpload", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> PushFileChunk(FileChunckResponse chuck)
+        {
+            var requestContent = JsonConvert.SerializeObject(chuck);
+            return await _client.PostAsync($"/Files/Upload", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> GetFiles(string path)

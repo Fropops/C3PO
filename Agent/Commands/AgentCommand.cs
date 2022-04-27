@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,8 @@ namespace Agent.Commands
     public abstract class AgentCommand
     {
         public virtual string Name { get; set; }
+
+        public string Module => Assembly.GetExecutingAssembly().GetName().Name;
 
         public virtual void Execute(AgentTask task, Models.Agent agent, CommModule comm)
         {

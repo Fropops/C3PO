@@ -91,5 +91,17 @@ namespace TeamServer.Controllers
             return Created(path, task);
         }
 
+        [HttpGet("{agentId}/stop")]
+        public ActionResult StopAgent(string agentId)
+        {
+            var agent = this._agentService.GetAgent(agentId);
+            if (agent is null)
+                return NotFound("Agent not found");
+
+            this._agentService.RemoveAgent(agent);
+
+            return Ok();
+        }
+
     }
 }

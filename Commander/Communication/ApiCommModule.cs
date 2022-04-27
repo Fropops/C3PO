@@ -277,6 +277,11 @@ namespace Commander.Communication
             return this._tasks.Values.Where(t => t.AgentId == id).OrderByDescending(t => t.RequestDate);
         }
 
+        public async Task<HttpResponseMessage> StopAgent(string id)
+        {
+            return await _client.GetAsync($"/Agents/{id}/stop");
+        }
+
         public AgentTask GetTask(string taskId)
         {
             if (!this._tasks.ContainsKey(taskId))

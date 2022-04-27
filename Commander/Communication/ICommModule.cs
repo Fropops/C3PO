@@ -26,6 +26,8 @@ namespace Commander.Communication
 
         Agent GetAgent(int index);
         Agent GetAgent(string id);
+
+        Task<HttpResponseMessage> StopAgent(string id);
         IEnumerable<AgentTask> GetTasks(string id);
         AgentTask GetTask(string taskId);
         AgentTaskResult GetTaskResult(string taskId);

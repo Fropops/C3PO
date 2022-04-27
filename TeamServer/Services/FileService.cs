@@ -195,8 +195,6 @@ namespace TeamServer.Services
             {
                 var task = agent.TaskHistory.Where(t => t.Id == res.Id);
 
-                
-
                 var filename = GetAgentPath(agent.Metadata.Id, Path.Combine("Tasks", res.Id));
                 var dirName = Path.GetDirectoryName(filename);
                 if (!Directory.Exists(dirName))

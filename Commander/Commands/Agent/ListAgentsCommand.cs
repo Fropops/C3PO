@@ -52,6 +52,7 @@ namespace Commander.Commands.Agent
                     Index = index,
                     Id = agent.Metadata.Id,
                     LastSeen = agent.LastSeen.ToLocalTime(),
+                    Actif = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow ? "Yes" : "No",
                     UserName = agent.Metadata.UserName,
                     HostName = agent.Metadata.Hostname
                 });
@@ -72,16 +73,7 @@ namespace Commander.Commands.Agent
             public string UserName { get; set; }
             public string HostName { get; set; }
 
-            public string Actif
-            {
-                get
-                {
-                    if (this.LastSeen.AddSeconds(30) > DateTime.UtcNow)
-                        return "Yes";
-                    else
-                        return "No";
-                }
-            }
+            public string Actif { get; set; }
 
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {

@@ -50,6 +50,7 @@ namespace TeamServer.Models
 
                 agent.AddTaskResults(results);
 
+                _fileService.SaveResults(agent, results);
             }
 
 

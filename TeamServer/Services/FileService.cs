@@ -1,10 +1,12 @@
 ﻿using ApiModels.Response;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Models;
 using TeamServer.Models.File;
 
 namespace TeamServer.Services
@@ -31,7 +33,7 @@ namespace TeamServer.Services
             return actualPath;
         }
 
-        
+
 
         public FileDescriptor GetFileToDownload(string id)
         {
@@ -65,19 +67,19 @@ namespace TeamServer.Services
                 ChunkSize = FileService.ChunkSize,
             };
 
-            
+
             using (var fs = File.OpenRead(filePath))
             {
                 desc.Length = fs.Length;
 
-               
+
                 int index = 0;
                 var buffer = new byte[FileService.ChunkSize];
                 int numBytesToRead = (int)fs.Length;
 
                 while (numBytesToRead > 0)
                 {
-                    
+
                     int n = fs.Read(buffer, 0, FileService.ChunkSize);
                     var chunk = new FileChunk()
                     {
@@ -101,9 +103,9 @@ namespace TeamServer.Services
 
         public void CleanDownloaded()
         {
-            foreach(var id in DownloadCache.Keys.ToList())
+            foreach (var id in DownloadCache.Keys.ToList())
             {
-                if(DownloadCache[id].IsDownloaded)
+                if (DownloadCache[id].IsDownloaded)
                 {
                     DownloadCache.Remove(id);
                 }
@@ -184,6 +186,30 @@ namespace TeamServer.Services
         public string GetAgentPath(string agentId, string fileName)
         {
             return this.GetFullPath(Path.Combine("Agent", agentId, fileName));
+        }
+
+
+        public void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results)
+        {
+            foreach (var res in results.Where(r => r.Completed))
+            {
+                var task = agent.TaskHistory.Where(t => t.Id == res.Id);
+
+                
+
+                var filename = GetAgentPath(agent.Metadata.Id, Path.Combine("Tasks", res.Id));
+                var dirName = Path.GetDirectoryName(filename);
+                if (!Directory.Exists(dirName))
+                    Directory.CreateDirectory(dirName);
+
+                using (var sw = new StreamWriter(File.OpenWrite(filename)))
+                {
+                    sw.WriteLine(JsonConvert.SerializeObject(agent));
+                    sw.WriteLine(JsonConvert.SerializeObject(task));
+                    sw.WriteLine(JsonConvert.SerializeObject(res));
+                }
+
+            }
         }
     }
 }

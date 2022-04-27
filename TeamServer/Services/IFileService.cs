@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Models;
 using TeamServer.Models.File;
 
 namespace TeamServer.Services
@@ -24,5 +25,7 @@ namespace TeamServer.Services
         void SaveUploadedFile(FileDescriptor desc, string path);
 
         string GetAgentPath(string agentId, string fileName);
+
+        void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results);
     }
 }

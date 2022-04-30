@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +26,16 @@ namespace TeamServer.Models
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
                 {
-                    host.UseUrls($"http://0.0.0.0:{BindPort}");
+                    host.UseUrls($"https://0.0.0.0:{BindPort}");
                     host.Configure(ConfigureApp);
                     host.ConfigureServices(ConfigureServices);
+                    host.UseKestrel(options =>
+                    {
+                        options.Listen(IPAddress.Loopback, BindPort, listenOptions =>
+                        {
+                            listenOptions.UseHttps("sslcert.pfx");
+                        });
+                    });
                 });
             var host = hostBuilder.Build();
 

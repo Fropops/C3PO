@@ -13,4 +13,10 @@
     <ProjectReference Include="..\ApiModels\ApiModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sslcert.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

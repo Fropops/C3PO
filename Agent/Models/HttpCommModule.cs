@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +24,14 @@ namespace Agent.Models
         {
             ConnectAddress=connectAddress;
             ConnectPort=connectPort;
+
+            ServicePointManager.ServerCertificateValidationCallback = new
+            RemoteCertificateValidationCallback
+            (
+               delegate { return true; }
+            );
         }
+
 
         public override void Init(AgentMetadata metadata)
         {
@@ -30,7 +39,7 @@ namespace Agent.Models
 
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 10);
-            _client.BaseAddress = new Uri($"http://{this.ConnectAddress}:{this.ConnectPort}");
+            _client.BaseAddress = new Uri($"https://{this.ConnectAddress}:{this.ConnectPort}");
             _client.DefaultRequestHeaders.Clear();
 
             var encodedMetadata = Convert.ToBase64String(metadata.Serialize());
@@ -168,7 +177,7 @@ namespace Agent.Models
             int index = 0;
             using (var ms = new MemoryStream(fileBytes))
             {
-                
+
                 var buffer = new byte[ChunkSize];
                 int numBytesToRead = (int)ms.Length;
 

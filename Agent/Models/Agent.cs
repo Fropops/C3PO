@@ -30,7 +30,7 @@ namespace Agent.Models
                 }
             }
 
-            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).ToArray();
+            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).OrderBy(c => c).ToArray();
         }
 
         public int LoadCommands(Assembly module)
@@ -49,7 +49,7 @@ namespace Agent.Models
                 }
             }
 
-            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).ToArray();
+            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).OrderBy(c => c).ToArray();
             this._communicator.Init(this._metadata);
             return count;
         }

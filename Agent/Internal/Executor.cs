@@ -7,10 +7,29 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Agent.Commands.Internal
+namespace Agent.Internal
 {
-    public static class ExecuteHelper
+    public static class Executor
     {
+        public static void StartCommand(string fileName, string arguments)
+        {
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = fileName,
+                Arguments = arguments,
+                WorkingDirectory = Directory.GetCurrentDirectory(),
+                UseShellExecute = false,
+                //CreateNoWindow = true,
+            };
+
+            var process = new Process
+            {
+                StartInfo = startInfo,
+            };
+           
+            process.Start();
+        }
+
         public static string ExecuteCommand(string fileName, string arguments)
         {
             var startInfo = new ProcessStartInfo()

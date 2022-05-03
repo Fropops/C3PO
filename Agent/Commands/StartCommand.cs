@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
-    public class RunCommand : AgentCommand
+    public class StartCommand : AgentCommand
     {
-        public override string Name => "run";
+        public override string Name => "start";
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
             var filename = task.SplittedArgs[0];
             string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();
-            result.Result = Executor.ExecuteCommand(filename, args);
+            Executor.StartCommand(filename, args);
+            result.Result = "Process started";
         }
     }
 }

@@ -49,6 +49,7 @@ namespace Commander.Commands.Agent
             foreach (var agent in agents)
             {
                 var result = await comm.StopAgent(agent.Metadata.Id);
+                
                 if (!result.IsSuccessStatusCode)
                 {
                     terminal.WriteError($"An error occured : {result.StatusCode}");

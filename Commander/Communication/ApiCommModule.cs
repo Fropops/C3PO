@@ -272,6 +272,12 @@ namespace Commander.Communication
             return this._agents[id];
         }
 
+        public void DeleteAgent(string id)
+        {
+            if (GetAgent(id) != null)
+                this._agents.Remove(id, out var ret);
+        }
+
         public IEnumerable<AgentTask> GetTasks(string id)
         {
             return this._tasks.Values.Where(t => t.AgentId == id).OrderByDescending(t => t.RequestDate);
@@ -279,6 +285,7 @@ namespace Commander.Communication
 
         public async Task<HttpResponseMessage> StopAgent(string id)
         {
+            this.DeleteAgent(id);
             return await _client.GetAsync($"/Agents/{id}/stop");
         }
 

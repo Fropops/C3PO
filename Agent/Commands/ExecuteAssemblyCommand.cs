@@ -1,4 +1,4 @@
-﻿using Agent.Commands.Internal;
+﻿using Agent.Internal;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace Agent.Commands
 
             var args = task.SplittedArgs.ToList();
             args.RemoveAt(0); //filename
-            var output = ExecuteHelper.ExecuteAssembly(fileContent, args.ToArray());
+            var output = Executor.ExecuteAssembly(fileContent, args.ToArray());
 
             result.Result = output;
         }

@@ -19,6 +19,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0B76A01A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInject", "Tests\TestInject\TestInject.csproj", "{3522483D-B975-4323-8C5B-D03248D2E8C8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8BA2B05D-B7F3-4986-860D-F5FC7192EB8D}"
+	ProjectSection(SolutionItems) = preProject
+		Generate Shellcode Commands.txt = Generate Shellcode Commands.txt
+		reaNimator.txt = reaNimator.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stager", "Tests\Stager\Stager.csproj", "{F9056E90-DAA2-46FA-860C-FF3A8E363156}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +57,10 @@ Global
 		{3522483D-B975-4323-8C5B-D03248D2E8C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3522483D-B975-4323-8C5B-D03248D2E8C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3522483D-B975-4323-8C5B-D03248D2E8C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9056E90-DAA2-46FA-860C-FF3A8E363156}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9056E90-DAA2-46FA-860C-FF3A8E363156}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9056E90-DAA2-46FA-860C-FF3A8E363156}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9056E90-DAA2-46FA-860C-FF3A8E363156}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +68,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1EC72179-F2F6-426C-B261-756EAB36F4A7} = {549767D5-4A00-4A20-AC4D-9A0F55BE4274}
 		{3522483D-B975-4323-8C5B-D03248D2E8C8} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
+		{F9056E90-DAA2-46FA-860C-FF3A8E363156} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F1C3E1B-972F-4903-9445-6F9834624107}

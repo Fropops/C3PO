@@ -26,12 +26,12 @@ namespace TeamServer.Models
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
                 {
-                    host.UseUrls($"https://0.0.0.0:{BindPort}");
+                    host.UseUrls($"http://*:{BindPort}");
                     host.Configure(ConfigureApp);
                     host.ConfigureServices(ConfigureServices);
                     host.UseKestrel(options =>
                     {
-                        options.Listen(IPAddress.Loopback, BindPort, listenOptions =>
+                        options.Listen(IPAddress.Any, BindPort, listenOptions =>
                         {
                             listenOptions.UseHttps("sslcert.pfx");
                         });

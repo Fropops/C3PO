@@ -51,6 +51,7 @@
     <Compile Include="Commands\Injection\SelfInjectCommand.cs" />
     <Compile Include="Commands\Injection\SpawnInjectCommand.cs" />
     <Compile Include="Commands\Execution\StartCommand.cs" />
+    <Compile Include="Commands\ListProcessCommand.cs" />
     <Compile Include="Commands\LoadCommand.cs" />
     <Compile Include="Commands\TerminateCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />

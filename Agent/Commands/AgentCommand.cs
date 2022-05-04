@@ -40,5 +40,11 @@ namespace Agent.Commands
         }
 
         public abstract void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm);
+
+        public void Notify(AgentTaskResult result, CommModule comm, string status)
+        {
+            result.Info = status;
+            comm.SendResult(result);
+        }
     }
 }

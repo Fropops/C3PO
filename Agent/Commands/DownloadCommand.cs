@@ -28,6 +28,9 @@ namespace Agent.Commands
                 commm.SendResult(result);
             }).Result;
 
+
+            this.Notify(result, commm, $"{fileName} Downloaded");
+
             string path = string.Empty;
             if (task.SplittedArgs.Length > 1)
             {

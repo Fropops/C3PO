@@ -80,59 +80,59 @@ namespace Commander.Executor
 
         private void CommModule_RunningTaskChanged(object sender, List<AgentTask> tasks)
         {
-            if(this.CurrentAgent == null)
-            {
-                if(lastRunningCount != 0)
-                {
-                    Terminal.CanHandleInput = false;
-                    Terminal.SaveCursorPosition();
-                    Terminal.SetCursorPosition(0, 0);
-                    Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount + 1);
-                    Terminal.ResetCursorPosition();
-                    Terminal.CanHandleInput = true;
-                }
-                return;
-            }
-            tasks = tasks.Where(t => t.AgentId == this.CurrentAgent.Metadata.Id).ToList();
-            if (tasks.Count == 0 && lastRunningCount == 0)
-                return;
+            //if(this.CurrentAgent == null)
+            //{
+            //    if(lastRunningCount != 0)
+            //    {
+            //        Terminal.CanHandleInput = false;
+            //        Terminal.SaveCursorPosition();
+            //        Terminal.SetCursorPosition(0, 0);
+            //        Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount + 1);
+            //        Terminal.ResetCursorPosition();
+            //        Terminal.CanHandleInput = true;
+            //    }
+            //    return;
+            //}
+            //tasks = tasks.Where(t => t.AgentId == this.CurrentAgent.Metadata.Id).ToList();
+            //if (tasks.Count == 0 && lastRunningCount == 0)
+            //    return;
 
-            Terminal.CanHandleInput = false;
+            //Terminal.CanHandleInput = false;
 
-            Terminal.SaveCursorPosition();
-            Terminal.SetCursorPosition(0, 0);
-            Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount + 1);
+            //Terminal.SaveCursorPosition();
+            //Terminal.SetCursorPosition(0, 0);
+            //Terminal.DrawBackGround(TerminalConstants.DefaultBackGroundColor, lastRunningCount + 1);
 
-            lastRunningCount = tasks.Count;
-            if (tasks.Any())
-            {
-                Terminal.SetCursorPosition(0, 0);
-                Terminal.DrawBackGround(ConsoleColor.Cyan, tasks.Count + 1);
+            //lastRunningCount = tasks.Count;
+            //if (tasks.Any())
+            //{
+            //    Terminal.SetCursorPosition(0, 0);
+            //    Terminal.DrawBackGround(ConsoleColor.Cyan, tasks.Count + 1);
 
-                Terminal.SetBackGroundColor(ConsoleColor.Cyan);
-                Terminal.SetForeGroundColor(ConsoleColor.Black);
+            //    Terminal.SetBackGroundColor(ConsoleColor.Cyan);
+            //    Terminal.SetForeGroundColor(ConsoleColor.Black);
 
-                Terminal.SetCursorPosition(0, 0);
-                Terminal.WriteLine("Running Commands :");
-                int index = 0;
-                foreach (var task in tasks.OrderBy(t => t.RequestDate))
-                {
-                    index++;
-                    int completion = 0;
-                    var res = this.CommModule.GetTaskResult(task.Id);
-                    if (res != null)
-                        completion = res.Completion;
+            //    Terminal.SetCursorPosition(0, 0);
+            //    Terminal.WriteLine("Running Commands :");
+            //    int index = 0;
+            //    foreach (var task in tasks.OrderBy(t => t.RequestDate))
+            //    {
+            //        index++;
+            //        int completion = 0;
+            //        var res = this.CommModule.GetTaskResult(task.Id);
+            //        if (res != null)
+            //            completion = res.Completion;
 
-                    Terminal.Write($" #{index} {task.FullCommand} - {completion}%");
-                    Terminal.WriteLine();
-                }
-            }
+            //        Terminal.Write($" #{index} {task.FullCommand} - {completion}%");
+            //        Terminal.WriteLine();
+            //    }
+            //}
 
-            Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
-            Terminal.SetBackGroundColor(TerminalConstants.DefaultBackGroundColor);
-            Terminal.ResetCursorPosition();
+            //Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
+            //Terminal.SetBackGroundColor(TerminalConstants.DefaultBackGroundColor);
+            //Terminal.ResetCursorPosition();
 
-            Terminal.CanHandleInput = true;
+            //Terminal.CanHandleInput = true;
         }
 
         private void CommModule_ConnectionStatusChanged(object sender, ConnectionStatus e)

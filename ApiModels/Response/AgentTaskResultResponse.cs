@@ -10,7 +10,7 @@ namespace ApiModels.Response
     {
         public string Id { get; set; }
         public string Result { get; set; }
-        public int Completion { get; set; }
-        public bool Completed { get; set; }
+        public string Info { get; set; }
+        public int Status { get; set; }
     }
 }

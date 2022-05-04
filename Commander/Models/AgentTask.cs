@@ -31,8 +31,13 @@ namespace Commander.Models
         {
             terminal.WriteInfo($"Task {this.Id}");
             terminal.WriteInfo($"Cmd = {this.FullCommand}");
-            if (!result.Completed)
-                terminal.WriteInfo($"Task is still running ({result.Completion}%)");
+            if(result.Status == AgentResultStatus.Completed)
+                terminal.WriteInfo($"Task is {result.Status} ");
+            else
+                if(result.Status == AgentResultStatus.Running && !string.IsNullOrEmpty(result.Info))
+                terminal.WriteLine($"Task is {result.Status} : {result.Info}");
+            else
+                terminal.WriteLine($"Task is {result.Status} ");
             terminal.WriteInfo($"-------------------------------------------");
             if (!string.IsNullOrEmpty(result.Result))
                 terminal.WriteLine(result.Result);

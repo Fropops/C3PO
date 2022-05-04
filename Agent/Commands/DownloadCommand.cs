@@ -24,7 +24,7 @@ namespace Agent.Commands
 
             var fileContent = commm.Download(fileName, a =>
             {
-                result.Completion = a;
+                result.Info = $"Downloading {fileName} ({a}%)";
                 commm.SendResult(result);
             }).Result;
 

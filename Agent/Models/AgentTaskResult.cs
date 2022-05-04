@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace Agent.Models
 {
+    public enum AgentResultStatus
+    {
+        Queued = 0,
+        Running = 1,
+        Completed = 2
+    }
+
     public class AgentTaskResult
     {
         public string Id { get; set; }
         public string Result { get; set; }
-
-        public int Completion { get; set; }
-        public bool Completed { get; set; }
+        public string Info { get; set; }
+        public AgentResultStatus Status { get; set; }
     }
 }

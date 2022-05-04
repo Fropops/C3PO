@@ -106,15 +106,17 @@ namespace Agent.Models
             AgentTaskResult result = null;
 
             if (command is null)
+            {
                 result = new AgentTaskResult()
                 {
                     Id = task.Id,
-                    Result = $"Agent has no {task.Command} command registered!"
+                    Result = $"Agent has no {task.Command} command registered!",
+                    Status = AgentResultStatus.Completed,
                 };
+                this._communicator.SendResult(result);
+            }
             else
                 command.Execute(task, this, this._communicator);
-
-            //this.SendTaskResult(result);
         }
 
         //private void SendTaskResult(AgentTaskResult result)

@@ -60,8 +60,8 @@ namespace TeamServer.Controllers
                     {
                         Id = res.Id,
                         Result = res.Result,
-                        Completed = res.Completed,
-                        Completion = res.Completion,
+                        Info = res.Info,
+                        Status = (int)res.Status,
                     });
                 }
 

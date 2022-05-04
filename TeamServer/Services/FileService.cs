@@ -191,7 +191,7 @@ namespace TeamServer.Services
 
         public void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results)
         {
-            foreach (var res in results.Where(r => r.Completed))
+            foreach (var res in results.Where(r => r.Status == AgentResultStatus.Completed))
             {
                 var task = agent.TaskHistory.Where(t => t.Id == res.Id);
 

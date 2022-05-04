@@ -20,6 +20,8 @@ namespace Agent.Commands
             result.Id = task.Id;
             try
             {
+                result.Status = AgentResultStatus.Running;
+                comm.SendResult(result);
                 this.InnerExecute(task, agent, result, comm);
             }
             catch(Exception e)
@@ -29,8 +31,8 @@ namespace Agent.Commands
             }
             finally
             {
-                result.Completion = 100;
-                result.Completed = true;
+                result.Info = string.Empty;
+                result.Status = AgentResultStatus.Completed;
                 comm.SendResult(result);
             }
 

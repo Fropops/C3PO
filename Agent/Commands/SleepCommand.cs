@@ -22,11 +22,13 @@ namespace Agent.Commands
             int chunk = delay / 100;
 
             int spent = 0;
+            int completion = 0;
             while (spent < delay)
             {
                 Thread.Sleep(chunk);
+                completion++;
                 spent += chunk;
-                result.Completion++;
+                result.Info = $"Completed at {completion}%";
                 commm.SendResult(result);
             }
 

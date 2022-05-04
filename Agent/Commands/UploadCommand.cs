@@ -40,7 +40,7 @@ namespace Agent.Commands
                 filename = task.SplittedArgs[1];
             commm.Upload(fileBytes, filename, a =>
             {
-                result.Completion = a;
+                result.Info = $"Uploading {filename} ({a}%)";
                 commm.SendResult(result);
             }).Wait();
 

@@ -147,15 +147,15 @@ namespace Commander.Communication
                 {
                     Id = tr.Id,
                     Result = tr.Result,
-                    Completion = tr.Completion,
-                    Completed = tr.Completed,
+                    Info = tr.Info,
+                    Status = (AgentResultStatus)tr.Status,
                 };
 
                 //new respone or response change detected
 
                 if (!_results.ContainsKey(res.Id)) // new response
                 {
-                    if (res.Completed && !firstLoad)
+                    if (res.Status == AgentResultStatus.Completed && !firstLoad)
                         this.TaskResultUpdated?.Invoke(this, res);
                 }
                 else
@@ -163,10 +163,10 @@ namespace Commander.Communication
                     //Change detected :
                     var existing = this._results[res.Id];
                     if (res.Result != existing.Result
-                        || res.Completed != existing.Completed
-                        || res.Completion != existing.Completion)
+                        || res.Status  != existing.Status
+                        || res.Info != existing.Info)
                     {
-                        if (res.Completed && !firstLoad)
+                        if (res.Status == AgentResultStatus.Completed && !firstLoad)
                             this.TaskResultUpdated?.Invoke(this, res);
                     }
                 }
@@ -174,12 +174,12 @@ namespace Commander.Communication
                 this._results.AddOrUpdate(tr.Id, res, (key, current) =>
                 {
                     current.Result = res.Result;
-                    current.Completed = res.Completed;
-                    current.Completion = res.Completion;
+                    current.Info = res.Info;
+                    current.Status = res.Status;
                     return current;
                 });
 
-                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || !this._results[t.Id].Completed).ToList();
+                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || this._results[t.Id].Status != AgentResultStatus.Completed).ToList();
                 this.RunningTaskChanged?.Invoke(this, running);
             }
         }

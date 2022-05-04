@@ -1,5 +1,6 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
+using Commander.Models;
 using Commander.Terminal;
 using System;
 using System.Collections.Generic;
@@ -64,24 +65,28 @@ namespace Commander.Commands.Agent
             else
             {
                 int take = options.Top ?? 10;
-                var result = comm.GetTasks(executor.CurrentAgent.Metadata.Id).Take(take);
+                var tasks = comm.GetTasks(executor.CurrentAgent.Metadata.Id).Take(take);
 
-                if (result.Count() == 0)
+                if (tasks.Count() == 0)
                 {
                     terminal.WriteInfo("No Tasks.");
                     return true;
                 }
 
                 var index = 0;
-                foreach (var task in result)
+                foreach (var task in tasks)
                 {
+                    var result = comm.GetTaskResult(task.Id);
+
                     results.Add(new ViewTaskResult()
                     {
                         Index = index,
                         Id = task.Id,
                         Command = task.FullCommand,
                         //Arguments = task.Arguments,
-                    });
+                        Info = result == null ? string.Empty : result.Info ?? string.Empty,
+                        Status = result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
+                    }); ;
                     index++;
                 }
 
@@ -98,13 +103,18 @@ namespace Commander.Commands.Agent
             public string Id { get; set; }
             public string Command { get; set; }
             //public string Arguments { get; set; }
+            public string Status { get; set; }
+
+            public string Info { get; set; }
 
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
-                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
+                //new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
                 new SharpSploitResultProperty { Name = nameof(Command), Value = Command },
                 //new SharpSploitResultProperty { Name = nameof(Arguments), Value = Arguments },
+                new SharpSploitResultProperty { Name = nameof(Status), Value = Status },
+                new SharpSploitResultProperty { Name = nameof(Info), Value = Info },
             };
         }
 

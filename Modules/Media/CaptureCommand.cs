@@ -30,7 +30,7 @@ namespace Media
             var filename = $"capture/{Guid.NewGuid()}.png";
             commm.Upload(buff, filename, a =>
             {
-                result.Completion = a;
+                result.Info = $"Downloading {filename} ({a}%)";
                 commm.SendResult(result);
             }).Wait();
 

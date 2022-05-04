@@ -13,7 +13,7 @@ namespace Agent.Models
 
         public abstract Task Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
-        public abstract Task Start();
+        public abstract void Start();
         public abstract void Stop();
 
         protected ConcurrentQueue<AgentTask> _inbound = new ConcurrentQueue<AgentTask>();

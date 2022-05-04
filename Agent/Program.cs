@@ -35,9 +35,15 @@ namespace Agent
             GenerateMetadata();
 
             s_commModule = new HttpCommModule(server, port);
-
             var agent = new Models.Agent(s_metadata, s_commModule);
-            agent.Start();
+
+            Thread commThread = new Thread(s_commModule.Start);
+            Thread agentThread = new Thread(agent.Start);
+            commThread.Start();
+            agentThread.Start();
+
+            commThread.Join();
+            agentThread.Join();
         }
 
 

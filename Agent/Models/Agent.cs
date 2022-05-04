@@ -31,6 +31,7 @@ namespace Agent.Models
             }
 
             this._metadata.AvailableCommands = this._commands.Select(c => c.Name).OrderBy(c => c).ToArray();
+            this._communicator.Init(this._metadata);
         }
 
         public int LoadCommands(Assembly module)
@@ -64,17 +65,20 @@ namespace Agent.Models
 
         public void Start()
         {
-            _communicator.Init(this._metadata);
-            _communicator.Start();
+            //_communicator.Init(this._metadata);
+            //_communicator.Start();
 
             while (!_tokenSource.IsCancellationRequested)
             {
                 if (_communicator.ReceieveData(out var tasks))
                 {
+                    
                     HandleTask(tasks);
                 }
+                Thread.Sleep(100);
             }
         }
+
 
         public void Stop()
         {
@@ -84,7 +88,15 @@ namespace Agent.Models
         public void HandleTask(IEnumerable<AgentTask> tasks)
         {
             foreach (var task in tasks)
-                HandleTask(task);
+            {
+                Thread t = new Thread(this.StartHandleTask);
+                t.Start(task);
+            }
+        }
+
+        public void StartHandleTask(object task)
+        {
+            this.HandleTask(task as AgentTask);
         }
 
         public void HandleTask(AgentTask task)

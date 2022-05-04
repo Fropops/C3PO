@@ -48,7 +48,7 @@ namespace Agent.Models
         }
 
 
-        public override async Task Start()
+        public override async void Start()
         {
             _tokenSource = new CancellationTokenSource();
 

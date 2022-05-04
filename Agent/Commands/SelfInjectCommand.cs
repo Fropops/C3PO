@@ -12,7 +12,7 @@ namespace Agent.Commands
 {
     public class SelfInjectCommand : AgentCommand
     {
-        public override string Name => "selfinject";
+        public override string Name => "inject-self";
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {

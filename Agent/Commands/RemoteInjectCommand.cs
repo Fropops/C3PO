@@ -13,7 +13,7 @@ namespace Agent.Commands
 {
     public class RemoteInjectCommand : AgentCommand
     {
-        public override string Name => "remoteinject";
+        public override string Name => "inject-remote";
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {

@@ -37,7 +37,7 @@ namespace Commander.Commands.Agent
         {
             bool cmdRes = true;
             var agents = new List<Models.Agent>();
-            if (options.all)
+            if (options.all || string.IsNullOrEmpty(options.id))
             {
                 agents.AddRange(comm.GetAgents());
             }

@@ -26,6 +26,12 @@ namespace TeamServer.Services
 
         string GetAgentPath(string agentId, string fileName);
 
+        string GetAgentPath(string agentId);
+
+        public string GetListenerPath(string listenerName, string fileName);
+
+        public string GetListenerPath(string listenerName);
+
         void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results);
     }
 }

@@ -36,9 +36,15 @@ namespace TeamServer
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TeamServer", Version = "v1" });
             });
 
+
+            services.AddLogging();
+
             services.AddSingleton<IListenerService, ListenerService>();
             services.AddSingleton<IAgentService, AgentService>();
             services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IBinMakerService, BinMakerService>();
+
+            
 
         }
 
@@ -51,6 +57,7 @@ namespace TeamServer
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
             }
+            
 
             app.UseRouting();
 
@@ -69,10 +76,23 @@ namespace TeamServer
             var listenerService = app.ApplicationServices.GetService<IListenerService>();
             var agentService = app.ApplicationServices.GetService<IAgentService>();
             var fileService = app.ApplicationServices.GetService<IFileService>();
+            var binMakerService = app.ApplicationServices.GetService<IBinMakerService>();
 
-            var listener = new HttpListener("Default Listener", 8080);
-            listener.Init(agentService, fileService);
+            var factory = app.ApplicationServices.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("Default Listener Start");
+
+            var listener = new HttpListener("Default Listener", "192.168.56.1", 8080);
+            listener.Init(agentService, fileService, binMakerService);
             listener.Start();
+            try
+            {
+                logger.LogInformation(binMakerService.GenerateStagersFor(listener));
+            }
+            catch(Exception ex)
+            {
+                logger.LogError($"Unable to create stagers for {listener.Name}");
+                logger.LogError(ex.ToString());
+            }
 
             listenerService.AddListener(listener);
         }

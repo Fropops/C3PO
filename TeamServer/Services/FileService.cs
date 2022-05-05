@@ -188,6 +188,21 @@ namespace TeamServer.Services
             return this.GetFullPath(Path.Combine("Agent", agentId, fileName));
         }
 
+        public string GetAgentPath(string agentId)
+        {
+            return this.GetFullPath(Path.Combine("Agent", agentId));
+        }
+
+        public string GetListenerPath(string listenerName, string fileName)
+        {
+            return this.GetFullPath(Path.Combine("Stager", listenerName.Replace(" ", "_"), fileName));
+        }
+
+        public string GetListenerPath(string listenerName)
+        {
+            return this.GetFullPath(Path.Combine("Stager", listenerName.Replace(" ", "_")));
+        }
+
 
         public void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results)
         {

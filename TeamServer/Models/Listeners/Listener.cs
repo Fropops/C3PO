@@ -10,21 +10,26 @@ namespace TeamServer.Models
     {
         public virtual string Name { get; protected set; }
 
+        public virtual string Ip { get; protected set; }
+
         public virtual int BindPort { get; protected set; }
 
         protected IAgentService _agentService;
         protected IFileService _fileService;
+        protected IBinMakerService _binMakerService;
 
-        public Listener(string name, int bindPort)
+        public Listener(string name, string Ip, int bindPort)
         {
             this.Name = name;
+            this.Ip = Ip;
             this.BindPort = bindPort;
         }
 
-        public void Init(IAgentService service, IFileService fileService)
+        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService)
         {
             this._agentService = service;
             this._fileService = fileService;
+            this._binMakerService = binMakerService;
         }
 
         public abstract Task Start();

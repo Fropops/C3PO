@@ -15,7 +15,7 @@ namespace TeamServer.Models
     {
         
 
-        public HttpListener(string name, int bindPort) : base(name, bindPort)
+        public HttpListener(string name, string ip,  int bindPort) : base(name, ip, bindPort)
         {
         }
 
@@ -23,6 +23,8 @@ namespace TeamServer.Models
 
         public override async Task Start()
         {
+
+
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
                 {
@@ -53,6 +55,7 @@ namespace TeamServer.Models
             //});
             service.AddSingleton(this._agentService);
             service.AddSingleton(this._fileService);
+            service.AddSingleton(this._binMakerService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)
@@ -65,6 +68,7 @@ namespace TeamServer.Models
                 e.MapControllerRoute("DownloadChunk", "/DownloadChunk", new { Controller = "HttpListener", Action = "DownloadChunk" });
                 e.MapControllerRoute("SetupUpload", "/SetupUpload", new { Controller = "HttpListener", Action = "SetupUpload" });
                 e.MapControllerRoute("UploadChunk", "/UploadChunk", new { Controller = "HttpListener", Action = "UploadChunk" });
+                e.MapControllerRoute("UploadChunk", "/Stager", new { Controller = "HttpListener", Action = "DownloadStager" });
             });
         }
 

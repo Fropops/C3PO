@@ -1,0 +1,2 @@
+Ssl certificates don't work on Kali
+Process.Start don't work on AWS

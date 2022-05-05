@@ -22,7 +22,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8BA2B05D-B7F3-4986-860D-F5FC7192EB8D}"
 	ProjectSection(SolutionItems) = preProject
 		Generate Shellcode Commands.txt = Generate Shellcode Commands.txt
+		Notes.txt = Notes.txt
 		reaNimator.txt = reaNimator.txt
+		Todo.txt = Todo.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stager", "Tests\Stager\Stager.csproj", "{F9056E90-DAA2-46FA-860C-FF3A8E363156}"

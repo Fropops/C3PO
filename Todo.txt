@@ -1,0 +1,5 @@
+UAC Bypass
+bin generation (not working on AWS)
+Keylogger
+SSL certif on kali
+bin generation commander side

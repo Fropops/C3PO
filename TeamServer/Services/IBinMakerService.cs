@@ -9,5 +9,12 @@ namespace TeamServer.Services
     public interface IBinMakerService
     {
         string GenerateStagersFor(Listener listener);
+
+        string DonutFolder { get; }
+        string ReaNimatorFolder { get; }
+        string GeneratedAgentBinFileName { get; }
+        string GeneratedAgentExeFileName { get; }
+
+        string SourceAgentExePath { get; }
     }
 }

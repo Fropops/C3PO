@@ -39,7 +39,7 @@ namespace Agent.Models
 
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 10);
-            _client.BaseAddress = new Uri($"https://{this.ConnectAddress}:{this.ConnectPort}");
+            _client.BaseAddress = new Uri($"http://{this.ConnectAddress}:{this.ConnectPort}");
             _client.DefaultRequestHeaders.Clear();
 
             var encodedMetadata = Convert.ToBase64String(metadata.Serialize());

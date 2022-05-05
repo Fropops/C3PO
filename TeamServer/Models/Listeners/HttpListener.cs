@@ -35,7 +35,7 @@ namespace TeamServer.Models
                     {
                         options.Listen(IPAddress.Any, BindPort, listenOptions =>
                         {
-                            listenOptions.UseHttps("sslcert.pfx");
+                            //listenOptions.UseHttps("sslcert.pfx");
                         });
                     });
                 });
@@ -53,6 +53,7 @@ namespace TeamServer.Models
             //    mvcOptions.Filters.Add<HttpListenerActionFilter>();
             //    mvcOptions.
             //});
+            service.AddSingleton(this._listenerService);
             service.AddSingleton(this._agentService);
             service.AddSingleton(this._fileService);
             service.AddSingleton(this._binMakerService);
@@ -68,7 +69,7 @@ namespace TeamServer.Models
                 e.MapControllerRoute("DownloadChunk", "/DownloadChunk", new { Controller = "HttpListener", Action = "DownloadChunk" });
                 e.MapControllerRoute("SetupUpload", "/SetupUpload", new { Controller = "HttpListener", Action = "SetupUpload" });
                 e.MapControllerRoute("UploadChunk", "/UploadChunk", new { Controller = "HttpListener", Action = "UploadChunk" });
-                e.MapControllerRoute("UploadChunk", "/Stager", new { Controller = "HttpListener", Action = "DownloadStager" });
+                e.MapControllerRoute("Stager", "/Stager", new { Controller = "HttpListener", Action = "DownloadStager" });
             });
         }
 

@@ -77,12 +77,13 @@ namespace TeamServer
             var agentService = app.ApplicationServices.GetService<IAgentService>();
             var fileService = app.ApplicationServices.GetService<IFileService>();
             var binMakerService = app.ApplicationServices.GetService<IBinMakerService>();
+            var config = app.ApplicationServices.GetService<IConfiguration>();
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
 
-            var listener = new HttpListener("Default Listener", "192.168.56.1", 8080);
-            listener.Init(agentService, fileService, binMakerService);
+            var listener = new HttpListener("Default Listener", config.GetValue<string>("DefaultListenerIp"), config.GetValue<int>("DefaultListenerPort"));
+            listener.Init(agentService, fileService, binMakerService, listenerService);
             listener.Start();
             try
             {

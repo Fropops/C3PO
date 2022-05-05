@@ -17,6 +17,7 @@ namespace TeamServer.Models
         protected IAgentService _agentService;
         protected IFileService _fileService;
         protected IBinMakerService _binMakerService;
+        protected IListenerService _listenerService;
 
         public Listener(string name, string Ip, int bindPort)
         {
@@ -25,11 +26,12 @@ namespace TeamServer.Models
             this.BindPort = bindPort;
         }
 
-        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService)
+        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService)
         {
             this._agentService = service;
             this._fileService = fileService;
             this._binMakerService = binMakerService;
+            this._listenerService = listenerService;
         }
 
         public abstract Task Start();

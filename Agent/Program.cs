@@ -20,7 +20,7 @@ namespace Agent
 
         static void Main(string[] args)
         {
-            string server = "127.0.0.1";
+            string server = "192.168.56.1";
             int port = 8080;
             if (args.Length == 1)
             {

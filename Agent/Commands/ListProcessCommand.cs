@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +36,8 @@ namespace Agent.Commands
                     Id = process.Id,
                     SessionId = process.SessionId,
                     ProcessPath = GetProcessPath(process),
+                    Owner = GetProcessOwner(process),
+                    Arch = GetProcessArch(process),
                 };
 
                 list.Add(res);
@@ -57,6 +60,51 @@ namespace Agent.Commands
             }
         }
 
+        public string GetProcessOwner(Process proc)
+        {
+            var hToken = IntPtr.Zero;
+            try
+            {
+                if (!Native.Advapi.OpenProcessToken(proc.Handle, Native.Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
+                    return "-";
+
+                var identity = new WindowsIdentity(hToken);
+                return identity.Name;
+            }
+            catch
+            {
+                return "-";
+            }
+            finally
+            {
+                Native.Kernel32.CloseHandle(hToken);
+            }
+        }
+
+        public string GetProcessArch(Process proc)
+        {
+            try
+            {
+                var is64BitOS = Environment.Is64BitOperatingSystem;
+
+                if (!is64BitOS)
+                    return "x86";
+
+                if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                    return "-";
+
+                if (!isWow64)
+                    return "x86";
+
+                return "x64";
+            }
+            catch
+            {
+                return "-";
+            }
+        }
+
+
         public sealed class ListProcessResult : SharpSploitResult
         {
             public string Name { get; set; }
@@ -67,12 +115,18 @@ namespace Agent.Commands
 
             public string ProcessPath { get; set; }
 
+            public string Owner { get; set; }
+
+            public string Arch { get; set; }
+
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
                 new SharpSploitResultProperty { Name = "PID", Value = Id },
                 new SharpSploitResultProperty { Name = nameof(SessionId), Value = SessionId },
                 new SharpSploitResultProperty { Name = nameof(ProcessPath), Value = ProcessPath },
+                new SharpSploitResultProperty { Name = nameof(Owner), Value = Owner },
+                new SharpSploitResultProperty { Name = nameof(Arch), Value = Arch },
             };
         }
     }

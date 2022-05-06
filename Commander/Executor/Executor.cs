@@ -52,9 +52,17 @@ namespace Commander.Executor
             this.CommModule.RunningTaskChanged += CommModule_RunningTaskChanged;
             this.CommModule.TaskResultUpdated += CommModule_TaskResultUpdated;
             this.CommModule.AgentsUpdated +=CommModule_AgentsUpdated;
+            this.CommModule.AgentAdded +=CommModule_AgentAdded;
             //end events
 
             this.Terminal.NewLine(false);
+        }
+
+        private void CommModule_AgentAdded(object sender, string e)
+        {
+            Terminal.Interrupt();
+            Terminal.WriteInfo($"New Agent Checking in : {e}");
+            Terminal.Restore();
         }
 
         private void CommModule_AgentsUpdated(object sender, EventArgs e)

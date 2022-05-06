@@ -20,10 +20,11 @@ namespace Commander.Communication
         public event EventHandler<ConnectionStatus> ConnectionStatusChanged;
 
         public event EventHandler<List<AgentTask>> RunningTaskChanged;
+        public event EventHandler AgentsUpdated;
 
         public event EventHandler<AgentTaskResult> TaskResultUpdated;
 
-        public event EventHandler AgentsUpdated;
+        public event EventHandler<string> AgentAdded;
 
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
@@ -215,7 +216,16 @@ namespace Commander.Communication
             var response = await _client.GetStringAsync("Agents");
             var agentResponse = JsonConvert.DeserializeObject<IEnumerable<AgentResponse>>(response);
 
-            this._agents.Clear();
+            var agentIds = agentResponse.Select(a => a.Metadata.Id);
+
+
+            var addedAgents = new List<string>();
+
+            //del agents
+            foreach (var toRemove in this._agents.Keys.Where(k => !agentIds.Contains(k)))
+                this._agents.Remove(toRemove, out _);
+
+            //add or update new
             foreach (var ar in agentResponse)
             {
                 var agent = new Agent()
@@ -234,16 +244,19 @@ namespace Commander.Communication
                     LastSeen = ar.LastSeen
                 };
 
+                if (!this._agents.ContainsKey(agent.Metadata.Id))
+                    addedAgents.Add(agent.Metadata.Id);
+
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {
                     current.LastSeen = agent.LastSeen;
                     return current;
                 });
-
-                //this._agents[agent.Metadata.Id].Metadata.AvailableCommands = agent.Metadata.AvailableCommands;
             }
 
             this.AgentsUpdated?.Invoke(this, new EventArgs());
+            foreach (var added in addedAgents)
+                this.AgentAdded?.Invoke(this, added);
         }
 
         public void Stop()

@@ -15,7 +15,7 @@ namespace Agent.Commands
     {
         public override string Name => "migrate";
 
-        public const string ShellCodePath = "Stager/Agent.bin";
+        public const string ShellCodePath = "Stager/Default_Listener/Agent.bin";
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {

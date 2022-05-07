@@ -54,7 +54,9 @@ namespace Commander.Commands.Agent
                     LastSeen = agent.LastSeen.ToLocalTime(),
                     Actif = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow ? "Yes" : "No",
                     UserName = agent.Metadata.UserName,
-                    HostName = agent.Metadata.Hostname
+                    HostName = agent.Metadata.Hostname,
+                    Integrity = agent.Metadata.Integrity,
+                    Process = agent.Metadata.ProcessName,
                 });
                 index++;
             }
@@ -73,16 +75,22 @@ namespace Commander.Commands.Agent
             public string UserName { get; set; }
             public string HostName { get; set; }
 
+            public string Process { get; set; }
+
+            public string Integrity { get; set; }
+
             public string Actif { get; set; }
 
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
                 new SharpSploitResultProperty { Name = nameof(Actif), Value = Actif },
-                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
+                new SharpSploitResultProperty { Name = nameof(Process), Value = Process },
+                new SharpSploitResultProperty { Name = nameof(Integrity), Value = Integrity },
                 new SharpSploitResultProperty { Name = nameof(UserName), Value = UserName },
                 new SharpSploitResultProperty { Name = nameof(HostName), Value = HostName },
                 new SharpSploitResultProperty { Name = nameof(LastSeen), Value = LastSeen },
+                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
             };
         }
 

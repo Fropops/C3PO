@@ -28,11 +28,20 @@ namespace Agent.Commands
                 commm.SendResult(result);
                 }).Result;
 
+            var cur = Assembly.GetExecutingAssembly();
+            result.Result += $"Current assembly : {cur.FullName}{Environment.NewLine}";
+            var agentType = typeof(AgentCommand);
+            result.Result += $"{agentType.AssemblyQualifiedName} | {agentType.FullName}";
+            result.Result += $"{agentType.ToString()}";
+
+
             var assembly = Assembly.Load(fileContent);
+            result.Result += $"Loaded assembly : {assembly.FullName}{Environment.NewLine}";
+
 
             int commandCOunt = agent.LoadCommands(assembly);
 
-            result.Result = $"Loaded {commandCOunt} from {Path.GetFileNameWithoutExtension(fileName)} Module.";
+            result.Result += $"Loaded {commandCOunt} from {Path.GetFileNameWithoutExtension(fileName)} Module.";
         }
     }
 }

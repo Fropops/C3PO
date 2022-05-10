@@ -54,8 +54,8 @@ namespace TeamServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
+                //app.UseSwagger();
+                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
             }
             
 
@@ -82,7 +82,7 @@ namespace TeamServer
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
 
-            var listener = new HttpListener("Default Listener", config.GetValue<string>("DefaultListenerIp"), config.GetValue<int>("DefaultListenerPort"));
+            var listener = new HttpListener("Default", config.GetValue<string>("DefaultListenerIp"), config.GetValue<int>("DefaultListenerPort"));
             listener.Init(agentService, fileService, binMakerService, listenerService);
             listener.Start();
             try

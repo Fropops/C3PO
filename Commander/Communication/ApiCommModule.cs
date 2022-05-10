@@ -250,6 +250,7 @@ namespace Commander.Communication
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {
                     current.LastSeen = agent.LastSeen;
+                    current.Metadata.AvailableCommands = agent.Metadata.AvailableCommands;
                     return current;
                 });
             }

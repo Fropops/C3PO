@@ -39,6 +39,7 @@ namespace Agent.Models
             int count = 0;
             foreach (var type in module.GetTypes())
             {
+
                 if (type.IsSubclassOf(typeof(AgentCommand)))
                 {
                     var instance = Activator.CreateInstance(type) as AgentCommand;

@@ -31,10 +31,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>temporary.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
+    <Compile Include="Commands\CaptureCommand.cs" />
     <Compile Include="Commands\FileSystem\DeleteDirectoryCommand.cs" />
     <Compile Include="Commands\FileSystem\MakeDirectoryCommand.cs" />
     <Compile Include="Commands\Injection\MigrateCommand.cs" />
@@ -52,7 +61,6 @@
     <Compile Include="Commands\Injection\SpawnInjectCommand.cs" />
     <Compile Include="Commands\Execution\StartCommand.cs" />
     <Compile Include="Commands\ListProcessCommand.cs" />
-    <Compile Include="Commands\LoadCommand.cs" />
     <Compile Include="Commands\TerminateCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />
@@ -84,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="temporary.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -29,6 +29,8 @@ namespace Agent
                 port = Convert.ToInt32(split[1]);
             }
 
+            //server = "gate.fropops.fr";
+            //port = 443;
             //server = "13.38.61.75";
             //port = 80;
 

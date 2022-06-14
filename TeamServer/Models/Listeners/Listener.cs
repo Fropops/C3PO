@@ -14,16 +14,22 @@ namespace TeamServer.Models
 
         public virtual int BindPort { get; protected set; }
 
+        public virtual int PublicPort { get; protected set; }
+
         protected IAgentService _agentService;
         protected IFileService _fileService;
         protected IBinMakerService _binMakerService;
         protected IListenerService _listenerService;
 
-        public Listener(string name, string Ip, int bindPort)
+        public Listener(string name, int bindPort, string Ip, int? publicPort = null)
         {
             this.Name = name;
             this.Ip = Ip;
             this.BindPort = bindPort;
+            if (!publicPort.HasValue)
+                this.PublicPort = bindPort;
+            else
+                this.PublicPort = publicPort.Value;
         }
 
         public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService)

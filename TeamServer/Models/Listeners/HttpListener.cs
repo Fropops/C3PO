@@ -15,7 +15,7 @@ namespace TeamServer.Models
     {
         
 
-        public HttpListener(string name, string ip,  int bindPort) : base(name, ip, bindPort)
+        public HttpListener(string name, int bindPort, string ip, int? publicPort = null) : base(name, bindPort, ip, publicPort)
         {
         }
 

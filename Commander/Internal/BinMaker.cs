@@ -12,6 +12,7 @@ namespace Commander.Internal
     public class BinMaker
     {
         public static string DonutFolder = "/opt/donut/";
+        public static string ReaNimatorFolder = "/Share/Projects/reaNimator-modif";
         public static string GenerateBin(string dotnetExePath, string binPath, string parameters)
         {
             var cmd = Path.Combine(DonutFolder, "donut");
@@ -31,10 +32,28 @@ namespace Commander.Internal
             return ret;
         }
 
-        //public static string GenerateDll(string binPath, string dllPath)
-        //{
+        public static string GenerateDll(string binPath, string dllPath)
+        {
+            var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
+            var inputFile = binPath;
+            var outFile = dllPath;
 
-        //}
+            List<string> args = new List<string>();
+            args.Add("-f");
+            args.Add(inputFile);
+            args.Add("-t");
+            args.Add("raw");
+            args.Add($"-o");
+            args.Add(outFile);
+            args.Add($"-e");
+            args.Add($"-u");
+            args.Add($"-b");
+            args.Add($"-p");
+            args.Add($"explorer.exe");
+
+            var ret = ExecuteCommand(cmd, args, ReaNimatorFolder);
+            return ret;
+        }
 
         public static string ExecuteCommand(string fileName, List<string> args, string startIn)
         {

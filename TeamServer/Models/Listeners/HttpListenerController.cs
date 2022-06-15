@@ -32,7 +32,7 @@ namespace TeamServer.Models
         {
             var metadata = ExtractMetadata(HttpContext.Request.Headers);
             if (metadata == null)
-                return NotFound();
+                return Content("<html>Hello</html>"); ;
 
             var agent = this._agentService.GetAgent(metadata.Id);
             if (agent == null)

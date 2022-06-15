@@ -28,7 +28,7 @@ namespace TeamServer.Models
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
                 {
-                    host.UseUrls($"http://*:{BindPort}");
+                    host.UseUrls($"https://*:{BindPort}");
                     host.Configure(ConfigureApp);
                     host.ConfigureServices(ConfigureServices);
                     host.UseKestrel(options =>
@@ -36,6 +36,7 @@ namespace TeamServer.Models
                         options.Listen(IPAddress.Any, BindPort, listenOptions =>
                         {
                             //listenOptions.UseHttps("sslcert.pfx");
+                            listenOptions.UseHttps("certs/ts.pfx", "teamserver");
                         });
                     });
                 });

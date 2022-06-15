@@ -31,12 +31,15 @@ namespace TeamServer.Services
         public string ReaNimatorFolder => _configuration.GetValue<string>("ReaNimatorFolder");
         public string GeneratedAgentBinFileName => _configuration.GetValue<string>("GeneratedAgentBinFileName");
         public string GeneratedAgentExeFileName => _configuration.GetValue<string>("GeneratedAgentExeFileName");
+        public string GeneratedAgentDllFileName => _configuration.GetValue<string>("GeneratedAgentDllFileName");
 
         public string SourceAgentExePath => _configuration.GetValue<string>("SourceAgentExePath");
 
         public string GenerateStagersFor(Listener listener)
         {
-            return this.GenerateExeStager(listener);
+            string gen = this.GenerateExeStager(listener);
+            gen += this.GenerateDllStager(listener);
+            return gen;
         }
 
         public string GenerateBinStager(Listener listener)
@@ -70,6 +73,14 @@ namespace TeamServer.Services
             res += GenerateExeStagerFromBin(listener);
             return res;
         }
+
+        public string GenerateDllStager(Listener listener)
+        {
+            var res = GenerateBinStager(listener);
+            res += Environment.NewLine;
+            res += GenerateDllStagerFromBin(listener);
+            return res;
+        }
         public string GenerateExeStagerFromBin(Listener listener)
         {
             var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
@@ -88,6 +99,34 @@ namespace TeamServer.Services
             args.Add(outFile);
             args.Add($"-e");
             args.Add($"-u");
+            args.Add($"-p");
+            args.Add($"explorer.exe");
+
+            //reaNimator -f /Share/tmp/Stager/agent.bin -t raw -o /Share/tmp/Stager/TestSelf.exe -e -u -p "explorer.exe"
+            _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");
+            var ret = ExecuteCommand(cmd, args, this.ReaNimatorFolder);
+            return ret;
+        }
+
+        public string GenerateDllStagerFromBin(Listener listener)
+        {
+            var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
+            var inputFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentBinFileName);
+            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentDllFileName);
+
+            if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
+                Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
+
+            List<string> args = new List<string>();
+            args.Add("-f");
+            args.Add(inputFile);
+            args.Add("-t");
+            args.Add("raw");
+            args.Add($"-o");
+            args.Add(outFile);
+            args.Add($"-e");
+            args.Add($"-u");
+            args.Add($"-b");
             args.Add($"-p");
             args.Add($"explorer.exe");
 

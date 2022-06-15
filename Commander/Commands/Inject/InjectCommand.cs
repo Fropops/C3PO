@@ -45,7 +45,7 @@ namespace Commander
             File.Delete(binFileName);
 
             var agent = executor.CurrentAgent;
-            var response = comm.TaskAgent(agent.Metadata.Id, "inject-spawn", $"{serverFile} explorer.exe").Result;
+            var response = comm.TaskAgent(agent.Metadata.Id, "inject-spawn", $"{serverFile} cmd.exe").Result;
             if (!response.IsSuccessStatusCode)
             {
                 terminal.WriteError("An error occured : " + response.StatusCode);

@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="certs\ts.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="sslcert.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

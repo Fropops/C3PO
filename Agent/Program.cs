@@ -20,8 +20,8 @@ namespace Agent
 
         static void Main(string[] args)
         {
-            string server = "192.168.56.1";
-            int port = 8080;
+            string server = "192.168.56.102";
+            int port = 80;
             if (args.Length == 1)
             {
                 var split = args[0].Split(':');

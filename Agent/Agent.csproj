@@ -86,6 +86,7 @@
     <Compile Include="Models\FileDescriptor.cs" />
     <Compile Include="Models\HttpCommModule.cs" />
     <Compile Include="Native\Advapi.cs" />
+    <Compile Include="Native\Avicap.cs" />
     <Compile Include="Native\Kernel32.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

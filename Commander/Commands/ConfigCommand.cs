@@ -27,6 +27,7 @@ namespace Commander.Commands
 
     public class ConfigCommand : EnhancedCommand<ConfigCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "List & Change Commander settings";
         public override string Name => "config";
 
@@ -39,33 +40,33 @@ namespace Commander.Commands
 
             };
 
-        protected async override Task<bool> HandleCommand(ConfigCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected async override Task<bool> HandleCommand(CommandContext<ConfigCommandOptions> context)
         {
-            if (options.NoOptions)
+            if (context.Options.NoOptions)
             {
                 var results = new SharpSploitResultList<ConfigResult>();
-                results.Add(new ConfigResult() { Name = "Server", Value = comm.ConnectAddress });
-                results.Add(new ConfigResult() { Name = "Port", Value = comm.ConnectPort.ToString() });
-                terminal.WriteLine(results.ToString());
+                results.Add(new ConfigResult() { Name = "Server", Value = context.CommModule.ConnectAddress });
+                results.Add(new ConfigResult() { Name = "Port", Value = context.CommModule.ConnectPort.ToString() });
+                context.Terminal.WriteLine(results.ToString());
                 return true;
             }
             else
             {
                 bool netConfigChanged = false;
-                if (!string.IsNullOrEmpty(options.server))
+                if (!string.IsNullOrEmpty(context.Options.server))
                 {
-                    comm.ConnectAddress = options.server;
+                    context.CommModule.ConnectAddress = context.Options.server;
                     netConfigChanged = true;
-                    terminal.WriteSuccess($"Server changed to {options.server}.");
+                    context.Terminal.WriteSuccess($"Server changed to {context.Options.server}.");
                 }
-                if (options.port.HasValue)
+                if (context.Options.port.HasValue)
                 {
-                    comm.ConnectPort = options.port.Value;
+                    context.CommModule.ConnectPort = context.Options.port.Value;
                     netConfigChanged = true;
-                    terminal.WriteSuccess($"Server port changed to {options.port.Value}.");
+                    context.Terminal.WriteSuccess($"Server port changed to {context.Options.port.Value}.");
                 }
                 if (netConfigChanged)
-                    comm.UpdateConfig();
+                    context.CommModule.UpdateConfig();
             }
             return true;
         }

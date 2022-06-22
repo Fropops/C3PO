@@ -30,7 +30,6 @@ namespace Agent.Models
                 }
             }
 
-            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).OrderBy(c => c).ToArray();
             this._communicator.Init(this._metadata);
         }
 
@@ -51,7 +50,6 @@ namespace Agent.Models
                 }
             }
 
-            this._metadata.AvailableCommands = this._commands.Select(c => c.Name).OrderBy(c => c).ToArray();
             this._communicator.Init(this._metadata);
             return count;
         }

@@ -33,10 +33,10 @@ namespace TeamServer.Controllers
                 {
                     results.Add(new AgentTaskResponse()
                     {
+                        Label = task.Label,
                         AgentId = agent.Metadata.Id,
                         Arguments = task.Arguments,
                         Command = task.Command,
-                        File = task.File,
                         Id = task.Id,
                         RequestDate = task.RequestDate,
                     });
@@ -62,6 +62,8 @@ namespace TeamServer.Controllers
                         Result = res.Result,
                         Info = res.Info,
                         Status = (int)res.Status,
+                        FileId = res.FileId,
+                        FileName = res.FileName,
                     });
                 }
 

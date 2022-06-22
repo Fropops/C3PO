@@ -9,9 +9,9 @@ namespace Agent.Models
 {
     public abstract class CommModule
     {
-        public abstract Task<Byte[]> Download(string filename, Action<int> OnCompletionChanged = null);
+        public abstract Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
 
-        public abstract Task Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
+        public abstract Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
         public abstract void Start();
         public abstract void Stop();

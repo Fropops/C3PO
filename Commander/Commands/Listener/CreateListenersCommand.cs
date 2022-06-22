@@ -24,6 +24,7 @@ namespace Commander.Commands.Listener
 
     public class InteractAgentCommand : EnhancedCommand<CreateListenersCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Start a new listener";
         public override string Name => "start";
         public override ExecutorMode AvaliableIn => ExecutorMode.Listener;
@@ -35,19 +36,19 @@ namespace Commander.Commands.Listener
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
-        protected override async Task<bool> HandleCommand(CreateListenersCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected override async Task<bool> HandleCommand(CommandContext<CreateListenersCommandOptions> context)
         {
-            var result = await comm.CreateListener(options.name, options.port ?? 80);
+            var result = await context.CommModule.CreateListener(context.Options.name, context.Options.port ?? 80);
             if (!result.IsSuccessStatusCode)
             {
-                terminal.WriteError("An error occured : " + result.StatusCode);
+                context.Terminal.WriteError("An error occured : " + result.StatusCode);
                 return false;
             }
 
             var json = await result.Content.ReadAsStringAsync();
             var listener = JsonConvert.DeserializeObject<ListenerResponse>(json);
 
-            terminal.WriteSuccess($"Listener {listener.Name} started on port {listener.BindPort}.");
+            context.Terminal.WriteSuccess($"Listener {listener.Name} started on port {listener.BindPort}.");
             return true;
         }
     }

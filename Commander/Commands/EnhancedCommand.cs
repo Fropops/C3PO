@@ -5,17 +5,24 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Commander.Commands
 {
+   
+
+
     public abstract class EnhancedCommand<T> : ExecutorCommand
     {
         private RootCommand _command;
 
         private bool _isCommandCorrectlyExecuting = false;
+
+        private string currentLabel = string.Empty;
+        private string currentParams = string.Empty;
         public abstract RootCommand Command { get; }
 
         public override void Execute(string parms)
@@ -23,10 +30,23 @@ namespace Commander.Commands
             var executor = ServiceProvider.GetService<IExecutor>();
             var terminal = ServiceProvider.GetService<ITerminal>();
             var comm = ServiceProvider.GetService<ICommModule>();
-            InnerExecute(terminal, executor, comm, parms);
+            var label = this.Name;
+            if (!string.IsNullOrEmpty(parms))
+                label += " " + parms;
+
+            CommandContext<T> context = new CommandContext<T>()
+            {
+                Executor = executor,
+                Terminal = terminal,
+                CommModule = comm,
+                CommandLabel = label,
+                CommandParameters = parms,
+            };
+          
+            InnerExecute(context);
         }
 
-        protected async override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
+        protected async override void InnerExecute(CommandContext context)
         {
             if (this._command == null)
             {
@@ -35,30 +55,50 @@ namespace Commander.Commands
                 this._command.Handler = CommandHandler.Create<T>(HandleCommandWrapper);
             }
 
-            var res = _command.Invoke(parms);
+            this.currentLabel = context.CommandLabel;
+            this.currentParams = context.CommandParameters;
+            _isCommandCorrectlyExecuting = false;
+
+            var res = _command.Invoke(this.currentParams);
             if (res > 0)
             {
-                executor.InputHandled(this, false);
+                context.Executor.InputHandled(this, false);
                 return;
             }
 
-            await Task.Delay(2000);
-            if (!this._isCommandCorrectlyExecuting) //prevent blocking when Handler is not called
-                executor.InputHandled(this, false);
+
+            await Task.Delay(500);
+            //Debug.WriteLine($"Awaited 1s => isCommandCorrectlyExecuting = {this._isCommandCorrectlyExecuting}");
+            if (!_isCommandCorrectlyExecuting) //prevent blocking when Handler is not called
+                context.Executor.InputHandled(this, false);
+
         }
 
         private async void HandleCommandWrapper(T options)
         {
+            this._isCommandCorrectlyExecuting = true;
             var executor = ServiceProvider.GetService<IExecutor>();
             var terminal = ServiceProvider.GetService<ITerminal>();
             var comm = ServiceProvider.GetService<ICommModule>();
+
+            CommandContext<T> context = new CommandContext<T>()
+            {
+                Executor = executor,
+                Terminal = terminal,
+                CommModule = comm,
+                CommandLabel = this.currentLabel,
+                CommandParameters = this.currentParams,
+                Options = options
+            };
+
+
             bool result = false;
+
             try
             {
-                this._isCommandCorrectlyExecuting = true;
-                result = await this.HandleCommand(options, terminal, executor, comm);
+                result = await this.HandleCommand(context);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 terminal.WriteError(ex.ToString());
             }
@@ -68,9 +108,17 @@ namespace Commander.Commands
             }
         }
 
-        protected abstract Task<bool> HandleCommand(T options, ITerminal terminal, IExecutor executor, ICommModule comm);
+        protected abstract Task<bool> HandleCommand(CommandContext<T> context);
+    }
+
+    public class EmptyCommandOptions
+    {
+    }
+
+    public abstract class EnhancedCommand : EnhancedCommand<EmptyCommandOptions>
+    {
     }
 
 
-   
+
 }

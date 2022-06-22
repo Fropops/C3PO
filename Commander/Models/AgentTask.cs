@@ -9,11 +9,13 @@ namespace Commander.Models
 {
     public class AgentTask
     {
+        
         public string AgentId { get; set; }
         public string Id { get; set; }
         public string Command { get; set; }
         public string Arguments { get; set; }
-        public byte[] File { get; set; }
+
+        public string Label { get; set; }
         public DateTime RequestDate { get; set; }
 
         public string FullCommand
@@ -30,6 +32,7 @@ namespace Commander.Models
         public void Print(AgentTaskResult result, ITerminal terminal)
         {
             terminal.WriteInfo($"Task {this.Id}");
+            terminal.WriteInfo($"Label = {this.Label}");
             terminal.WriteInfo($"Cmd = {this.FullCommand}");
             if(result.Status == AgentResultStatus.Completed)
                 terminal.WriteInfo($"Task is {result.Status} ");

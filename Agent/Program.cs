@@ -20,8 +20,9 @@ namespace Agent
 
         static void Main(string[] args)
         {
-            string server = "192.168.56.102";
-            int port = 80;
+            string server = "127.0.0.1";
+            int port = 8080;
+            string protocol = "https";
             if (args.Length == 1)
             {
                 var split = args[0].Split(':');
@@ -29,14 +30,17 @@ namespace Agent
                 port = Convert.ToInt32(split[1]);
             }
 
-            server = "gate.fropops.fr";
-            port = 443;
+            //server = "gate.fropops.fr";
+            //port = 443;
             //server = "13.38.61.75";
             //port = 80;
+            server = "127.0.0.1";
+            port = 8080;
+            protocol = "http";
 
             GenerateMetadata();
 
-            s_commModule = new HttpCommModule(server, port);
+            s_commModule = new HttpCommModule(protocol, server, port);
             var agent = new Models.Agent(s_metadata, s_commModule);
 
             Thread commThread = new Thread(s_commModule.Start);

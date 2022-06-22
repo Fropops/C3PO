@@ -23,15 +23,10 @@ namespace TeamServer.Controllers
 
 
 
-        [HttpGet("SetupDownload/{filename}")]
-        public IActionResult GetFileDescriptor(string filename)
+        [HttpGet("SetupDownload/{id}")]
+        public IActionResult GetFileDescriptor(string id)
         {
-            var decoded = System.Web.HttpUtility.UrlDecode(filename);
-            string fullPath = this._fileService.GetFullPath(decoded);
-            if(string.IsNullOrEmpty(fullPath))
-                return NotFound();
-
-            var desc = _fileService.CreateFileDescriptor(fullPath);
+            var desc = _fileService.GetFile(id);
             if (desc == null)
                 return NotFound();
 
@@ -48,7 +43,7 @@ namespace TeamServer.Controllers
         [HttpGet("Download/{id}/{chunkIndex}")]
         public IActionResult GetFileChunk(string id, int chunkIndex)
         {
-            var desc = _fileService.GetFileToDownload(id);
+            var desc = _fileService.GetFile(id);
             if(chunkIndex < 0 || chunkIndex >= desc.ChunkCount)
                 return NotFound();
 
@@ -65,26 +60,13 @@ namespace TeamServer.Controllers
             });
         }
 
-
-        [HttpGet("List/{path}")]
-        public IActionResult List(string path)
-        {
-            var decoded = System.Web.HttpUtility.UrlDecode(path).Trim();
-            var fullPath = _fileService.GetFullPath(decoded);
-            if (!Directory.Exists(fullPath))
-                return NotFound();
-            var files = _fileService.List(fullPath);
-            return Ok(files);
-        }
-
-
         [HttpPost("SetupUpload")]
         public IActionResult PostFileDescriptor([FromBody] FileDescriptor desc)
         {
             if (string.IsNullOrEmpty(desc.Id))
                 return NotFound();
 
-            _fileService.AddFileToUpload(desc);
+            _fileService.AddFile(desc);
             return Ok();
         }
 
@@ -93,19 +75,12 @@ namespace TeamServer.Controllers
         {
             try
             {
-                var desc = _fileService.GetFileToUpload(chunk.FileId);
+                var desc = _fileService.GetFile(chunk.FileId);
                 if (desc == null)
                     return NotFound();
 
                 desc.Chunks.Add(chunk);
-                if (desc.IsUploaded)
-                {
-                    var fileName = _fileService.GetFullPath(desc.Name);
-                    _fileService.SaveUploadedFile(desc, fileName);
-                }
-
-                _fileService.CleanDownloaded();
-
+               
                 return Ok();
             }
             catch(Exception ex)

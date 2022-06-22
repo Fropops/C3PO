@@ -21,6 +21,7 @@ namespace Commander.Commands.Agent
 
     public class ViewTasksCommand : EnhancedCommand<ViewTasksCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "List all task of an agent, or the detail of a specific task";
         public override string Name => "view";
 
@@ -34,29 +35,29 @@ namespace Commander.Commands.Agent
             };
 
 
-        protected override async Task<bool> HandleCommand(ViewTasksCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected override async Task<bool> HandleCommand(CommandContext<ViewTasksCommandOptions> context)
         {
             var results = new SharpSploitResultList<ViewTaskResult>();
 
 
-            if (options.index.HasValue)
+            if (context.Options.index.HasValue)
             {
                 //Show Result of the Task
-                var task = comm.GetTasks(executor.CurrentAgent.Metadata.Id).Skip(options.index.Value).FirstOrDefault();
+                var task = context.CommModule.GetTasks(context.Executor.CurrentAgent.Metadata.Id).Skip(context.Options.index.Value).FirstOrDefault();
                 if(task == null)
                 {
-                    terminal.WriteError($"No task at index {options.index}");
+                    context.Terminal.WriteError($"No task at index {context.Options.index}");
                     return true;
                 }
 
-                var result = comm.GetTaskResult(task.Id);
+                var result = context.CommModule.GetTaskResult(task.Id);
                 if (result == null)
                 {
-                    terminal.WriteInfo($"Task : {task.Command} is queued.");
+                    context.Terminal.WriteInfo($"Task : {task.Command} is queued.");
                 }
                 else
                 {
-                    task.Print(result, terminal);
+                    task.Print(result, context.Terminal);
                 }
                 
                 
@@ -64,25 +65,25 @@ namespace Commander.Commands.Agent
             }
             else
             {
-                int take = options.Top ?? 10;
-                var tasks = comm.GetTasks(executor.CurrentAgent.Metadata.Id).Take(take);
+                int take = context.Options.Top ?? 10;
+                var tasks = context.CommModule.GetTasks(context.Executor.CurrentAgent.Metadata.Id).Take(take);
 
                 if (tasks.Count() == 0)
                 {
-                    terminal.WriteInfo("No Tasks.");
+                    context.Terminal.WriteInfo("No Tasks.");
                     return true;
                 }
 
                 var index = 0;
                 foreach (var task in tasks)
                 {
-                    var result = comm.GetTaskResult(task.Id);
+                    var result = context.CommModule.GetTaskResult(task.Id);
 
                     results.Add(new ViewTaskResult()
                     {
                         Index = index,
                         Id = task.Id,
-                        Command = task.FullCommand,
+                        Command = task.Label,
                         //Arguments = task.Arguments,
                         Info = result == null ? string.Empty : result.Info ?? string.Empty,
                         Status = result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
@@ -90,7 +91,7 @@ namespace Commander.Commands.Agent
                     index++;
                 }
 
-                terminal.WriteLine(results.ToString());
+                context.Terminal.WriteLine(results.ToString());
 
                 return true;
             }

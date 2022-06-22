@@ -18,8 +18,13 @@ namespace Agent.Models
         public string Command { get; set; }
         [DataMember(Name = "arguments")]
         public string Arguments { get; set; }
-        [DataMember(Name = "file")]
-        public byte[] File { get; set; }
+
+        [DataMember(Name = "fileId")]
+        public string FileId { get; set; }
+
+        [DataMember(Name = "fileName")]
+        public string FileName { get; set; }
+
 
         public string[] SplittedArgs
         {

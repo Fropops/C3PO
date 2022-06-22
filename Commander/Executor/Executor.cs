@@ -7,6 +7,7 @@ using Commander.Models;
 using Commander.Terminal;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,9 +16,9 @@ using System.Threading.Tasks;
 
 namespace Commander.Executor
 {
-   
+
     public class Executor : IExecutor
-    {    
+    {
         public ExecutorMode Mode { get; set; } = ExecutorMode.None;
 
         public bool IsRunning
@@ -67,7 +68,7 @@ namespace Commander.Executor
 
         private void CommModule_AgentsUpdated(object sender, EventArgs e)
         {
-            if(this.CurrentAgent != null)
+            if (this.CurrentAgent != null)
             {
                 this.CurrentAgent = this.CommModule.GetAgent(this.CurrentAgent.Metadata.Id);
             }
@@ -78,9 +79,22 @@ namespace Commander.Executor
             var task = this.CommModule.GetTask(res.Id);
             if (this.CurrentAgent == null || task.AgentId != this.CurrentAgent.Metadata.Id)
                 return;
-            
+
             this.Terminal.Interrupt();
             task.Print(res, this.Terminal);
+            if(res.FileId != null)
+            {
+                var bytes = this.CommModule.Download(res.FileId, a =>
+                {
+                    this.Terminal.WriteLine($"dowloading ({a}%)");
+                }).Result;
+
+                using (FileStream fs = new FileStream(res.FileName, FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(bytes, 0, bytes.Length);
+                }
+                this.Terminal.WriteSuccess($"File {res.FileName} successfully downloaded");
+            }
             this.Terminal.Restore();
         }
 
@@ -147,7 +161,7 @@ namespace Commander.Executor
         {
             string status = string.Empty;
             this.Terminal.Interrupt();
-            switch(e)
+            switch (e)
             {
                 case ConnectionStatus.Connected:
                     {
@@ -249,16 +263,9 @@ namespace Commander.Executor
 
             if (cmd is null)
             {
-                if (Mode == ExecutorMode.AgentInteraction && this.CurrentAgent.Metadata.AvailableCommands != null && this.CurrentAgent.Metadata.AvailableCommands.Any(c => c == input))
-                {
-                    cmd = new AgentTaskCommand(input);
-                }
-                else
-                {
-                    this.Terminal.WriteError(error);
-                    this.InputHandled(null, false);
-                    return;
-                }
+                this.Terminal.WriteError(error);
+                this.InputHandled(null, false);
+                return;
             }
 
             cmd.Execute(parms);

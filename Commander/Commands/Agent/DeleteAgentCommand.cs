@@ -23,6 +23,7 @@ namespace Commander.Commands.Agent
 
     public class DeleteAgentCommand : EnhancedCommand<DeleteAgentCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Delete an agent from the list";
         public override string Name => "delete";
         public override ExecutorMode AvaliableIn => ExecutorMode.Agent;
@@ -33,30 +34,30 @@ namespace Commander.Commands.Agent
                 new Option(new[] { "--all", "-a" }, "Delete all the agents."),
             };
 
-        protected override async Task<bool> HandleCommand(DeleteAgentCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected override async Task<bool> HandleCommand(CommandContext<DeleteAgentCommandOptions> context)
         {
             bool cmdRes = true;
             var agents = new List<Models.Agent>();
-            if (options.all || string.IsNullOrEmpty(options.id))
+            if (context.Options.all || string.IsNullOrEmpty(context.Options.id))
             {
-                agents.AddRange(comm.GetAgents());
+                agents.AddRange(context.CommModule.GetAgents());
             }
             else
             {
-                agents.Add(comm.GetAgent(options.id));
+                agents.Add(context.CommModule.GetAgent(context.Options.id));
             }
 
             foreach (var agent in agents)
             {
-                var result = await comm.StopAgent(agent.Metadata.Id);
+                var result = await context.CommModule.StopAgent(agent.Metadata.Id);
                 
                 if (!result.IsSuccessStatusCode)
                 {
-                    terminal.WriteError($"An error occured : {result.StatusCode}");
+                    context.Terminal.WriteError($"An error occured : {result.StatusCode}");
                     cmdRes = false;
                 }
                 else
-                    terminal.WriteSuccess($"{agent.Metadata.Id} was deleted.");
+                    context.Terminal.WriteSuccess($"{agent.Metadata.Id} was deleted.");
             }
 
             return cmdRes;

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -122,9 +123,9 @@ namespace Commander.Communication
                 var task = new AgentTask()
                 {
                     AgentId = tr.AgentId,
+                    Label = tr.Label,
                     Arguments = tr.Arguments,
                     Command = tr.Command,
-                    File = tr.File,
                     Id = tr.Id,
                     RequestDate = tr.RequestDate,
                 };
@@ -150,6 +151,8 @@ namespace Commander.Communication
                     Result = tr.Result,
                     Info = tr.Info,
                     Status = (AgentResultStatus)tr.Status,
+                    FileId = tr.FileId,
+                    FileName = tr.FileName,
                 };
 
                 //new respone or response change detected
@@ -165,7 +168,8 @@ namespace Commander.Communication
                     var existing = this._results[res.Id];
                     if (res.Result != existing.Result
                         || res.Status  != existing.Status
-                        || res.Info != existing.Info)
+                        || res.Info != existing.Info
+                        || res.FileId != existing.FileId)
                     {
                         if (res.Status == AgentResultStatus.Completed && !firstLoad)
                             this.TaskResultUpdated?.Invoke(this, res);
@@ -239,7 +243,6 @@ namespace Commander.Communication
                         ProcessId = ar.Metadata.ProcessId,
                         ProcessName = ar.Metadata.ProcessName,
                         UserName = ar.Metadata.UserName,
-                        AvailableCommands = ar.Metadata.AvailableCommands,
                     },
                     LastSeen = ar.LastSeen
                 };
@@ -250,7 +253,6 @@ namespace Commander.Communication
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {
                     current.LastSeen = agent.LastSeen;
-                    current.Metadata.AvailableCommands = agent.Metadata.AvailableCommands;
                     return current;
                 });
             }
@@ -336,10 +338,12 @@ namespace Commander.Communication
 
 
 
-        public async Task<HttpResponseMessage> TaskAgent(string id, string cmd, string parms)
+        public async Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null)
         {
             var taskrequest = new TaskAgentRequest()
             {
+                Label = label,
+                Id = taskId,
                 Command = cmd,
             };
             if (!string.IsNullOrEmpty(parms))
@@ -347,37 +351,158 @@ namespace Commander.Communication
 
             var requestContent = JsonConvert.SerializeObject(taskrequest);
 
-            return await _client.PostAsync($"/Agents/{id}", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            var response = await _client.PostAsync($"/Agents/{agentId}", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
         }
 
-        public async Task<HttpResponseMessage> GetFileDescriptor(string filename)
+        public async Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null)
         {
-            var encoded = System.Web.HttpUtility.UrlEncode(filename);
-            return await _client.GetAsync($"/Files/SetupDownload/{encoded}");
+            var taskrequest = new TaskAgentRequest()
+            {
+                Label = label,
+                Id = taskId,
+                Command = cmd,
+                FileId = fileId,
+                FileName = fileName,
+            };
+            if (!string.IsNullOrEmpty(parms))
+                taskrequest.Arguments = parms;
+
+            var requestContent = JsonConvert.SerializeObject(taskrequest);
+
+            var response = await _client.PostAsync($"/Agents/{agentId}", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
         }
 
-        public async Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex)
+
+
+
+
+        private async Task<FileDescriptorResponse> SetupDownload(string id)
         {
-            return await _client.GetAsync($"/Files/Download/{id}/{chunkIndex}");
+            var response = await _client.GetAsync($"/Files/SetupDownload/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var desc = JsonConvert.DeserializeObject<FileDescriptorResponse>(json);
+            return desc;
         }
 
-        public async Task<HttpResponseMessage> PushFileDescriptor(FileDescriptorResponse desc)
+        private async Task<FileChunckResponse> GetFileChunk(string id, int chunckIndex)
         {
-            var requestContent = JsonConvert.SerializeObject(desc);
+            var response = await _client.GetAsync($"/Files/Download/{id}/{chunckIndex}");
 
-            return await _client.PostAsync($"/Files/SetupUpload", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var chunck = JsonConvert.DeserializeObject<FileChunckResponse>(json);
+            return chunck;
         }
 
-        public async Task<HttpResponseMessage> PushFileChunk(FileChunckResponse chuck)
+        private async Task SetupUpload(FileDescriptorResponse fileDesc)
         {
-            var requestContent = JsonConvert.SerializeObject(chuck);
-            return await _client.PostAsync($"/Files/Upload", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            var requestContent = JsonConvert.SerializeObject(fileDesc);
+
+            var response = await _client.PostAsync($"/Files/SetupUpload", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
         }
 
-        public async Task<HttpResponseMessage> GetFiles(string path)
+        private async Task PostFileChunk(FileChunckResponse chunk)
         {
-            var encoded = System.Web.HttpUtility.UrlEncode(path);
-            return await _client.GetAsync($"/Files/List/{encoded}");
+            var requestContent = JsonConvert.SerializeObject(chunk);
+            var response = await _client.PostAsync($"/Files/Upload", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json")); ;
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+        public async Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null)
+        {
+            var desc = await this.SetupDownload(id);
+            var chunks = new List<FileChunckResponse>();
+
+            for (int index = 0; index < desc.ChunkCount; ++index)
+            {
+                var chunk = this.GetFileChunk(desc.Id, index).Result;
+                chunks.Add(chunk);
+                OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
+            }
+
+            OnCompletionChanged?.Invoke(100);
+            using (var ms = new MemoryStream())
+            {
+                foreach (var chunk in chunks.OrderBy(c => c.Index))
+                {
+                    var bytes = Convert.FromBase64String(chunk.Data);
+                    ms.Write(bytes, 0, bytes.Length);
+                }
+
+
+                return ms.ToArray();
+
+            }
+        }
+
+        public const int ChunkSize = 10000;
+
+        public async Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
+        {
+
+            var desc = new FileDescriptorResponse()
+            {
+                Length = fileBytes.Length,
+                ChunkSize = ChunkSize,
+                Id = Guid.NewGuid().ToString(),
+                Name = filename
+            };
+
+            var chunks = new List<FileChunckResponse>();
+
+            int index = 0;
+            using (var ms = new MemoryStream(fileBytes))
+            {
+
+                var buffer = new byte[ChunkSize];
+                int numBytesToRead = (int)ms.Length;
+
+                while (numBytesToRead > 0)
+                {
+
+                    int n = ms.Read(buffer, 0, ChunkSize);
+                    //var data =
+                    var chunk = new FileChunckResponse()
+                    {
+                        FileId = desc.Id,
+                        Data = System.Convert.ToBase64String(buffer.Take(n).ToArray()),
+                        Index = index,
+                    };
+                    chunks.Add(chunk);
+                    numBytesToRead -= n;
+
+                    index++;
+                }
+            }
+
+            desc.ChunkCount = chunks.Count;
+
+            await SetupUpload(desc);
+
+            index = 0;
+            foreach (var chunk in chunks)
+            {
+                await PostFileChunk(chunk);
+                OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
+                index++;
+            }
+            OnCompletionChanged?.Invoke(100);
+
+            return desc.Id;
         }
     }
 }

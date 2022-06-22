@@ -10,13 +10,14 @@
 
 //namespace Commander.Commands.Inject
 //{
-//    public class UACBypassCommand : SiteLoadCommand
+//    public class RevShellCommand : InjectCommand
 //    {
-//        public override string Description => "Site load a dll bypassing UAC and running parm as high integrity level";
-//        public override string Name => "uac-bypass";
+//        public override string Description => "Revershell using rshell.exe (Module)";
+//        public override string Name => "revshell";
 //        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
-//        public override string ExeName => "UACByPass.exe";
+//        public override string ExeName => "rshell.exe";
 
+//        public override string ProcessName => "cmd.exe";
 //    }
 //}

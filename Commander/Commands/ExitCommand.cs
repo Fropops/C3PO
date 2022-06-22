@@ -11,13 +11,14 @@ namespace Commander.Commands.Listener
 {
     public class ExitCommand : ExecutorCommand
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Close the Commander";
         public override string Name => "exit";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
+        protected override void InnerExecute(CommandContext context)
         {
-            executor.Stop();
+            context.Executor.Stop();
         }
     }
 }

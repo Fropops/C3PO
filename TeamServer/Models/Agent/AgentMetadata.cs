@@ -14,6 +14,5 @@ namespace TeamServer.Models
         public int ProcessId { get; set; }
         public string Integrity { get; set; }
         public string Architecture { get; set; }
-        public string[] AvailableCommands { get; set; }
     }
 }

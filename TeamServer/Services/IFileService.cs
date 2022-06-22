@@ -10,20 +10,15 @@ namespace TeamServer.Services
 {
     public interface IFileService
     {
-        string GetFullPath(string fileName);
-        FileDescriptor GetFileToDownload(string id);
-        FileDescriptor GetFileToUpload(string id);
-        FileDescriptor CreateFileDescriptor(string filePath);
+        
+        FileDescriptor GetFile(string id);
+ 
+        void AddFile(FileDescriptor desc);
 
-        void AddFileToUpload(FileDescriptor desc);
         void CleanDownloaded();
 
-        void CleanUploaded();
 
-        List<FileFolderListResponse> List(string fullPath);
-
-        void SaveUploadedFile(FileDescriptor desc, string path);
-
+        string GetFullPath(string fileName);
         string GetAgentPath(string agentId, string fileName);
 
         string GetAgentPath(string agentId);

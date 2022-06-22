@@ -11,17 +11,18 @@ namespace Commander.Commands
 {
     public abstract class SwitchModeCommand : ExecutorCommand
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => $"Switch to {this.TargetMode} mode";
         public override ExecutorMode AvaliableIn => ExecutorMode.None;
 
         public abstract ExecutorMode TargetMode { get; }
-        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
+        protected override void InnerExecute(CommandContext context)
         {
-            executor.Mode = TargetMode;
+            context.Executor.Mode = TargetMode;
             if (TargetMode  == ExecutorMode.None)
-                terminal.Prompt = Terminal.Terminal.DefaultPrompt;
+                context.Terminal.Prompt = Terminal.Terminal.DefaultPrompt;
             else
-                terminal.Prompt = $"${this.TargetMode}> ";
+                context.Terminal.Prompt = $"${this.TargetMode}> ";
         }
     }
 

@@ -16,6 +16,7 @@ namespace Commander.Commands.Agent
 
     public class StatusCommand : EnhancedCommand<StatusCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Show current agent status";
         public override string Name => "status";
 
@@ -23,13 +24,13 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description);
 
-        protected async override Task<bool> HandleCommand(StatusCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected async override Task<bool> HandleCommand(CommandContext<StatusCommandOptions> context)
         {
-            var agent = executor.CurrentAgent;
+            var agent = context.Executor.CurrentAgent;
             if (agent.LastSeen.AddSeconds(30) > DateTime.UtcNow)
-                terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
+                context.Terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
             else
-                terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
+                context.Terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
             var results = new SharpSploitResultList<StatusResult>();
             results.Add(new StatusResult() { Name = "Id", Value = agent.Metadata.Id });
             results.Add(new StatusResult() { Name = "Hostname", Value = agent.Metadata.Hostname });
@@ -38,7 +39,7 @@ namespace Commander.Commands.Agent
             results.Add(new StatusResult() { Name = "ProcessName", Value = agent.Metadata.ProcessName });
             results.Add(new StatusResult() { Name = "Integrity", Value = agent.Metadata.Integrity });
             results.Add(new StatusResult() { Name = "Last Seen", Value = agent.LastSeen.ToLocalTime().ToString("dd/MM/yyyy hh:mm:ss") });
-            terminal.WriteLine(results.ToString());
+            context.Terminal.WriteLine(results.ToString());
             return true;
         }
     }

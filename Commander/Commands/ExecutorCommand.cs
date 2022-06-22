@@ -15,6 +15,8 @@ namespace Commander.Commands
 
         public virtual string Description { get; protected set; }
 
+        public virtual string Category { get; protected set; } = "Others";
+
         public abstract ExecutorMode AvaliableIn { get; }
 
         public virtual void Execute(string parms)
@@ -22,10 +24,22 @@ namespace Commander.Commands
             var executor = ServiceProvider.GetService<IExecutor>();
             var terminal = ServiceProvider.GetService<ITerminal>();
             var comm = ServiceProvider.GetService<ICommModule>();
-            InnerExecute(terminal, executor, comm, parms);
+            var label = this.Name;
+            if (!string.IsNullOrEmpty(parms))
+                label += " " + parms;
+            var context = new CommandContext()
+            {
+                CommandLabel = label,
+                CommandParameters = parms,
+                CommModule = comm,
+                Executor = executor,
+                Terminal = terminal
+            };
+
+            InnerExecute(context);
             executor.InputHandled(this, true);
         }
 
-        protected abstract void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms);
+        protected abstract void InnerExecute(CommandContext context);
     }
 }

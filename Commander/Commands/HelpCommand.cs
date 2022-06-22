@@ -11,52 +11,51 @@ namespace Commander.Commands
 {
     public class HelpCommand : ExecutorCommand
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Give info on available commands";
         public override string Name => "help";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        protected override void InnerExecute(ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
+        protected override void InnerExecute(CommandContext context)
         {
             var results = new SharpSploitResultList<HelpResult>();
 
-            var mode = executor.Mode;
+            var mode = context.Executor.Mode;
 
             List<ExecutorCommand> cmds = new List<ExecutorCommand>();
-            cmds.AddRange(executor.GetCommandsInMode(mode));
-            cmds.AddRange(executor.GetCommandsInMode(ExecutorMode.All));
+            cmds.AddRange(context.Executor.GetCommandsInMode(mode));
+            cmds.AddRange(context.Executor.GetCommandsInMode(ExecutorMode.All));
 
-
-            foreach (var cmd in cmds.OrderBy(c => c.Name))
+            context.Terminal.WriteLine("Available commands :");
+            bool first = true;
+            foreach (var cat in CommandCategory.All)
             {
-                if (cmd.Name == "dummyTask")
+                var tmpCmds = cmds.Where(c => c.Category == cat);
+                if (!tmpCmds.Any())
                     continue;
-                results.Add(new HelpResult()
-                {
-                    Name = cmd.Name,
-                    Description = cmd.Description ?? string.Empty,
-                });
-            }
+                if (first)
+                    first = false;
+                else
+                    context.Terminal.WriteLine();
+                context.Terminal.WriteLine(" " + cat + " ");
+                context.Terminal.WriteLine(string.Empty.PadLeft(cat.Length + 2, '='));
 
-            terminal.WriteLine("Available commands :");
-            terminal.WriteLine(results.ToString());
-
-            if (mode == ExecutorMode.AgentInteraction)
-            {
-                results.Clear();
-                foreach(var cmd in executor.CurrentAgent.Metadata.AvailableCommands)
+                foreach (var cmd in tmpCmds.OrderBy(c => c.Name))
                 {
                     results.Add(new HelpResult()
                     {
-                        Name = cmd,
-                        Description = string.Empty,
+                        Name = cmd.Name,
+                        Description = cmd.Description ?? string.Empty,
                     });
                 }
-                terminal.WriteLine();
-                terminal.WriteLine("Commands on the agent :");
-                terminal.WriteLine(results.ToString());
+
+                context.Terminal.WriteLine(results.ToString());
+                results.Clear();
             }
 
-            
+
+
+
         }
 
         public sealed class HelpResult : SharpSploitResult

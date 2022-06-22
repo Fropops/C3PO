@@ -9,10 +9,12 @@ namespace ApiModels.Response
     public class AgentTaskResponse
     {
         public string AgentId { get; set; }
+
+        public string Label { get; set; }
         public string Id { get; set; }
         public string Command { get; set; }
         public string Arguments { get; set; }
-        public byte[] File { get; set; }
+        public string[] FileNames { get; set; }
         public DateTime RequestDate { get; set; }
     }
 }

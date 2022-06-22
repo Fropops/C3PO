@@ -18,6 +18,7 @@ namespace Commander.Commands.Agent
 
     public class ListAgentsCommand : EnhancedCommand<ListAgentsCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "List all agents";
         public override string Name => "list";
 
@@ -29,16 +30,16 @@ namespace Commander.Commands.Agent
             };
 
 
-        protected override async Task<bool> HandleCommand(ListAgentsCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected override async Task<bool> HandleCommand(CommandContext<ListAgentsCommandOptions> context)
         {
             var results = new SharpSploitResultList<ListAgentResult>();
 
-            var result = comm.GetAgents();
+            var result = context.CommModule.GetAgents();
 
 
             if (result.Count() == 0)
             {
-                terminal.WriteLine("No Agents running.");
+                context.Terminal.WriteLine("No Agents running.");
                 return true;
             }
 
@@ -61,7 +62,7 @@ namespace Commander.Commands.Agent
                 index++;
             }
 
-            terminal.WriteLine(results.ToString());
+            context.Terminal.WriteLine(results.ToString());
 
             return true;
         }

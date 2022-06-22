@@ -12,5 +12,8 @@ namespace ApiModels.Response
         public string Result { get; set; }
         public string Info { get; set; }
         public int Status { get; set; }
+
+        public string FileId { get; set; }
+        public string FileName { get; set; }
     }
 }

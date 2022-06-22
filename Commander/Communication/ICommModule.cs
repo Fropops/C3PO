@@ -34,14 +34,12 @@ namespace Commander.Communication
         AgentTaskResult GetTaskResult(string taskId);
         Task<HttpResponseMessage> CreateListener(string name, int port);
         IEnumerable<Listener> GetListeners();
-        Task<HttpResponseMessage> TaskAgent(string id, string cmd, string parms);
+        Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null);
+        Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
 
-        Task<HttpResponseMessage> GetFileDescriptor(string filename);
-        Task<HttpResponseMessage> GetFileChunk(string id, int chunkIndex);
-        Task<HttpResponseMessage> GetFiles(string path);
-
-        Task<HttpResponseMessage> PushFileChunk(FileChunckResponse chuck);
-        Task<HttpResponseMessage> PushFileDescriptor(FileDescriptorResponse desc);
+        Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
+       
+        Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
     }
 }

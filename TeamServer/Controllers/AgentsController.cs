@@ -77,11 +77,13 @@ namespace TeamServer.Controllers
 
             var task = new AgentTask()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = request.Id,
                 Command = request.Command,
                 Arguments = request.Arguments,
-                File = request.File,
-                RequestDate = DateTime.UtcNow
+                Label = request.Label,
+                RequestDate = DateTime.UtcNow,
+                FileName = request.FileName,
+                FileId = request.FileId,
             };
 
             agent.QueueTask(task);

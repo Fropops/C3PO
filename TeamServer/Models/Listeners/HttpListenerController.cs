@@ -42,7 +42,6 @@ namespace TeamServer.Models
             }
 
             agent.CheckIn();
-            agent.Metadata.AvailableCommands = metadata.AvailableCommands;
 
             if (HttpContext.Request.Method == "POST")
             {
@@ -81,14 +80,9 @@ namespace TeamServer.Models
         }
 
         #region Download
-        public IActionResult SetupDownload(string filename)
+        public IActionResult SetupDownload(string id)
         {
-            var decoded = System.Web.HttpUtility.UrlDecode(filename);
-            string fullPath = this._fileService.GetFullPath(decoded);
-            if (string.IsNullOrEmpty(fullPath))
-                return NotFound();
-
-            var desc = _fileService.CreateFileDescriptor(fullPath);
+            var desc = _fileService.GetFile(id);
             if (desc == null)
                 return NotFound();
 
@@ -104,7 +98,7 @@ namespace TeamServer.Models
 
         public IActionResult DownloadChunk(string id, int index)
         {
-            var desc = _fileService.GetFileToDownload(id);
+            var desc = _fileService.GetFile(id);
             if (index < 0 || index >= desc.ChunkCount)
                 return NotFound();
 
@@ -128,13 +122,13 @@ namespace TeamServer.Models
             if (string.IsNullOrEmpty(desc.Id))
                 return NotFound();
 
-            _fileService.AddFileToUpload(desc);
+            _fileService.AddFile(desc);
             return Ok();
         }
 
         public IActionResult UploadChunk([FromBody] FileChunk chunk)
         {
-            var desc = _fileService.GetFileToUpload(chunk.FileId);
+            var desc = _fileService.GetFile(chunk.FileId);
             if (desc == null)
                 return NotFound();
 
@@ -143,13 +137,6 @@ namespace TeamServer.Models
                 return NotFound();
 
             desc.Chunks.Add(chunk);
-            if (desc.IsUploaded)
-            {
-                var fileName = _fileService.GetAgentPath(metadata.Id, desc.Name);
-                _fileService.SaveUploadedFile(desc, fileName);
-            }
-
-            _fileService.CleanDownloaded();
 
             return Ok();
         }

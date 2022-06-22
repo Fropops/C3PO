@@ -18,6 +18,7 @@ namespace Commander.Commands.Listener
 
     public class ListListenersCommand : EnhancedCommand<ListListenersCommandOptions>
     {
+        public override string Category => CommandCategory.Commander;
         public override string Description => "List all listeners";
         public override string Name => "list";
 
@@ -29,17 +30,17 @@ namespace Commander.Commands.Listener
             };
 
 
-        protected override async Task<bool> HandleCommand(ListListenersCommandOptions options, ITerminal terminal, IExecutor executor, ICommModule comm)
+        protected override async Task<bool> HandleCommand(CommandContext<ListListenersCommandOptions> context)
         {
             var results = new SharpSploitResultList<ListListenersResult>();
 
-            if (options.verbose)
-                terminal.WriteLine("Hello from verbose output!");
+            if (context.Options.verbose)
+                context.Terminal.WriteLine("Hello from verbose output!");
 
-            var result = comm.GetListeners();
+            var result = context.CommModule.GetListeners();
             if (result.Count() == 0)
             {
-                terminal.WriteInfo("No Listeners running.");
+                context.Terminal.WriteInfo("No Listeners running.");
                 return true;
             }
 
@@ -56,7 +57,7 @@ namespace Commander.Commands.Listener
                 index++;
             }
 
-            terminal.WriteLine(results.ToString());
+            context.Terminal.WriteLine(results.ToString());
 
             return true;
         }

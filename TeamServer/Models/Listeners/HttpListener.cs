@@ -36,7 +36,7 @@ namespace TeamServer.Models
                         options.Listen(IPAddress.Any, BindPort, listenOptions =>
                         {
                             //listenOptions.UseHttps("sslcert.pfx");
-                            listenOptions.UseHttps("certs/ts.pfx", "teamserver");
+                            //listenOptions.UseHttps("certs/ts.pfx", "teamserver");
                         });
                     });
                 });

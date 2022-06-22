@@ -19,5 +19,8 @@ namespace Agent.Models
         public string Result { get; set; }
         public string Info { get; set; }
         public AgentResultStatus Status { get; set; }
+
+        public string FileId { get;set; }
+        public string FileName { get; set; }
     }
 }

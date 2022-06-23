@@ -17,10 +17,5 @@ namespace Commander.Commands.Agent
         public override string Description => "Capture current screen(s)";
         public override string Name => "capture";
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
-
-        protected override Task<bool> HandleCommand(CommandContext<CaptureCommandoptions> context)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

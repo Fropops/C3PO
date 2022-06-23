@@ -56,15 +56,22 @@ namespace TeamServer.Controllers
             {
                 foreach (var res in agent.GetTaskResults())
                 {
-                    results.Add(new AgentTaskResultResponse()
+                    var ret = new AgentTaskResultResponse()
                     {
                         Id = res.Id,
                         Result = res.Result,
                         Info = res.Info,
                         Status = (int)res.Status,
-                        FileId = res.FileId,
-                        FileName = res.FileName,
+                    };
+
+                    foreach(var file in res.Files)
+                    ret.Files.Add(new ApiModels.Response.TaskFileResult()
+                    {
+                        FileId = file.FileId,
+                        FileName = file.FileName,
                     });
+
+                    results.Add(ret);
                 }
 
             }

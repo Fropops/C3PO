@@ -49,5 +49,7 @@ namespace Commander.Terminal
         void SetForeGroundColor(ConsoleColor color);
 
         void SetBackGroundColor(ConsoleColor color);
+
+        void ShowProgress(string label, int progress, bool newLine = false);
     }
 }

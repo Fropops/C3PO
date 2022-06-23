@@ -82,18 +82,20 @@ namespace Commander.Executor
 
             this.Terminal.Interrupt();
             task.Print(res, this.Terminal);
-            if(res.FileId != null)
+            foreach(var file in res.Files)
             {
-                var bytes = this.CommModule.Download(res.FileId, a =>
+                bool first = true;
+                var bytes = this.CommModule.Download(file.FileId, a =>
                 {
-                    this.Terminal.WriteLine($"dowloading ({a}%)");
+                    this.Terminal.ShowProgress("dowloading", a, first);
+                    first = false;
                 }).Result;
 
-                using (FileStream fs = new FileStream(res.FileName, FileMode.Create, FileAccess.Write))
+                using (FileStream fs = new FileStream(file.FileName, FileMode.Create, FileAccess.Write))
                 {
                     fs.Write(bytes, 0, bytes.Length);
                 }
-                this.Terminal.WriteSuccess($"File {res.FileName} successfully downloaded");
+                this.Terminal.WriteSuccess($"File {file.FileName} successfully downloaded");
             }
             this.Terminal.Restore();
         }

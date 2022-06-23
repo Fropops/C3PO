@@ -13,6 +13,12 @@ namespace ApiModels.Response
         public string Info { get; set; }
         public int Status { get; set; }
 
+        public List<TaskFileResult> Files { get; set; } = new List<TaskFileResult>();
+
+    }
+
+    public class TaskFileResult
+    {
         public string FileId { get; set; }
         public string FileName { get; set; }
     }

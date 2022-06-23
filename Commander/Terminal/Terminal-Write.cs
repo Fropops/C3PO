@@ -126,7 +126,18 @@ namespace Commander.Terminal
             Console.BackgroundColor = color;
         }
 
+        public void ShowProgress(string label, int progress, bool newLine = true)
+        {
+            if (!newLine)
+            {
+                Console.CursorLeft = 0;
+                Console.CursorTop -= 1;
+            }
 
+            int p = progress / 5;
+            string progressBar = "[" + string.Empty.PadLeft(p, '=') + string.Empty.PadLeft(20-p, ' ') + "]";
+            this.WriteLine($"{label} {progressBar} ({progress}%)");
+        }
 
     }
 }

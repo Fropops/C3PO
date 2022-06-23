@@ -151,9 +151,10 @@ namespace Commander.Communication
                     Result = tr.Result,
                     Info = tr.Info,
                     Status = (AgentResultStatus)tr.Status,
-                    FileId = tr.FileId,
-                    FileName = tr.FileName,
                 };
+
+                foreach(var file in tr.Files)
+                res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName });
 
                 //new respone or response change detected
 
@@ -169,7 +170,7 @@ namespace Commander.Communication
                     if (res.Result != existing.Result
                         || res.Status  != existing.Status
                         || res.Info != existing.Info
-                        || res.FileId != existing.FileId)
+                        || res.Files.Count != existing.Files.Count)
                     {
                         if (res.Status == AgentResultStatus.Completed && !firstLoad)
                             this.TaskResultUpdated?.Invoke(this, res);
@@ -427,14 +428,19 @@ namespace Commander.Communication
             var desc = await this.SetupDownload(id);
             var chunks = new List<FileChunckResponse>();
 
+            int progress = 0;
             for (int index = 0; index < desc.ChunkCount; ++index)
             {
                 var chunk = this.GetFileChunk(desc.Id, index).Result;
                 chunks.Add(chunk);
-                OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
-            }
 
+                var newprogress = index * 100 / desc.ChunkCount;
+                if (progress != newprogress)
+                    OnCompletionChanged?.Invoke(progress);
+                progress = newprogress;
+            }
             OnCompletionChanged?.Invoke(100);
+
             using (var ms = new MemoryStream())
             {
                 foreach (var chunk in chunks.OrderBy(c => c.Index))
@@ -443,9 +449,7 @@ namespace Commander.Communication
                     ms.Write(bytes, 0, bytes.Length);
                 }
 
-
                 return ms.ToArray();
-
             }
         }
 
@@ -494,11 +498,15 @@ namespace Commander.Communication
             await SetupUpload(desc);
 
             index = 0;
+            int progress = 0;
             foreach (var chunk in chunks)
             {
                 await PostFileChunk(chunk);
-                OnCompletionChanged?.Invoke(index * 100 / desc.ChunkCount);
+                var newprogress = index * 100 / desc.ChunkCount;
+                if(progress != newprogress)
+                    OnCompletionChanged?.Invoke(progress);
                 index++;
+                progress = newprogress;
             }
             OnCompletionChanged?.Invoke(100);
 

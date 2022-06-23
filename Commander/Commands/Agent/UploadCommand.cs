@@ -52,9 +52,13 @@ namespace Commander.Commands.Agent
                 filename = context.Options.remotefile;
             }
 
+            context.Terminal.WriteLine($"Preparing to upload the file...");
+
+            bool first = true;
             var fileId = await context.CommModule.Upload(fileBytes, filename, a =>
             {
-                context.Terminal.WriteLine($"uploading {filename} ({a}%)");
+                context.Terminal.ShowProgress("uploading",a, first);
+                first = false;
             });
 
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, EndPointCommand.DOWNLOAD, fileId, filename);

@@ -23,6 +23,8 @@ namespace Commander.Commands.Agent
         public static string START = "start";
         public static string RUN = "run";
 
+        public static string KEYLOG = "keylog";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -92,6 +94,23 @@ namespace Commander.Commands.Agent
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("process", () => "", "process name to search for"),
+            };
+    }
+
+
+    public class KeylogCommandOptions
+    {
+        public bool verb { get; set; }
+    }
+    public class eylogCommand : EndPointCommand<PSCommandOptions>
+    {
+        public override string Description => "Log keys on the agent";
+        public override string Name => EndPointCommand.KEYLOG;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<string>("verb", () => "start", "Start | Stop").FromAmong("start", "stop"),
             };
     }
 

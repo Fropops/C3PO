@@ -25,8 +25,11 @@ namespace Commander.Internal
             args.Add("-a 2");
             args.Add($"-o");
             args.Add(outFile);
-            args.Add($"-p");
-            args.Add($"{parameters}");
+            if (!string.IsNullOrEmpty(parameters))
+            {
+                args.Add($"-p");
+                args.Add($"{parameters}");
+            }
 
             var ret = ExecuteCommand(cmd, args, DonutFolder);
             return ret;

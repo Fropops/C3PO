@@ -34,9 +34,12 @@ namespace Agent
             //port = 443;
             //server = "13.38.61.75";
             //port = 80;
-            server = "127.0.0.1";
-            port = 8080;
+            //server = "127.0.0.1";
+            //port = 8080;
+            server = "192.168.56.102";
+            port = 443;
             protocol = "http";
+
 
             GenerateMetadata();
 

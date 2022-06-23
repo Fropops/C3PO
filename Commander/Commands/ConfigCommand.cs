@@ -47,6 +47,8 @@ namespace Commander.Commands
                 var results = new SharpSploitResultList<ConfigResult>();
                 results.Add(new ConfigResult() { Name = "Server", Value = context.CommModule.ConnectAddress });
                 results.Add(new ConfigResult() { Name = "Port", Value = context.CommModule.ConnectPort.ToString() });
+                results.Add(new ConfigResult() { Name = "TmpFolder", Value = InjectCommand.TmpFolder.ToString() });
+                results.Add(new ConfigResult() { Name = "ModuleFolder", Value = InjectCommand.ModuleFolder.ToString() });
                 context.Terminal.WriteLine(results.ToString());
                 return true;
             }

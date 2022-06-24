@@ -45,6 +45,9 @@ namespace TeamServer.Models
             }
 
             agent.CheckIn();
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
+            if (listener != null)
+                agent.ListenerId = listener.Id;
 
             if (HttpContext.Request.Method == "POST")
             {

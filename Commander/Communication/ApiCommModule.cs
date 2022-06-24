@@ -206,6 +206,10 @@ namespace Commander.Communication
                 {
                     Name = lr.Name,
                     BindPort = lr.BindPort,
+                    PublicPort = lr.PublicPort,
+                    Secured = lr.Secured,
+                    Id = lr.Id,
+                    Ip = lr.Ip,
                 };
 
                 this._listeners.AddOrUpdate(lr.Name, listener, (key, current) =>
@@ -245,7 +249,8 @@ namespace Commander.Communication
                         ProcessName = ar.Metadata.ProcessName,
                         UserName = ar.Metadata.UserName,
                     },
-                    LastSeen = ar.LastSeen
+                    LastSeen = ar.LastSeen,
+                    ListenerId = ar.ListenerId,
                 };
 
                 if (!this._agents.ContainsKey(agent.Metadata.Id))
@@ -254,6 +259,7 @@ namespace Commander.Communication
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {
                     current.LastSeen = agent.LastSeen;
+                    current.ListenerId = ar.ListenerId;
                     return current;
                 });
             }

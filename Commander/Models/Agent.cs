@@ -11,5 +11,7 @@ namespace Commander.Models
         public AgentMetadata Metadata { get; set;  }
 
         public DateTime LastSeen { get; set; }
+
+        public string ListenerId { get; set; }
     }
 }

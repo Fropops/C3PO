@@ -8,6 +8,7 @@ namespace TeamServer.Models
 {
     public abstract class Listener
     {
+        public string Id { get; protected set; }
         public virtual string Name { get; protected set; }
 
         public virtual string Ip { get; protected set; }
@@ -30,6 +31,8 @@ namespace TeamServer.Models
                 this.PublicPort = bindPort;
             else
                 this.PublicPort = publicPort.Value;
+
+            this.Id = Guid.NewGuid().ToString();
         }
 
         public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService)

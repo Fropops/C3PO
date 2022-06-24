@@ -23,5 +23,7 @@ namespace ApiModels.Response
         public AgentMetadataResponse Metadata { get; set; }
 
         public DateTime LastSeen { get; set; }
+
+        public string ListenerId { get; set; }
     }
 }

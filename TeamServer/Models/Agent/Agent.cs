@@ -11,6 +11,8 @@ namespace TeamServer.Models
 
         public DateTime LastSeen { get; protected set; }
 
+        public string ListenerId { get; set; }
+
         private ConcurrentQueue<AgentTask> _pendingTasks = new();
 
         private readonly List<AgentTaskResult> _taskResults = new();

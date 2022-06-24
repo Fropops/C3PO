@@ -13,10 +13,12 @@ namespace TeamServer.Models
 {
     public class HttpListener : Listener
     {
-        
 
-        public HttpListener(string name, int bindPort, string ip, int? publicPort = null) : base(name, bindPort, ip, publicPort)
+        public bool Secured { get; protected set; }
+
+        public HttpListener(string name, int bindPort, string ip, bool secured = true, int? publicPort = null) : base(name, bindPort, ip, publicPort)
         {
+            Secured = secured;
         }
 
         private CancellationTokenSource _tokenSource;
@@ -31,12 +33,16 @@ namespace TeamServer.Models
                     host.UseUrls($"https://*:{BindPort}");
                     host.Configure(ConfigureApp);
                     host.ConfigureServices(ConfigureServices);
+
                     host.UseKestrel(options =>
                     {
                         options.Listen(IPAddress.Any, BindPort, listenOptions =>
                         {
-                            //listenOptions.UseHttps("sslcert.pfx");
-                            //listenOptions.UseHttps("certs/ts.pfx", "teamserver");
+                            if (this.Secured)
+                            {
+                                //listenOptions.UseHttps("sslcert.pfx");
+                                listenOptions.UseHttps("certs/ts.pfx", "teamserver");
+                            }
                         });
                     });
                 });

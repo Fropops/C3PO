@@ -44,16 +44,28 @@ namespace Commander.Commands.SideLoad
 
         protected override async Task<bool> HandleCommand(CommandContext<SiteLoadModuleCommandOptions> context)
         {
-            
+
+            var listenerId = context.Executor.CurrentAgent.ListenerId;
+            //if(context.Options.verbose)
+            //{
+            //    context.Terminal.WriteLine("listener = " + listenerId ?? string.Empty);
+            //}
+
+            var listener = context.CommModule.GetListeners().FirstOrDefault(l => l.Id == listenerId);
+            if (listener == null)
+            {
+                context.Terminal.WriteError("No listener found !");
+                return false;
+            }
 
             var taskId = Guid.NewGuid().ToString();
             var taskCmd = "side-load-module";
             //Generate parameters
             ExecutionContext exeCtxt = new ExecutionContext()
             {
-                i =  "192.168.56.102",
-                p = 443,
-                s = "n",
+                i = listener.Ip,
+                p = listener.PublicPort,
+                s = listener.Secured ? "y" : "n",
                 id = taskId,
                 a = this.ComputeParams(context.Options.parameters)
             };
@@ -64,7 +76,7 @@ namespace Commander.Commands.SideLoad
                 context.Terminal.WriteLine($"Parameters Serialized = {ser}");
 
             var parms = Convert.ToBase64String(Encoding.UTF8.GetBytes(ser));
-            if(parms.Length > 250)
+            if (parms.Length > 250)
             {
                 context.Terminal.WriteError("Parameters too long.");
                 return false;

@@ -70,12 +70,6 @@ namespace TeamServer.Controllers
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
             var path = $"{root}/{listener.Name}";
 
-            var response = new ListenerResponse()
-            {
-                Name = listener.Name,
-                BindPort = listener.BindPort,
-            };
-
             return Created(path, listener);
         }
 

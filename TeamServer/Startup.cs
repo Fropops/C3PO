@@ -82,7 +82,7 @@ namespace TeamServer
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
 
-            var listener = new HttpListener("Default", config.GetValue<int>("DefaultListenerPort"), config.GetValue<string>("DefaultListenerIp"), config.GetValue<int>("DefaultListenerPublicPort"));
+            var listener = new HttpListener("Default", config.GetValue<int>("DefaultListenerPort"), config.GetValue<string>("DefaultListenerIp"), config.GetValue<bool>("DefaultListenerSecured"), config.GetValue<int>("DefaultListenerPublicPort"));
             listener.Init(agentService, fileService, binMakerService, listenerService);
             listener.Start();
             try

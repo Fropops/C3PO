@@ -25,6 +25,9 @@ namespace Commander.Commands.Agent
 
         public static string KEYLOG = "keylog";
 
+        public static string EXECUTEASSEMBLY = "execute-assembly";
+        public static string SIDELOAD = "side-load";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -102,7 +105,7 @@ namespace Commander.Commands.Agent
     {
         public bool verb { get; set; }
     }
-    public class eylogCommand : EndPointCommand<PSCommandOptions>
+    public class KeylogCommand : EndPointCommand<PSCommandOptions>
     {
         public override string Description => "Log keys on the agent";
         public override string Name => EndPointCommand.KEYLOG;
@@ -113,5 +116,7 @@ namespace Commander.Commands.Agent
                 new Argument<string>("verb", () => "start", "Start | Stop").FromAmong("start", "stop"),
             };
     }
+
+    
 
 }

@@ -1,4 +1,5 @@
-﻿using Commander.Communication;
+﻿using Commander.Commands.SideLoad;
+using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
 using System;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands.SideLoad
+namespace Commander.Commands.Module
 {
     public class UACBypassCommand : SiteLoadModuleCommand
     {

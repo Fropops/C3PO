@@ -25,7 +25,6 @@ namespace Agent.Commands
             this.Notify(result, commm, $"{fileName} Downloaded");
 
             var args = task.SplittedArgs.ToList();
-            args.RemoveAt(0); //filename
             var output = Executor.ExecuteAssembly(fileContent, args.ToArray());
 
             result.Result = output;

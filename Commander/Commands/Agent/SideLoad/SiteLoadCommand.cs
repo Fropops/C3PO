@@ -1,5 +1,6 @@
 ﻿using ApiModels.Response;
 using Commander.Commands;
+using Commander.Commands.Agent;
 using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
@@ -16,17 +17,20 @@ namespace Commander.Commands.SideLoad
 
     public class SiteLoadCommandOptions
     {
+        public string fileToSideLoad { get; set; }
         public string parameters { get; set; }
         public string processName { get; set; }
         public bool verbose { get; set; }
     }
 
-    public abstract class SiteLoadCommand : EnhancedCommand<SiteLoadCommandOptions>
+    public class SiteLoadCommand : EnhancedCommand<SiteLoadCommandOptions>
     {
-        public override string Category => CommandCategory.Module;
+        public override string Category => CommandCategory.Core;
+
+        public override string Name => EndPointCommand.SIDELOAD;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
-        public virtual string ExeName { get; set; }
+        public override string Description => "SideLoad an executable";
 
         public virtual string ComputeParams(string innerParams)
         {
@@ -35,6 +39,7 @@ namespace Commander.Commands.SideLoad
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
+            new Argument<string>("fileToSideLoad", "path of the file to load"),
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
             new Option<string>(new[] { "--processName", "-p" }, () => "explorer.exe" ,"process name to start."),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
@@ -42,9 +47,15 @@ namespace Commander.Commands.SideLoad
 
         protected override async Task<bool> HandleCommand(CommandContext<SiteLoadCommandOptions> context)
         {
+            if (!File.Exists(context.Options.fileToSideLoad))
+            {
+                context.Terminal.WriteError($"File {context.Options.fileToSideLoad} not found");
+                return false;
+            }
+
             context.Terminal.WriteLine($"Generating bin payload with params {context.CommandParameters}...");
 
-            var result = InjectCommand.GenerateBin(Path.Combine(InjectCommand.ModuleFolder, this.ExeName), this.ComputeParams(context.Options.parameters), out var binFileName);
+            var result = InjectCommand.GenerateBin(context.Options.fileToSideLoad, this.ComputeParams(context.Options.parameters), out var binFileName);
             if (context.Options.verbose)
                 context.Terminal.WriteLine(result);
 

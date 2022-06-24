@@ -14,6 +14,7 @@ namespace Agent.Commands
 
         public string Module => Assembly.GetExecutingAssembly().GetName().Name;
 
+        protected bool PreventTaskCompletion = false;
         public virtual void Execute(AgentTask task, Models.Agent agent, CommModule comm)
         {
             var result = new AgentTaskResult();
@@ -32,7 +33,8 @@ namespace Agent.Commands
             finally
             {
                 result.Info = string.Empty;
-                result.Status = AgentResultStatus.Completed;
+                if(!this.PreventTaskCompletion)
+                    result.Status = AgentResultStatus.Completed;
                 comm.SendResult(result);
             }
 

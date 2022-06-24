@@ -57,7 +57,7 @@ namespace Commander
 
         protected override async Task<bool> HandleCommand(CommandContext<InjectCommandOptions> context)
         {
-            context.Terminal.WriteLine($"Generating payload with params {context.CommandParameters}...");
+            context.Terminal.WriteLine($"Generating payload with params {this.ComputeParams(context.Options.parameters)}...");
 
             var result = GenerateBin(context.Options.fileToInject, this.ComputeParams(context.Options.parameters), out var binFileName);
             if (context.Options.verbose)

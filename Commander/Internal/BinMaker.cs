@@ -35,7 +35,7 @@ namespace Commander.Internal
             return ret;
         }
 
-        public static string GenerateDll(string binPath, string dllPath)
+        public static string GenerateDll(string binPath, string processName, string dllPath)
         {
             var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
             var inputFile = binPath;
@@ -52,7 +52,7 @@ namespace Commander.Internal
             args.Add($"-u");
             args.Add($"-b");
             args.Add($"-p");
-            args.Add($"explorer.exe");
+            args.Add(processName);
 
             var ret = ExecuteCommand(cmd, args, ReaNimatorFolder);
             return ret;

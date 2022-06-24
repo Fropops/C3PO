@@ -70,6 +70,7 @@ namespace TeamServer.Models
                 e.MapControllerRoute("DownloadChunk", "/DownloadChunk", new { Controller = "HttpListener", Action = "DownloadChunk" });
                 e.MapControllerRoute("SetupUpload", "/SetupUpload", new { Controller = "HttpListener", Action = "SetupUpload" });
                 e.MapControllerRoute("UploadChunk", "/UploadChunk", new { Controller = "HttpListener", Action = "UploadChunk" });
+                e.MapControllerRoute("ModuleInfo", "/ModuleInfo", new { Controller = "HttpListener", Action = "ModuleInfo" });
                 e.MapControllerRoute("Stager", "/Stager", new { Controller = "HttpListener", Action = "DownloadStager" });
             });
         }

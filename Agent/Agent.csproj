@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
     <Compile Include="Commands\CaptureCommand.cs" />
+    <Compile Include="Commands\Execution\SideLoadModuleCommand.cs" />
     <Compile Include="Commands\Execution\SideLoadCommand.cs" />
     <Compile Include="Commands\FileSystem\MakeDirectoryCommand.cs" />
     <Compile Include="Commands\FileSystem\DeleteDirectoryCommand.cs" />

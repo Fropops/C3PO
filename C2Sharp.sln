@@ -33,6 +33,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UACBypass", "Modules\UACByp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegKeyPersistence", "Modules\RegKeyPersistence\RegKeyPersistence.csproj", "{3D1A12FC-857E-4C16-9030-5F1145827FF7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{75FB3794-95ED-4734-98BD-EAC3E769081C}"
+	ProjectSection(SolutionItems) = preProject
+		Modules\Module.cs = Modules\Module.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +90,7 @@ Global
 		{F87A950E-3435-493A-8B10-C626E5D5A38F} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
 		{FED297BD-CC0C-4E55-8BA2-219FBB648382} = {549767D5-4A00-4A20-AC4D-9A0F55BE4274}
 		{3D1A12FC-857E-4C16-9030-5F1145827FF7} = {549767D5-4A00-4A20-AC4D-9A0F55BE4274}
+		{75FB3794-95ED-4734-98BD-EAC3E769081C} = {549767D5-4A00-4A20-AC4D-9A0F55BE4274}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F1C3E1B-972F-4903-9445-6F9834624107}

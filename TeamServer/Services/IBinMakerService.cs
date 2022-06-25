@@ -15,6 +15,8 @@ namespace TeamServer.Services
         string GeneratedAgentBinFileName { get; }
         string GeneratedAgentExeFileName { get; }
 
+        string GeneratedAgentDllFileName { get; }
+
         string SourceAgentExePath { get; }
     }
 }

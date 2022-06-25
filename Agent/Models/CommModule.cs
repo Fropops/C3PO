@@ -13,6 +13,10 @@ namespace Agent.Models
 
         public abstract Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
+
+        public abstract Task<Byte[]> DownloadStagerDll();
+        public abstract Task<Byte[]> DownloadStagerExe();
+        public abstract Task<Byte[]> DownloadStagerBin();
         public abstract void Start();
         public abstract void Stop();
 

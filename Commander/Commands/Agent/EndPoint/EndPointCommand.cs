@@ -28,6 +28,8 @@ namespace Commander.Commands.Agent
         public static string EXECUTEASSEMBLY = "execute-assembly";
         public static string SIDELOAD = "side-load";
 
+        public static string MIGRATE = "migrate";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -36,7 +38,7 @@ namespace Commander.Commands.Agent
         {
             var agent = context.Executor.CurrentAgent;
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
-            
+
 
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
@@ -117,6 +119,22 @@ namespace Commander.Commands.Agent
             };
     }
 
-    
+    public class MigrateCommandOptions
+    {
+        public int processId { get; set; }
+    }
+    public class MigrateCommand : EndPointCommand<MigrateCommandOptions>
+    {
+        public override string Description => "Migrate the agent to an existing process";
+        public override string Name => EndPointCommand.MIGRATE;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<int>("processId", "Id of the process to inject"),
+            };
+    }
+
+
 
 }

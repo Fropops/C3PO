@@ -18,6 +18,7 @@ namespace Commander.Commands.Agent
         public static string LS = "ls";
         public static string PS = "ps";
         public static string PWD = "pwd";
+        public static string TERMINATE = "terminate";
 
         public static string SHELL = "shell";
         public static string START = "start";
@@ -83,6 +84,13 @@ namespace Commander.Commands.Agent
     {
         public override string Description => "Get The idle time of the target pc";
         public override string Name => EndPointCommand.IDLE;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+    }
+
+    public class TerminateCommand : EndPointCommand
+    {
+        public override string Description => "Terminate the agent";
+        public override string Name => EndPointCommand.TERMINATE;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
     }
 

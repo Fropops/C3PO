@@ -68,6 +68,8 @@
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />
     <Compile Include="Commands\Execution\ExecuteAssemblyCommand.cs" />
+    <Compile Include="Commands\IdleCommand.cs" />
+    <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Internal\Executor.cs" />
     <Compile Include="Internal\Extension.cs" />
     <Compile Include="Commands\FileSystem\ListDirectoryCommand.cs" />

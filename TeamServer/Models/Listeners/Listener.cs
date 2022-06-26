@@ -17,6 +17,8 @@ namespace TeamServer.Models
 
         public virtual int PublicPort { get; protected set; }
 
+        public virtual string Protocol { get; protected set; }
+
         protected IAgentService _agentService;
         protected IFileService _fileService;
         protected IBinMakerService _binMakerService;

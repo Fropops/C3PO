@@ -58,7 +58,7 @@ namespace TeamServer.Services
             args.Add($"-o");
             args.Add(outFile);
             args.Add($"-p");
-            args.Add($"{listener.Ip}:{listener.PublicPort}");
+            args.Add($"{listener.Protocol}:{listener.Ip}:{listener.PublicPort}");
 
             //string args = $"'{inputFile}' -f 1 -a 2 -o '{outFile}' -p '{listener.Ip}:{listener.BindPort}'";
             _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");

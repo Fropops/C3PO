@@ -16,6 +16,8 @@ namespace TeamServer.Models
 
         public bool Secured { get; protected set; }
 
+        public override string Protocol => this.Secured ? "https" : "http";
+
         public HttpListener(string name, int bindPort, string ip, bool secured = true, int? publicPort = null) : base(name, bindPort, ip, publicPort)
         {
             Secured = secured;

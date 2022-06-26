@@ -20,6 +20,8 @@ namespace Commander
         public string parameters { get; set; }
         public string processName { get; set; }
         public int? processId { get; set; }
+
+        public bool raw { get; set; }
         public bool verbose { get; set; }
     }
 
@@ -50,6 +52,7 @@ namespace Commander
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
             new Option<string>(new[] { "--processName", "-p" }, () => "cmd.exe" ,"process name to start."),
             new Option<int?>(new[] { "--processId", "-i" }, "process id to inject to."),
+            new Option(new[] { "--raw", "-r" }, "inject the raw file"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
 
@@ -57,14 +60,23 @@ namespace Commander
 
         protected override async Task<bool> HandleCommand(CommandContext<InjectCommandOptions> context)
         {
-            context.Terminal.WriteLine($"Generating payload with params {this.ComputeParams(context.Options.parameters)}...");
+            string binFileName = string.Empty;
+            if (!context.Options.raw)
+            {
+                context.Terminal.WriteLine($"Generating payload with params {this.ComputeParams(context.Options.parameters)}...");
 
-            var result = GenerateBin(context.Options.fileToInject, this.ComputeParams(context.Options.parameters), out var binFileName);
-            if (context.Options.verbose)
-                context.Terminal.WriteLine(result);
+                var result = GenerateBin(context.Options.fileToInject, this.ComputeParams(context.Options.parameters), out binFileName);
+                if (context.Options.verbose)
+                    context.Terminal.WriteLine(result);
+
+                
+            }
+            else
+            {
+                binFileName = context.Options.fileToInject;
+            }
 
             context.Terminal.WriteLine($"Pushing {binFileName} to the server...");
-
             byte[] fileBytes = null;
             using (FileStream fs = File.OpenRead(binFileName))
             {
@@ -79,7 +91,11 @@ namespace Commander
                 first = false;
             });
 
-            File.Delete(binFileName);
+            if (!context.Options.raw)
+            {
+                File.Delete(binFileName);
+            }
+
             string fileName = Path.GetFileName(binFileName);
 
             if(context.Options.injectionType.Equals("spawn"))

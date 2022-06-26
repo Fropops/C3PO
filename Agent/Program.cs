@@ -20,15 +20,10 @@ namespace Agent
 
         static void Main(string[] args)
         {
-            string server = "127.0.0.1";
-            int port = 8080;
-            string protocol = "https";
-            if (args.Length == 1)
-            {
-                var split = args[0].Split(':');
-                server = split[0];
-                port = Convert.ToInt32(split[1]);
-            }
+            string server = "192.168.56.102";
+            int port = 443;
+            string protocol = "http";
+
 
             //server = "gate.fropops.fr";
             //port = 443;
@@ -36,10 +31,18 @@ namespace Agent
             //port = 80;
             //server = "127.0.0.1";
             //port = 8080;
-            server = "192.168.56.102";
-            port = 443;
-            protocol = "http";
+            //server = "192.168.56.102";
+            //port = 443;
+            //protocol = "http";
 
+
+            if (args.Length == 2)
+            {
+                var split = args[0].Split(':');
+                protocol = args[0];
+                server = split[1];
+                port = Convert.ToInt32(split[2]);
+            }
 
             GenerateMetadata();
 

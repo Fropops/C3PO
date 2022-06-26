@@ -36,7 +36,7 @@ namespace Agent
             //protocol = "http";
 
 
-            if (args.Length == 2)
+            if (args.Length == 1)
             {
                 var split = args[0].Split(':');
                 protocol = args[0];

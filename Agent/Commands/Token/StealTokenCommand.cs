@@ -56,7 +56,7 @@ namespace Commands
                     Agent.Native.Kernel32.CloseHandle(hToken);
                     process.Dispose();
 
-                    result.Result += $"Successfully impersonate token";
+                    result.Result += $"Successfully impersonate token {identity.Name}";
                     return;
                 }
 

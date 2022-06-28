@@ -15,6 +15,7 @@ namespace Commander.Commands.Agent
         public static string WHOAMI = "whoami";
         public static string DOWNLOAD = "download";
         public static string UPLOAD = "upload";
+        public static string CD = "cd";
         public static string LS = "ls";
         public static string PS = "ps";
         public static string PWD = "pwd";
@@ -126,6 +127,22 @@ namespace Commander.Commands.Agent
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("process", () => "", "process name to search for"),
+            };
+    }
+
+    public class CDCommandOptions
+    {
+        public string path { get; set; }
+    }
+    public class CDCommand : EndPointCommand<PSCommandOptions>
+    {
+        public override string Description => "Change Directory";
+        public override string Name => EndPointCommand.CD;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<string>("path", () => "", "path to navigate to"),
             };
     }
 

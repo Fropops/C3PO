@@ -22,17 +22,21 @@ namespace Agent.Commands
         [DllImport("User32.dll")]
         private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
-        public static uint GetIdleTime()
+        public static TimeSpan GetIdleTime()
         {
+            DateTime bootTime = DateTime.UtcNow.AddMilliseconds(-Environment.TickCount);
             LASTINPUTINFO lastInPut = new LASTINPUTINFO();
             lastInPut.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(lastInPut);
             GetLastInputInfo(ref lastInPut);
 
-            return ((uint)Environment.TickCount - lastInPut.dwTime);
+            DateTime lastInputTime = bootTime.AddMilliseconds(lastInPut.dwTime);
+            var utcnow = DateTime.UtcNow;
+            var res = utcnow.Subtract(lastInputTime);
+            return res;
         }
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            var timespan = TimeSpan.FromTicks(GetIdleTime());
+            var timespan = GetIdleTime();
             result.Result = $"Idle for {timespan.Hours}:{timespan.Minutes}:{timespan.Seconds}";
         }
     }

@@ -13,10 +13,9 @@ namespace TeamServer.Models
 {
     public class HttpListener : Listener
     {
-
-        public bool Secured { get; protected set; }
-
         public override string Protocol => this.Secured ? "https" : "http";
+
+        public override string Uri => $"{this.Protocol}://{this.Ip}:{this.PublicPort}".ToLower();
 
         public HttpListener(string name, int bindPort, string ip, bool secured = true, int? publicPort = null) : base(name, bindPort, ip, publicPort)
         {
@@ -79,9 +78,9 @@ namespace TeamServer.Models
                 e.MapControllerRoute("SetupUpload", "/SetupUpload", new { Controller = "HttpListener", Action = "SetupUpload" });
                 e.MapControllerRoute("UploadChunk", "/UploadChunk", new { Controller = "HttpListener", Action = "UploadChunk" });
                 e.MapControllerRoute("ModuleInfo", "/ModuleInfo", new { Controller = "HttpListener", Action = "ModuleInfo" });
-                e.MapControllerRoute("Stager", "/StagerExe", new { Controller = "HttpListener", Action = "DownloadStagerExe" });
-                e.MapControllerRoute("Stager", "/StagerBin", new { Controller = "HttpListener", Action = "DownloadStagerBin" });
-                e.MapControllerRoute("Stager", "/StagerDll", new { Controller = "HttpListener", Action = "DownloadStagerDll" });
+                e.MapControllerRoute("StagerExe", "/StagerExe", new { Controller = "HttpListener", Action = "DownloadStagerExe" });
+                e.MapControllerRoute("StagerBin", "/StagerBin", new { Controller = "HttpListener", Action = "DownloadStagerBin" });
+                e.MapControllerRoute("StagerDll", "/StagerDll", new { Controller = "HttpListener", Action = "DownloadStagerDll" });
                 
             });
         }

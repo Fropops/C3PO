@@ -25,8 +25,10 @@ namespace Agent
             string protocol = "http";
 
 
-            //server = "gate.fropops.fr";
-            //port = 443;
+            server = "gate.fropops.fr";
+            port = 443;
+            protocol = "https";
+
             //server = "13.38.61.75";
             //port = 80;
             //server = "127.0.0.1";
@@ -39,7 +41,7 @@ namespace Agent
             if (args.Length == 1)
             {
                 var split = args[0].Split(':');
-                protocol = args[0];
+                protocol = split[0];
                 server = split[1];
                 port = Convert.ToInt32(split[2]);
             }

@@ -8,6 +8,7 @@ namespace TeamServer.Models
 {
     public abstract class Listener
     {
+        public bool Secured { get; protected set; }
         public string Id { get; protected set; }
         public virtual string Name { get; protected set; }
 
@@ -36,6 +37,8 @@ namespace TeamServer.Models
 
             this.Id = Guid.NewGuid().ToString();
         }
+
+        public abstract string Uri { get; }
 
         public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService)
         {

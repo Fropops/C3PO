@@ -45,9 +45,17 @@ namespace TeamServer.Models
             }
 
             agent.CheckIn();
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
+
+            //string calledUri = this.Request.GetListenerUri();
+
+            //System.IO.File.AppendAllText("log.log", calledUri + Environment.NewLine);
+
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
             if (listener != null)
+            {
+                //System.IO.File.AppendAllText("log.log", $"Found listener {listener.Id} with {listener.Uri}" + Environment.NewLine);
                 agent.ListenerId = listener.Id;
+            }
 
             if (HttpContext.Request.Method == "POST")
             {
@@ -172,20 +180,11 @@ namespace TeamServer.Models
 
         public IActionResult DownloadStagerExe()
         {
-            Listener currentListener = null;
-            foreach (var listener in _listenerService.GetListeners())
-            {
-                if (this.Request.Host.Port == listener.BindPort)
-                {
-                    currentListener = listener;
-                    break;
-                }
-            }
-
-            if (currentListener == null)
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+            if (listener == null)
                 return NotFound("No corresponding Listener");
 
-            var path = this._fileService.GetListenerPath(currentListener.Name);
+            var path = this._fileService.GetListenerPath(listener.Name);
             var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentExeFileName);
             if (!System.IO.File.Exists(fileName))
                 return NotFound();
@@ -197,26 +196,18 @@ namespace TeamServer.Models
                 fs.Read(fileBytes, 0, (int)fs.Length);
             }
 
+
             return File(fileBytes, "application/octet-stream", "stager.exe");
         }
 
         public IActionResult DownloadStagerBin()
         {
-            Listener currentListener = null;
-            foreach (var listener in _listenerService.GetListeners())
-            {
-                if (this.Request.Host.Port == listener.BindPort)
-                {
-                    currentListener = listener;
-                    break;
-                }
-            }
-
-            if (currentListener == null)
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+            if (listener == null)
                 return NotFound("No corresponding Listener");
 
-            var path = this._fileService.GetListenerPath(currentListener.Name);
-            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentExeFileName);
+            var path = this._fileService.GetListenerPath(listener.Name);
+            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentBinFileName);
             if (!System.IO.File.Exists(fileName))
                 return NotFound();
 
@@ -232,20 +223,11 @@ namespace TeamServer.Models
 
         public IActionResult DownloadStagerDll()
         {
-            Listener currentListener = null;
-            foreach (var listener in _listenerService.GetListeners())
-            {
-                if (this.Request.Host.Port == listener.BindPort)
-                {
-                    currentListener = listener;
-                    break;
-                }
-            }
-
-            if (currentListener == null)
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+            if (listener == null)
                 return NotFound("No corresponding Listener");
 
-            var path = this._fileService.GetListenerPath(currentListener.Name);
+            var path = this._fileService.GetListenerPath(listener.Name);
             var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentDllFileName);
             if (!System.IO.File.Exists(fileName))
                 return NotFound();

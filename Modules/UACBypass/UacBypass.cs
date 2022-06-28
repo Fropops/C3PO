@@ -21,7 +21,7 @@ namespace UACBypass
 
             if (Environment.OSVersion.Version.Build < 9200)
             {
-                this.Result.Result += "This UAC-ByPasss method requires NT 10.0 (Windows 10) or higher!";
+                this.AppendResult("This UAC-ByPasss method requires NT 10.0 (Windows 10) or higher!");
                 return;
             }
 
@@ -29,7 +29,7 @@ namespace UACBypass
             //Module.Log($"using {parameters} as file to run.");
             if (!File.Exists(fileName))
             {
-                this.Result.Result += $"The filename {fileName} specified in the argument is not valid";
+                this.AppendResult($"The filename {fileName} specified in the argument is not valid");
                 return;
             }
 
@@ -66,7 +66,6 @@ namespace UACBypass
                     rk.DeleteSubKeyTree("ms-settings");
                     rk.Close();
                     this.AppendResult(ex.ToString());
-                    Environment.Exit(-1);
                 }
             }
 

@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace ModuleBase
 {
-	public abstract class Module
+    public abstract class Module
 	{
 		public abstract string Name { get; }
 

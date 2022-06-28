@@ -205,15 +205,20 @@ namespace Commander.Communication
                 var listener = new Listener()
                 {
                     Name = lr.Name,
+                    Id = lr.Id,
                     BindPort = lr.BindPort,
                     PublicPort = lr.PublicPort,
                     Secured = lr.Secured,
-                    Id = lr.Id,
+                    
                     Ip = lr.Ip,
                 };
 
                 this._listeners.AddOrUpdate(lr.Name, listener, (key, current) =>
                 {
+                    current.BindPort = listener.BindPort;
+                    current.PublicPort = listener.PublicPort;
+                    current.Secured = listener.Secured;
+                    current.Ip = listener.Ip;
                     return current;
                 });
             }

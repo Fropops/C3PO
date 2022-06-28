@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
+    <Compile Include="Commands\ReverseShellCommand.cs" />
     <Compile Include="Commands\CaptureCommand.cs" />
     <Compile Include="Commands\Execution\SideLoadModuleCommand.cs" />
     <Compile Include="Commands\Execution\SideLoadCommand.cs" />

@@ -34,6 +34,8 @@ namespace Commander.Commands.Agent
         public static string VERSION = "version";
         public static string IDLE = "idle";
 
+        public static string REVERSE_SHELL = "reverse-shell";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -157,6 +159,24 @@ namespace Commander.Commands.Agent
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<int>("processId", "Id of the process to inject"),
+            };
+    }
+
+    public class ReverseShellCommandOptions
+    {
+        public string Ip { get; set; }
+        public int port { get; set; }
+    }
+    public class ReverseShellCommand : EndPointCommand<ReverseShellCommandOptions>
+    {
+        public override string Description => "Start a reverse shell";
+        public override string Name => EndPointCommand.REVERSE_SHELL;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<string>("Ip", "Ip to reach"),
+                new Argument<int>("port", "port to reach"),
             };
     }
 

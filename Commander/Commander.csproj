@@ -21,4 +21,8 @@
     <ProjectReference Include="..\ApiModels\ApiModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Agent\Token\" />
+  </ItemGroup>
+
 </Project>

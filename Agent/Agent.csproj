@@ -69,6 +69,9 @@
     <Compile Include="Commands\Server\DownloadCommand.cs" />
     <Compile Include="Commands\Execution\ExecuteAssemblyCommand.cs" />
     <Compile Include="Commands\IdleCommand.cs" />
+    <Compile Include="Commands\Token\StealTokenCommand.cs" />
+    <Compile Include="Commands\Token\RevertToSelfCommand.cs" />
+    <Compile Include="Commands\Token\MakeTokenCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
     <Compile Include="Internal\Executor.cs" />
     <Compile Include="Internal\Extension.cs" />

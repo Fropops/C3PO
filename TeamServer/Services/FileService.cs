@@ -70,7 +70,7 @@ namespace TeamServer.Services
             }
         }
 
-      
+
         //public void SaveUploadedFile(FileDescriptor desc, string path)
         //{
 
@@ -123,19 +123,23 @@ namespace TeamServer.Services
 
         public void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results)
         {
-            foreach (var res in results.Where(r => r.Status == AgentResultStatus.Completed))
+            //Logger.Log($"Nb of results to save : {results.Count()}");
+            foreach (var res in results)
             {
-                var task = agent.TaskHistory.Where(t => t.Id == res.Id);
+                var task = agent.TaskHistory.FirstOrDefault(t => t.Id == res.Id);
 
                 var filename = GetAgentPath(agent.Metadata.Id, Path.Combine("Tasks", res.Id));
                 var dirName = Path.GetDirectoryName(filename);
                 if (!Directory.Exists(dirName))
                     Directory.CreateDirectory(dirName);
 
+                //Logger.Log($"Filename = {filename}");
+
                 using (var sw = new StreamWriter(File.OpenWrite(filename)))
                 {
-                    sw.WriteLine(JsonConvert.SerializeObject(agent));
-                    sw.WriteLine(JsonConvert.SerializeObject(task));
+                    sw.WriteLine(JsonConvert.SerializeObject(agent.Metadata));
+                    if (task != null)
+                        sw.WriteLine(JsonConvert.SerializeObject(task));
                     sw.WriteLine(JsonConvert.SerializeObject(res));
                 }
 

@@ -30,6 +30,8 @@ namespace TeamServer.Models
             this._binMakerService = binMakerService;
         }
 
+
+        
         public async Task<IActionResult> HandleImplant()
         {
             
@@ -67,6 +69,7 @@ namespace TeamServer.Models
 
                 agent.AddTaskResults(results);
 
+                Logger.Log($"Saving resulst of {agent.Metadata.Id}");
                 _fileService.SaveResults(agent, results);
             }
 
@@ -170,6 +173,9 @@ namespace TeamServer.Models
                     existing.Status = res.Status;
                     existing.Info = res.Info;
                     existing.Result = res.Result;
+                    
+                    _fileService.SaveResults(agent, new List<AgentTaskResult> { existing });
+
                     break;
                 }
             }

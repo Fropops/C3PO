@@ -30,6 +30,8 @@ namespace Commander.Communication
 
         Task<HttpResponseMessage> StopAgent(string id);
         IEnumerable<AgentTask> GetTasks(string id);
+
+        void AddTask(AgentTask task);
         AgentTask GetTask(string taskId);
         AgentTaskResult GetTaskResult(string taskId);
         Task<HttpResponseMessage> CreateListener(string name, int port);

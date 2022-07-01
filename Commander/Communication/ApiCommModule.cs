@@ -311,6 +311,10 @@ namespace Commander.Communication
             return this._tasks.Values.Where(t => t.AgentId == id).OrderByDescending(t => t.RequestDate);
         }
 
+        public void AddTask(AgentTask task)
+        {
+            this._tasks.AddOrUpdate(task.Id, task, (key, current) => { return current; });
+        }
         public async Task<HttpResponseMessage> StopAgent(string id)
         {
             this.DeleteAgent(id);

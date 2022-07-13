@@ -34,6 +34,7 @@ namespace Commander.Commands.Agent
 
         public static string VERSION = "version";
         public static string IDLE = "idle";
+        public static string CAT = "cat";
 
         public static string REVERSE_SHELL = "reverse-shell";
 

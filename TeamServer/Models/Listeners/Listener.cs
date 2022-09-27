@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace TeamServer.Models
         protected IFileService _fileService;
         protected IBinMakerService _binMakerService;
         protected IListenerService _listenerService;
+        protected ILogger _logger;
 
         public Listener(string name, int bindPort, string Ip, int? publicPort = null)
         {
@@ -40,12 +42,13 @@ namespace TeamServer.Models
 
         public abstract string Uri { get; }
 
-        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService)
+        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger)
         {
             this._agentService = service;
             this._fileService = fileService;
             this._binMakerService = binMakerService;
             this._listenerService = listenerService;
+            this._logger = logger;
         }
 
         public abstract Task Start();

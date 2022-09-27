@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,8 +45,6 @@ namespace TeamServer
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
 
-            
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,7 +67,48 @@ namespace TeamServer
                 endpoints.MapControllers();
             });
 
+
+            this.StartHttpHost(app);
             this.StartDefaultListener(app);
+        }
+
+
+        private IListenerService ls;
+        private IFileService fs;
+
+        private void StartHttpHost(IApplicationBuilder app)
+        {
+            ls = app.ApplicationServices.GetService<IListenerService>();
+            fs = app.ApplicationServices.GetService<IFileService>();
+
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHostDefaults(host =>
+                {
+                    host.UseUrls($"http://*:80");
+                    host.Configure(ConfigureHttpHostApp);
+                    host.ConfigureServices(ConfigureHttpHostServices);                
+                });
+            var host = hostBuilder.Build();
+            host.RunAsync();
+        }
+
+
+        private void ConfigureHttpHostServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddSingleton<IListenerService>(ls);
+            services.AddSingleton(fs);
+        }
+
+        private void ConfigureHttpHostApp(IApplicationBuilder app)
+        {
+            app.UseRouting();
+            app.UseEndpoints(e =>
+            {
+                
+                e.MapControllerRoute("/", "/{id}", new { Controller = "HttpHost", Action = "Dload" });
+                e.MapControllerRoute("/", "/", new { Controller = "HttpHost", Action = "Index" });
+            });
         }
 
         private void StartDefaultListener(IApplicationBuilder app)
@@ -82,20 +122,15 @@ namespace TeamServer
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
 
-            var listener = new HttpListener("Default", config.GetValue<int>("DefaultListenerPort"), config.GetValue<string>("DefaultListenerIp"), config.GetValue<bool>("DefaultListenerSecured"), config.GetValue<int>("DefaultListenerPublicPort"));
-            listener.Init(agentService, fileService, binMakerService, listenerService);
-            listener.Start();
-            try
+            var defaultListenersConfig = config.GetValue<string>("ListenersConfig");
+            IEnumerable<ListenerConfig> listeners = JsonConvert.DeserializeObject<IEnumerable<ListenerConfig>>(defaultListenersConfig);
+            foreach (var listenerConf in listeners)
             {
-                logger.LogInformation(binMakerService.GenerateStagersFor(listener));
+                var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured, listenerConf.PublicPort);
+                listener.Init(agentService, fileService, binMakerService, listenerService, logger);
+                listener.Start();
+                listenerService.AddListener(listener);
             }
-            catch(Exception ex)
-            {
-                logger.LogError($"Unable to create stagers for {listener.Name}");
-                logger.LogError(ex.ToString());
-            }
-
-            listenerService.AddListener(listener);
         }
     }
 }

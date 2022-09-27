@@ -69,7 +69,7 @@ namespace TeamServer.Models
 
                 agent.AddTaskResults(results);
 
-                Logger.Log($"Saving resulst of {agent.Metadata.Id}");
+                //Logger.Log($"Saving resulst of {agent.Metadata.Id}");
                 _fileService.SaveResults(agent, results);
             }
 

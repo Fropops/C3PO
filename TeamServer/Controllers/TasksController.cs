@@ -69,6 +69,7 @@ namespace TeamServer.Controllers
                     {
                         FileId = file.FileId,
                         FileName = file.FileName,
+                        IsDownloaded = file.IsDownloaded,
                     });
 
                     results.Add(ret);

@@ -21,6 +21,7 @@ namespace Commander
         public string processName { get; set; }
         public int? processId { get; set; }
 
+        public string base64Params { get; set; }
         public bool raw { get; set; }
         public bool verbose { get; set; }
     }
@@ -52,6 +53,7 @@ namespace Commander
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
             new Option<string>(new[] { "--processName", "-p" }, () => "cmd.exe" ,"process name to start."),
             new Option<int?>(new[] { "--processId", "-i" }, "process id to inject to."),
+            new Option<string>(new[] { "--base64Params", "-b64" }, "params B64 encoded."),
             new Option(new[] { "--raw", "-r" }, "inject the raw file"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
@@ -63,9 +65,16 @@ namespace Commander
             string binFileName = string.Empty;
             if (!context.Options.raw)
             {
-                context.Terminal.WriteLine($"Generating payload with params {this.ComputeParams(context.Options.parameters)}...");
+                var parms = this.ComputeParams(context.Options.parameters);
+                if(!string.IsNullOrEmpty(context.Options.base64Params))
+                {
+                    var decodedBytes = Convert.FromBase64String(context.Options.base64Params);
+                    parms = Encoding.ASCII.GetString(decodedBytes);
+                }
 
-                var result = GenerateBin(context.Options.fileToInject, this.ComputeParams(context.Options.parameters), out binFileName);
+                context.Terminal.WriteLine($"Generating payload with params {parms}...");
+
+                var result = GenerateBin(context.Options.fileToInject, parms, out binFileName);
                 if (context.Options.verbose)
                     context.Terminal.WriteLine(result);
 

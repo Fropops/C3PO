@@ -1,2 +1,5 @@
-Keylogger
-IdelTime
+Powershell
+UAC bypass
+X SharpChromium
+X Launchers
+X Download

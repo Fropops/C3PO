@@ -38,6 +38,9 @@ namespace Agent.Commands
 
             if (task.SplittedArgs.Length > 1)
                 filename = task.SplittedArgs[1];
+            else
+                filename = Path.GetFileName(filename);
+
             string fileId = commm.Upload(fileBytes, filename, a =>
             {
                 result.Info = $"Uploading {filename} ({a}%)";

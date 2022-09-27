@@ -93,7 +93,7 @@ namespace Commander.Executor
 
             this.Terminal.Interrupt();
             task.Print(res, this.Terminal);
-            foreach(var file in res.Files)
+            foreach(var file in res.Files.Where(f => !f.IsDownloaded))
             {
                 bool first = true;
                 var bytes = this.CommModule.Download(file.FileId, a =>

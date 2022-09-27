@@ -34,13 +34,17 @@ namespace Commander.Commands.Agent
 
             var fileName = context.Options.remotefile;
             string dest = Path.GetFileName(fileName);
-            if(!string.IsNullOrEmpty(context.Options.localfile))
+
+            string parms = fileName;
+
+            if (!string.IsNullOrEmpty(context.Options.localfile))
             {
-                dest = context.Options.localfile;
+                parms += " " + context.Options.localfile;
+
             }
                 
 
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, EndPointCommand.UPLOAD, $"{fileName} {dest}");
+            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, EndPointCommand.UPLOAD, parms);
            
             context.Terminal.WriteInfo($"Agent tasked to upload file to server.");
 

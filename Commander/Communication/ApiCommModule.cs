@@ -154,7 +154,7 @@ namespace Commander.Communication
                 };
 
                 foreach(var file in tr.Files)
-                res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName });
+                    res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName, IsDownloaded = file.IsDownloaded });
 
                 //new respone or response change detected
 
@@ -170,7 +170,9 @@ namespace Commander.Communication
                     if (res.Result != existing.Result
                         || res.Status  != existing.Status
                         || res.Info != existing.Info
-                        || res.Files.Count != existing.Files.Count)
+                        || res.Files.Count != existing.Files.Count
+//                        || res.Files.Count(f => f.IsDownloaded) != existing.Files.Count(f => f.IsDownloaded)
+                        )
                     {
                         if (res.Status == AgentResultStatus.Completed && !firstLoad)
                             this.TaskResultUpdated?.Invoke(this, res);
@@ -182,6 +184,11 @@ namespace Commander.Communication
                     current.Result = res.Result;
                     current.Info = res.Info;
                     current.Status = res.Status;
+                    current.Files.Clear();
+                    foreach(var file in res.Files)
+                    {
+                        current.Files.Add(file);
+                    }
                     return current;
                 });
 
@@ -440,6 +447,7 @@ namespace Commander.Communication
 
         public async Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null)
         {
+            //Console.WriteLine($"Starting Download of {id}");
             var desc = await this.SetupDownload(id);
             var chunks = new List<FileChunckResponse>();
 
@@ -526,6 +534,21 @@ namespace Commander.Communication
             OnCompletionChanged?.Invoke(100);
 
             return desc.Id;
+        }
+
+        public async void WebHost(string listenerId, string fileName, byte[] fileContent)
+        {
+            var wh = new FileWebHost()
+            {
+                ListenerId = listenerId,
+                FileName = fileName,
+                Data = fileContent,
+            };
+            var requestContent = JsonConvert.SerializeObject(wh);
+
+            var response = await _client.PostAsync($"/Files/WebHost", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
         }
     }
 }

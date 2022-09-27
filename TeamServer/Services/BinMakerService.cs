@@ -30,19 +30,20 @@ namespace TeamServer.Services
         public string DonutFolder => _configuration.GetValue<string>("DonutFolder");
         public string ReaNimatorFolder => _configuration.GetValue<string>("ReaNimatorFolder");
         public string GeneratedAgentBinFileName => _configuration.GetValue<string>("GeneratedAgentBinFileName");
+        public string GeneratedAgentB64FileName => _configuration.GetValue<string>("GeneratedAgentB64FileName");
         public string GeneratedAgentExeFileName => _configuration.GetValue<string>("GeneratedAgentExeFileName");
         public string GeneratedAgentDllFileName => _configuration.GetValue<string>("GeneratedAgentDllFileName");
 
         public string SourceAgentExePath => _configuration.GetValue<string>("SourceAgentExePath");
 
-        public string GenerateStagersFor(Listener listener)
-        {
-            string gen = this.GenerateExeStager(listener);
-            gen += this.GenerateDllStager(listener);
-            return gen;
-        }
+        //public string GenerateStagersFor(Listener listener)
+        //{
+        //    string gen = this.GenerateExeStager(listener);
+        //    gen += this.GenerateDllStager(listener);
+        //    return gen;
+        //}
 
-        public string GenerateBinStager(Listener listener)
+        public string GenerateBin(Listener listener)
         {
             var cmd = Path.Combine(DonutFolder, "donut");
             var inputFile = this.SourceAgentExePath;
@@ -66,9 +67,19 @@ namespace TeamServer.Services
             return ret;
         }
 
+
+        public void GenerateB64(Listener listener)
+        {
+            byte[] bytes = File.ReadAllBytes(this.SourceAgentExePath);
+            string base64 = Convert.ToBase64String(bytes);
+            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentB64FileName);
+            File.WriteAllText(outFile, base64);
+            
+        }
+
         public string GenerateExeStager(Listener listener)
         {
-            var res = GenerateBinStager(listener);
+            var res = GenerateBin(listener);
             res += Environment.NewLine;
             res += GenerateExeStagerFromBin(listener);
             return res;
@@ -76,7 +87,7 @@ namespace TeamServer.Services
 
         public string GenerateDllStager(Listener listener)
         {
-            var res = GenerateBinStager(listener);
+            var res = GenerateBin(listener);
             res += Environment.NewLine;
             res += GenerateDllStagerFromBin(listener);
             return res;

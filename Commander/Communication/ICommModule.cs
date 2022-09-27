@@ -43,5 +43,7 @@ namespace Commander.Communication
        
         Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
+        void WebHost(string listenerId, string fileName, byte[] fileContent);
+
     }
 }

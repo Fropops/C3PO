@@ -13,6 +13,7 @@ namespace Commander.Commands.Agent
 {
     public class ListAgentsCommandOptions
     {
+        public string listenerName { get; set; }
         public bool verbose { get; set; }
     }
 
@@ -26,6 +27,7 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
+                new Argument<string>("listenerName",() => "" ,"Name of the listener"),
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
@@ -43,22 +45,28 @@ namespace Commander.Commands.Agent
                 return true;
             }
 
-            
 
+            var listeners = context.CommModule.GetListeners();
             var index = 0;
             foreach (var agent in result)
             {
-                results.Add(new ListAgentResult()
+                var listenerName = listeners.FirstOrDefault(l => l.Id == agent.ListenerId)?.Name ?? string.Empty;
+                if (string.IsNullOrEmpty(context.Options.listenerName) || listenerName.ToLower().Equals(context.Options.listenerName.ToLower()))
                 {
-                    Index = index,
-                    Id = agent.Metadata.Id,
-                    LastSeen = agent.LastSeen.ToLocalTime(),
-                    Actif = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow ? "Yes" : "No",
-                    UserName = agent.Metadata.UserName,
-                    HostName = agent.Metadata.Hostname,
-                    Integrity = agent.Metadata.Integrity,
-                    Process = agent.Metadata.ProcessName,
-                });
+
+                    results.Add(new ListAgentResult()
+                    {
+                        Index = index,
+                        Id = agent.Metadata.Id,
+                        LastSeen = agent.LastSeen.ToLocalTime(),
+                        Actif = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow ? "Yes" : "No",
+                        UserName = agent.Metadata.UserName,
+                        HostName = agent.Metadata.Hostname,
+                        Integrity = agent.Metadata.Integrity,
+                        Process = agent.Metadata.ProcessName,
+                        Listener = listenerName,
+                    });
+                }
                 index++;
             }
 
@@ -82,6 +90,8 @@ namespace Commander.Commands.Agent
 
             public string Actif { get; set; }
 
+            public string Listener { get; set; }
+
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
@@ -92,6 +102,7 @@ namespace Commander.Commands.Agent
                 new SharpSploitResultProperty { Name = nameof(HostName), Value = HostName },
                 new SharpSploitResultProperty { Name = nameof(LastSeen), Value = LastSeen },
                 new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
+                new SharpSploitResultProperty { Name = nameof(Listener), Value = Listener },
             };
         }
 

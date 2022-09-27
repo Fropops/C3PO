@@ -12,6 +12,7 @@ namespace Commander.Executor
         Listener,
         Agent,
         AgentInteraction,
+        Launcher,
         All,
     }
 }

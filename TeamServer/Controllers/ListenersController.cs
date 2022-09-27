@@ -52,18 +52,8 @@ namespace TeamServer.Controllers
         {
             var listener = new HttpListener(request.Name, request.BindPort, request.Ip);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
-            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService);
+            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger);
             listener.Start();
-
-            try
-            {
-                this._binMakerService.GenerateStagersFor(listener);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"Unable to create stagers for {listener.Name}");
-                logger.LogError(ex.ToString());
-            }
 
             _listenerService.AddListener(listener);
 

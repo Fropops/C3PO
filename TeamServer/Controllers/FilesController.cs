@@ -16,9 +16,13 @@ namespace TeamServer.Controllers
     public class FilesController : ControllerBase
     {
         IFileService _fileService;
-        public FilesController(IFileService fileService)
+        IListenerService _listenerService;
+        IAgentService _agentService;
+        public FilesController(IFileService fileService, IListenerService listenerService, IAgentService agentService)
         {
             _fileService = fileService;
+            _listenerService = listenerService;
+            _agentService = agentService;
         }
 
 
@@ -29,6 +33,23 @@ namespace TeamServer.Controllers
             var desc = _fileService.GetFile(id);
             if (desc == null)
                 return NotFound();
+
+
+            foreach(var agent in _agentService.GetAgents())
+            {
+                foreach(var res in agent.GetTaskResults())
+                {
+                    foreach(var file in res.Files)
+                    {
+                        if(file.FileId == id)
+                        {
+                            file.IsDownloaded = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
 
             return Ok(new FileDescriptorResponse()
             {
@@ -44,7 +65,7 @@ namespace TeamServer.Controllers
         public IActionResult GetFileChunk(string id, int chunkIndex)
         {
             var desc = _fileService.GetFile(id);
-            if(chunkIndex < 0 || chunkIndex >= desc.ChunkCount)
+            if (chunkIndex < 0 || chunkIndex >= desc.ChunkCount)
                 return NotFound();
 
             var chunck = desc.Chunks[chunkIndex];
@@ -80,14 +101,33 @@ namespace TeamServer.Controllers
                     return NotFound();
 
                 desc.Chunks.Add(chunk);
-               
+
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return this.Problem(ex.ToString());
             }
         }
 
+        [HttpPost("WebHost")]
+        public IActionResult WebHost([FromBody] FileWebHost wb)
+        {
+            try
+            {
+                var listener = _listenerService.GetListeners().FirstOrDefault(l => l.Id == wb.ListenerId);
+                if (listener == null)
+                    return NotFound();
+
+                var outPath = this._fileService.GetListenerPath(listener.Name, wb.FileName);
+                System.IO.File.WriteAllBytes(outPath, wb.Data);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return this.Problem(ex.ToString());
+            }
+        }
     }
 }

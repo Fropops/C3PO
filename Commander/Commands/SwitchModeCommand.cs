@@ -29,6 +29,7 @@ namespace Commander.Commands
 
     public class ListenerModeCommand : SwitchModeCommand
     {
+        public override ExecutorMode AvaliableIn => ExecutorMode.All;
         public override string Name => "listener";
         public override ExecutorMode TargetMode => ExecutorMode.Listener;
 
@@ -36,8 +37,17 @@ namespace Commander.Commands
 
     public class AgentModeCommand : SwitchModeCommand
     {
+        public override ExecutorMode AvaliableIn => ExecutorMode.All;
         public override string Name => "agent";
         public override ExecutorMode TargetMode => ExecutorMode.Agent;
+
+    }
+
+    public class LauncherModeCommand : SwitchModeCommand
+    {
+        public override ExecutorMode AvaliableIn => ExecutorMode.All;
+        public override string Name => "launcher";
+        public override ExecutorMode TargetMode => ExecutorMode.Launcher;
 
     }
 }

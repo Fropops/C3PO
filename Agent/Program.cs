@@ -22,12 +22,12 @@ namespace Agent
         {
             string server = "192.168.56.102";
             int port = 443;
-            string protocol = "http";
+            string protocol = "https";
 
 
-            server = "gate.fropops.fr";
-            port = 443;
-            protocol = "https";
+            //server = "gate.fropops.fr";
+            //port = 443;
+            //protocol = "https";
 
             //server = "13.38.61.75";
             //port = 80;

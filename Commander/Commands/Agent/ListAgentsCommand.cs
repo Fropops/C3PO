@@ -57,7 +57,7 @@ namespace Commander.Commands.Agent
                     results.Add(new ListAgentResult()
                     {
                         Index = index,
-                        Id = agent.Metadata.Id,
+                        Id = agent.Metadata.ShortId,
                         LastSeen = agent.LastSeen.ToLocalTime(),
                         Actif = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow ? "Yes" : "No",
                         UserName = agent.Metadata.UserName,

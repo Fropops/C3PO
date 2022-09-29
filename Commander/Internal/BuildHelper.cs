@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,57 @@ namespace Commander.Internal
     }
     public class BuildHelper
     {
+        public static string ScriptFolder { get; set; } = "/Share/tmp/C2/Commander/Script";
+        public static string NimFile { get; set; } = "/Share/tmp/C2/Commander/Script";
+        public static string TmpFolder { get; set; } = "/Share/tmp/C2/Commander/Tmp";
+
+        public static string NimPath { get; set; } = "/usr/bin/nim";
+
+        public static List<string> ComputeNimBuildParameters(string scriptName, string outFile, bool isDebug, bool isDll)
+        {
+            string path = ScriptFolder;
+            path =  Path.Combine(path, scriptName);
+            if (!isDebug)
+                path += "_release";
+            path += ".nim";
+
+            var parms = new List<string>();
+            
+            parms.Add("c");
+
+            if(isDll)
+                parms.Add("--app:lib");
+            else
+                if(isDebug)
+                    parms.Add("--app:console");
+                else
+                    parms.Add("--app:gui");
+
+
+            if (!isDebug)
+            {
+                parms.Add("-d:release");
+                parms.Add("-d:strip");
+                parms.Add("--passL:-s");
+            }
+
+            parms.Add("-f");
+            parms.Add("-d:mingw");
+            parms.Add($"-o:{outFile}");
+
+
+            parms.Add($"{path}");
+
+            return parms;
+        }
+
+        public static ExecuteResult NimBuild(List<string> parms)
+        {
+            return BuildHelper.ExecuteCommand(NimPath, parms, ScriptFolder);
+        }
+
+
+
 
         public static ExecuteResult ExecuteCommand(string fileName, List<string> args, string startIn)
         {

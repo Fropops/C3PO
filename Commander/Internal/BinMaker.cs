@@ -13,6 +13,7 @@ namespace Commander.Internal
     {
         public static string DonutFolder = "/opt/donut/";
         public static string ReaNimatorFolder = "/Share/Projects/reaNimator-modif";
+        
         public static string GenerateBin(string dotnetExePath, string binPath, string parameters)
         {
             var cmd = Path.Combine(DonutFolder, "donut");

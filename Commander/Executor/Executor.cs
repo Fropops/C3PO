@@ -59,10 +59,13 @@ namespace Commander.Executor
             this.Terminal.NewLine(false);
         }
 
-        private void CommModule_AgentAdded(object sender, string e)
+        private void CommModule_AgentAdded(object sender, Agent e)
         {
             Terminal.Interrupt();
-            Terminal.WriteInfo($"New Agent Checking in : {e}");
+            string userName = e.Metadata.UserName;
+            if (e.Metadata.Integrity == "High")
+                userName += "*";
+            Terminal.WriteInfo($"New Agent Checking in : {userName}/{e.Metadata.Hostname} ({e.Metadata.Id.ToShortGuid()})");
             Terminal.Restore();
         }
 

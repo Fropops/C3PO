@@ -1,5 +1,7 @@
-Powershell
-UAC bypass
+X Powershell
+X UAC bypass => not working automated => always trigger AV => to make manually
 X SharpChromium
-X Launchers
+X Dropper
 X Download
+Encloser
+Scripts Command

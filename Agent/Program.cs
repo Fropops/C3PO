@@ -20,7 +20,7 @@ namespace Agent
 
         static void Main(string[] args)
         {
-            string server = "192.168.56.102";
+            string server = "10.0.2.10";
             int port = 443;
             string protocol = "https";
 

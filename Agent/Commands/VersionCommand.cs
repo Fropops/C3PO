@@ -13,7 +13,7 @@ namespace Agent.Commands
 
         public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
         {
-            result.Result = "Version : 2.4";
+            result.Result = "Version : 3.0";
         }
     }
 }

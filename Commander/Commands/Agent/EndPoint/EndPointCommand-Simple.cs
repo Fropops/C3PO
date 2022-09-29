@@ -16,7 +16,7 @@ namespace Commander.Commands.Agent
         protected override void InnerExecute(CommandContext context)
         {
             context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, context.CommandParameters).Wait();
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
         }
     }
 
@@ -24,6 +24,12 @@ namespace Commander.Commands.Agent
     {
         public override string Description => "Send a command to be executed by the agent shell";
         public override string Name => EndPointCommand.SHELL;
+    }
+
+    public class PowerShellCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Send a command to be executed by the agent shell";
+        public override string Name => EndPointCommand.POWERSHELL;
     }
 
     public class RunCommand : SimpleEndPointCommand

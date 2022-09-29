@@ -15,7 +15,7 @@ namespace Commander.Communication
         event EventHandler<List<AgentTask>> RunningTaskChanged;
         event EventHandler<AgentTaskResult> TaskResultUpdated;
         event EventHandler AgentsUpdated;
-        event EventHandler<string> AgentAdded;
+        event EventHandler<Agent> AgentAdded;
         Task Start();
         void Stop();
         void UpdateConfig();

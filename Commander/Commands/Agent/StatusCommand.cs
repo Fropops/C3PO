@@ -28,11 +28,11 @@ namespace Commander.Commands.Agent
         {
             var agent = context.Executor.CurrentAgent;
             if (agent.LastSeen.AddSeconds(30) > DateTime.UtcNow)
-                context.Terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
+                context.Terminal.WriteSuccess($"Agent {agent.Metadata.ShortId} is up and running !");
             else
-                context.Terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
+                context.Terminal.WriteError($"Agent {agent.Metadata.ShortId} seems to be not responding!");
             var results = new SharpSploitResultList<StatusResult>();
-            results.Add(new StatusResult() { Name = "Id", Value = agent.Metadata.Id });
+            results.Add(new StatusResult() { Name = "Id", Value = agent.Metadata.ShortId });
             results.Add(new StatusResult() { Name = "Hostname", Value = agent.Metadata.Hostname });
             results.Add(new StatusResult() { Name = "UserName", Value = agent.Metadata.UserName });
             results.Add(new StatusResult() { Name = "ProcessId", Value = agent.Metadata.ProcessId.ToString() });

@@ -4,6 +4,7 @@ using Commander.Terminal;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ namespace Commander.Commands.Agent
 
         public static string REVERSE_SHELL = "reverse-shell";
 
+        public static string POWERSHELL = "powershell";
+        public static string POWERSHELL_IMPORT = "powershell-import";
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -48,7 +51,7 @@ namespace Commander.Commands.Agent
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
 
 
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.ShortId}.");
         }
 
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
@@ -200,4 +203,50 @@ namespace Commander.Commands.Agent
 
 
 
+    public class PowershellImportCommandOptions
+    {
+        public string scriptfile { get; set; }
+
+    }
+    public class PowershellImportCommand : EnhancedCommand<PowershellImportCommandOptions>
+    {
+        public override string Category => CommandCategory.Core;
+        public override string Description => "Import a powershell script.";
+        public override string Name => EndPointCommand.POWERSHELL_IMPORT;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<string>("scriptfile", () => "", "path of the script file to load"),
+            };
+
+        protected override async Task<bool> HandleCommand(CommandContext<PowershellImportCommandOptions> context)
+        {
+            if (!string.IsNullOrEmpty(context.Options.scriptfile) && !File.Exists(context.Options.scriptfile))
+            {
+                context.Terminal.WriteError($"File {context.Options.scriptfile} not found");
+                return false;
+            }
+            byte[] fileBytes = null;
+            using (FileStream fs = File.OpenRead(context.Options.scriptfile))
+            {
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
+            }
+
+            string fileName = Path.GetFileName(context.Options.scriptfile);
+            bool first = true;
+            var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
+            {
+                context.Terminal.ShowProgress("uploading", a, first);
+                first = false;
+            });
+
+            File.Delete(fileName);
+
+            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName);
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            return true;
+        }
+    }
 }

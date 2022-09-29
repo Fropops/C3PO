@@ -25,7 +25,7 @@ namespace Commander.Communication
 
         public event EventHandler<AgentTaskResult> TaskResultUpdated;
 
-        public event EventHandler<string> AgentAdded;
+        public event EventHandler<Agent> AgentAdded;
 
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
@@ -240,7 +240,7 @@ namespace Commander.Communication
             var agentIds = agentResponse.Select(a => a.Metadata.Id);
 
 
-            var addedAgents = new List<string>();
+            var addedAgents = new List<Agent>();
 
             //del agents
             foreach (var toRemove in this._agents.Keys.Where(k => !agentIds.Contains(k)))
@@ -266,7 +266,7 @@ namespace Commander.Communication
                 };
 
                 if (!this._agents.ContainsKey(agent.Metadata.Id))
-                    addedAgents.Add(agent.Metadata.Id);
+                    addedAgents.Add(agent);
 
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {

@@ -3,11 +3,14 @@ using System.Management.Automation;
 using System.Globalization;
 using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
+using System;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace Agent.Commands.Execution
 {
-    
-public class PowerShellRunner : IDisposable
+
+    public class PowerShellRunner : IDisposable
     {
         private readonly PSHost _host;
         private readonly Runspace _rs;
@@ -51,10 +54,10 @@ public class PowerShellRunner : IDisposable
         private class CustomPSHost : PSHost
         {
             private Guid _hostId = Guid.NewGuid();
-            private CustomPSHostUserInterface _ui = new();
+            private CustomPSHostUserInterface _ui = new CustomPSHostUserInterface();
             public override Guid InstanceId => _hostId;
             public override string Name => "ConsoleHost";
-            public override Version Version => new(1, 0);
+            public override Version Version => new Version(1, 0);
             public override PSHostUserInterface UI => _ui;
             public override CultureInfo CurrentCulture => Thread.CurrentThread.CurrentCulture;
             public override CultureInfo CurrentUICulture => Thread.CurrentThread.CurrentUICulture;
@@ -84,7 +87,7 @@ public class PowerShellRunner : IDisposable
         {
             // Replace StringBuilder with whatever your preferred output method is (e.g. a socket or a named pipe)
             private StringBuilder _sb;
-            private CustomPSRHostRawUserInterface _rawUi = new();
+            private CustomPSRHostRawUserInterface _rawUi = new CustomPSRHostRawUserInterface();
 
             public CustomPSHostUserInterface() => _sb = new StringBuilder();
 
@@ -136,22 +139,22 @@ public class PowerShellRunner : IDisposable
 
         private class CustomPSRHostRawUserInterface : PSHostRawUserInterface
         {
-            private Size _windowSize = new() { Width = 120, Height = 100 };
-            private Coordinates _cursorPosition = new() { X = 0, Y = 0 };
+            private Size _windowSize = new Size() { Width = 120, Height = 100 };
+            private Coordinates _cursorPosition = new Coordinates() { X = 0, Y = 0 };
 
             private int _cursorSize = 1;
             private ConsoleColor _foregroundColor = ConsoleColor.White;
             private ConsoleColor _backgroundColor = ConsoleColor.Black;
 
-            private Size _maxPhysicalWindowSize = new()
+            private Size _maxPhysicalWindowSize = new Size()
             {
                 Width = int.MaxValue,
                 Height = int.MaxValue
             };
 
-            private Size _maxWindowSize = new() { Width = 100, Height = 100 };
-            private Size _bufferSize = new() { Width = 100, Height = 1000 };
-            private Coordinates _windowPosition = new() { X = 0, Y = 0 };
+            private Size _maxWindowSize = new Size() { Width = 100, Height = 100 };
+            private Size _bufferSize = new Size() { Width = 100, Height = 1000 };
+            private Coordinates _windowPosition = new Coordinates() { X = 0, Y = 0 };
             private string _windowTitle = "";
 
             public override ConsoleColor BackgroundColor
@@ -225,3 +228,4 @@ public class PowerShellRunner : IDisposable
             }
         }
     }
+}

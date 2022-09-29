@@ -120,7 +120,7 @@ namespace Commander.Commands.SideLoad
             //context.Terminal.WriteLine(fileName);
 
             await context.CommModule.TaskAgent(context.CommandLabel, taskId, context.Executor.CurrentAgent.Metadata.Id, taskCmd, fileId, fileName);
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
             return true;
         }
     }

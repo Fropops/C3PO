@@ -90,15 +90,16 @@ namespace Agent.Commands
                 if (!is64BitOS)
                     return "x86";
 
+
                 if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return "-";
 
-                if (!isWow64)
+                if (isWow64)
                     return "x86";
 
                 return "x64";
             }
-            catch
+            catch(Exception e)
             {
                 return "-";
             }

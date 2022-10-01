@@ -86,7 +86,7 @@ namespace Agent.Internal
 
             if (baseAddress == IntPtr.Zero)
             {
-                ret.Error = "Failed to allocate memory for Loader.dll, error code: {Marshal.GetLastWin32Error()}";
+                ret.Error = $"Failed to allocate memory for Loader.dll, error code: {Marshal.GetLastWin32Error()}";
                 ret.Succeed = false;
                 return ret;
             }
@@ -218,7 +218,7 @@ namespace Agent.Internal
 
             if (baseAddress == IntPtr.Zero)
             {
-                ret.Error = "Failed to allocate memory for Loader.dll, error code: {Marshal.GetLastWin32Error()}";
+                ret.Error = $"Failed to allocate memory for Loader.dll, error code: {Marshal.GetLastWin32Error()}";
                 ret.Succeed = false;
                 return ret;
             }

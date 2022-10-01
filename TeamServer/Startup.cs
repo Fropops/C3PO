@@ -68,7 +68,7 @@ namespace TeamServer
             });
 
 
-            this.StartHttpHost(app);
+            //this.StartHttpHost(app);
             this.StartDefaultListener(app);
         }
 

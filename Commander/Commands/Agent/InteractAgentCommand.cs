@@ -15,7 +15,7 @@ namespace Commander.Commands.Agent
 {
     public class InteractAgentCommandOptions
     {
-        public int index { get; set; }
+        public string id { get; set; }
 
     }
 
@@ -25,20 +25,25 @@ namespace Commander.Commands.Agent
         public override string Category => CommandCategory.Commander;
         public override string Description => "Select an agent to interact with";
         public override string Name => "interact";
-        public override ExecutorMode AvaliableIn => ExecutorMode.Agent;
+        public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<int>("index", "index of the agent"),
+                new Argument<string>("id", "index or id of the agent"),
             };
 
         protected override async Task<bool> HandleCommand(CommandContext<InteractAgentCommandOptions> context)
         {
-            var agent = context.CommModule.GetAgent(context.Options.index);
+            Commander.Models.Agent agent = null;
+            int index = 0;
+            if (int.TryParse(context.Options.id, out index))
+                agent = context.CommModule.GetAgent(index);
+            else
+                agent = context.CommModule.GetAgents().FirstOrDefault(a => a.Metadata.ShortId.ToLower().Equals(context.Options.id.ToLower()));
             
             if(agent == null)
             {
-                context.Terminal.WriteError($"No agent with index {context.Options.index} found.");
+                context.Terminal.WriteError($"No agent with id or index {context.Options.id} found.");
                 return false;
             }
 

@@ -37,7 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{75FB3794-9
 		Modules\Module.cs = Modules\Module.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stager", "Stager\Stager.csproj", "{EAA75F4D-6C11-4304-AC0B-566694B538A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dropper", "Stager\Dropper.csproj", "{EAA75F4D-6C11-4304-AC0B-566694B538A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encloser", "Encloser\Encloser.csproj", "{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}"
 EndProject

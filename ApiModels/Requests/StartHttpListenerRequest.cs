@@ -12,5 +12,9 @@ namespace ApiModels.Requests
 
         public string Ip { get; set; }
         public int BindPort { get; set; }
+
+        public int PublicPort { get; set; }
+
+        public bool Secured { get; set; }
     }
 }

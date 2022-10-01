@@ -17,7 +17,11 @@ namespace Commander.Commands.Listener
     {
         public string name { get; set; }
         public bool verbose { get; set; }
-        public int? port { get; set; }
+        public int? localPort { get; set; }
+
+        public string address { get; set; }
+        public bool secured { get; set; }
+        public int? publicPort {get;set;}
 
     }
 
@@ -32,13 +36,49 @@ namespace Commander.Commands.Listener
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("name", "name of the listener"),
-                new Option<int?>(new[] { "--port", "-p" }, "The listening port."),
+                new Argument<string>("address", "The listening address."),
+                new Option<int?>(new[] { "--localPort", "-p" }, () => null, "The listening port."),
+                new Option<int?>(new[] { "--publicPort", "-pp" }, () => null, "The public listening port."),
+                new Option<bool>(new[] { "--secured", "-s" }, () => true, "HTTPS if secured else HTTP"),
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };
 
         protected override async Task<bool> HandleCommand(CommandContext<CreateListenersCommandOptions> context)
         {
-            var result = await context.CommModule.CreateListener(context.Options.name, context.Options.port ?? 80);
+            if(!context.Options.localPort.HasValue && context.Options.publicPort.HasValue)
+            {
+                context.Options.localPort = context.Options.publicPort;
+            }
+
+            if (!context.Options.publicPort.HasValue && context.Options.localPort.HasValue)
+            {
+                context.Options.publicPort = context.Options.localPort;
+            }
+
+            if(!context.Options.publicPort.HasValue)
+            {
+                if (context.Options.secured)
+                    context.Options.publicPort = 443;
+                else
+                    context.Options.publicPort = 80;
+            }
+
+            if (!context.Options.localPort.HasValue)
+            {
+                if (context.Options.secured)
+                    context.Options.localPort = 443;
+                else
+                    context.Options.localPort = 80;
+            }
+
+
+            if (context.CommModule.GetListeners().Any(l => l.Name.ToLower().Equals(context.Options.name.ToLower())))
+            {
+                context.Terminal.WriteError($"A listener whith the name {context.Options.name} already exists !");
+                return false;
+            }
+
+            var result = await context.CommModule.CreateListener(context.Options.name, context.Options.localPort.Value, context.Options.address, context.Options.secured, context.Options.publicPort.Value);
             if (!result.IsSuccessStatusCode)
             {
                 context.Terminal.WriteError("An error occured : " + result.StatusCode);

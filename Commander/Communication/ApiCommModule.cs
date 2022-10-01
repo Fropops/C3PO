@@ -344,14 +344,22 @@ namespace Commander.Communication
 
 
 
-        public async Task<HttpResponseMessage> CreateListener(string name, int port)
+        public async Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured, int publicPort)
         {
             var requestObj = new ApiModels.Requests.StartHttpListenerRequest();
             requestObj.Name = name;
             requestObj.BindPort  = port;
+            requestObj.Ip = address;
+            requestObj.Secured = secured;
+            requestObj.PublicPort = publicPort;
             var requestContent = JsonConvert.SerializeObject(requestObj);
 
             return await _client.PostAsync("/Listeners/", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> StopListener(string id, bool clean)
+        {
+            return await _client.DeleteAsync($"/Listeners/?id={id}&clean={clean}");
         }
 
         public IEnumerable<Listener> GetListeners()

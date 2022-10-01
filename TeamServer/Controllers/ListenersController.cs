@@ -50,7 +50,7 @@ namespace TeamServer.Controllers
         [HttpPost]
         public IActionResult StartListener([FromBody] StartHttpListenerRequest request)
         {
-            var listener = new HttpListener(request.Name, request.BindPort, request.Ip);
+            var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured, request.PublicPort);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
             listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger);
             listener.Start();
@@ -63,16 +63,22 @@ namespace TeamServer.Controllers
             return Created(path, listener);
         }
 
-        [HttpDelete("{name}")]
-        public IActionResult StopListener(string name)
+        [HttpDelete]
+        public IActionResult StopListener(string id, bool? clean)
         {
-            var listener = this._listenerService.GetListener(name);
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Id == id);
             if (listener == null)
                 return NotFound();
 
             listener.Stop();
+            _listenerService.RemoveListener(listener);
 
-            return NoContent();
+            if (clean == true)
+            {
+                System.IO.Directory.Delete(_fileService.GetListenerPath(listener.Name),true);
+            }
+
+            return Ok();
         }
     }
 }

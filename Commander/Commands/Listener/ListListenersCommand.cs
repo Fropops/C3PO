@@ -80,7 +80,7 @@ namespace Commander.Commands.Listener
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
-                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
+                //new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
                 new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
                 new SharpSploitResultProperty { Name = nameof(Address), Value = Address },
                 new SharpSploitResultProperty { Name = nameof(BindPort), Value = BindPort },

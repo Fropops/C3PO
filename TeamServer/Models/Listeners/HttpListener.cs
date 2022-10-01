@@ -107,16 +107,13 @@ namespace TeamServer.Models
             app.UseRouting();
             app.UseEndpoints(e =>
             {
+                e.MapControllerRoute("/", "/{id}", new { Controller = "HttpListener", Action = "WebHost" });
                 e.MapControllerRoute("/", "/", new { Controller = "HttpListener", Action = "HandleImplant" });
-                e.MapControllerRoute("SetupDownload", "/SetupDownload", new { Controller = "HttpListener", Action = "SetupDownload" });
-                e.MapControllerRoute("DownloadChunk", "/DownloadChunk", new { Controller = "HttpListener", Action = "DownloadChunk" });
-                e.MapControllerRoute("SetupUpload", "/SetupUpload", new { Controller = "HttpListener", Action = "SetupUpload" });
-                e.MapControllerRoute("UploadChunk", "/UploadChunk", new { Controller = "HttpListener", Action = "UploadChunk" });
-                e.MapControllerRoute("ModuleInfo", "/ModuleInfo", new { Controller = "HttpListener", Action = "ModuleInfo" });
-                e.MapControllerRoute("StagerExe", "/StagerExe", new { Controller = "HttpListener", Action = "DownloadStagerExe" });
-                e.MapControllerRoute("StagerBin", "/StagerBin", new { Controller = "HttpListener", Action = "DownloadStagerBin" });
-                e.MapControllerRoute("StagerDll", "/StagerDll", new { Controller = "HttpListener", Action = "DownloadStagerDll" });
-
+                e.MapControllerRoute("SetupDownload", "/SetupDownload/{id}", new { Controller = "HttpListener", Action = "SetupDownload" });
+                e.MapControllerRoute("DownloadChunk", "/DownloadChunk/{id}/{chunkIndex}/", new { Controller = "HttpListener", Action = "DownloadChunk" });
+                e.MapControllerRoute("SetupUpload", "/SetupUpload/", new { Controller = "HttpListener", Action = "SetupUpload" });
+                e.MapControllerRoute("UploadChunk", "/UploadChunk/", new { Controller = "HttpListener", Action = "UploadChunk" });
+                //e.MapControllerRoute("ModuleInfo", "/ModuleInfo/", new { Controller = "HttpListener", Action = "ModuleInfo" });
             });
         }
 

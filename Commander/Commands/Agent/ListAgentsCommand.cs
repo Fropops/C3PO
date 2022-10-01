@@ -95,13 +95,13 @@ namespace Commander.Commands.Agent
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
+                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
                 new SharpSploitResultProperty { Name = nameof(Actif), Value = Actif },
                 new SharpSploitResultProperty { Name = nameof(Process), Value = Process },
                 new SharpSploitResultProperty { Name = nameof(Integrity), Value = Integrity },
                 new SharpSploitResultProperty { Name = nameof(UserName), Value = UserName },
                 new SharpSploitResultProperty { Name = nameof(HostName), Value = HostName },
                 new SharpSploitResultProperty { Name = nameof(LastSeen), Value = LastSeen },
-                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
                 new SharpSploitResultProperty { Name = nameof(Listener), Value = Listener },
             };
         }

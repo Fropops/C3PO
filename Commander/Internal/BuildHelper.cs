@@ -16,31 +16,28 @@ namespace Commander.Internal
     }
     public class BuildHelper
     {
-        public static string ScriptFolder { get; set; } = "/Share/tmp/C2/Commander/Script";
-        public static string NimFile { get; set; } = "/Share/tmp/C2/Commander/Script";
+        public static string SourceFolder { get; set; } = Path.Combine(Environment.CurrentDirectory, "Source");
         public static string TmpFolder { get; set; } = "/Share/tmp/C2/Commander/Tmp";
 
         public static string NimPath { get; set; } = "/usr/bin/nim";
 
         public static List<string> ComputeNimBuildParameters(string scriptName, string outFile, bool isDebug, bool isDll)
         {
-            string path = ScriptFolder;
+            string path = SourceFolder;
             path =  Path.Combine(path, scriptName);
-            if (!isDebug)
-                path += "_release";
-            path += ".nim";
+            if (!Path.GetExtension(path).Equals(".nim", StringComparison.OrdinalIgnoreCase))
+                path += ".nim";
 
             var parms = new List<string>();
-            
+
             parms.Add("c");
 
-            if(isDll)
+            if (isDll)
                 parms.Add("--app:lib");
+            else if (isDebug)
+                parms.Add("--app:console");
             else
-                if(isDebug)
-                    parms.Add("--app:console");
-                else
-                    parms.Add("--app:gui");
+                parms.Add("--app:gui");
 
 
             if (!isDebug)
@@ -62,7 +59,7 @@ namespace Commander.Internal
 
         public static ExecuteResult NimBuild(List<string> parms)
         {
-            return BuildHelper.ExecuteCommand(NimPath, parms, ScriptFolder);
+            return BuildHelper.ExecuteCommand(NimPath, parms, SourceFolder);
         }
 
 
@@ -104,7 +101,7 @@ namespace Commander.Internal
                 result.Result = process.ExitCode;
                 result.Out = output;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result.Result = -1;
                 result.Out = ex.ToString();

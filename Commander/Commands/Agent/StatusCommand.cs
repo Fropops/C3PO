@@ -37,6 +37,7 @@ namespace Commander.Commands.Agent
             results.Add(new StatusResult() { Name = "UserName", Value = agent.Metadata.UserName });
             results.Add(new StatusResult() { Name = "ProcessId", Value = agent.Metadata.ProcessId.ToString() });
             results.Add(new StatusResult() { Name = "ProcessName", Value = agent.Metadata.ProcessName });
+            results.Add(new StatusResult() { Name = "Architecture", Value = agent.Metadata.Architecture });
             results.Add(new StatusResult() { Name = "Integrity", Value = agent.Metadata.Integrity });
             results.Add(new StatusResult() { Name = "Last Seen", Value = agent.LastSeen.ToLocalTime().ToString("dd/MM/yyyy hh:mm:ss") });
             context.Terminal.WriteLine(results.ToString());

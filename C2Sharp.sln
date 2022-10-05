@@ -42,12 +42,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encloser", "Encloser\Encloser.csproj", "{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Launcher", "Launcher", "{2DE697B9-6FF7-4ACE-B03E-2F34009507C7}"
-	ProjectSection(SolutionItems) = preProject
-		Nim\Dropper.nim = Nim\Dropper.nim
-		Nim\Dropper.ps1 = Nim\Dropper.ps1
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Depndencies", "Depndencies", "{289AF798-1663-40B6-B63D-E1E3B790D87C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stage1", "Launcher\Stage1\Stage1.csproj", "{32297F2D-1AAF-4681-8310-C1177F64357E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +93,10 @@ Global
 		{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32297F2D-1AAF-4681-8310-C1177F64357E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32297F2D-1AAF-4681-8310-C1177F64357E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32297F2D-1AAF-4681-8310-C1177F64357E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32297F2D-1AAF-4681-8310-C1177F64357E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +109,7 @@ Global
 		{75FB3794-95ED-4734-98BD-EAC3E769081C} = {549767D5-4A00-4A20-AC4D-9A0F55BE4274}
 		{EAA75F4D-6C11-4304-AC0B-566694B538A1} = {2DE697B9-6FF7-4ACE-B03E-2F34009507C7}
 		{4C99D738-7FE8-4F0A-B56C-6FDD252EF077} = {2DE697B9-6FF7-4ACE-B03E-2F34009507C7}
+		{32297F2D-1AAF-4681-8310-C1177F64357E} = {2DE697B9-6FF7-4ACE-B03E-2F34009507C7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F1C3E1B-972F-4903-9445-6F9834624107}

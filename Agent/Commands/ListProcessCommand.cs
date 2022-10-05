@@ -81,6 +81,30 @@ namespace Agent.Commands
             }
         }
 
+        public static bool Is64bitProcess(Process proc)
+        {
+            try
+            {
+                var is64BitOS = Environment.Is64BitOperatingSystem;
+
+                if (!is64BitOS)
+                    return false;
+
+
+                if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                    return false;
+
+                if (isWow64)
+                    return false;
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public string GetProcessArch(Process proc)
         {
             try

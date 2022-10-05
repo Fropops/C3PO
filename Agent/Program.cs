@@ -88,7 +88,7 @@ namespace Agent
                 UserName = userName,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
-                Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x68",
+                Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86",
                 Integrity = integrity,
             };
 

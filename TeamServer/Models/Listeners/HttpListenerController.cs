@@ -21,6 +21,7 @@ namespace TeamServer.Models
         private IFileService _fileService;
         private IListenerService _listenerService;
         private IBinMakerService _binMakerService;
+        private ILoggerFactory _loggerFactory;
 
         public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService, ILoggerFactory loggerFactory)
         {
@@ -28,24 +29,37 @@ namespace TeamServer.Models
             this._fileService = fileService;
             this._listenerService = listenerService;
             this._binMakerService = binMakerService;
+            this._loggerFactory = loggerFactory;
         }
 
 
         public async Task<IActionResult> WebHost(string id)
         {
-
+            var logger = _loggerFactory.CreateLogger("WebHost");
+            logger.LogInformation($"{id}");
             string fileName = Path.GetFileName(id);
 
             var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
 
             if (listener == null)
+            {
+                logger.LogError($"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}");
+                System.IO.File.AppendAllText("log.log", $"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}" + Environment.NewLine);
                 return this.NotFound();
+            }
 
             var path = _fileService.GetListenerPath(listener.Name);
             path = Path.Combine(path, fileName);
 
             if (!System.IO.File.Exists(path))
+            {
+                logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
+                System.IO.File.AppendAllText("log.log", $"NOT FOUND {fileName} from listener {listener.Name}" + Environment.NewLine);
                 return this.NotFound();
+            }
+
+            logger.LogInformation($"GET {fileName} from listener {listener.Name}");
+            System.IO.File.AppendAllText("log.log", $"GET {fileName} from listener {listener.Name}" + Environment.NewLine);
 
             return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
         }

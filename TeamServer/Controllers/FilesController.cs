@@ -1,6 +1,7 @@
 ﻿using ApiModels.Requests;
 using ApiModels.Response;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,11 +19,13 @@ namespace TeamServer.Controllers
         IFileService _fileService;
         IListenerService _listenerService;
         IAgentService _agentService;
+       
         public FilesController(IFileService fileService, IListenerService listenerService, IAgentService agentService)
         {
             _fileService = fileService;
             _listenerService = listenerService;
             _agentService = agentService;
+            
         }
 
 
@@ -121,7 +124,7 @@ namespace TeamServer.Controllers
 
                 var outPath = this._fileService.GetListenerPath(listener.Name, wb.FileName);
                 System.IO.File.WriteAllBytes(outPath, wb.Data);
-
+                
                 return Ok();
             }
             catch (Exception ex)

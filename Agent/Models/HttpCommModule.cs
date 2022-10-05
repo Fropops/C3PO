@@ -236,21 +236,25 @@ namespace Agent.Models
             return desc.Id;
         }
 
-        public override async Task<Byte[]> DownloadStagerDll()
+        //public override async Task<Byte[]> DownloadStagerDll()
+        //{
+        //    var response = await _client.GetAsync("/StagerDll");
+        //    var responseContent = await response.Content.ReadAsByteArrayAsync();
+        //    return responseContent;
+        //}
+        //public override async Task<Byte[]> DownloadStagerExe()
+        //{
+        //    var response = await _client.GetAsync("/StagerExe");
+        //    var responseContent = await response.Content.ReadAsByteArrayAsync();
+        //    return responseContent;
+        //}
+        public override async Task<Byte[]> DownloadAgentBin(bool x86 = false)
         {
-            var response = await _client.GetAsync("/StagerDll");
-            var responseContent = await response.Content.ReadAsByteArrayAsync();
-            return responseContent;
-        }
-        public override async Task<Byte[]> DownloadStagerExe()
-        {
-            var response = await _client.GetAsync("/StagerExe");
-            var responseContent = await response.Content.ReadAsByteArrayAsync();
-            return responseContent;
-        }
-        public override async Task<Byte[]> DownloadStagerBin()
-        {
-            var response = await _client.GetAsync("/Agent.bin");
+            var filename = "Agent";
+            if (x86)
+                filename += "-x86";
+            filename += ".bin";
+            var response = await _client.GetAsync(filename);
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             return responseContent;
         }

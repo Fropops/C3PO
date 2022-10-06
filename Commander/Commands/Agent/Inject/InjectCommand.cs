@@ -87,10 +87,16 @@ namespace Commander
 
             context.Terminal.WriteLine($"Pushing {binFileName} to the server...");
             byte[] fileBytes = null;
+           
             using (FileStream fs = File.OpenRead(binFileName))
             {
                 fileBytes = new byte[fs.Length];
                 fs.Read(fileBytes, 0, (int)fs.Length);
+            }
+
+            if (context.Options.verbose)
+            {
+                context.Terminal.WriteLine($"Shellcode size = {fileBytes.Length}");
             }
 
             bool first = true;

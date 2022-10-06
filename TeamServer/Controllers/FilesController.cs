@@ -76,6 +76,11 @@ namespace TeamServer.Controllers
 
             _fileService.CleanDownloaded();
 
+            //Logger.Log($"File {desc.Name} => Downloading chunck #{chunck.Index} with length of {chunck.Data.Length}");
+
+            //if (desc.IsDownloaded)
+            //    Logger.Log($"File {desc.Name} uploaded with {desc.ChunkCount} chunks");
+
             return Ok(new FileChunckResponse()
             {
                 Data = chunck.Data,
@@ -103,7 +108,11 @@ namespace TeamServer.Controllers
                 if (desc == null)
                     return NotFound();
 
+                //Logger.Log($"File {desc.Name} => uploading chunck #{chunk.Index} with length of {chunk.Data.Length}");
+
                 desc.Chunks.Add(chunk);
+                //if(desc.IsUploaded)
+                //    Logger.Log($"File {desc.Name} uploaded with {desc.ChunkCount} chunks");
 
                 return Ok();
             }

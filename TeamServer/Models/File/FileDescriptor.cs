@@ -26,6 +26,7 @@ namespace TeamServer.Models.File
             get
             {
                 return this.Chunks.Count == this.ChunkCount;
+                
             }
         }
 

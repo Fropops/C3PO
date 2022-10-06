@@ -29,6 +29,8 @@ namespace Agent.Commands
                 commm.SendResult(result);
             }).Result;
 
+            result.Result += $"Sehllcode size = {fileContent.Length}" + Environment.NewLine;
+
             this.Notify(result, commm, $"{fileName} Downloaded");
 
             var shellcode = fileContent;

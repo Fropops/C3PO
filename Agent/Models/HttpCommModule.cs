@@ -125,6 +125,7 @@ namespace Agent.Models
         private async Task<FileChunk> GetFileChunk(string id, int chunckIndex)
         {
             var response = await _client.GetByteArrayAsync($"/DownloadChunk/{id}/{chunckIndex}");
+            string json = Encoding.UTF8.GetString(response);
             return response.Deserialize<FileChunk>();
         }
 

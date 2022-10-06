@@ -35,16 +35,16 @@ namespace TeamServer.Models
 
         public async Task<IActionResult> WebHost(string id)
         {
-            var logger = _loggerFactory.CreateLogger("WebHost");
-            logger.LogInformation($"{id}");
+            //var logger = _loggerFactory.CreateLogger("WebHost");
+            //logger.LogInformation($"{id}");
             string fileName = Path.GetFileName(id);
 
             var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
 
             if (listener == null)
             {
-                logger.LogError($"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}");
-                System.IO.File.AppendAllText("log.log", $"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}" + Environment.NewLine);
+                //logger.LogError($"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}");
+                Logger.Log($"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}");
                 return this.NotFound();
             }
 
@@ -53,13 +53,12 @@ namespace TeamServer.Models
 
             if (!System.IO.File.Exists(path))
             {
-                logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
-                System.IO.File.AppendAllText("log.log", $"NOT FOUND {fileName} from listener {listener.Name}" + Environment.NewLine);
+                //logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
+                Logger.Log($"NOT FOUND {fileName} from listener {listener.Name}");
                 return this.NotFound();
             }
 
-            logger.LogInformation($"GET {fileName} from listener {listener.Name}");
-            System.IO.File.AppendAllText("log.log", $"GET {fileName} from listener {listener.Name}" + Environment.NewLine);
+            Logger.Log($"GET {fileName} from listener {listener.Name}");
 
             return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
         }
@@ -148,16 +147,22 @@ namespace TeamServer.Models
             });
         }
 
-        public IActionResult DownloadChunk(string id, int index)
+        [HttpGet("DownloadChunk/{id}/{chunkIndex}")]
+        public IActionResult DownloadChunk(string id, int chunkIndex)
         {
             var desc = _fileService.GetFile(id);
-            if (index < 0 || index >= desc.ChunkCount)
+            if (chunkIndex < 0 || chunkIndex >= desc.ChunkCount)
                 return NotFound();
 
-            var chunck = desc.Chunks[index];
+            var chunck = desc.Chunks[chunkIndex];
             chunck.IsDownloaded = true;
 
             _fileService.CleanDownloaded();
+
+            //Logger.Log($"File {desc.Name} => Downloading chunck #{chunck.Index} with length of {chunck.Data.Length} | index requested = {chunkIndex} of {desc.Chunks.Count}");
+
+            //if(desc.IsDownloaded)
+            //    Logger.Log($"File {desc.Name} uploaded with {desc.ChunkCount} chunks");
 
             return Ok(new FileChunckResponse()
             {

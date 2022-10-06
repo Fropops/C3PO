@@ -32,6 +32,7 @@ namespace Commander.Internal
                 args.Add($"{parameters}");
             }
 
+            Console.WriteLine($"Executing {cmd} {string.Join(' ', args)}");
             var ret = ExecuteCommand(cmd, args, DonutFolder);
             return ret;
         }

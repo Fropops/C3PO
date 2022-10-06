@@ -60,6 +60,9 @@ namespace Agent.Internal
 
             process.WaitForExit();
 
+            //output += process.StandardOutput.ReadToEnd();
+            //output += process.StandardError.ReadToEnd();
+
             return output;
         }
 

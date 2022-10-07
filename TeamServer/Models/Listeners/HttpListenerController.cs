@@ -174,6 +174,7 @@ namespace TeamServer.Models
         #endregion
 
         #region Upload
+        [HttpPost("Upload/Setup")]
         public IActionResult SetupUpload([FromBody] FileDescriptor desc)
         {
             if (string.IsNullOrEmpty(desc.Id))
@@ -183,6 +184,7 @@ namespace TeamServer.Models
             return Ok();
         }
 
+        [HttpPost("Upload/Chunk")]
         public IActionResult UploadChunk([FromBody] FileChunk chunk)
         {
             var desc = _fileService.GetFile(chunk.FileId);

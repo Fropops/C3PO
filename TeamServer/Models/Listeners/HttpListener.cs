@@ -118,8 +118,8 @@ namespace TeamServer.Models
                 e.MapControllerRoute("/", "/", new { Controller = "HttpListener", Action = "HandleImplant" });
                 e.MapControllerRoute("SetupDownload", "/SetupDownload/{id}", new { Controller = "HttpListener", Action = "SetupDownload" });
                 e.MapControllerRoute("DownloadChunk", "/DownloadChunk/{id}/{chunkIndex}/", new { Controller = "HttpListener", Action = "DownloadChunk" });
-                e.MapControllerRoute("SetupUpload", "/SetupUpload/", new { Controller = "HttpListener", Action = "SetupUpload" });
-                e.MapControllerRoute("UploadChunk", "/UploadChunk/", new { Controller = "HttpListener", Action = "UploadChunk" });
+                e.MapControllerRoute("SetupUpload", "/Upload/Setup", new { Controller = "HttpListener", Action = "SetupUpload" });
+                e.MapControllerRoute("UploadChunk", "/Upload/Chunk", new { Controller = "HttpListener", Action = "UploadChunk" });
                 //e.MapControllerRoute("ModuleInfo", "/ModuleInfo/", new { Controller = "HttpListener", Action = "ModuleInfo" });
             });
         }

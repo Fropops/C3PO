@@ -132,7 +132,7 @@ namespace Agent.Models
         private async Task SetupUpload(FileDescriptor fileDesc)
         {
             var content = new StringContent(Encoding.UTF8.GetString(fileDesc.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/SetupUpload", content);
+            var response = await _client.PostAsync("/Upload/Setup", content);
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"{response}");
         }
@@ -140,7 +140,7 @@ namespace Agent.Models
         private async Task PostFileChunk(FileChunk chunk)
         {
             var content = new StringContent(Encoding.UTF8.GetString(chunk.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/UploadChunk", content);
+            var response = await _client.PostAsync("/Upload/Chunk", content);
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"{response}");
         }

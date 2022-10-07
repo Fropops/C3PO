@@ -41,6 +41,8 @@ namespace Commander.Commands.Agent
 
         public static string POWERSHELL = "powershell";
         public static string POWERSHELL_IMPORT = "powershell-import";
+
+        public static string WGET = "wget";
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);

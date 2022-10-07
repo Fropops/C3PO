@@ -26,6 +26,12 @@ namespace Commander.Commands.Agent
         public override string Name => EndPointCommand.SHELL;
     }
 
+    public class WgetCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Download a page or file from an URL";
+        public override string Name => EndPointCommand.WGET;
+    }
+
     public class PowerShellCommand : SimpleEndPointCommand
     {
         public override string Description => "Send a command to be executed by the agent shell";

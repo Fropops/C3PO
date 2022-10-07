@@ -77,6 +77,7 @@
     <Compile Include="Commands\Execution\StartCommand.cs" />
     <Compile Include="Commands\KeyLoggerCommand.cs" />
     <Compile Include="Commands\ListProcessCommand.cs" />
+    <Compile Include="Commands\Server\WGetCommand.cs" />
     <Compile Include="Commands\TerminateCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />

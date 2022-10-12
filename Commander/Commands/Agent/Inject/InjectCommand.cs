@@ -51,7 +51,7 @@ namespace Commander
             new Argument<string>("injectionType", "Type of injection").FromAmong("self", "spawn", "remote"),
             new Argument<string>("fileToInject", "path of the file to inject"),
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
-            new Option<string>(new[] { "--processName", "-p" }, () => "cmd.exe" ,"process name to start."),
+            new Option<string>(new[] { "--processName", "-p" }, () => "powershell -WindowStyle Hidden" ,"process name to start."),
             new Option<int?>(new[] { "--processId", "-i" }, "process id to inject to."),
             new Option<string>(new[] { "--base64Params", "-b64" }, "params B64 encoded."),
             new Option(new[] { "--raw", "-r" }, "inject the raw file"),

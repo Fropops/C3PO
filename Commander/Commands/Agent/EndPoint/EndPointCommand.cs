@@ -219,34 +219,41 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("scriptfile", () => "", "path of the script file to load"),
+                new Argument<string>("scriptfile", () => string.Empty, "path of the script file to load"),
             };
 
         protected override async Task<bool> HandleCommand(CommandContext<PowershellImportCommandOptions> context)
         {
-            if (!string.IsNullOrEmpty(context.Options.scriptfile) && !File.Exists(context.Options.scriptfile))
+
+            if (!string.IsNullOrEmpty(context.Options.scriptfile))
             {
-                context.Terminal.WriteError($"File {context.Options.scriptfile} not found");
-                return false;
+                if (!File.Exists(context.Options.scriptfile))
+                {
+                    context.Terminal.WriteError($"File {context.Options.scriptfile} not found");
+                    return false;
+                }
+                byte[] fileBytes = null;
+                using (FileStream fs = File.OpenRead(context.Options.scriptfile))
+                {
+                    fileBytes = new byte[fs.Length];
+                    fs.Read(fileBytes, 0, (int)fs.Length);
+                }
+
+                string fileName = Path.GetFileName(context.Options.scriptfile);
+                bool first = true;
+                var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
+                {
+                    context.Terminal.ShowProgress("uploading", a, first);
+                    first = false;
+                });
+
+                File.Delete(fileName);
+
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName);
             }
-            byte[] fileBytes = null;
-            using (FileStream fs = File.OpenRead(context.Options.scriptfile))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
+            else
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name);
 
-            string fileName = Path.GetFileName(context.Options.scriptfile);
-            bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            });
-
-            File.Delete(fileName);
-
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName);
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
             return true;
         }

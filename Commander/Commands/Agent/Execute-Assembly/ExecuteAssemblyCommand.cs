@@ -50,8 +50,6 @@ namespace Commander.Commands.Agent.Execute_Assembly
                 first = false;
             });
 
-            File.Delete(fileName);
-
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, context.Options.parameters);
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
             return true;

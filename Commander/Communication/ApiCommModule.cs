@@ -30,6 +30,10 @@ namespace Commander.Communication
         public string ConnectAddress { get; set; }
         public int ConnectPort { get; set; }
 
+        public int Delay { get; set; } = 1000;
+
+
+
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
@@ -107,7 +111,7 @@ namespace Commander.Communication
                         this.Terminal.WriteError(e.ToString());
                 }
 
-                await Task.Delay(5000);
+                await Task.Delay(this.Delay);
             }
         }
 

@@ -15,6 +15,8 @@ namespace Commander.Commands
         public string server { get; set; }
         public int? port { get; set; }
 
+        public int? delay { get; set; }
+
         public bool NoOptions
         {
             get
@@ -37,6 +39,7 @@ namespace Commander.Commands
             {
                 new Option<string>(new[] { "--server", "-s" }, "The host name or ip."),
                 new Option<int?>(new[] { "--port", "-p" }, "The host listening port."),
+                new Option<int?>(new[] { "--delay", "-d" }, "The pulling delay."),
 
             };
 
@@ -67,6 +70,13 @@ namespace Commander.Commands
                     netConfigChanged = true;
                     context.Terminal.WriteSuccess($"Server port changed to {context.Options.port.Value}.");
                 }
+                if (context.Options.delay.HasValue)
+                {
+                    context.CommModule.Delay = context.Options.delay.Value;
+                    netConfigChanged = true;
+                    context.Terminal.WriteSuccess($"Server port changed to {context.Options.port.Value}.");
+                }
+
                 if (netConfigChanged)
                     context.CommModule.UpdateConfig();
             }

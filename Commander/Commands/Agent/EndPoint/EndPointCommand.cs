@@ -13,6 +13,8 @@ namespace Commander.Commands.Agent
 {
     public abstract class EndPointCommand<T> : EnhancedCommand<T>
     {
+        public static string SLEEP = "sleep";
+
         public static string WHOAMI = "whoami";
         public static string DOWNLOAD = "download";
         public static string UPLOAD = "upload";
@@ -200,6 +202,24 @@ namespace Commander.Commands.Agent
             {
                 new Argument<string>("Ip", "Ip to reach"),
                 new Argument<int>("port", "port to reach"),
+            };
+    }
+
+    public class SleepCommandOptions
+    {
+        public string Ip { get; set; }
+        public int port { get; set; }
+    }
+    public class SleepCommand : EndPointCommand<SleepCommandOptions>
+    {
+        public override string Description => "Change agent response time";
+        public override string Name => EndPointCommand.SLEEP;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<int>("delay", "delay in seconds"),
+                new Option<int?>("jitter", "jitter in percent"),
             };
     }
 

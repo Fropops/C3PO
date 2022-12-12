@@ -87,6 +87,7 @@
     <Compile Include="Commands\Token\RevertToSelfCommand.cs" />
     <Compile Include="Commands\Token\MakeTokenCommand.cs" />
     <Compile Include="Commands\VersionCommand.cs" />
+    <Compile Include="Commands\SleepCommand.cs" />
     <Compile Include="Internal\Executor.cs" />
     <Compile Include="Internal\Extension.cs" />
     <Compile Include="Commands\FileSystem\ListDirectoryCommand.cs" />
@@ -94,7 +95,7 @@
     <Compile Include="Commands\FileSystem\PrintWorkingDirectoryCommand.cs" />
     <Compile Include="Commands\Execution\RunCommand.cs" />
     <Compile Include="Commands\Execution\ShellCommand.cs" />
-    <Compile Include="Commands\SleepCommand.cs" />
+    <Compile Include="Commands\WaitCommand.cs" />
     <Compile Include="Commands\WhoamiCommand.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Internal\Injector.cs" />

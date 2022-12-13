@@ -7,7 +7,7 @@ namespace TeamServer.Models
 {
     public class Agent
     {
-        public AgentMetadata Metadata { get; }
+        public AgentMetadata Metadata { get; set; }
 
         public DateTime LastSeen { get; protected set; }
 
@@ -18,10 +18,17 @@ namespace TeamServer.Models
         private readonly List<AgentTaskResult> _taskResults = new();
         public ConcurrentBag<AgentTask> TaskHistory { get; private set; } = new();
 
-        public Agent(AgentMetadata metadata)
+
+        public Agent(string id)
         {
-            this.Metadata = metadata;
+            this.Metadata = new AgentMetadata();
+            this.Metadata.Id = id;
         }
+
+        //public Agent(AgentMetadata metadata)
+        //{
+        //    this.Metadata = metadata;
+        //}
 
         public void CheckIn()
         {

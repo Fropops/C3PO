@@ -21,8 +21,12 @@ namespace Agent
         static void Main(string[] args)
         {
             string server = "192.168.56.103";
-            int port = 443;
-            string protocol = "https";
+            int port = 400;
+            string protocol = "http";
+
+            //string server = "192.168.56.103";
+            //int port = 443;
+            //string protocol = "https";
 
 
             //server = "gate.fropops.fr";

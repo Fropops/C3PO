@@ -78,6 +78,7 @@
     <Compile Include="Commands\KeyLoggerCommand.cs" />
     <Compile Include="Commands\ListProcessCommand.cs" />
     <Compile Include="Commands\Server\WGetCommand.cs" />
+    <Compile Include="Commands\MetaCommand.cs" />
     <Compile Include="Commands\TerminateCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Internal\Injector.cs" />
     <Compile Include="Models\Agent.cs" />
+    <Compile Include="Models\ResultData.cs" />
     <Compile Include="Models\AgentMetadata.cs" />
     <Compile Include="Models\AgentTask.cs" />
     <Compile Include="Models\AgentTaskResult.cs" />

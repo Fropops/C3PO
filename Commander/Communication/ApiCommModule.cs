@@ -274,8 +274,14 @@ namespace Commander.Communication
 
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {
+                    current.Metadata.Architecture = agent.Metadata.Architecture;
+                    current.Metadata.Hostname = agent.Metadata.Hostname;
+                    current.Metadata.Integrity = agent.Metadata.Integrity;
+                    current.Metadata.ProcessId = agent.Metadata.ProcessId;
+                    current.Metadata.ProcessName = agent.Metadata.ProcessName;
+                    current.Metadata.UserName = agent.Metadata.UserName;
                     current.LastSeen = agent.LastSeen;
-                    current.ListenerId = ar.ListenerId;
+                    current.ListenerId = agent.ListenerId;
                     return current;
                 });
             }

@@ -22,6 +22,7 @@ namespace Agent.Models
         public abstract Task<Byte[]> DownloadAgentBin(bool x86 = false);
         public abstract void Start();
         public abstract void Stop();
+        public abstract void SendMetaData();
 
         protected ConcurrentQueue<AgentTask> _inbound = new ConcurrentQueue<AgentTask>();
         protected ConcurrentQueue<AgentTaskResult> _outBound = new ConcurrentQueue<AgentTaskResult>();
@@ -65,5 +66,7 @@ namespace Agent.Models
 
             return list;
         }
+
+        
     }
 }

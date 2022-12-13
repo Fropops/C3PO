@@ -73,7 +73,7 @@ namespace TeamServer.Models
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
                 {
-                    host.UseUrls($"https://*:{BindPort}");
+                    host.UseUrls($"http://*:{BindPort}");
                     host.Configure(ConfigureApp);
                     host.ConfigureServices(ConfigureServices);
 
@@ -114,12 +114,12 @@ namespace TeamServer.Models
             app.UseRouting();
             app.UseEndpoints(e =>
             {
-                e.MapControllerRoute("/", "/{id}", new { Controller = "HttpListener", Action = "WebHost" });
-                e.MapControllerRoute("/", "/", new { Controller = "HttpListener", Action = "HandleImplant" });
-                e.MapControllerRoute("SetupDownload", "/SetupDownload/{id}", new { Controller = "HttpListener", Action = "SetupDownload" });
-                e.MapControllerRoute("DownloadChunk", "/DownloadChunk/{id}/{chunkIndex}/", new { Controller = "HttpListener", Action = "DownloadChunk" });
-                e.MapControllerRoute("SetupUpload", "/Upload/Setup", new { Controller = "HttpListener", Action = "SetupUpload" });
-                e.MapControllerRoute("UploadChunk", "/Upload/Chunk", new { Controller = "HttpListener", Action = "UploadChunk" });
+                e.MapControllerRoute("wh", "/wh/{id}", new { Controller = "HttpListener", Action = "WebHost" });
+                e.MapControllerRoute("/", "/{id}", new { Controller = "HttpListener", Action = "HandleImplant" });
+                //e.MapControllerRoute("SetupDownload", "/SetupDownload/{id}", new { Controller = "HttpListener", Action = "SetupDownload" });
+                //e.MapControllerRoute("DownloadChunk", "/DownloadChunk/{id}/{chunkIndex}/", new { Controller = "HttpListener", Action = "DownloadChunk" });
+                //e.MapControllerRoute("SetupUpload", "/Upload/Setup", new { Controller = "HttpListener", Action = "SetupUpload" });
+                //e.MapControllerRoute("UploadChunk", "/Upload/Chunk", new { Controller = "HttpListener", Action = "UploadChunk" });
                 //e.MapControllerRoute("ModuleInfo", "/ModuleInfo/", new { Controller = "HttpListener", Action = "ModuleInfo" });
             });
         }

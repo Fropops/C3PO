@@ -66,11 +66,6 @@ namespace TeamServer.Models
 
         public async Task<IActionResult> HandleImplant(string id)
         {
-
-            //var metadata = ExtractMetadata(HttpContext.Request.Headers);
-            //if (metadata == null)
-            //    return Content("<html>Hello</html>");
-
             var agent = this._agentService.GetAgent(id);
             if (agent == null)
             {

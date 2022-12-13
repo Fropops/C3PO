@@ -29,7 +29,7 @@ namespace Stage1
 
             HttpClient client = new HttpClient();
             client.Timeout = new TimeSpan(0, 0, 10);
-            client.BaseAddress = new Uri($"{protocol}://{server}:{port}");
+            client.BaseAddress = new Uri($"{protocol}://{server}:{port}/wh/");
             client.DefaultRequestHeaders.Clear();
 
 

@@ -9,7 +9,7 @@ namespace Agent.Models
 {
     public abstract class CommModule
     {
-        public int Interval { get; set; } = 5000;
+        public int Interval { get; set; } = 2000;
         public double Jitter { get; set; } = 0.5;
 
         public abstract Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);

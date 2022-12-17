@@ -14,7 +14,7 @@ namespace Commander
         {
             var terminal = new Terminal.Terminal();
             ServiceProvider.RegisterSingleton<ITerminal>(terminal);
-            var apiCommModule = new ApiCommModule(terminal, "127.0.0.1", 5000);
+            var apiCommModule = new ApiCommModule(terminal, "192.168.56.1", 5000);
             ServiceProvider.RegisterSingleton<ICommModule>(apiCommModule);
             var exec = new Executor.Executor(terminal, apiCommModule);
             ServiceProvider.RegisterSingleton<IExecutor>(exec);

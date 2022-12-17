@@ -10,7 +10,7 @@ namespace Agent.Commands
     public class TerminateCommand: AgentCommand
     {
         public override string Name => "terminate";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             result.Result = "Exiting...";
             Environment.Exit(0);

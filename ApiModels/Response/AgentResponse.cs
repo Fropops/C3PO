@@ -9,6 +9,7 @@ namespace ApiModels.Response
     public class AgentMetadataResponse
     {
         public string Id { get; set; }
+
         public string Hostname { get; set; }
         public string UserName { get; set; }
         public string ProcessName { get; set; }
@@ -25,5 +26,6 @@ namespace ApiModels.Response
         public DateTime LastSeen { get; set; }
 
         public string ListenerId { get; set; }
+        public List<string> Path { get; set; }
     }
 }

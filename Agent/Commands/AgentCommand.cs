@@ -15,7 +15,7 @@ namespace Agent.Commands
         public string Module => Assembly.GetExecutingAssembly().GetName().Name;
 
         protected bool PreventTaskCompletion = false;
-        public virtual void Execute(AgentTask task, Models.Agent agent, CommModule comm)
+        public virtual void Execute(AgentTask task, Models.Agent agent, MessageManager comm)
         {
             var result = new AgentTaskResult();
             result.Id = task.Id;
@@ -41,9 +41,9 @@ namespace Agent.Commands
             
         }
 
-        public abstract void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm);
+        public abstract void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm);
 
-        public void Notify(AgentTaskResult result, CommModule comm, string status)
+        public void Notify(AgentTaskResult result, MessageManager comm, string status)
         {
             result.Info = status;
             comm.SendResult(result);

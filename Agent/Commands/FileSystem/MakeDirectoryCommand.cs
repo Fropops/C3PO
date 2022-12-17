@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class MakeDirectoryCommand : AgentCommand
     {
         public override string Name => "mkdir";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             string path;
             if (task.SplittedArgs.Length != 1 || task.SplittedArgs.Length != 2)

@@ -20,6 +20,11 @@ namespace TeamServer.Services
             return GetAgents().FirstOrDefault(a => a.Metadata.Id.Equals(id));
         }
 
+        public List<Agent> GetAgentToRelay(string id)
+        {
+            return GetAgents().Where(a => a.Id == id || a.RelayId == id).ToList();
+        }
+
         public IEnumerable<Agent> GetAgents()
         {
             return _agents;

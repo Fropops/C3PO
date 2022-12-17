@@ -17,7 +17,7 @@ namespace Commands
     public class StealTokenCommand : AgentCommand
     {
         public override string Name => "steal-token";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             if (!int.TryParse(task.SplittedArgs[0], out var pid))
             {

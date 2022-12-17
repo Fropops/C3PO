@@ -12,6 +12,8 @@ namespace Commander.Models
 
         public DateTime LastSeen { get; set; }
 
+        public List<string> Path { get; set; } = new List<string>();
+
         public string ListenerId { get; set; }
     }
 }

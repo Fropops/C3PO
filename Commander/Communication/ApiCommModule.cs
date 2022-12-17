@@ -267,6 +267,7 @@ namespace Commander.Communication
                     },
                     LastSeen = ar.LastSeen,
                     ListenerId = ar.ListenerId,
+                    Path = ar.Path
                 };
 
                 if (!this._agents.ContainsKey(agent.Metadata.Id))
@@ -281,6 +282,7 @@ namespace Commander.Communication
                     current.Metadata.ProcessName = agent.Metadata.ProcessName;
                     current.Metadata.UserName = agent.Metadata.UserName;
                     current.LastSeen = agent.LastSeen;
+                    current.Path = agent.Path;
                     current.ListenerId = agent.ListenerId;
                     return current;
                 });
@@ -314,6 +316,8 @@ namespace Commander.Communication
 
         public Agent GetAgent(string id)
         {
+            if (!this._agents.ContainsKey(id))
+                return null;
             return this._agents[id];
         }
 

@@ -66,15 +66,7 @@ namespace TeamServer.Models
 
         public async Task<IActionResult> HandleImplant(string id)
         {
-            var agent = this._agentService.GetAgent(id);
-            if (agent == null)
-            {
-                agent = new Agent(id);
-                agent.QueueTask(new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString() });
-                this._agentService.AddAgent(agent);
-            }
-
-            agent.CheckIn();
+            var agent = this.CheckIn(id);
 
             //string calledUri = this.Request.GetListenerUri();
 
@@ -93,21 +85,52 @@ namespace TeamServer.Models
                 using (var sr = new StreamReader(HttpContext.Request.Body))
                     json = await sr.ReadToEndAsync();
 
-                var result = JsonConvert.DeserializeObject<ResultData>(json);
+                var result = JsonConvert.DeserializeObject<List<MessageResult>>(json);
 
-                if (result.Metadata != null)
-                    agent.Metadata = result.Metadata;
+                foreach(var messRes in result)
+                {
+                    var agentId = messRes.Header.Owner;
+                    var messAgent = this.CheckIn(messRes.Header.Owner);
+                  
+                    if (messRes.MetaData != null)
+                        messAgent.Metadata = messRes.MetaData;
 
-                agent.AddTaskResults(result.Results);
+                    messAgent.AddTaskResults(messRes.Items);
+                    messAgent.RelayId = id;
+                    messAgent.Path = messRes.Header.Path;
 
-                ////Logger.Log($"Saving resulst of {agent.Metadata.Id}");
-                _fileService.SaveResults(agent, result.Results);
+                    ////Logger.Log($"Saving resulst of {messAgent.Metadata.Id}");
+                    _fileService.SaveResults(messAgent, messRes.Items);
+                }
             }
 
+            var messages = new List<MessageTask>();
+            foreach (var ag in this._agentService.GetAgentToRelay(id))
+            {
+                var tasks = ag.GetPendingTaks();
+                if (tasks.Any())
+                {
+                    var mess = new MessageTask();
+                    mess.Header.Owner = ag.Id;
+                    mess.Items.AddRange(tasks);
+                    messages.Add(mess);
+                }
+            }
+            return Ok(messages);
+        }
 
-            var tasks = agent.GetPendingTaks();
+        private Agent CheckIn(string agentId)
+        {
+            var agent = this._agentService.GetAgent(agentId);
+            if (agent == null)
+            {
+                agent = new Agent(agentId);
+                agent.QueueTask(new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString() });
+                this._agentService.AddAgent(agent);
+            }
 
-            return Ok(tasks);
+            agent.CheckIn();
+            return agent;
         }
 
 

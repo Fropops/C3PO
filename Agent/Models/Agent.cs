@@ -11,7 +11,9 @@ namespace Agent.Models
 {
     public class Agent
     {
-        private CommModule _communicator;
+        public HttpCommModule HttpCommunicator { get; set; }
+        public PipeCommModule PipeCommunicator { get; set; }
+        private MessageManager _messageManager;
         private AgentMetadata _metadata;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -30,7 +32,6 @@ namespace Agent.Models
                 }
             }
 
-            this._communicator.Init(this._metadata);
         }
 
         public int LoadCommands(Assembly module)
@@ -49,30 +50,31 @@ namespace Agent.Models
                     }
                 }
             }
-
-            this._communicator.Init(this._metadata);
             return count;
         }
 
-        public Agent(AgentMetadata metadata, CommModule comm)
+        public Agent(AgentMetadata metadata)
         {
             _metadata = metadata;
-            _communicator = comm;
+            _messageManager = new MessageManager(metadata);
+
+            this.HttpCommunicator = new HttpCommModule(_messageManager);
+            this.PipeCommunicator = new PipeCommModule(_messageManager);
 
             LoadCoreAgentCommands();
         }
 
+
         public void Start()
         {
-            //_communicator.Init(this._metadata);
-            //_communicator.Start();
 
             while (!_tokenSource.IsCancellationRequested)
             {
-                if (_communicator.ReceieveData(out var tasks))
+                var messages = this._messageManager.GetMessageTasksForAgent(this._metadata.Id);
+                if (messages.Any())
                 {
-                    
-                    HandleTask(tasks);
+                    foreach(var mess in messages)
+                        HandleTask(mess.Items);
                 }
                 Thread.Sleep(100);
             }
@@ -112,16 +114,10 @@ namespace Agent.Models
                     Result = $"Agent has no {task.Command} command registered!",
                     Status = AgentResultStatus.Completed,
                 };
-                this._communicator.SendResult(result);
+                this._messageManager.SendResult(result);
             }
             else
-                command.Execute(task, this, this._communicator);
+                command.Execute(task, this, this._messageManager);
         }
-
-        //private void SendTaskResult(AgentTaskResult result)
-        //{
-        //    this._communicator.SendData(result);
-        //}
-
     }
 }

@@ -12,7 +12,7 @@ namespace Agent.Commands
     {
         public override string Name => "wait";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             int delay = 10;
             if (task.SplittedArgs.Length > 0)

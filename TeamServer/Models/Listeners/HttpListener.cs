@@ -53,12 +53,13 @@ namespace TeamServer.Models
 
             if (_logger != null)
             {
-                _logger.LogInformation($"Creating binairies");
-                var result = _binMakerService.GenerateBins(this);
-                if(_logger != null)
-                    _logger.LogInformation(result);
+               
                 try
                 {
+                    _logger.LogInformation($"Creating binairies");
+                    var result = _binMakerService.GenerateBins(this);
+                    if (_logger != null)
+                        _logger.LogInformation(result);
                     _binMakerService.GenerateB64s(this);
                 }
                 catch(Exception ex)

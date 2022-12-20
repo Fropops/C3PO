@@ -1,4 +1,5 @@
 ﻿using Agent.Models;
+using Agent.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,13 @@ namespace Agent
 
         private Random random = new Random();
 
-        public MessageManager MessageManager { get; protected set; }
+        public MessageService MessageService { get; protected set; }
+        public FileService FileService { get; protected set; }
 
-        public CommModule(MessageManager messageManager)
+        public CommModule(MessageService messageManager, FileService fileService)
         {
-            this.MessageManager = messageManager;
+            this.MessageService = messageManager;
+            this.FileService = fileService;
         }
 
         protected int GetDelay()

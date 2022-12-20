@@ -20,6 +20,8 @@ namespace Commander.Communication
         void Stop();
         void UpdateConfig();
 
+        ConnectionStatus ConnectionStatus { get; set; }
+
         string ConnectAddress { get; set; }
         int ConnectPort { get; set; }
         int Delay { get; set; }

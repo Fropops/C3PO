@@ -15,7 +15,7 @@ namespace Commands
     public class CaptureCommand : AgentCommand
     {
         public override string Name => "capture";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             throw new NotImplementedException();
             //List<TaskFileResult> files = new List<TaskFileResult>();
@@ -33,13 +33,13 @@ namespace Commands
             //    var buff = (byte[])converter.ConvertTo(image, typeof(byte[]));
 
             //    var filename = $"Capture_{screenId}_{Guid.NewGuid()}.png";
-            //    var fileId = commm.Upload(buff, filename, a =>
+            //    var fileId = context.MessageServiceUpload(buff, filename, a =>
             //    {
             //        result.Info = $"Uploading {filename} ({a}%)";
-            //        commm.SendResult(result);
+            //        context.MessageServiceSendResult(result);
             //    }).Result;
 
-            //    result.Result += $"Screen #{screenId} Captured to {filename}!"+ Environment.NewLine;
+            //    context.Result.Result += $"Screen #{screenId} Captured to {filename}!"+ Environment.NewLine;
             //    files.Add(new TaskFileResult() { FileId = fileId, FileName = filename });
             //    screenId++;
             //}

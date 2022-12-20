@@ -116,9 +116,9 @@
     <Compile Include="Models\AgentMetadata.cs" />
     <Compile Include="Models\AgentTask.cs" />
     <Compile Include="Models\AgentTaskResult.cs" />
-    <Compile Include="Models\MessageManager.cs" />
-    <Compile Include="Models\FileChunk.cs" />
-    <Compile Include="Models\FileDescriptor.cs" />
+    <Compile Include="Service\FileService.cs" />
+    <Compile Include="Service\MessageService.cs" />
+    <Compile Include="Service\FileChunk.cs" />
     <Compile Include="Models\HttpCommModule.cs" />
     <Compile Include="Models\Pipe\SimplePipeServer.cs" />
     <Compile Include="Native\Advapi.cs" />

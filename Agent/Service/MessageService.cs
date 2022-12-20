@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agent.Service;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Agent.Models
 {
-    public class MessageManager
+    public class MessageService
     {
         protected ConcurrentQueue<MessageTask> _taskMessages = new ConcurrentQueue<MessageTask>();
         protected ConcurrentQueue<MessageResult> _resultMessages = new ConcurrentQueue<MessageResult>();
         public AgentMetadata AgentMetaData { get; private set; }
 
 
-        public MessageManager(AgentMetadata metadata)
+        public MessageService(AgentMetadata metadata)
         {
             this.AgentMetaData = metadata;
         }
@@ -90,7 +91,6 @@ namespace Agent.Models
 
         public List<MessageResult> GetMessageResultsToRelay()
         {
-            var remaining = new Queue<MessageResult>();
             var list = new List<MessageResult>();
 
 
@@ -105,78 +105,30 @@ namespace Agent.Models
 
 
 
-        public void SendResult(AgentTaskResult res, bool includeMetaData = false)
+        public void SendResult(AgentTaskResult res,  bool includeMetaData = false)
         {
-            MessageResult mr = new MessageResult();
-            mr.Header.Owner = this.AgentMetaData.Id;
-            mr.Items.Add(res);
-            if (includeMetaData)
-                mr.MetaData = this.AgentMetaData;
-            this._resultMessages.Enqueue(mr);
+            bool found = false;
+            foreach(var existing in _resultMessages)
+            {
+                if(existing.Header.Owner == this.AgentMetaData.Id)
+                {
+                    found = true;
+                    existing.Items.Add(res);
+                    if(includeMetaData && existing.MetaData == null)
+                        existing.MetaData = this.AgentMetaData;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                MessageResult mr = new MessageResult();
+                mr.Header.Owner = this.AgentMetaData.Id;
+                mr.Items.Add(res);
+                if (includeMetaData)
+                    mr.MetaData = this.AgentMetaData;
+                this._resultMessages.Enqueue(mr);
+            }
         }
 
     }
 }
-
-//public class CommModule
-//{
-//    public int Interval { get; set; } = 2000;
-//    public double Jitter { get; set; } = 0.5;
-
-//    public abstract Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
-
-//    public abstract Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
-
-
-//    //public abstract Task<Byte[]> DownloadStagerDll();
-//    //public abstract Task<Byte[]> DownloadStagerExe();
-//    public abstract Task<Byte[]> DownloadAgentBin(bool x86 = false);
-//    public abstract void Start();
-//    public abstract void Stop();
-//    public abstract void SendMetaData();
-
-//    protected ConcurrentQueue<AgentTask> _inbound = new ConcurrentQueue<AgentTask>();
-//    protected ConcurrentQueue<AgentTaskResult> _outBound = new ConcurrentQueue<AgentTaskResult>();
-//    protected AgentMetadata _agentmetaData;
-
-//    public virtual void Init(AgentMetadata metadata)
-//    {
-//        this._agentmetaData = metadata;
-//    }
-
-//    public bool ReceieveData(out IEnumerable<AgentTask> tasks)
-//    {
-//        if (_inbound.IsEmpty)
-//        {
-//            tasks = null;
-//            return false;
-//        }
-
-//        var list = new List<AgentTask>();
-//        while (_inbound.TryDequeue(out var task))
-//        {
-//            list.Add(task);
-//        }
-
-//        tasks = list;
-//        return true;
-//    }
-
-//    public void SendResult(AgentTaskResult result)
-//    {
-//        _outBound.Enqueue(result);
-//    }
-
-//    protected IEnumerable<AgentTaskResult> GetOutbound()
-//    {
-//        var list = new List<AgentTaskResult>();
-//        while (_outBound.TryDequeue(out var task))
-//        {
-//            list.Add(task);
-//        }
-
-//        return list;
-//    }
-
-
-//}

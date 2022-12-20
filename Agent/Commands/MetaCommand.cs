@@ -12,9 +12,9 @@ namespace Agent.Commands
     {
         public override string Name => "meta";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            commm.SendResult(result, true);
+            context.MessageService.SendResult(context.Result, true);
         }
     }
 }

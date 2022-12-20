@@ -11,12 +11,12 @@ namespace Agent.Commands
     public class MakeDirectoryCommand : AgentCommand
     {
         public override string Name => "mkdir";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             string path;
             if (task.SplittedArgs.Length != 1 || task.SplittedArgs.Length != 2)
             {
-                result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
+                context.Result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
                 return;
             }
 
@@ -25,18 +25,18 @@ namespace Agent.Commands
             if (task.SplittedArgs.Length > 1)
                 if (!bool.TryParse(task.SplittedArgs[1], out recurse))
                 {
-                    result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
+                    context.Result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
                     return;
                 }
 
             Directory.Delete(path, recurse);
             if (!Directory.Exists(path))
             {
-                result.Result = $"{path} deleted";
+                context.Result.Result = $"{path} deleted";
                 return;
             }
 
-            result.Result = $"Failed to delete {path}";
+            context.Result.Result = $"Failed to delete {path}";
         }
 
 

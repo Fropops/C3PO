@@ -79,6 +79,12 @@ namespace Commander.Terminal
             Console.Write(text);
         }
 
+        public void Write(string text, int count)
+        {
+            for(int  i = 0; i < count; ++i)
+                Console.Write(text);
+        }
+
         public void WriteLine(params string[] parm)
         {
             this.InnerWriteLine(parm);

@@ -11,12 +11,12 @@ namespace Agent.Commands
     public class CatCommand : AgentCommand
     {
         public override string Name => "cat";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             string path;
             if (task.SplittedArgs.Length != 1)
             {
-                result.Result = $"Usage : {this.Name} file_to_display";
+                context.Result.Result = $"Usage : {this.Name} file_to_display";
                 return;
             }
 
@@ -24,18 +24,18 @@ namespace Agent.Commands
           
             if(!File.Exists(path))
             {
-                result.Result = $"Failed to delete {path}";
+                context.Result.Result = $"Failed to delete {path}";
                 return;
             }
 
             if (!File.Exists(path))
             {
-                result.Result = $"{path} not found";
+                context.Result.Result = $"{path} not found";
                 return;
             }
 
             string text = System.IO.File.ReadAllText(path);
-            result.Result = text;
+            context.Result.Result = text;
         }
 
 

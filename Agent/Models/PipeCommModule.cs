@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agent.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace Agent.Models
         protected PipeServer Server { get; set; }
 
         private CancellationTokenSource _tokenSource;
-        public PipeCommModule(MessageManager messageManager) : base(messageManager)
+        public PipeCommModule(MessageService messageService, FileService fileService) : base(messageService, fileService)
         {
         }
 
@@ -62,14 +63,14 @@ namespace Agent.Models
                     {
                         var targets = new List<string>(link.Relays);
 
-                        var tasks = this.MessageManager.GetMessageTasksToRelay(targets);
+                        var tasks = this.MessageService.GetMessageTasksToRelay(targets);
 
 
                         PipeClient client = new SimplePipeClient(link.Hostname, link.AgentId);
 
                         var ret = client.SendAndReceive(tasks);
 
-                        this.MessageManager.EnqueueResults(ret.Item1);
+                        this.MessageService.EnqueueResults(ret.Item1);
                         link.Relays = ret.Item2;
 #if DEBUG
                         Console.WriteLine($"Relaying to \\\\{link.Hostname}\\{link.AgentId} :");

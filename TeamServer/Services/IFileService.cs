@@ -28,5 +28,9 @@ namespace TeamServer.Services
         public string GetListenerPath(string listenerName);
 
         void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results);
+
+        public List<AgentFileChunck> GetFileChunksForAgent(string id);
+
+        public void AddAgentFileChunk(AgentFileChunck chunk);
     }
 }

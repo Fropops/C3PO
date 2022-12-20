@@ -35,7 +35,7 @@ namespace Commander.Commands.Agent
             var filename = Path.GetFileName(path);
             if (!File.Exists(path))
             {
-                context.Terminal.WriteError("File {file} does not exists!");
+                context.Terminal.WriteError($"File {filename} does not exists!");
                 return false;
             }
 

@@ -7,6 +7,9 @@ namespace TeamServer.Models
 {
     public class Agent
     {
+
+
+
         public string Id { get; set; }
         public string RelayId { get; set; }
 
@@ -22,6 +25,27 @@ namespace TeamServer.Models
         private readonly List<AgentTaskResult> _taskResults = new();
         public ConcurrentBag<AgentTask> TaskHistory { get; private set; } = new();
 
+        public Queue<AgentFileChunck> FileChuncksToUpload { get; private set; } = new Queue<AgentFileChunck>();
+
+        private AgentFileChunck GetNextChunck()
+        {
+            if (!FileChuncksToUpload.Any())
+                return null;
+            return FileChuncksToUpload.Dequeue();
+        }
+
+        public MessageTask GetNextMessage()
+        {
+            var mess = new MessageTask();
+            mess.Header.Owner = this.Id;
+            mess.Items.AddRange(this.GetPendingTaks());
+            mess.FileChunk = this.GetNextChunck();
+
+            if (mess.FileChunk == null && !mess.Items.Any())
+                return null;
+
+            return mess;
+        }
 
         public Agent(string id)
         {
@@ -29,6 +53,14 @@ namespace TeamServer.Models
             this.Metadata.Id = id;
             this.Id = id;
         }
+
+        public void QueueDownload(List<AgentFileChunck> chunks)
+        {
+            foreach (var chunk in chunks)
+                this.FileChuncksToUpload.Enqueue(chunk);
+        }
+
+
 
         //public Agent(AgentMetadata metadata)
         //{

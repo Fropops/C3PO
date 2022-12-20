@@ -83,11 +83,11 @@ namespace Commander.Commands.Agent
                     {
                         Index = index,
                         Id = task.Id,
-                        Command = task.Label,
+                        Command = task.Label ?? string.Empty,
                         //Arguments = task.Arguments,
                         Info = result == null ? string.Empty : result.Info ?? string.Empty,
                         Status = result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
-                    }); ;
+                    });
                     index++;
                 }
 
@@ -100,13 +100,13 @@ namespace Commander.Commands.Agent
 
         public sealed class ViewTaskResult : SharpSploitResult
         {
-            public int Index { get; set; }
-            public string Id { get; set; }
-            public string Command { get; set; }
+            public int Index { get; set; } = 0;
+            public string Id { get; set; } = string.Empty;
+            public string Command { get; set; } = string.Empty;
             //public string Arguments { get; set; }
-            public string Status { get; set; }
+            public string Status { get; set; } = string.Empty;
 
-            public string Info { get; set; }
+            public string Info { get; set; } = string.Empty;
 
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {

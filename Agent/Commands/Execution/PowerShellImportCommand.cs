@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class PowerShellImportCommand : AgentCommand
     {
         public override string Name => "powershell-import";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             throw new NotImplementedException();
             //if (string.IsNullOrEmpty(task.FileId))
@@ -21,10 +21,10 @@ namespace Agent.Commands
             //    return;
             //}
 
-            //var fileContent = commm.Download(task.FileId, a =>
+            //var fileContent = context.MessageServiceDownload(task.FileId, a =>
             //{
             //    result.Info = $"Downloading {task.FileName} ({a}%)";
-            //    commm.SendResult(result);
+            //    context.MessageServiceSendResult(result);
             //}).Result;
 
             //Script = Encoding.UTF8.GetString(fileContent);

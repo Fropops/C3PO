@@ -16,16 +16,16 @@ namespace Commands
     public class RevertToSelfCommand : AgentCommand
     {
         public override string Name => "revert-self";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
          
             if (Agent.Native.Advapi.RevertToSelf())
             {
-                result.Result += $"Reverted to self";
+                context.Result.Result += $"Reverted to self";
                 return;
             }
 
-            result.Result += $"Failed to revert";
+            context.Result.Result += $"Failed to revert";
             return;
         }
     }

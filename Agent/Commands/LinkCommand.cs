@@ -12,12 +12,12 @@ namespace Agent.Commands
     {
         public override string Name => "link";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (task.SplittedArgs.Count() != 2)
             {
                 var list = new SharpSploitResultList<ListLinkResult>();
-                foreach (var link in agent.PipeCommunicator.Links)
+                foreach (var link in context.Agent.PipeCommunicator.Links)
                 {
                     list.Add(new ListLinkResult()
                     {
@@ -28,11 +28,11 @@ namespace Agent.Commands
                     });
                    
                 }
-                result.Result = list.ToString();
+                context.Result.Result = list.ToString();
                 return;
             }
 
-            agent.PipeCommunicator.Links.Add(new PipeLink() { Hostname = task.SplittedArgs[0], AgentId = task.SplittedArgs[1] });
+            context.Agent.PipeCommunicator.Links.Add(new PipeLink() { Hostname = task.SplittedArgs[0], AgentId = task.SplittedArgs[1] });
         }
 
 

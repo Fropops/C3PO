@@ -12,7 +12,7 @@ namespace Agent.Commands
     {
         public override string Name => "wait";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             int delay = 10;
             if (task.SplittedArgs.Length > 0)
@@ -28,11 +28,11 @@ namespace Agent.Commands
                 Thread.Sleep(chunk);
                 completion++;
                 spent += chunk;
-                result.Info = $"Completed at {completion}%";
-                commm.SendResult(result);
+                context.Result.Info = $"Completed at {completion}%";
+                context.MessageService.SendResult(context.Result);
             }
 
-            result.Result = $"Awaited for {delay}ms";
+            context.Result.Result = $"Awaited for {delay}ms";
         }
     }
 }

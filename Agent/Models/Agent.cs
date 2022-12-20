@@ -1,4 +1,5 @@
 ﻿using Agent.Commands;
+using Agent.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,8 @@ namespace Agent.Models
     {
         public HttpCommModule HttpCommunicator { get; set; }
         public PipeCommModule PipeCommunicator { get; set; }
-        private MessageManager _messageManager;
+        private MessageService _messageService;
+        private FileService _fileService;
         private AgentMetadata _metadata;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -56,25 +58,29 @@ namespace Agent.Models
         public Agent(AgentMetadata metadata)
         {
             _metadata = metadata;
-            _messageManager = new MessageManager(metadata);
+            _messageService = new MessageService(metadata);
+            _fileService = new FileService();
 
-            this.HttpCommunicator = new HttpCommModule(_messageManager);
-            this.PipeCommunicator = new PipeCommModule(_messageManager);
+            this.HttpCommunicator = new HttpCommModule(_messageService, _fileService);
+            this.PipeCommunicator = new PipeCommModule(_messageService, _fileService);
 
             LoadCoreAgentCommands();
         }
 
-
         public void Start()
         {
-
             while (!_tokenSource.IsCancellationRequested)
             {
-                var messages = this._messageManager.GetMessageTasksForAgent(this._metadata.Id);
+                var messages = this._messageService.GetMessageTasksForAgent(this._metadata.Id);
                 if (messages.Any())
                 {
-                    foreach(var mess in messages)
+                    foreach (var mess in messages)
+                    {
+                        if (mess.FileChunk != null)
+                            this._fileService.AddFileChunck(mess.FileChunk);
                         HandleTask(mess.Items);
+                    }
+
                 }
                 Thread.Sleep(100);
             }
@@ -95,6 +101,8 @@ namespace Agent.Models
             }
         }
 
+        object runningTaskLock = new object();
+
         public void StartHandleTask(object task)
         {
             this.HandleTask(task as AgentTask);
@@ -114,10 +122,18 @@ namespace Agent.Models
                     Result = $"Agent has no {task.Command} command registered!",
                     Status = AgentResultStatus.Completed,
                 };
-                this._messageManager.SendResult(result);
+                this._messageService.SendResult(result);
             }
             else
-                command.Execute(task, this, this._messageManager);
+            {
+                var ctxt = new AgentCommandContext()
+                {
+                    Agent = this,
+                    MessageService = _messageService,
+                    FileService = _fileService
+                };
+                command.Execute(task, ctxt);
+            }
         }
     }
 }

@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Agent.Models
+namespace TeamServer.Models
 {
-    [DataContract]
-    public class FileChunk
+    public class AgentFileChunck
     {
-        [DataMember(Name = "fileId")]
         public string FileId { get; set; }
-        [DataMember(Name = "index")]
+        public string FileName { get; set; }
         public int Index { get; set; }
-        [DataMember(Name = "data")]
+        public int Count { get; set; }
         public string Data { get; set; }
     }
 }

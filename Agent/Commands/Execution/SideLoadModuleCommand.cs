@@ -14,14 +14,14 @@ namespace Agent.Commands
     {
         public override string Name => "side-load-module";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             throw new NotImplementedException();
             //var fileName = task.FileName;
-            //var fileContent = commm.Download(task.FileId, a =>
+            //var fileContent = context.MessageServiceDownload(task.FileId, a =>
             //{
             //    result.Info = $"Downloading {fileName} ({a}%)";
-            //    commm.SendResult(result);
+            //    context.MessageServiceSendResult(result);
             //}).Result;
 
             //this.Notify(result, commm, $"{fileName} Downloaded");

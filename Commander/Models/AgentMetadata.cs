@@ -22,5 +22,17 @@ namespace Commander.Models
                 return this.Id.ToShortGuid();
             }
         }
+
+        public string Desc
+        {
+            get
+            {
+                string desc = UserName;
+                if (Integrity == "High")
+                    desc += "*";
+                desc += "@" + Hostname;
+                return desc;
+            }
+        }
     }
 }

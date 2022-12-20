@@ -36,18 +36,19 @@ namespace TeamServer.Models
 
     public class MessageResult : Message
     {
-        public override MessageType MessageType => MessageType.Result;
 
         public List<AgentTaskResult> Items { get; set; } = new List<AgentTaskResult>();
 
         public AgentMetadata MetaData { get; set; }
+
+        public AgentFileChunck FileChunk { get; set; }
     }
 
 
     public class MessageTask : Message
     {
-        public override MessageType MessageType => MessageType.Task;
-
         public List<AgentTask> Items { get; set; } = new List<AgentTask>();
+
+        public AgentFileChunck FileChunk { get; set; }
     }
 }

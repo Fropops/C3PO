@@ -13,6 +13,8 @@ namespace Commander.Terminal
         bool CanHandleInput { get; set; }
 
         string Prompt { get; set; }
+
+        public ConsoleColor DefaultColor { get; set; }
         Task Start();
 
         void stop();
@@ -35,6 +37,7 @@ namespace Commander.Terminal
         void WriteLine();
 
         void Write(string text);
+        void Write(string text, int count);
 
         void WriteLine(params string[] parm);
 

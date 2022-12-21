@@ -16,7 +16,7 @@ namespace Commander.Commands.Agent
         protected override void InnerExecute(CommandContext context)
         {
             context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, context.CommandParameters).Wait();
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
         }
     }
 

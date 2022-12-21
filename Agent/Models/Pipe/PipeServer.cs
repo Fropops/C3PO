@@ -29,7 +29,7 @@ namespace Agent.Models
 
         public async Task Start()
         {
-            Console.WriteLine("[thread: {0}] -> Starting server listener.", Thread.CurrentThread.ManagedThreadId);
+            //Console.WriteLine("[thread: {0}] -> Starting server listener.", Thread.CurrentThread.ManagedThreadId);
 
             while (!_cancel.IsCancellationRequested)
             {

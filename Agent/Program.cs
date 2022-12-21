@@ -125,7 +125,7 @@ namespace Agent
 
             s_metadata = new AgentMetadata()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = ShortGuid.NewGuid(),
                 Hostname = Environment.MachineName,
                 UserName = userName,
                 ProcessId = process.Id,

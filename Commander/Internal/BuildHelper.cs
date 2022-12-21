@@ -109,5 +109,40 @@ namespace Commander.Internal
 
             return result;
         }
+
+        public static string[] SplitIntoChunks(string input, int chunkSize)
+        {
+            int stringLength = input.Length;
+
+            // Calculate the number of chunks we will need.
+            int chunkCount = stringLength / chunkSize;
+            if (stringLength % chunkSize > 0)
+            {
+                chunkCount++;
+            }
+
+            // Initialize the array to hold the chunks.
+            string[] chunks = new string[chunkCount];
+
+            // Split the input string into the array.
+            for (int i = 0; i < chunkCount; i++)
+            {
+                int startIndex = i * chunkSize;
+                int length = Math.Min(chunkSize, stringLength - startIndex);
+                chunks[i] = input.Substring(startIndex, length);
+            }
+
+            return chunks;
+        }
+
+        public static string GenerateB64(string sourceFile)
+        {
+            byte[] bytes = File.ReadAllBytes(sourceFile);
+            string base64 = Convert.ToBase64String(bytes);
+            return base64;
+
+        }
     }
+
+
 }

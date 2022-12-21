@@ -39,7 +39,7 @@ namespace Commander.Commands.Agent
             if (int.TryParse(context.Options.id, out index))
                 agent = context.CommModule.GetAgent(index);
             else
-                agent = context.CommModule.GetAgents().FirstOrDefault(a => a.Metadata.ShortId.ToLower().Equals(context.Options.id.ToLower()));
+                agent = context.CommModule.GetAgents().FirstOrDefault(a => a.Metadata.Id.ToLower().Equals(context.Options.id.ToLower()));
             
             if(agent == null)
             {
@@ -51,7 +51,7 @@ namespace Commander.Commands.Agent
             context.Executor.Mode = ExecutorMode.AgentInteraction;
             var star = agent.Metadata.Integrity == "High" ? "*" : string.Empty;
 
-            context.Terminal.Prompt = $"${ExecutorMode.Agent}({agent.Metadata.ShortId}) {agent.Metadata.UserName}{star}@{agent.Metadata.Hostname}> ";
+            context.Terminal.Prompt = $"${ExecutorMode.Agent}({agent.Metadata.Id}) {agent.Metadata.UserName}{star}@{agent.Metadata.Hostname}> ";
 
             return true;
         }

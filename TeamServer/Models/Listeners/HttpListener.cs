@@ -57,10 +57,11 @@ namespace TeamServer.Models
                 try
                 {
                     _logger.LogInformation($"Creating binairies");
+                    _binMakerService.GenerateB64s(this);
                     var result = _binMakerService.GenerateBins(this);
                     if (_logger != null)
                         _logger.LogInformation(result);
-                    _binMakerService.GenerateB64s(this);
+                    
                 }
                 catch(Exception ex)
                 {

@@ -14,5 +14,11 @@ namespace Commander
                 return guid;
             return guid.Replace("-", "").Substring(0, 10);
         }
+
+        public static string ToShortGuid(this Guid guid)
+        {
+            return guid.ToString().Replace("-", "").Substring(0, 10);
+        }
+
     }
 }

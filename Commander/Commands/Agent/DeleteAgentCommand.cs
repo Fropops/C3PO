@@ -59,7 +59,7 @@ namespace Commander.Commands.Agent
                     cmdRes = false;
                 }
                 else
-                    context.Terminal.WriteSuccess($"{agent.Metadata.ShortId} was deleted.");
+                    context.Terminal.WriteSuccess($"{agent.Metadata.Id} was deleted.");
             }
 
             return cmdRes;

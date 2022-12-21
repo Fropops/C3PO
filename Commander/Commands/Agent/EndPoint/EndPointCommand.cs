@@ -57,7 +57,7 @@ namespace Commander.Commands.Agent
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
 
 
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
 
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
@@ -276,7 +276,7 @@ namespace Commander.Commands.Agent
             else
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name);
 
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
             return true;
         }
     }

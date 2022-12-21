@@ -85,7 +85,7 @@ namespace Commander.Commands.Agent
                 var node = new MapTreeNode();
                 node.Name = agent.Metadata.Desc;
                 node.Id = agent.Metadata.Id;
-                node.ShortId = agent.Metadata.ShortId;
+                node.ShortId = agent.Metadata.Id;
                 node.IsAlive = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow;
                 allNodes.Add(agent.Metadata.Id, node);
             }

@@ -15,14 +15,6 @@ namespace Commander.Models
         public string Integrity { get; set; }
         public string Architecture { get; set; }
 
-        public string ShortId
-        {
-            get
-            {
-                return this.Id.ToShortGuid();
-            }
-        }
-
         public string Desc
         {
             get

@@ -25,7 +25,7 @@ namespace Agent.Models
             this.PipeName = pipeName;
             this.IsInitialized = true;
             if (!string.IsNullOrEmpty(pipeName))
-                this.Server = new SimplePipeServer(pipeName, this);
+                this.Server = new CryptoPipeServer(pipeName, this);
         }
 
         public override async void Stop()
@@ -65,8 +65,8 @@ namespace Agent.Models
 
                         var tasks = this.MessageService.GetMessageTasksToRelay(targets);
 
-
-                        PipeClient client = new SimplePipeClient(link.Hostname, link.AgentId);
+                        //Console.WriteLine($"Creating client");
+                        PipeClient client = new CryptoPipeClient(link.Hostname, link.AgentId);
 
                         var ret = client.SendAndReceive(tasks);
 

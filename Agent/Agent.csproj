@@ -110,6 +110,7 @@
     <Compile Include="Models\Pipe\PipeClient.cs" />
     <Compile Include="Models\Pipe\PipeLink.cs" />
     <Compile Include="Models\Pipe\PipeServer.cs" />
+    <Compile Include="Models\Pipe\CryptoPipeClient.cs" />
     <Compile Include="Models\Pipe\SimplePipeClient.cs" />
     <Compile Include="Models\ResultData.cs" />
     <Compile Include="Models\AgentMetadata.cs" />

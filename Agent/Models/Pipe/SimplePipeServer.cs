@@ -30,15 +30,9 @@ namespace Agent.Models
                 //Console.WriteLine("Pipe Client connected.", Thread.CurrentThread.ManagedThreadId);
 
                 var reader = new StreamReader(server);
-                //Console.WriteLine($"received : " + reader.ReadLine());
-
+ 
                 var writer = new StreamWriter(server);
-                //writer.WriteLine($"Send to client");
-                //writer.Flush();
 
-                //var tasks = this.GetMessagesToSend();
-
-                //this.HandleMessageReceived();
                 var b64tasks = reader.ReadLine();
                 var tasks = Convert.FromBase64String(b64tasks).Deserialize<List<MessageTask>>();
                 this.PipeCommModule.MessageService.EnqueueTasks(tasks);

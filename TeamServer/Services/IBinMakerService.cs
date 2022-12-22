@@ -11,7 +11,7 @@ namespace TeamServer.Services
         //string GenerateStagersFor(Listener listener);
 
         string DonutFolder { get; }
-        string ReaNimatorFolder { get; }
+        //string ReaNimatorFolder { get; }
 
         void GenerateB64s(Listener listener);
         string GenerateBins(Listener listener);

@@ -30,7 +30,7 @@ namespace Commander.Commands.Laucher
     {
 
 
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Launcher;
         public override string Description => "Create a Powershell dropper script";
         public override string Name => "ps-dropper";
 

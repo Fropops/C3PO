@@ -29,7 +29,7 @@ namespace Commander.Commands.Laucher
     }
     public class BuildEmbedderCommand : EnhancedCommand<BuildEmbedderCommandCommandOptions>
     {
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Launcher;
         public override string Description => "Create a file embedding the agent";
         public override string Name => "embedder";
 

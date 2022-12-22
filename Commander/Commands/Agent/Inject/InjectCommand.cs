@@ -48,7 +48,7 @@ namespace Commander
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
-            new Argument<string>("injectionType", "Type of injection").FromAmong("self", "spawn", "remote"),
+            new Argument<string>("injectionType", "Type of injection").FromAmong("self", "spawn", "remote", "spawn-nowait"),
             new Argument<string>("fileToInject", "path of the file to inject"),
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
             new Option<string>(new[] { "--processName", "-p" }, () => "powershell -WindowStyle Hidden" ,"process name to start."),
@@ -113,13 +113,17 @@ namespace Commander
 
             string fileName = Path.GetFileName(binFileName);
 
-            if(context.Options.injectionType.Equals("spawn"))
+            if (context.Options.injectionType.Equals("spawn-nowait"))
             {
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn", fileId, fileName, $"{context.Options.processName}");
             }
-            else if(context.Options.injectionType == "remote")
+            else if (context.Options.injectionType == "spawn")
             {
-                if(!context.Options.processId.HasValue)
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn-wait", fileId, fileName, $"{context.Options.processName}");
+            }
+            else if (context.Options.injectionType == "remote")
+            {
+                if (!context.Options.processId.HasValue)
                 {
                     context.Terminal.WriteError("A processId is required.");
                     return false;

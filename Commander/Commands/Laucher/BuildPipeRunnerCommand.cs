@@ -24,7 +24,7 @@ namespace Commander.Commands.Laucher
     }
     public class BuildPipeRunnerCommand : EnhancedCommand<BuildPipeRunnerCommandCommandOptions>
     {
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Launcher;
         public override string Description => "Create a file embedding the piped agent";
         public override string Name => "piperunner";
 

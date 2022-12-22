@@ -35,9 +35,9 @@ namespace TeamServer.Services
         }
 
         public string DonutFolder => _configuration.GetValue<string>("DonutFolder");
-        public string ReaNimatorFolder => _configuration.GetValue<string>("ReaNimatorFolder");
+        //public string ReaNimatorFolder => _configuration.GetValue<string>("ReaNimatorFolder");
 
-        public string SourcePath => _configuration.GetValue<string>("SourcePath");
+        public string SourcePath => "Source/";
 
         private string GetX86FileName(string fileName)
         {

@@ -30,7 +30,7 @@ namespace Commander.Commands.Laucher
     {
         public static string PowershellSSlScript  = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
 
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Launcher;
         public override string Description => "Create a dropper file";
         public override string Name => "dropper";
 

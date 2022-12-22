@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Commander.Commands.Laucher
 {
-    public class BuildStagerCommandCommandOptions
+    public class BuildStagerCommandOptions
     {
 
         public string listenerName { get; set; }
@@ -26,7 +26,7 @@ namespace Commander.Commands.Laucher
 
         public bool verbose { get; set; }
     }
-    public class BuildDropperCommand : EnhancedCommand<BuildStagerCommandCommandOptions>
+    public class BuildStagerCommand : EnhancedCommand<BuildStagerCommandOptions>
     {
         public static string PowershellSSlScript  = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
 
@@ -46,7 +46,7 @@ namespace Commander.Commands.Laucher
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
 
-        protected override async Task<bool> HandleCommand(CommandContext<BuildStagerCommandCommandOptions> context)
+        protected override async Task<bool> HandleCommand(CommandContext<BuildStagerCommandOptions> context)
         {
             var listeners = context.CommModule.GetListeners();
             var listener = listeners.FirstOrDefault(l => l.Name.ToLower() == context.Options.listenerName.ToLower());

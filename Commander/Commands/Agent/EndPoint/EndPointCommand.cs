@@ -33,8 +33,6 @@ namespace Commander.Commands.Agent
         public static string EXECUTEASSEMBLY = "execute-assembly";
         public static string SIDELOAD = "side-load";
 
-        public static string MIGRATE = "migrate";
-
         public static string VERSION = "version";
         public static string IDLE = "idle";
         public static string CAT = "cat";
@@ -170,22 +168,6 @@ namespace Commander.Commands.Agent
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("verb", () => "start", "Start | Stop").FromAmong("start", "stop"),
-            };
-    }
-
-    public class MigrateCommandOptions
-    {
-        public int processId { get; set; }
-    }
-    public class MigrateCommand : EndPointCommand<MigrateCommandOptions>
-    {
-        public override string Description => "Migrate the agent to an existing process";
-        public override string Name => EndPointCommand.MIGRATE;
-        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
-
-        public override RootCommand Command => new RootCommand(this.Description)
-            {
-                new Argument<int>("processId", "Id of the process to inject"),
             };
     }
 

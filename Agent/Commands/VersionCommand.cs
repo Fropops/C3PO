@@ -13,7 +13,7 @@ namespace Agent.Commands
 
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            context.Result.Result = "Version : 3.1";
+            context.Result.Result = "Version : 4.0";
         }
     }
 }

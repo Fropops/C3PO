@@ -9,9 +9,9 @@ namespace PipeServer
 {
     public abstract class PipeServer
     {
-        private readonly CancellationToken _cancel;
+        protected readonly CancellationToken _cancel;
 
-        private readonly CancellationTokenSource _cancelSource;
+        protected readonly CancellationTokenSource _cancelSource;
 
         public string PipeName { get; private set; }
 
@@ -24,14 +24,12 @@ namespace PipeServer
             _cancel = _cancelSource.Token;
         }
 
-        public async Task Start()
+        public void Start()
         {
             Console.WriteLine("[thread: {0}] -> Starting server listener.", Thread.CurrentThread.ManagedThreadId);
 
-            while (!_cancel.IsCancellationRequested)
-            {
-                await Listener();
-            }
+            var serverThread = new Thread(() => RunServer());
+            serverThread.Start();
         }
 
         public void Stop()
@@ -39,7 +37,8 @@ namespace PipeServer
             _cancelSource.Cancel();
         }
 
-        protected abstract Task Listener();
+        protected abstract void RunServer();
+
         
     }
 }

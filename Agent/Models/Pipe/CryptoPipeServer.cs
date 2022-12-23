@@ -17,107 +17,109 @@ namespace Agent.Models
         {
         }
 
-        protected override async Task Listener()
+        protected override void RunServer()
         {
             using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
             {
-                try
+                while (!this._cancel.IsCancellationRequested)
                 {
-                    //Console.WriteLine("\r\n[thread: {0}] -> Waiting for client.", Thread.CurrentThread.ManagedThreadId);
-
-                    await Task.Factory.FromAsync(server.BeginWaitForConnection, server.EndWaitForConnection, null);
-
-                    //Console.WriteLine("[thread: {0}] -> Client connected.", Thread.CurrentThread.ManagedThreadId);
-
-
-                    // Create a new RSA crypto provider
-                    RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                    rsa.KeySize = 2048; // Set the key size to 2048 bits
-                    rsa.ExportParameters(true); // Export the private key
-
-                    //Console.WriteLine("Public key: {0}", rsa.ToXmlString(false));
-                    //Console.WriteLine("Private key: {0}", rsa.ToXmlString(true));
-
-
-
-                    var reader = new StreamReader(server);
-                    var writer = new StreamWriter(server);
-
-                    //Sends the public key
-                    writer.WriteLine(rsa.ToXmlString(false));
-                    writer.Flush();
-
-                    //Read the encoded generated symetric key
-                    var b64EncryptedKey = reader.ReadLine();
-                    var receivedKey = Convert.FromBase64String(b64EncryptedKey);
-                    byte[] decryptedKey = rsa.Decrypt(receivedKey, false);
-
-                    //Read the encoded generated symetric IV
-                    var b64EncryptedIv = reader.ReadLine();
-                    var receivedIv = Convert.FromBase64String(b64EncryptedIv);
-                    byte[] decryptedIv = rsa.Decrypt(receivedIv, false);
-
-                    // Console.WriteLine($"B64 Key = {Convert.ToBase64String(decryptedKey)}");
-
-                    //Console.WriteLine("KEY = " + string.Join(",", decryptedKey.Select(i => i.ToString())));
-                    //Console.WriteLine("IV = " + string.Join(",", decryptedIv.Select(i => i.ToString())));
-
-                    RijndaelManaged rijndael = new RijndaelManaged();
-                    rijndael.KeySize = 256;
-                    rijndael.BlockSize = 128;
-                    rijndael.Key = decryptedKey;
-                    rijndael.IV = decryptedIv;
-                    //rijndael.Padding = PaddingMode.Zeros;
-
-                    //Console.WriteLine("Server - Key Exchange done !");
-
-                    var b64tasks = this.ReceiveMessageAndDecrypt(server, rijndael);
-                    var tasks = Convert.FromBase64String(b64tasks).Deserialize<List<MessageTask>>();
-                    this.PipeCommModule.MessageService.EnqueueTasks(tasks);
-                    //Console.WriteLine("Pipe Client Tasks received", Thread.CurrentThread.ManagedThreadId);
-
-                    var agentId = this.PipeCommModule.MessageService.AgentMetaData.Id;
-
-                    var results = this.PipeCommModule.MessageService.GetMessageResultsToRelay();
-
-                    if (!results.Any(t => t.Header.Owner == agentId))
+                    try
                     {
-                        //add a checkin message
-                        var messageResult = new MessageResult();
-                        messageResult.Header.Owner = agentId;
-                        messageResult.FileChunk = this.PipeCommModule.FileService.GetChunkToSend();
-                        results.Add(messageResult);
+                        if (!server.WaitForConnection(this._cancel))
+                            return;
+
+                        //Console.WriteLine("[thread: {0}] -> Client connected.", Thread.CurrentThread.ManagedThreadId);
+
+
+                        // Create a new RSA crypto provider
+                        RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                        rsa.KeySize = 2048; // Set the key size to 2048 bits
+                        rsa.ExportParameters(true); // Export the private key
+
+                        //Console.WriteLine("Public key: {0}", rsa.ToXmlString(false));
+                        //Console.WriteLine("Private key: {0}", rsa.ToXmlString(true));
+
+
+
+                        var reader = new StreamReader(server);
+                        var writer = new StreamWriter(server);
+
+                        //Sends the public key
+                        writer.WriteLine(rsa.ToXmlString(false));
+                        writer.Flush();
+
+                        //Read the encoded generated symetric key
+                        var b64EncryptedKey = reader.ReadLine();
+                        var receivedKey = Convert.FromBase64String(b64EncryptedKey);
+                        byte[] decryptedKey = rsa.Decrypt(receivedKey, false);
+
+                        //Read the encoded generated symetric IV
+                        var b64EncryptedIv = reader.ReadLine();
+                        var receivedIv = Convert.FromBase64String(b64EncryptedIv);
+                        byte[] decryptedIv = rsa.Decrypt(receivedIv, false);
+
+                        // Console.WriteLine($"B64 Key = {Convert.ToBase64String(decryptedKey)}");
+
+                        //Console.WriteLine("KEY = " + string.Join(",", decryptedKey.Select(i => i.ToString())));
+                        //Console.WriteLine("IV = " + string.Join(",", decryptedIv.Select(i => i.ToString())));
+
+                        RijndaelManaged rijndael = new RijndaelManaged();
+                        rijndael.KeySize = 256;
+                        rijndael.BlockSize = 128;
+                        rijndael.Key = decryptedKey;
+                        rijndael.IV = decryptedIv;
+                        //rijndael.Padding = PaddingMode.Zeros;
+
+                        //Console.WriteLine("Server - Key Exchange done !");
+
+                        var b64tasks = this.ReceiveMessageAndDecrypt(server, rijndael);
+                        var tasks = Convert.FromBase64String(b64tasks).Deserialize<List<MessageTask>>();
+                        this.PipeCommModule.MessageService.EnqueueTasks(tasks);
+                        //Console.WriteLine("Pipe Client Tasks received", Thread.CurrentThread.ManagedThreadId);
+
+                        var agentId = this.PipeCommModule.MessageService.AgentMetaData.Id;
+
+                        var results = this.PipeCommModule.MessageService.GetMessageResultsToRelay();
+
+                        if (!results.Any(t => t.Header.Owner == agentId))
+                        {
+                            //add a checkin message
+                            var messageResult = new MessageResult();
+                            messageResult.Header.Owner = agentId;
+                            messageResult.FileChunk = this.PipeCommModule.FileService.GetChunkToSend();
+                            results.Add(messageResult);
+                        }
+
+
+                        foreach (var resMess in results)
+                            resMess.Header.Path.Insert(0, agentId);
+
+
+                        string b64results = Convert.ToBase64String(results.Serialize());
+                        this.EncryptAndSendMessage(server, rijndael, b64results);
+                        //Console.WriteLine("Pipe Client result sent", Thread.CurrentThread.ManagedThreadId);
+
+                        //Get all relays
+                        var allrelays = this.PipeCommModule.Links.SelectMany(l => l.Relays).ToList();
+                        allrelays.Add(this.PipeCommModule.MessageService.AgentMetaData.Id);
+                        string b64Relays = Convert.ToBase64String(allrelays.Serialize());
+                        this.EncryptAndSendMessage(server, rijndael, b64Relays);
+                        //Console.WriteLine("Pipe Client Relay sent.", Thread.CurrentThread.ManagedThreadId);
+
+                        if (server.IsConnected)
+                        {
+                            //Console.WriteLine("Pipe Client Disconnected.", Thread.CurrentThread.ManagedThreadId);
+                            server.Disconnect();
+                        }
+
+                        //Console.WriteLine("Pipe Client Leaved.", Thread.CurrentThread.ManagedThreadId);
                     }
-
-
-                    foreach (var resMess in results)
-                        resMess.Header.Path.Insert(0, agentId);
-
-
-                    string b64results = Convert.ToBase64String(results.Serialize());
-                    this.EncryptAndSendMessage(server, rijndael, b64results);
-                    //Console.WriteLine("Pipe Client result sent", Thread.CurrentThread.ManagedThreadId);
-
-                    //Get all relays
-                    var allrelays = this.PipeCommModule.Links.SelectMany(l => l.Relays).ToList();
-                    allrelays.Add(this.PipeCommModule.MessageService.AgentMetaData.Id);
-                    string b64Relays = Convert.ToBase64String(allrelays.Serialize());
-                    this.EncryptAndSendMessage(server, rijndael, b64Relays);
-                    //Console.WriteLine("Pipe Client Relay sent.", Thread.CurrentThread.ManagedThreadId);
-
-                    if (server.IsConnected)
+                    catch (Exception ex)
                     {
-                        //Console.WriteLine("Pipe Client Disconnected.", Thread.CurrentThread.ManagedThreadId);
-                        server.Disconnect();
-                    }
-
-                    //Console.WriteLine("Pipe Client Leaved.", Thread.CurrentThread.ManagedThreadId);
-                }
-                catch(Exception ex)
-                {
 #if DEBUG
-                    Console.WriteLine(ex.ToString());
+                        Console.WriteLine(ex.ToString());
 #endif
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -7,9 +8,32 @@ using System.Threading.Tasks;
 
 namespace Agent.Models
 {
+    public static class NamedPipeServerStreamExtension
+    {
+        public static bool WaitForConnection(this NamedPipeServerStream server, CancellationToken token)
+        {
+            using (token.Register(server.Close))
+            {
+                try
+                {
+                    server.WaitForConnection();
+                    return true;
+                }
+                catch (System.IO.IOException ex)
+                {
+                    // Token was canceled - swallow the exception and return null
+                    if (token.IsCancellationRequested)
+                        return false;
+                    throw ex;
+                }
+            }
+        }
+
+    }
+
     public abstract class PipeServer
     {
-        private readonly CancellationToken _cancel;
+        protected readonly CancellationToken _cancel;
 
         private readonly CancellationTokenSource _cancelSource;
 
@@ -27,14 +51,12 @@ namespace Agent.Models
             _cancel = _cancelSource.Token;
         }
 
-        public async Task Start()
+        public void Start()
         {
             //Console.WriteLine("[thread: {0}] -> Starting server listener.", Thread.CurrentThread.ManagedThreadId);
 
-            while (!_cancel.IsCancellationRequested)
-            {
-                await Listener();
-            }
+            var serverThread = new Thread(() => RunServer());
+            serverThread.Start();
         }
 
         public void Stop()
@@ -42,7 +64,7 @@ namespace Agent.Models
             _cancelSource.Cancel();
         }
 
-        protected abstract Task Listener();
+        protected abstract void RunServer();
 
 
 

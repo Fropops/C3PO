@@ -15,11 +15,17 @@ namespace PipeServer
 
         private static void Main(string[] args)
         {
-            var pipeServer = new CryptoPipeServer("Test");
+            var pipeServer = new SimplePipeServer("Test");
 
             Console.WriteLine("[thread: {0}] -> Starting server.", Thread.CurrentThread.ManagedThreadId);
 
-            pipeServer.Start().Wait();
+            pipeServer.Start();
+
+            Thread.Sleep(30000);
+
+            pipeServer.Stop();
+
+            Thread.Sleep(10000);
 
             Console.WriteLine("\r\n[thread: {0}] -> Server closed.\r\n", Thread.CurrentThread.ManagedThreadId);
             Console.WriteLine("Press any key to continue ...");

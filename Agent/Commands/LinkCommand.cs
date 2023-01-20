@@ -24,7 +24,7 @@ namespace Agent.Commands
                         Pipe = link.Hostname + " => " + link.AgentId,
                         Status = link.Status ? "OK" : "ERROR",
                         Error = link.Error ?? string.Empty,
-                        LastSeen = link.LastSeen?.ToLocalTime().ToString("dd/MM/yyyy hh:mm:ss")
+                        LastSeen = link.LastSeen.HasValue? link.LastSeen.Value.ToLocalTime().ToString("dd/MM/yyyy hh:mm:ss") : "Never"
                     });
                    
                 }

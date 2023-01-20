@@ -88,7 +88,8 @@ except:
 # var bytes = toByteSeq(decoded)
 
 var b64 :string  = ""
-[[PAYLOAD]]
+
+
 
 
 var ct : string = decode(b64)
@@ -122,3 +123,4 @@ if len(commandLineParams()) > 0:
 
 var arr = toCLRVariant([parms], VT_BSTR) # Actually passing some args
 assembly.EntryPoint.Invoke(nil, toCLRVariant([arr]))
+

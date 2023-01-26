@@ -15,11 +15,13 @@ namespace TeamServer.Controllers
     {
         private readonly IAgentService _agentService;
         private readonly IFileService _fileService;
+        private readonly ISocksService _socksService;
 
-        public AgentsController(IAgentService agentService, IFileService fileService)
+        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService)
         {
             this._agentService = agentService;
             this._fileService = fileService;
+            this._socksService = socksService;
         }
 
         [HttpGet]
@@ -105,6 +107,24 @@ namespace TeamServer.Controllers
                 return NotFound("Agent not found");
 
             this._agentService.RemoveAgent(agent);
+
+            return Ok();
+        }
+
+        [HttpGet("{agentId}/startproxy")]
+        public ActionResult StartProxy(string agentId, int port)
+        {
+            if (!this._socksService.StartProxy(agentId, port))
+                return this.Problem($"Cannot start proxy on port {port}!");
+
+            return Ok();
+        }
+
+        [HttpGet("{agentId}/stopproxy")]
+        public ActionResult StopProxy(string agentId)
+        {
+            if (!this._socksService.StopProxy(agentId))
+                return this.Problem($"Cannot stop proxy!");
 
             return Ok();
         }

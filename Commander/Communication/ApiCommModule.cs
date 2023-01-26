@@ -572,5 +572,28 @@ namespace Commander.Communication
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"{response}");
         }
+
+        public async Task<bool> StartProxy(string agentId, int port)
+        {
+            var resp = await _client.GetAsync($"/Agents/{agentId}/startproxy?port={port}");
+            if (resp.IsSuccessStatusCode)
+                return true;
+            else
+            {
+                Terminal.WriteError(resp.StatusCode + " " + resp.ReasonPhrase);
+                return false;
+            }
+        }
+        public async Task<bool> StopProxy(string agentId)
+        {
+            var resp = await _client.GetAsync($"/Agents/{agentId}/stopproxy");
+            if (resp.IsSuccessStatusCode)
+                return true;
+            else
+            {
+                Terminal.WriteError(resp.StatusCode + " " + resp.ReasonPhrase);
+                return false;
+            }
+        }
     }
 }

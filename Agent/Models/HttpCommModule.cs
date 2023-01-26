@@ -22,7 +22,7 @@ namespace Agent.Models
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
-        public HttpCommModule(MessageService messManager, FileService fileService) : base(messManager, fileService)
+        public HttpCommModule(MessageService messManager, FileService fileService, ProxyService proxyService) : base(messManager, fileService, proxyService)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -81,15 +81,21 @@ namespace Agent.Models
                     {
                         foreach (var mess in thisAgentRes)
                             mess.FileChunk = this.FileService.GetChunkToSend();
+
+                        thisAgentRes.First().ProxyMessages = this.ProxyService.GetResponses();
+
+
                     }
                     else
                     {
                         var chunk = this.FileService.GetChunkToSend();
-                        if (chunk != null)
+                        var proxy = this.ProxyService.GetResponses();
+                        if (chunk != null || proxy.Any())
                         {
                             var mess = new MessageResult();
                             mess.Header.Owner = this.MessageService.AgentMetaData.Id;
                             mess.FileChunk = chunk;
+                            mess.ProxyMessages = proxy;
                             results.Add(mess);
                         }
                     }

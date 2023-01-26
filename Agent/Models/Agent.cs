@@ -16,6 +16,7 @@ namespace Agent.Models
         public PipeCommModule PipeCommunicator { get; set; }
         private MessageService _messageService;
         private FileService _fileService;
+        private ProxyService _proxyService;
         private AgentMetadata _metadata;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -60,9 +61,10 @@ namespace Agent.Models
             _metadata = metadata;
             _messageService = new MessageService(metadata);
             _fileService = new FileService();
+            _proxyService = new ProxyService();
 
-            this.HttpCommunicator = new HttpCommModule(_messageService, _fileService);
-            this.PipeCommunicator = new PipeCommModule(_messageService, _fileService);
+            this.HttpCommunicator = new HttpCommModule(_messageService, _fileService, _proxyService);
+            this.PipeCommunicator = new PipeCommModule(_messageService, _fileService, _proxyService);
 
             LoadCoreAgentCommands();
         }
@@ -78,11 +80,14 @@ namespace Agent.Models
                     {
                         if (mess.FileChunk != null)
                             this._fileService.AddFileChunck(mess.FileChunk);
+                        if (mess.ProxyMessages != null)
+                            this._proxyService.AddRequests(mess.ProxyMessages);
+
                         HandleTask(mess.Items);
                     }
 
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(10);
             }
         }
 
@@ -100,8 +105,6 @@ namespace Agent.Models
                 t.Start(task);
             }
         }
-
-        object runningTaskLock = new object();
 
         public void StartHandleTask(object task)
         {
@@ -130,7 +133,8 @@ namespace Agent.Models
                 {
                     Agent = this,
                     MessageService = _messageService,
-                    FileService = _fileService
+                    FileService = _fileService,
+                    ProxyService = _proxyService
                 };
                 command.Execute(task, ctxt);
             }

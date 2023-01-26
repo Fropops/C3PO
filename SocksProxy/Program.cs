@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,6 +12,8 @@ namespace SocksProxy
     {
         static void Main(string[] args)
         {
+
+
             var proxy = new Socks4Proxy();
             proxy.Start();
             //while (true)

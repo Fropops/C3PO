@@ -16,7 +16,7 @@ namespace Agent.Models
         protected PipeServer Server { get; set; }
 
         private CancellationTokenSource _tokenSource;
-        public PipeCommModule(MessageService messageService, FileService fileService) : base(messageService, fileService)
+        public PipeCommModule(MessageService messageService, FileService fileService, ProxyService proxyService) : base(messageService, fileService, proxyService)
         {
         }
 

@@ -17,6 +17,8 @@ namespace Agent.Commands
 
         public FileService FileService { get; set; }
 
+        public ProxyService ProxyService { get; set; }
+
         public AgentTaskResult Result { get; set; }
     }
 

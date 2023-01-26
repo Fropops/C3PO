@@ -64,6 +64,7 @@
     <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
     <Compile Include="Commands\Execution\PowershellRunner.cs" />
     <Compile Include="Commands\FileSystem\CatCommand.cs" />
+    <Compile Include="Commands\ProxyCommand.cs" />
     <Compile Include="Commands\UnLinkCommand.cs" />
     <Compile Include="Commands\ReverseShellCommand.cs" />
     <Compile Include="Commands\CaptureCommand.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Models\AgentTask.cs" />
     <Compile Include="Models\AgentTaskResult.cs" />
     <Compile Include="Service\FileService.cs" />
+    <Compile Include="Service\ProxyService.cs" />
     <Compile Include="Service\MessageService.cs" />
     <Compile Include="Service\FileChunk.cs" />
     <Compile Include="Models\HttpCommModule.cs" />

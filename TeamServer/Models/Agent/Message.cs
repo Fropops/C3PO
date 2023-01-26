@@ -39,6 +39,8 @@ namespace TeamServer.Models
 
         public List<AgentTaskResult> Items { get; set; } = new List<AgentTaskResult>();
 
+        public List<SocksMessage> ProxyMessages { get; set; } = new List<SocksMessage>();
+
         public AgentMetadata MetaData { get; set; }
 
         public AgentFileChunck FileChunk { get; set; }
@@ -48,6 +50,8 @@ namespace TeamServer.Models
     public class MessageTask : Message
     {
         public List<AgentTask> Items { get; set; } = new List<AgentTask>();
+
+        public List<SocksMessage> ProxyMessages { get; set; } = new List<SocksMessage>();
 
         public AgentFileChunck FileChunk { get; set; }
     }

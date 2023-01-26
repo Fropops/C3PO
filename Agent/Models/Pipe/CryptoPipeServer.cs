@@ -87,7 +87,14 @@ namespace Agent.Models
                             var messageResult = new MessageResult();
                             messageResult.Header.Owner = agentId;
                             messageResult.FileChunk = this.PipeCommModule.FileService.GetChunkToSend();
+                            messageResult.ProxyMessages = this.PipeCommModule.ProxyService.GetResponses();
                             results.Add(messageResult);
+                        }
+                        else
+                        {
+                            foreach (var mess in results)
+                                mess.FileChunk = this.PipeCommModule.FileService.GetChunkToSend();
+                            results.First().ProxyMessages = this.PipeCommModule.ProxyService.GetResponses();
                         }
 
 

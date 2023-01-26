@@ -18,21 +18,20 @@ namespace Agent
 
         private Random random = new Random();
 
+        public ProxyService ProxyService { get; protected set; }
         public MessageService MessageService { get; protected set; }
         public FileService FileService { get; protected set; }
 
-        public CommModule(MessageService messageManager, FileService fileService)
+        public CommModule(MessageService messageManager, FileService fileService, ProxyService proxyService)
         {
             this.MessageService = messageManager;
             this.FileService = fileService;
+            this.ProxyService = proxyService;
         }
 
         protected int GetDelay()
         {
-            var delta = (int)(Interval * Jitter);
-            delta = random.Next(0, delta);
-            if (random.Next(100) > 50)
-                delta = -delta;
+            var delta = random.Next(0, (int)(Jitter));
             return this.Interval + delta;
         }
 

@@ -39,6 +39,9 @@ namespace Agent.Models
 
         [DataMember(Name = "metaData")]
         public AgentMetadata MetaData { get; set; }
+
+        [DataMember(Name = "proxyMessages")]
+        public List<SocksMessage> ProxyMessages { get; set; }
     }
 
     [DataContract]
@@ -46,5 +49,19 @@ namespace Agent.Models
     {
         [DataMember(Name = "items")]
         public List<AgentTask> Items { get; set; } = new List<AgentTask>();
+
+        [DataMember(Name = "proxyMessages")]
+        public List<SocksMessage> ProxyMessages { get; set; }
+    }
+
+    [DataContract]
+    public class SocksMessage
+    {
+        [DataMember(Name = "source")]
+        public string Source { get; set; }
+        [DataMember(Name = "data")]
+        public string Data { get; set; }
+        [DataMember(Name = "connexionState")]
+        public bool ConnexionState { get; set; }
     }
 }

@@ -49,5 +49,8 @@ namespace Commander.Communication
 
         void WebHost(string listenerId, string fileName, byte[] fileContent);
 
+        Task<bool> StartProxy(string agentId, int port);
+        Task<bool> StopProxy(string agentId);
+
     }
 }

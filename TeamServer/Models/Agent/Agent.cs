@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace TeamServer.Models
 {
     public class Agent
@@ -25,7 +26,57 @@ namespace TeamServer.Models
         private readonly List<AgentTaskResult> _taskResults = new();
         public ConcurrentBag<AgentTask> TaskHistory { get; private set; } = new();
 
+        private ConcurrentDictionary<string, ConcurrentQueue<SocksMessage>> _InboudSocksMessages = new();
+        private ConcurrentQueue<SocksMessage>_OutboundSocksMessages = new();
+
+
         public Queue<AgentFileChunck> FileChuncksToUpload { get; private set; } = new Queue<AgentFileChunck>();
+
+        public Queue<SocksMessage> GetProxyResponses(string destination)
+        {
+            var q = new Queue<SocksMessage>();
+            if (!_InboudSocksMessages.ContainsKey(destination))
+                return q;
+
+            while (_InboudSocksMessages[destination].TryDequeue(out var message))
+                q.Enqueue(message);
+
+            return q;
+        }
+
+        public void AddProxyResponses(IEnumerable<SocksMessage> messages)
+        {
+            if (messages == null || !messages.Any())
+                return;
+
+            var src = messages.First().Source;
+            ConcurrentQueue<SocksMessage> q = null;
+
+            if (!_InboudSocksMessages.ContainsKey(src))
+            {
+                q = new ConcurrentQueue<SocksMessage>();
+                _InboudSocksMessages.TryAdd(src, q);
+            }
+            else
+                q = _InboudSocksMessages[src];
+
+            foreach(var m in messages)
+                q.Enqueue(m);
+        }
+
+
+        public List<SocksMessage> GetProxyRequests()
+        {
+            var q = new List<SocksMessage>();
+            while (_OutboundSocksMessages.TryDequeue(out var message))
+                q.Add(message);
+            return q;
+        }
+
+        public void SendProxyRequest(SocksMessage message)
+        {
+            _OutboundSocksMessages.Enqueue(message);
+        }
 
         private AgentFileChunck GetNextChunck()
         {
@@ -41,7 +92,9 @@ namespace TeamServer.Models
             mess.Items.AddRange(this.GetPendingTaks());
             mess.FileChunk = this.GetNextChunck();
 
-            if (mess.FileChunk == null && !mess.Items.Any())
+            mess.ProxyMessages = this.GetProxyRequests();
+
+            if (mess.FileChunk == null && !mess.Items.Any() && !mess.ProxyMessages.Any())
                 return null;
 
             return mess;

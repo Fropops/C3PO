@@ -44,6 +44,7 @@ namespace TeamServer
             services.AddSingleton<IAgentService, AgentService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
+            services.AddSingleton<ISocksService, SocksService>();
 
         }
 

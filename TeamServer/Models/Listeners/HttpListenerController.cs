@@ -101,9 +101,12 @@ namespace TeamServer.Models
                     if(messRes.FileChunk != null)
                          _fileService.AddAgentFileChunk(messRes.FileChunk);
 
+                    messAgent.AddProxyResponses(messRes.ProxyMessages);
+
                     ////Logger.Log($"Saving resulst of {messAgent.Metadata.Id}");
                     _fileService.SaveResults(messAgent, messRes.Items);
                 }
+
             }
 
             var messages = new List<MessageTask>();

@@ -17,10 +17,15 @@ namespace Agent
 
         static void Main(string[] args)
         {
+
 #if DEBUG
-            if(args.Count() == 0)
-                //args = new string[] { "https:192.168.56.103:443"/*, "pipe:id"*/ };
-                args = new string[] { "pipe:aaaaaaaaaa" };
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+#endif
+
+#if DEBUG
+            if (args.Count() == 0)
+                args = new string[] { "https:192.168.56.103:443"/*, "pipe:id"*/ };
+                //args = new string[] { "pipe:aaaaaaaaaa" };
 #endif
 
 

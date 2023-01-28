@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -87,10 +88,20 @@ namespace TeamServer.Services
         }
     }
 
+    public class ClientWrapper
+    {
+        public string Id { get; set; }
+        public bool AckReceived { get; set; }
+
+        public TcpClient TcpClient { get; set; }
+    }
+
     public class Socks4Proxy
     {
         private readonly int _bindPort;
         private readonly IPAddress _bindAddress;
+
+        private ConcurrentDictionary<string, ClientWrapper> Clients = new();
 
         private Agent agent;
 
@@ -113,14 +124,74 @@ namespace TeamServer.Services
 
             this.IsRunning = true;
 
+            var thread = new Thread(async () => await HandleClients());
+            thread.Start();
+
             while (!_tokenSource.IsCancellationRequested)
             {
+                Logger.Log($"Socks5 : waiting for clients");
                 // this blocks until a connection is received or token is cancelled
                 var client = await listener.AcceptTcpClientAsync(_tokenSource);
 
+                var t = new Thread(async () => await HandleClient(client));
+                t.Start();
+
+               /* try
+                {
+                    //Init
+                    var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
+                    var src = endpoint.Address + ":" + endpoint.Port;
+
+                    //Console.WriteLine($"{id} : Connected");
+
+                    //// read data from client
+                    var data = client.ReceivedData();
+
+                    if (data == null || data.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    //// read the first byte, which is the SOCKS version
+                    var version = Convert.ToInt32(data[0]);
+
+                    // read connect request
+                    var request = Socks4Request.FromBytes(data);
+
+                    // connect to destination
+                    //var destination = new TcpClient();
+                    //await destination.ConnectAsync(request.DestinationAddress, request.DestinationPort);
+
+                    var id = src + "|" +  request.DestinationAddress + ":" + request.DestinationPort;
+
+
+                    agent.SendProxyRequest(new SocksMessage()
+                    {
+                        Source = id,
+                        ConnexionState = true
+                    });
+
+                    if (this.Clients.TryAdd(id, new ClientWrapper() { TcpClient = client, Id = id }))
+                    {
+                        Logger.Log($"Socks5 : new client {id} added");
+                    }
+                    else
+                    {
+                        Logger.Log($"Socks5 : cannot add new client {id}");
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Socks5 : Error {ex.ToString()}");
+                    continue;
+                }*/
+
+
+
                 // do something with the connected client
-                var thread = new Thread(async () => await HandleClient(client));
-                thread.Start();
+                //var thread = new Thread(async () => await HandleClient(client));
+                //thread.Start();
             }
             // handle client in new thread
 
@@ -128,22 +199,131 @@ namespace TeamServer.Services
             this.IsRunning = false;
         }
 
+        private async Task HandleClients()
+        {
+            while (!_tokenSource.IsCancellationRequested)
+            {
+                //Logger.Log($"Socks5 :Handle Clients {this.Clients.Count}");
+                foreach (var key in this.Clients.Keys.ToList())
+                {
+                    var client = this.Clients[key];
+                    try
+                    {
+                        var receivedMessages = this.agent.GetProxyResponses(client.Id);
+                        if (!client.AckReceived)
+                        {
+                            //Logger.Log($"Socks5 : {id} No ack");
+                            if (receivedMessages.Any())
+                            {
+                                //Logger.Log($"Socks5 : {id} Messages received");
+                                client.AckReceived = true;
+                                if (receivedMessages.Any(r => r.ConnexionState))
+                                {
+                                    SendConnectReply(client.TcpClient, true);
+                                    Logger.Log($"Socks5 : {client.Id} Connection accepted");
+                                }
+                                else
+                                {
+                                    SendConnectReply(client.TcpClient, false);
+                                    Logger.Log($"Socks5 : {client.Id} Connection refused");
+                                    break;
+                                }
+                            }
+                            else //no message, no ack => waiting
+                                continue;
+                        }
+
+                        if (!client.TcpClient.IsAlive())
+                        {
+                            agent.SendProxyRequest(new SocksMessage()
+                            {
+                                Source = client.Id,
+                                ConnexionState = false
+                            });
+                            Logger.Log($"Socks5 : {client.Id} Connection closed (source)");
+                            this.Clients.Remove(client.Id, out _);
+                            continue;
+                        }
+
+                        // read from client
+                        if (client.TcpClient.DataAvailable())
+                        {
+                            var req = client.TcpClient.ReceivedData();
+
+                            // send to destination
+                            //destination.SendData(req);
+                            //Should send data to the agent
+                            agent.SendProxyRequest(new SocksMessage()
+                            {
+                                Source = client.Id,
+                                ConnexionState = true,
+                                Data = Convert.ToBase64String(req)
+                            });
+
+                            Logger.Log($"Socks5 : {client.Id} Client => Dest {req.Length}");
+
+                        }
+
+                        // read from destination
+                        //should read from the agent responses
+                        while (receivedMessages.Any())
+                        {
+                            var mess = receivedMessages.Dequeue();
+                            if (!mess.ConnexionState)
+                            {
+                                Logger.Log($"Socks5 : {client.Id} Connection closed (dest)");
+                                try
+                                {
+                                    client.TcpClient.Close();
+                                }
+                                catch { }
+
+                                this.Clients.Remove(client.Id, out _);
+                                break;
+                            }
+
+                            if (!string.IsNullOrEmpty(mess.Data))
+                            {
+                                var resp = Convert.FromBase64String(mess.Data);
+                                client.TcpClient.SendData(resp);
+                                Logger.Log($"Socks5 : {client.Id} Dest => Client {resp.Length}");
+                            }
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+#if DEBUG
+                        Console.WriteLine(ex);
+#endif
+                    }
+                    finally
+                    {
+                        //Console.WriteLine($"{id} : disconnected");
+                    }
+                }
+                // sos cpu
+                await Task.Delay(10);
+            }
+        }
+
         private async Task HandleClient(TcpClient client)
         {
-            if (client == null)
-                return;
-
-            bool ackReceived = false;
-
-            var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
-            var src = endpoint.Address + ":" + endpoint.Port;
             try
             {
+                if (client == null)
+                    return;
+
+                var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
+                var src = endpoint.Address + ":" + endpoint.Port;
 
                 //Console.WriteLine($"{id} : Connected");
-                
+
                 //// read data from client
                 var data = client.ReceivedData();
+
+                if (data == null || data.Length == 0)
+                    return;
 
                 //// read the first byte, which is the SOCKS version
                 var version = Convert.ToInt32(data[0]);
@@ -165,116 +345,174 @@ namespace TeamServer.Services
                     ConnexionState = true
                 });
 
-                while (!_tokenSource.IsCancellationRequested)
+                if (this.Clients.TryAdd(id, new ClientWrapper() { TcpClient = client, Id = id }))
                 {
-                    var receivedMessages = this.agent.GetProxyResponses(id);
-                    if (!ackReceived)
-                    {
-                        //Logger.Log($"Socks5 : {id} No ack");
-                        if (receivedMessages.Any())
-                        {
-                            //Logger.Log($"Socks5 : {id} Messages received");
-                            ackReceived = true;
-                            if (receivedMessages.Any(r => r.ConnexionState))
-                            {
-                                SendConnectReply(client, true);
-                                Logger.Log($"Socks5 : {id} Connection accepted");
-                            }
-                            else
-                            {
-                                SendConnectReply(client, false);
-                                Logger.Log($"Socks5 : {id} Connection refused");
-                                break;
-                            }
-                        }
-                        else //no message, no ack => waiting
-                            continue;
-                    }
-
-
-
-
-                    if (!client.IsAlive())
-                    {
-                        agent.SendProxyRequest(new SocksMessage()
-                        {
-                            Source = id,
-                            ConnexionState = false
-                        });
-                        Logger.Log($"Socks5 : {id} Connection closed (source)");
-                        break;
-                    }
-                        
-
-                    // read from client
-                    if (client.DataAvailable())
-                    {
-                        var req = client.ReceivedData();
-
-                        // send to destination
-                        //destination.SendData(req);
-                        //Should send data to the agent
-                        agent.SendProxyRequest(new SocksMessage()
-                        {
-                            Source = id,
-                            ConnexionState = true,
-                            Data = Convert.ToBase64String(req)
-                        });
-
-                        Logger.Log($"Socks5 : {id} Client => Dest {req.Length}");
-
-                    }
-
-                    // read from destination
-                    //should read from the agent responses
-                    bool shouldleave = false;
-                    while (receivedMessages.Any())
-                    {
-                        var mess = receivedMessages.Dequeue();
-                        if (!mess.ConnexionState)
-                        {
-                            Logger.Log($"Socks5 : {id} Connection closed (dest)");
-                            shouldleave = true;
-                        }
-
-                        if (!string.IsNullOrEmpty(mess.Data))
-                        {
-                            var resp = Convert.FromBase64String(mess.Data);
-                            client.SendData(resp);
-                            Logger.Log($"Socks5 : {id} Dest => Client {resp.Length}");
-                        }
-                    }
-
-                    if (shouldleave)
-                        break;
-                    //if (destination.DataAvailable())
-                    //{
-                    //    var resp = destination.ReceivedData();
-
-                    //    // send back to client
-                    //    client.SendData(resp);
-
-                    //    Console.WriteLine($"{id} : Dest => Client {resp.Length}");
-                    //}
-
-                    // sos cpu
-                    await Task.Delay(10);
+                    Logger.Log($"Socks5 : new client {id} added");
+                }
+                else
+                {
+                    Logger.Log($"Socks5 : cannot add new client {id}");
                 }
             }
-            catch (Exception ex)
-            {
-#if DEBUG
-                Console.WriteLine(ex);
-#endif
-                SendConnectReply(client, false);
-            }
-            finally
-            {
-                //Console.WriteLine($"{id} : disconnected");
-            }
+            catch { }
         }
 
 
+        #region old
+        /*  private async Task HandleClient(TcpClient client)
+          {
+              if (client == null)
+                  return;
+
+              bool ackReceived = false;
+
+              var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
+              var src = endpoint.Address + ":" + endpoint.Port;
+              try
+              {
+
+                  //Console.WriteLine($"{id} : Connected");
+
+                  //// read data from client
+                  var data = client.ReceivedData();
+
+                  if (data == null || data.Length == 0)
+                      return;
+
+                  //// read the first byte, which is the SOCKS version
+                  var version = Convert.ToInt32(data[0]);
+
+                  // read connect request
+                  var request = Socks4Request.FromBytes(data);
+
+                  // connect to destination
+                  //var destination = new TcpClient();
+                  //await destination.ConnectAsync(request.DestinationAddress, request.DestinationPort);
+
+                  var id = src + "|" +  request.DestinationAddress + ":" + request.DestinationPort;
+
+                  Logger.Log($"Socks5 : {src} Connection requested to {id}");
+
+                  agent.SendProxyRequest(new SocksMessage()
+                  {
+                      Source = id,
+                      ConnexionState = true
+                  });
+
+                  while (!_tokenSource.IsCancellationRequested)
+                  {
+                      var receivedMessages = this.agent.GetProxyResponses(id);
+                      if (!ackReceived)
+                      {
+                          //Logger.Log($"Socks5 : {id} No ack");
+                          if (receivedMessages.Any())
+                          {
+                              //Logger.Log($"Socks5 : {id} Messages received");
+                              ackReceived = true;
+                              if (receivedMessages.Any(r => r.ConnexionState))
+                              {
+                                  SendConnectReply(client, true);
+                                  Logger.Log($"Socks5 : {id} Connection accepted");
+                              }
+                              else
+                              {
+                                  SendConnectReply(client, false);
+                                  Logger.Log($"Socks5 : {id} Connection refused");
+                                  break;
+                              }
+                          }
+                          else //no message, no ack => waiting
+                              continue;
+                      }
+
+
+
+
+                      if (!client.IsAlive())
+                      {
+                          agent.SendProxyRequest(new SocksMessage()
+                          {
+                              Source = id,
+                              ConnexionState = false
+                          });
+                          Logger.Log($"Socks5 : {id} Connection closed (source)");
+                          break;
+                      }
+
+
+                      // read from client
+                      if (client.DataAvailable())
+                      {
+                          var req = client.ReceivedData();
+
+                          // send to destination
+                          //destination.SendData(req);
+                          //Should send data to the agent
+                          agent.SendProxyRequest(new SocksMessage()
+                          {
+                              Source = id,
+                              ConnexionState = true,
+                              Data = Convert.ToBase64String(req)
+                          });
+
+                          Logger.Log($"Socks5 : {id} Client => Dest {req.Length}");
+
+                      }
+
+                      // read from destination
+                      //should read from the agent responses
+                      bool shouldleave = false;
+                      while (receivedMessages.Any())
+                      {
+                          var mess = receivedMessages.Dequeue();
+                          if (!mess.ConnexionState)
+                          {
+                              Logger.Log($"Socks5 : {id} Connection closed (dest)");
+                              shouldleave = true;
+                          }
+
+                          if (!string.IsNullOrEmpty(mess.Data))
+                          {
+                              var resp = Convert.FromBase64String(mess.Data);
+                              client.SendData(resp);
+                              Logger.Log($"Socks5 : {id} Dest => Client {resp.Length}");
+                          }
+                      }
+
+                      if (shouldleave)
+                          break;
+                      //if (destination.DataAvailable())
+                      //{
+                      //    var resp = destination.ReceivedData();
+
+                      //    // send back to client
+                      //    client.SendData(resp);
+
+                      //    Console.WriteLine($"{id} : Dest => Client {resp.Length}");
+                      //}
+
+                      // sos cpu
+                      await Task.Delay(10);
+                  }
+              }
+              catch (Exception ex)
+              {
+      #if DEBUG
+                      Console.WriteLine(ex);
+      #endif
+                  try
+                  {
+                      SendConnectReply(client, false);
+                  }
+                  catch { }
+              }
+              finally
+              {
+                  //Console.WriteLine($"{id} : disconnected");
+              }
+          }
+        */
+        #endregion
 
         private void SendConnectReply(TcpClient client, bool success)
         {

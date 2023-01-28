@@ -123,7 +123,10 @@ namespace Agent.Commands
                     return;
                 }
                 else
+                {
                     isRunning = true;
+                    this.Notify(context, "Proxy is up and running.");
+                }
             }
 
 

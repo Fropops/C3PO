@@ -21,7 +21,10 @@ namespace Agent.Models
 
         protected override void RunServer()
         {
-            using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            //using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            //{
+            //    server.SetAccessControl(CreatePipeSecurityForEveryone());
+            using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 512, 512, CreatePipeSecurityForEveryone(), HandleInheritability.None))
             {
                 while (!this._cancel.IsCancellationRequested)
                 {
@@ -54,7 +57,7 @@ namespace Agent.Models
                         }
                         else
                         {
-                            foreach(var mess in results)
+                            foreach (var mess in results)
                                 mess.FileChunk = this.PipeCommModule.FileService.GetChunkToSend();
                             results.First().ProxyMessages = this.PipeCommModule.ProxyService.GetResponses();
                         }

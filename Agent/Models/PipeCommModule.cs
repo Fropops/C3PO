@@ -97,11 +97,11 @@ namespace Agent.Models
                     }
                     catch (Exception ex)
                     {
-                        link.Error = ex.Message;
+                        link.Error = ex.ToString();
                         link.Status = false;
-#if DEBUG
-                        Console.WriteLine(ex.ToString());
-#endif
+//#if DEBUG
+//                        Console.WriteLine(ex.ToString());
+//#endif
                     }
                 }
 

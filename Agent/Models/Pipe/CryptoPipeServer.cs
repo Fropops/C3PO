@@ -1,10 +1,13 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,10 +20,18 @@ namespace Agent.Models
         {
         }
 
+        // Creates a PipeSecurity that allows users read/write access
+
+
         protected override void RunServer()
         {
-            using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            //using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous))
+            //{
+            //    server.SetAccessControl(CreatePipeSecurityForEveryone());
+
+            using (NamedPipeServerStream server = new NamedPipeServerStream(this.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous,512,512,CreatePipeSecurityForEveryone(), HandleInheritability.None))
             {
+                Debug.WriteLine("CrytpoPipeServer : Server started waiting for incomming connections.");
                 while (!this._cancel.IsCancellationRequested)
                 {
                     try

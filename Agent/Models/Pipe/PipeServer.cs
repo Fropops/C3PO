@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +68,21 @@ namespace Agent.Models
 
         protected abstract void RunServer();
 
+        protected PipeSecurity CreatePipeSecurityForEveryone()
+        {
+            //PipeSecurity pipeSecurity = new PipeSecurity();
 
+            //var id = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+
+            //// Allow Everyone read and write access to the pipe. 
+            //pipeSecurity.SetAccessRule(new PipeAccessRule(id, PipeAccessRights.ReadWrite, AccessControlType.Allow));
+
+            //return pipeSecurity;
+
+            PipeSecurity pipeSecurity = new PipeSecurity();
+            pipeSecurity.AddAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.FullControl, AccessControlType.Allow));
+            return pipeSecurity;
+        }
 
 
     }

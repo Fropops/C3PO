@@ -21,7 +21,7 @@ namespace Agent.Models
             //Console.WriteLine("Named Pipe Client");
 
             // Connect to the server using a unique pipe name
-            var pipeClient = new NamedPipeClientStream(this.Hostname, this.PipeName, PipeDirection.InOut);
+            var pipeClient = new NamedPipeClientStream(this.Hostname, this.PipeName, PipeAccessRights.FullControl, PipeOptions.Asynchronous, System.Security.Principal.TokenImpersonationLevel.Anonymous, HandleInheritability.None);
             pipeClient.Connect(10000);
 
             // Send a message to the server

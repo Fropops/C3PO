@@ -117,7 +117,7 @@ namespace TeamServer.Models
             app.UseEndpoints(e =>
             {
                 e.MapControllerRoute("wh", "/wh/{id}", new { Controller = "HttpListener", Action = "WebHost" });
-                e.MapControllerRoute("/", "/{id}", new { Controller = "HttpListener", Action = "HandleImplant" });
+                e.MapControllerRoute("ci", "/ci/{id}", new { Controller = "HttpListener", Action = "HandleImplant" });
             });
         }
 

@@ -42,7 +42,7 @@ namespace Agent.Communication
         protected override async Task<List<MessageTask>> CheckIn(List<MessageResult> results)
         {
             var content = new StringContent(Encoding.UTF8.GetString(results.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"/{this.MessageService.AgentMetaData.Id}", content);
+            var response = await _client.PostAsync($"/ci/{this.MessageService.AgentMetaData.Id}", content);
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             return responseContent.Deserialize<List<MessageTask>>();
         }

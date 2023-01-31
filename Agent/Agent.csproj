@@ -96,6 +96,7 @@
     <Compile Include="Communication\CommModule.cs" />
     <Compile Include="Communication\ConnexionUrl.cs" />
     <Compile Include="Communication\TcpCommModule.cs" />
+    <Compile Include="Helpers\HttpExtensions.cs" />
     <Compile Include="Helpers\TcpExtensions.cs" />
     <Compile Include="Internal\Executor.cs" />
     <Compile Include="Internal\Extension.cs" />
@@ -106,7 +107,7 @@
     <Compile Include="Commands\Execution\ShellCommand.cs" />
     <Compile Include="Commands\WaitCommand.cs" />
     <Compile Include="Commands\WhoamiCommand.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Internal\Injector.cs" />
     <Compile Include="Models\Agent.cs" />
     <None Include="Communication\Pipe\CryptoPipeServer.cs.old" />
@@ -129,6 +130,7 @@
     <Compile Include="Service\IPivotService.cs" />
     <Compile Include="Service\IProxyService.cs" />
     <Compile Include="Service\IRunningService.cs" />
+    <Compile Include="Service\Pivoting\PivotHttpServer.cs" />
     <Compile Include="Service\Pivoting\PivotTCPServer.cs" />
     <Compile Include="Service\PivotService.cs" />
     <Compile Include="Service\ProxyService.cs" />

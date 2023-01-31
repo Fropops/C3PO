@@ -1,4 +1,5 @@
-﻿using Agent.Service;
+﻿using Agent.Models;
+using Agent.Service;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Agent.Models
+namespace Agent.Service
 {
-    public class MessageService
+    public class MessageService : IMessageService
     {
         protected ConcurrentQueue<MessageTask> _taskMessages = new ConcurrentQueue<MessageTask>();
         protected ConcurrentQueue<MessageResult> _resultMessages = new ConcurrentQueue<MessageResult>();

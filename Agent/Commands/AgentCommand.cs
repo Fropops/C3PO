@@ -13,11 +13,11 @@ namespace Agent.Commands
     public class AgentCommandContext
     {
         public Models.Agent Agent { get; set; }
-        public MessageService MessageService { get; set; }
+        public IMessageService MessageService { get; set; }
 
-        public FileService FileService { get; set; }
+        public IFileService FileService { get; set; }
 
-        public ProxyService ProxyService { get; set; }
+        public IProxyService ProxyService { get; set; }
 
         public AgentTaskResult Result { get; set; }
     }
@@ -74,7 +74,7 @@ namespace Agent.Commands
                 }
 
                 if(percent != 100)
-                    Thread.Sleep(context.Agent.HttpCommunicator.Interval);
+                    Thread.Sleep(context.Agent.Communicator.Interval);
             }
 
             this.Notify(context, $"{task.FileName} Downloaded");
@@ -94,7 +94,7 @@ namespace Agent.Commands
                 }
 
                 if (percent != 100)
-                    Thread.Sleep(context.Agent.HttpCommunicator.Interval);
+                    Thread.Sleep(context.Agent.Communicator.Interval);
             }
 
             this.Notify(context, $"{fileName} uploaded");

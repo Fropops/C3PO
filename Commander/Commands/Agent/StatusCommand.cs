@@ -31,14 +31,18 @@ namespace Commander.Commands.Agent
                 context.Terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
             else
                 context.Terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
+
+            //context.Terminal.WriteLine(agent.Metadata.ToString());
             var results = new SharpSploitResultList<StatusResult>();
-            results.Add(new StatusResult() { Name = "Id", Value = agent.Metadata?.Id });
-            results.Add(new StatusResult() { Name = "Hostname", Value = agent.Metadata?.Hostname });
-            results.Add(new StatusResult() { Name = "UserName", Value = agent.Metadata?.UserName });
+            results.Add(new StatusResult() { Name = "Id", Value = agent.Metadata?.Id ?? string.Empty });
+            results.Add(new StatusResult() { Name = "Hostname", Value = agent.Metadata?.Hostname ?? string.Empty });
+            results.Add(new StatusResult() { Name = "UserName", Value = agent.Metadata?.UserName ?? string.Empty });
             results.Add(new StatusResult() { Name = "ProcessId", Value = agent.Metadata?.ProcessId.ToString() });
-            results.Add(new StatusResult() { Name = "ProcessName", Value = agent.Metadata?.ProcessName });
-            results.Add(new StatusResult() { Name = "Architecture", Value = agent.Metadata?.Architecture });
-            results.Add(new StatusResult() { Name = "Integrity", Value = agent.Metadata?.Integrity });
+            results.Add(new StatusResult() { Name = "ProcessName", Value = agent.Metadata?.ProcessName ?? string.Empty });
+            results.Add(new StatusResult() { Name = "Architecture", Value = agent.Metadata?.Architecture ?? string.Empty });
+            results.Add(new StatusResult() { Name = "Integrity", Value = agent.Metadata?.Integrity ?? string.Empty });
+            results.Add(new StatusResult() { Name = "EndPoint", Value = agent.Metadata?.EndPoint ?? string.Empty });
+            results.Add(new StatusResult() { Name = "Version", Value = agent.Metadata?.Version ?? string.Empty });
             results.Add(new StatusResult() { Name = "Last Seen", Value = agent.LastSeen.ToLocalTime().ToString("dd/MM/yyyy hh:mm:ss") });
             context.Terminal.WriteLine(results.ToString());
             return true;

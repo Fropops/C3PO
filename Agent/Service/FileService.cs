@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Agent.Service
 {
-    public class FileService
+    public class FileService : IFileService
     {
         object _lockObjUpl = new object();
         object _lockObjDld = new object();

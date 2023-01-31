@@ -76,7 +76,6 @@ namespace Commander.Commands.Agent
         private MapTreeNode GenerateTree(CommandContext<MapCommandOptions> context)
         {
             var allAgents = context.CommModule.GetAgents();
-            var allListeners = context.CommModule.GetListeners();
 
             MapTreeNode root = new MapTreeNode() { Name = "TeamServer", IsAlive = context.CommModule.ConnectionStatus == ConnectionStatus.Connected, ShortId = string.Empty };
             Dictionary<string, MapTreeNode> allNodes = new Dictionary<string, MapTreeNode>();
@@ -93,20 +92,14 @@ namespace Commander.Commands.Agent
             foreach (var agent in allAgents)
             {
                 var node = allNodes[agent.Metadata.Id];
+                var conn = ConnexionUrl.FromString(agent.Metadata.EndPoint);
+                node.LinkToParent = conn.ProtocolString;
+
                 if (agent.Path.Count == 1)
-                {
                     root.Children.Add(node);
-                    if (!string.IsNullOrEmpty(agent.ListenerId))
-                    {
-                        var listener = allListeners.FirstOrDefault(l => l.Id == agent.ListenerId);
-                        if (listener != null)
-                            node.LinkToParent = listener.Name;
-                    }
-                }
                 else
                 {
                     var parId = agent.Path[agent.Path.Count - 2];
-                    node.LinkToParent = "Pipe";
                     allNodes[parId].Children.Add(node);
                 }
             }

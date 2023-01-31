@@ -33,7 +33,7 @@ namespace Commander.Commands.Agent
         public static string EXECUTEASSEMBLY = "execute-assembly";
         public static string SIDELOAD = "side-load";
 
-        public static string VERSION = "version";
+        //  public static string VERSION = "version";
         public static string IDLE = "idle";
         public static string CAT = "cat";
 
@@ -43,8 +43,12 @@ namespace Commander.Commands.Agent
         public static string POWERSHELL_IMPORT = "powershell-import";
 
         public static string WGET = "wget";
-        public static string LINK = "link";
-        public static string UNLINK = "unlink";
+        // public static string LINK = "link";
+        // public static string UNLINK = "unlink";
+
+        public static string SERVICE = "service";
+        public static string PIVOT = "pivot";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -84,12 +88,12 @@ namespace Commander.Commands.Agent
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
     }
 
-    public class VersionCommand : EndPointCommand
-    {
-        public override string Description => "Get Version of the agent";
-        public override string Name => EndPointCommand.VERSION;
-        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
-    }
+    /* public class VersionCommand : EndPointCommand
+     {
+         public override string Description => "Get Version of the agent";
+         public override string Name => EndPointCommand.VERSION;
+         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+     }*/
 
     public class IdleCommand : EndPointCommand
     {
@@ -189,12 +193,8 @@ namespace Commander.Commands.Agent
             };
     }
 
-    public class SleepCommandOptions
-    {
-        public string Ip { get; set; }
-        public int port { get; set; }
-    }
-    public class SleepCommand : EndPointCommand<SleepCommandOptions>
+
+    public class SleepCommand : EndPointCommand
     {
         public override string Description => "Change agent response time";
         public override string Name => EndPointCommand.SLEEP;
@@ -202,7 +202,7 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<int?>("delay", () => null, "delay in seconds"),
+                new Argument<double?>("delay", () => null, "delay in seconds"),
                 new Argument<int?>("jitter", () => null, "jitter in percent"),
             };
     }
@@ -263,7 +263,92 @@ namespace Commander.Commands.Agent
         }
     }
 
-    public class LinkCommandOptions
+
+    public class PivotCommandOptions
+    {
+        public string verb { get; set; }
+
+        public string type { get; set; }
+        public int? port { get; set; }
+
+        public string pipename { get; set; }
+    }
+    public class LinkCommand : EndPointCommand<PivotCommandOptions>
+    {
+        public override string Description => "Manage Pivots";
+        public override string Name => EndPointCommand.PIVOT;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string?>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
+            new Option<string>(new[] { "--type", "-t" }, () => null, "tcp | tscp | http | https | pipe | pipes").FromAmong("tcp", "tscp", "http", "https", "pipe", "pipes"),
+            new Option<int?>(new[] { "--port", "-p" }, () => null, "port to listen from"),
+            new Option<string>(new[] { "--pipename", "-n" }, () => null, "name of the pipe to listent from"),
+        };
+
+        const string StartVerb = "start";
+        const string StopVerb = "stop";
+        const string ShowVerb = "show";
+        const string TcpType = "tcp";
+        const string TcpsType = "tcps";
+        const string HttpType = "http";
+        const string HttpsType = "https";
+        const string PipeType = "pipe";
+        const string PipesType = "pipes";
+
+        protected override async Task<bool> HandleCommand(CommandContext<PivotCommandOptions> context)
+        {
+            var agent = context.Executor.CurrentAgent;
+            string commandArgs = string.Empty;
+
+            if (context.Options.verb == ShowVerb)
+            {
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
+                context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+                return true;
+            }
+
+
+            if (context.Options.verb == StartVerb || context.Options.verb == StopVerb)
+            {
+                if (string.IsNullOrEmpty(context.Options.type))
+                {
+                    context.Terminal.WriteError($"Type is required!");
+                    return false;
+                }
+
+                if (context.Options.type == TcpType || context.Options.type == TcpsType || context.Options.type == HttpType || context.Options.type == HttpsType)
+                {
+                    if (!context.Options.port.HasValue)
+                    {
+                        context.Terminal.WriteError($"Port is required!");
+                        return false;
+                    }
+                    commandArgs= $"{context.Options.verb} {context.Options.type} {context.Options.port}";
+                }
+
+                if (context.Options.type == PipeType || context.Options.type == PipesType)
+                {
+                    if (string.IsNullOrEmpty(context.Options.pipename))
+                    {
+                        context.Terminal.WriteError($"PipeName is required!");
+                        return false;
+                    }
+                    commandArgs= $"{context.Options.verb} {context.Options.type} {context.Options.pipename}";
+                }
+
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, commandArgs);
+                context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+                return true;
+            }
+
+            return false;
+        }
+
+    }
+
+    /*public class LinkCommandOptions
     {
         public string Host { get; set; }
         public int TargetAgent { get; set; }
@@ -280,9 +365,9 @@ namespace Commander.Commands.Agent
             new Argument<string?>("agentId", () => null, "Id of the agent (long)"),
         };
 
-    }
+    }*/
 
-    public class UnLinkCommandOptions
+    /*public class UnLinkCommandOptions
     {
         public int TargetAgent { get; set; }
     }
@@ -297,5 +382,5 @@ namespace Commander.Commands.Agent
             new Argument<string>("agentId", "Id of the agent (long)"),
         };
 
-    }
+    }*/
 }

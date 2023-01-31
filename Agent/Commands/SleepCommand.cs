@@ -16,11 +16,11 @@ namespace Agent.Commands
         {
             if (task.SplittedArgs.Count() == 0)
             {
-                context.Result.Result = $"Delay is {context.Agent.HttpCommunicator.Interval/1000}s +/- {context.Agent.HttpCommunicator.Jitter*100}%";
+                context.Result.Result = $"Delay is {context.Agent.Communicator.Interval/1000}s +/- {context.Agent.Communicator.Jitter*100}%";
                 return;
             }
 
-            int delay = int.Parse(task.SplittedArgs[0]);
+            double delay = double.Parse(task.SplittedArgs[0]);
             double jitter = 0;
             if (task.SplittedArgs.Count() > 1)
             {
@@ -34,13 +34,10 @@ namespace Agent.Commands
 
          
             delay = delay * 1000;
-            context.Agent.HttpCommunicator.Interval = delay;
-            context.Agent.HttpCommunicator.Jitter = jitter;
+            context.Agent.Communicator.Interval = (int)Math.Round(delay);
+            context.Agent.Communicator.Jitter = jitter;
 
-            context.Agent.PipeCommunicator.Interval = delay;
-            context.Agent.PipeCommunicator.Jitter = jitter;
-
-            context.Result.Result = $"Delay set to {delay/1000}s +/- {jitter*100}%";
+            context.Result.Result = $"Delay is set to {context.Agent.Communicator.Interval/1000.0}s +/- {context.Agent.Communicator.Jitter*100}%";
         }
     }
 }

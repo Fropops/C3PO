@@ -65,6 +65,8 @@ namespace Commander.Commands.Agent
                         Integrity = agent.Metadata.Integrity,
                         Process = agent.Metadata.ProcessName,
                         Architecture = agent.Metadata.Architecture,
+                        EndPoint = agent.Metadata.EndPoint,
+                        Version = agent.Metadata.Version,
                         Listener = listenerName,
                     });
                 }
@@ -95,6 +97,10 @@ namespace Commander.Commands.Agent
 
             public string Listener { get; set; }
 
+            public string Version { get; set; }
+
+            public string EndPoint { get; set; }
+
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
@@ -106,6 +112,7 @@ namespace Commander.Commands.Agent
                 new SharpSploitResultProperty { Name = nameof(UserName), Value = UserName },
                 new SharpSploitResultProperty { Name = nameof(HostName), Value = HostName },
                 new SharpSploitResultProperty { Name = nameof(LastSeen), Value = LastSeen },
+                new SharpSploitResultProperty { Name = nameof(EndPoint), Value = EndPoint },
                 new SharpSploitResultProperty { Name = nameof(Listener), Value = Listener },
             };
         }

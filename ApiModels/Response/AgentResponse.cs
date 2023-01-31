@@ -17,6 +17,9 @@ namespace ApiModels.Response
         public string Integrity { get; set; }
         public string Architecture { get; set; }
 
+        public string EndPoint { get; set; }
+        public string Version { get; set; }
+
     }
 
     public class AgentResponse

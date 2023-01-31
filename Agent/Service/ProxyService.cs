@@ -1,4 +1,5 @@
-﻿using Agent.Service;
+﻿using Agent.Models;
+using Agent.Service;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Agent.Models
+namespace Agent.Service
 {
-    public class ProxyService
+    public class ProxyService : IProxyService
     {
         protected ConcurrentQueue<SocksMessage> _InboudMessages = new ConcurrentQueue<SocksMessage>();
         protected ConcurrentQueue<SocksMessage> _OutboundMessages = new ConcurrentQueue<SocksMessage>();
@@ -52,6 +53,7 @@ namespace Agent.Models
              q.TryDequeue(out var mess);
             return mess;
         }
+
 
 
 

@@ -56,4 +56,10 @@ namespace Commander.Commands.Agent
         public override string Name => EndPointCommand.CAT;
     }
 
+    public class SERVICECommand : SimpleEndPointCommand
+    {
+        public override string Description => "Display the services";
+        public override string Name => EndPointCommand.SERVICE;
+    }
+
 }

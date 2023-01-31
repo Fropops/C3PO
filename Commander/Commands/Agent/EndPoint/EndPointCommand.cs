@@ -282,7 +282,7 @@ namespace Commander.Commands.Agent
         public override RootCommand Command => new RootCommand(this.Description)
         {
             new Argument<string?>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
-            new Option<string>(new[] { "--type", "-t" }, () => null, "tcp | tscp | http | https | pipe | pipes").FromAmong("tcp", "tscp", "http", "https", "pipe", "pipes"),
+            new Option<string>(new[] { "--type", "-t" }, () => null, "tcp | tcps | http | https | pipe | pipes").FromAmong("tcp", "tcps", "http", "https", "pipe", "pipes"),
             new Option<int?>(new[] { "--port", "-p" }, () => null, "port to listen from"),
             new Option<string>(new[] { "--pipename", "-n" }, () => null, "name of the pipe to listent from"),
         };

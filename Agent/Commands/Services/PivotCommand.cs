@@ -55,8 +55,20 @@ namespace Agent.Commands
                         context.Result.Result = $"A pivot is already running on port {port}";
                         return;
                     }
-                    pivotService.AddTCPServer(port);
+                    pivotService.AddTCPServer(port, false);
                     context.Result.Result = $"TCP pivot started on port {port}";
+                }
+
+                if (task.SplittedArgs[1].ToLower() == "tcps")
+                {
+                    var port = int.Parse(task.SplittedArgs[2]);
+                    if (pivotService.IsPivotRunningOnPort(port))
+                    {
+                        context.Result.Result = $"A pivot is already running on port {port}";
+                        return;
+                    }
+                    pivotService.AddTCPServer(port);
+                    context.Result.Result = $"TCPS pivot started on port {port}";
                 }
 
 
@@ -64,17 +76,17 @@ namespace Agent.Commands
 
             if (task.SplittedArgs[0] == StopVerb)
             {
-                if (task.SplittedArgs[1].ToLower() == "tcp")
+                if (task.SplittedArgs[1].ToLower() == "tcp" || task.SplittedArgs[1].ToLower() == "tcps" || task.SplittedArgs[1].ToLower() == "http" || task.SplittedArgs[1].ToLower() == "https")
                 {
                     var port = int.Parse(task.SplittedArgs[2]);
                     if (!pivotService.RemoveTCPServer(port))
                     {
-                        context.Result.Result = $"A TCP pivot is not running on port {port}";
+                        context.Result.Result = $"No pivot is not running on port {port}";
                         return;
                     }
                     else
                     {
-                        context.Result.Result = $"A TCP pivot stopped on port {port}";
+                        context.Result.Result = $"Pivot stopped on port {port}";
                     }
                 }
 

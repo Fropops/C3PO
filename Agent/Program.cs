@@ -26,7 +26,7 @@ namespace Agent
             if (args.Count() == 0)
                 //args = new string[] { "http://192.168.56.103:443" };
                 //args = new string[] { "pipe://192.168.56.103:aaaaaaaaaa" };
-                args = new string[] { "tcp://127.0.0.1:4343" };
+                args = new string[] { "tcps://127.0.0.1:4545" };
 #endif
             if (args.Count() == 0)
             {

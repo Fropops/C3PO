@@ -19,10 +19,7 @@ namespace Agent.Communication
                 case ConnexionType.Http:
                     return new HttpCommModule(conn, ServiceProvider.GetService<IMessageService>(), ServiceProvider.GetService<IFileService>(), ServiceProvider.GetService<IProxyService>());
                 case ConnexionType.Tcp:
-                    if (conn.IsSecure)
-                        return null;
-                    else
-                        return new TcpCommModule(conn, ServiceProvider.GetService<IMessageService>(), ServiceProvider.GetService<IFileService>(), ServiceProvider.GetService<IProxyService>());
+                    return new TcpCommModule(conn, ServiceProvider.GetService<IMessageService>(), ServiceProvider.GetService<IFileService>(), ServiceProvider.GetService<IProxyService>());
             }
             return null;
         }

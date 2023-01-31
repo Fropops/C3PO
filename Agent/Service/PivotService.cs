@@ -31,11 +31,11 @@ namespace Agent.Service
             return tcpServers.Any();
         }
 
-        public bool AddTCPServer(int port)
+        public bool AddTCPServer(int port, bool secure = true)
         {
             if (tcpServers.ContainsKey(port))
                 return false;
-            var server = new PivotTCPServer(port);
+            var server = new PivotTCPServer(port,secure);
             server.Start();
             return tcpServers.TryAdd(port, server);
         }

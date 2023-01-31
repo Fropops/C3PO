@@ -85,7 +85,7 @@ namespace Agent.Communication
                     foreach (var resMess in results)
                         resMess.Header.Path.Insert(0, this.MessageService.AgentMetaData.Id);
 
-                    var messages = await ChekIn(results);
+                    var messages = await CheckIn(results);
                     if (messages != null)
                         this.MessageService.EnqueueTasks(messages);
 
@@ -103,6 +103,6 @@ namespace Agent.Communication
             this.IsRunning = false;
         }
 
-        protected abstract Task<List<MessageTask>> ChekIn(List<MessageResult> results);
+        protected abstract Task<List<MessageTask>> CheckIn(List<MessageResult> results);
     }
 }

@@ -8,7 +8,7 @@ namespace Agent.Service
 {
     public interface IPivotService : IRunningService
     {
-        bool AddTCPServer(int port);
+        bool AddTCPServer(int port, bool secure = true);
         bool RemoveTCPServer(int port);
 
         bool IsPivotRunningOnPort(int port);

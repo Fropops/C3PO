@@ -131,6 +131,7 @@
     <Compile Include="Service\IProxyService.cs" />
     <Compile Include="Service\IRunningService.cs" />
     <Compile Include="Service\Pivoting\PivotHttpServer.cs" />
+    <Compile Include="Service\Pivoting\PivotServer.cs" />
     <Compile Include="Service\Pivoting\PivotTCPServer.cs" />
     <Compile Include="Service\PivotService.cs" />
     <Compile Include="Service\ProxyService.cs" />

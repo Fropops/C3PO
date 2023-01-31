@@ -21,18 +21,6 @@ namespace Agent.Communication
     {
         public TcpCommModule(ConnexionUrl conn, IMessageService messManager, IFileService fileService, IProxyService proxyService) : base(conn, messManager, fileService, proxyService)
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            ServicePointManager.ServerCertificateValidationCallback = new
-            RemoteCertificateValidationCallback
-            (
-               delegate
-               {
-                   return true;
-               }
-            );
-
-
         }
 
 

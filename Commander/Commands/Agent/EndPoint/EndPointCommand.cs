@@ -268,10 +268,7 @@ namespace Commander.Commands.Agent
     {
         public string verb { get; set; }
 
-        public string type { get; set; }
-        public int? port { get; set; }
-
-        public string pipename { get; set; }
+        public string bindto { get; set; }
     }
     public class LinkCommand : EndPointCommand<PivotCommandOptions>
     {
@@ -282,26 +279,16 @@ namespace Commander.Commands.Agent
         public override RootCommand Command => new RootCommand(this.Description)
         {
             new Argument<string?>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
-            new Option<string>(new[] { "--type", "-t" }, () => null, "tcp | tcps | http | https | pipe | pipes").FromAmong("tcp", "tcps", "http", "https", "pipe", "pipes"),
-            new Option<int?>(new[] { "--port", "-p" }, () => null, "port to listen from"),
-            new Option<string>(new[] { "--pipename", "-n" }, () => null, "name of the pipe to listent from"),
+            new Option<string>(new[] { "--bindto", "-b" }, () => null, "Endpoint To bind to"),
         };
 
         const string StartVerb = "start";
         const string StopVerb = "stop";
         const string ShowVerb = "show";
-        const string TcpType = "tcp";
-        const string TcpsType = "tcps";
-        const string HttpType = "http";
-        const string HttpsType = "https";
-        const string PipeType = "pipe";
-        const string PipesType = "pipes";
 
         protected override async Task<bool> HandleCommand(CommandContext<PivotCommandOptions> context)
         {
             var agent = context.Executor.CurrentAgent;
-            string commandArgs = string.Empty;
-
             if (context.Options.verb == ShowVerb)
             {
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
@@ -312,31 +299,21 @@ namespace Commander.Commands.Agent
 
             if (context.Options.verb == StartVerb || context.Options.verb == StopVerb)
             {
-                if (string.IsNullOrEmpty(context.Options.type))
+                if (string.IsNullOrEmpty(context.Options.bindto))
                 {
-                    context.Terminal.WriteError($"Type is required!");
+                    context.Terminal.WriteError($"BindTo is required!");
                     return false;
                 }
 
-                if (context.Options.type == TcpType || context.Options.type == TcpsType || context.Options.type == HttpType || context.Options.type == HttpsType)
+                var url = context.Options.bindto;
+                ConnexionUrl conn = ConnexionUrl.FromString(url);
+                if(!conn.IsValid)
                 {
-                    if (!context.Options.port.HasValue)
-                    {
-                        context.Terminal.WriteError($"Port is required!");
-                        return false;
-                    }
-                    commandArgs= $"{context.Options.verb} {context.Options.type} {context.Options.port}";
+                    context.Terminal.WriteError($"BindTo is not valid!");
+                    return false;
                 }
 
-                if (context.Options.type == PipeType || context.Options.type == PipesType)
-                {
-                    if (string.IsNullOrEmpty(context.Options.pipename))
-                    {
-                        context.Terminal.WriteError($"PipeName is required!");
-                        return false;
-                    }
-                    commandArgs= $"{context.Options.verb} {context.Options.type} {context.Options.pipename}";
-                }
+                string commandArgs = $"{context.Options.verb} {context.Options.bindto}";
 
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, commandArgs);
                 context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");

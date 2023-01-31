@@ -1,90 +1,78 @@
-﻿using Agent.Service.Pivoting;
+﻿using Agent.Communication;
+using Agent.Service.Pivoting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Service
 {
     public class PivotService : RunningService, IPivotService
     {
-        ConcurrentDictionary<int, PivotTCPServer> tcpServers = new ConcurrentDictionary<int, PivotTCPServer>();
-        ConcurrentDictionary<int, PivotHttpServer> httpServers = new ConcurrentDictionary<int, PivotHttpServer>();
+        ConcurrentDictionary<string, PivotServer> servers = new ConcurrentDictionary<string, PivotServer>();
         public override string ServiceName => "Pivot";
 
-        public List<PivotTCPServer> TCPServers
+        public List<PivotServer> Pivots
         {
             get
             {
-                return tcpServers.Values.ToList();
+                return servers.Values.ToList();
             }
-        }
-
-        public List<PivotHttpServer> HTTPServers
-        {
-            get
-            {
-                return httpServers.Values.ToList();
-            }
-        }
-
-        public bool IsPivotRunningOnPort(int port)
-        {
-            return tcpServers.ContainsKey(port) || httpServers.ContainsKey(port);
         }
 
         public bool HasPivots()
         {
-            return httpServers.Any() || httpServers.Any();
+            return servers.Any();
         }
 
-        public bool AddTCPServer(int port, bool secure = true)
+        public bool AddPivot(ConnexionUrl conn)
         {
-            if (tcpServers.ContainsKey(port))
-                return false;
-            var server = new PivotTCPServer(port,secure);
+            PivotServer server = null;
+            switch (conn.Protocol)
+            {
+                case ConnexionType.Http:
+                    {
+                        server = new PivotHttpServer(conn);
+                    }break;
+                case ConnexionType.Tcp:
+                    {
+                        server = new PivotTCPServer(conn);
+                    }
+                    break;
+                default: return false;
+    
+            }
             server.Start();
-            return tcpServers.TryAdd(port, server);
+
+            Thread.Sleep(10);
+            if (server.Status == RunningStatus.Running)
+            {
+                servers.TryAdd(conn.ToString().ToLower(), server);
+                return true;
+            }
+            return false;
         }
 
-        public bool RemoveTCPServer(int port)
+        public bool RemovePivot(ConnexionUrl conn)
         {
-            if (!tcpServers.ContainsKey(port))
+            var key = conn.ToString().ToLower();
+            if (!servers.ContainsKey(key))
                 return false;
-            var server = tcpServers[port];
+            var server = servers[key];
             server.Stop();
-            return tcpServers.TryRemove(port, out _);
+            return servers.TryRemove(key, out _);
         }
 
-
-        public bool AddHTTPServer(int port, bool secure = true)
-        {
-            if (httpServers.ContainsKey(port))
-                return false;
-            var server = new PivotHttpServer(port, secure);
-            server.Start();
-            return httpServers.TryAdd(port, server);
-        }
-
-        public bool RemoveHTTPServer(int port)
-        {
-            if (!httpServers.ContainsKey(port))
-                return false;
-            var server = httpServers[port];
-            server.Stop();
-            return httpServers.TryRemove(port, out _);
-        }
 
 
         public override void Stop()
         {
             base.Stop();
-            foreach(var port in this.tcpServers.Keys.ToList())
-                this.RemoveTCPServer(port);
-            foreach (var port in this.httpServers.Keys.ToList())
-                this.RemoveHTTPServer(port);
+            foreach(var key in this.servers.Keys.ToList())
+                this.RemovePivot(ConnexionUrl.FromString(key));
 
         }
     }

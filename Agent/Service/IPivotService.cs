@@ -1,4 +1,5 @@
-﻿using Agent.Service.Pivoting;
+﻿using Agent.Communication;
+using Agent.Service.Pivoting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +10,11 @@ namespace Agent.Service
 {
     public interface IPivotService : IRunningService
     {
-        List<PivotTCPServer> TCPServers { get; }
-        List<PivotHttpServer> HTTPServers { get; }
+        List<PivotServer> Pivots { get; }
 
+        bool AddPivot(ConnexionUrl conn);
+        bool RemovePivot(ConnexionUrl conn);
 
-        bool AddTCPServer(int port, bool secure = true);
-        bool RemoveTCPServer(int port);
-
-        bool AddHTTPServer(int port, bool secure = true);
-        bool RemoveHTTPServer(int port);
-
-        bool IsPivotRunningOnPort(int port);
         bool HasPivots();
     }
 }

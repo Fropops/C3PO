@@ -12,6 +12,17 @@ namespace Agent.Communication
         public string Address { get; set; }
         public int Port { get; set; }
 
+        public string ProtocolString
+        {
+            get
+            {
+                var str = this.Protocol.ToString().ToLower();
+                if (this.IsSecure)
+                    str += "s";
+                return str;
+            }
+        }
+
         public string PipeName { get; set; }
         public bool IsSecure { get; set; }
 
@@ -45,6 +56,7 @@ namespace Agent.Communication
                     conn.Address = address;
                     conn.IsValid = true;
                     conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
+                    return conn;
                 }
 
                 if (protocol == "https")

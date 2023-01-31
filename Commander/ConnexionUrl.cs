@@ -55,6 +55,8 @@ namespace Commander
                     conn.IsSecure = false;
                     conn.Address = address;
                     conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
+                    conn.IsValid = true;
+                    return conn;
                 }
 
                 if (protocol == "https")

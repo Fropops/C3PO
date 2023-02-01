@@ -50,7 +50,7 @@ namespace TeamServer.Controllers
         [HttpPost]
         public IActionResult StartListener([FromBody] StartHttpListenerRequest request)
         {
-            var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured, request.PublicPort);
+            var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
             listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger);
             listener.Start();

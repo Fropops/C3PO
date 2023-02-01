@@ -51,7 +51,7 @@ namespace TeamServer.Services
         //    return gen;
         //}
 
-        public string GenerateBins(Listener listener)
+        /*public string GenerateBins(Listener listener)
         {
             _logger.LogInformation($"Generate Bin files !");
             var res = GenerateBin(listener, true);
@@ -59,16 +59,16 @@ namespace TeamServer.Services
             return res;
         }
 
-        public string GenerateBin(Listener listener, bool x86 = false)
+        public string GenerateBin(bool x86 = false)
         {
             var cmd = Path.Combine(DonutFolder, "donut");
             var inputFile = Path.Combine(this.SourcePath, AgentFileName);
             if (x86)
                 inputFile = GetX86FileName(inputFile);
-            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), Path.GetFileNameWithoutExtension(inputFile) + BinExtension);
+            var outFile = this._fileService.GetWebHostPath(Path.GetFileNameWithoutExtension(inputFile) + BinExtension);
 
-            if (!Directory.Exists(this._fileService.GetListenerPath(listener.Name)))
-                Directory.CreateDirectory(this._fileService.GetListenerPath(listener.Name));
+            if (!Directory.Exists(Path.GetDirectoryName(outFile)))
+                Directory.CreateDirectory(Path.GetDirectoryName(outFile));
 
             List<string> args = new List<string>();
             args.Add(inputFile);
@@ -80,25 +80,25 @@ namespace TeamServer.Services
             args.Add($"-o");
             args.Add(outFile);
             args.Add($"-p");
-            args.Add($"{listener.Protocol}:{listener.Ip}:{listener.PublicPort}");
+            args.Add($"{listener.Protocol}:{listener.Ip}:{listener.BindPort}");
 
             //string args = $"'{inputFile}' -f 1 -a 2 -o '{outFile}' -p '{listener.Ip}:{listener.BindPort}'";
             _logger.LogInformation($"Executing {cmd} {string.Join(' ', args)}");
             var ret = ExecuteCommand(cmd, args, this.DonutFolder);
             return ret;
-        }
+        }*/
 
 
-        public void GenerateB64s(Listener listener)
+        public void GenerateB64s()
         {
             _logger.LogInformation($"Generate base64 files !");
-            GenerateB64(listener, AgentFileName, true);
-            GenerateB64(listener, AgentFileName);
-            GenerateB64(listener, Stage1FileName, true);
-            GenerateB64(listener, Stage1FileName);
+            GenerateB64(AgentFileName, true);
+            GenerateB64(AgentFileName);
+            GenerateB64(Stage1FileName, true);
+            GenerateB64(Stage1FileName);
         }
 
-        public void GenerateB64(Listener listener, string sourceFile, bool x86 = false)
+        public void GenerateB64(string sourceFile, bool x86 = false)
         {
             var inputFile = Path.Combine(this.SourcePath, sourceFile);
             if (x86)
@@ -106,8 +106,12 @@ namespace TeamServer.Services
 
             byte[] bytes = File.ReadAllBytes(inputFile);
             string base64 = Convert.ToBase64String(bytes);
-            var outFile = Path.Combine(this._fileService.GetListenerPath(listener.Name), Path.GetFileNameWithoutExtension(inputFile) + Base64Extension);
+            var outFile = this._fileService.GetWebHostPath(Path.GetFileNameWithoutExtension(inputFile) + Base64Extension);
+
+            if (!Directory.Exists(Path.GetDirectoryName(outFile)))
+                Directory.CreateDirectory(Path.GetDirectoryName(outFile));
             _logger.LogInformation($"Encoding base64 :  {inputFile} => {outFile}");
+
             File.WriteAllText(outFile, base64);
             
         }

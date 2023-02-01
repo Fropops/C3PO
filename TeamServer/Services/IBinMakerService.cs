@@ -13,8 +13,8 @@ namespace TeamServer.Services
         string DonutFolder { get; }
         //string ReaNimatorFolder { get; }
 
-        void GenerateB64s(Listener listener);
-        string GenerateBins(Listener listener);
+        void GenerateB64s();
+        //string GenerateBins(Listener listener);
 
 
         //string GeneratedAgentBinFileName { get; }

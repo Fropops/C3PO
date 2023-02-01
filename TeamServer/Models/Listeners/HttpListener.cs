@@ -19,9 +19,7 @@ namespace TeamServer.Models
 
         public override string Protocol => this.Secured ? "https" : "http";
 
-        public override string Uri => $"{this.Protocol}://{this.Ip}:{this.PublicPort}".ToLower();
-
-        public HttpListener(string name, int bindPort, string ip, bool secured = true, int? publicPort = null) : base(name, bindPort, ip, publicPort)
+        public HttpListener(string name, int bindPort, string ip, bool secured = true) : base(name, bindPort, ip)
         {
             Secured = secured;
         }
@@ -32,7 +30,7 @@ namespace TeamServer.Models
         {
             if(_logger != null)
             {
-                _logger.LogInformation($"Starting HTTP Listener {this.Name} : {this.Protocol}://{this.Ip}:{this.PublicPort} => {this.BindPort}");
+                _logger.LogInformation($"Starting HTTP Listener {this.Name} : {this.Protocol}://{this.Ip}:{this.BindPort}");
             }
 
             var port = this.BindPort;
@@ -49,24 +47,6 @@ namespace TeamServer.Models
             {
                 ListenersByPorts.Add(port, new List<HttpListener>() { this });
                 shouldStart = true;
-            }
-
-            if (_logger != null)
-            {
-               
-                try
-                {
-                    _logger.LogInformation($"Creating binairies");
-                    _binMakerService.GenerateB64s(this);
-                   // var result = _binMakerService.GenerateBins(this);
-                    //if (_logger != null)
-                    //    _logger.LogInformation(result);
-                    
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(ex.ToString());
-                }
             }
 
             if (!shouldStart)

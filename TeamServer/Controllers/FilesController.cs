@@ -127,11 +127,7 @@ namespace TeamServer.Controllers
         {
             try
             {
-                var listener = _listenerService.GetListeners().FirstOrDefault(l => l.Id == wb.ListenerId);
-                if (listener == null)
-                    return NotFound();
-
-                var outPath = this._fileService.GetListenerPath(listener.Name, wb.FileName);
+                var outPath = this._fileService.GetWebHostPath(wb.FileName);
                 System.IO.File.WriteAllBytes(outPath, wb.Data);
                 
                 return Ok();

@@ -112,13 +112,19 @@ namespace TeamServer.Services
 
         public string GetListenerPath(string listenerName, string fileName)
         {
-            return this.GetFullPath(Path.Combine("Listener", listenerName.Replace(" ", "_"), fileName));
+            return this.GetFullPath(Path.Combine("WebHost", listenerName.Replace(" ", "_"), fileName));
         }
 
         public string GetListenerPath(string listenerName)
         {
-            return this.GetFullPath(Path.Combine("Listener", listenerName.Replace(" ", "_")));
+            return this.GetFullPath(Path.Combine("WebHost", listenerName.Replace(" ", "_")));
         }
+
+        public string GetWebHostPath(string fileName)
+        {
+            return this.GetFullPath(Path.Combine("WebHost", fileName));
+        }
+
 
 
 

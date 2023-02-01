@@ -52,7 +52,6 @@ namespace Commander.Commands.Listener
                     Index = index,
                     Name = listener.Name,
                     BindPort = listener.BindPort,
-                    PublicPort = listener.PublicPort,
                     Address = listener.Ip,
                     Id = listener.Id,
                     Secured = listener.Secured ? "Yes" : "No",
@@ -74,7 +73,6 @@ namespace Commander.Commands.Listener
             public string Name { get; set; }
             public string Address { get; set; }
             public int BindPort { get; set; }
-            public int PublicPort { get; set; }
             public string Secured { get; set; }
 
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
@@ -85,7 +83,6 @@ namespace Commander.Commands.Listener
                 new SharpSploitResultProperty { Name = nameof(Address), Value = Address },
                 new SharpSploitResultProperty { Name = nameof(BindPort), Value = BindPort },
                 new SharpSploitResultProperty { Name = nameof(Secured), Value = Secured },
-                new SharpSploitResultProperty { Name = nameof(PublicPort), Value = PublicPort },
             };
         }
     }

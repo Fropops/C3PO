@@ -15,9 +15,7 @@ namespace Commander.Commands.Laucher
 {
     public class MigrateCommandOptions
     {
-
-        public string listenerName { get; set; }
-
+        public string endpoint { get; set; }
         public bool debug { get; set; }
 
         public bool x86 { get; set; }
@@ -38,9 +36,9 @@ namespace Commander.Commands.Laucher
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
-            new Argument<string>("listenerName", () => "piperunner", "name of the listener used"),
             new Option<int?>(new[] { "--processId", "-pid" }, () => null, "id of the process to injects to"),
             new Option<string>(new[] { "--processName", "-p" }, () => null, "name of process to spawn"),
+            new Option<string>(new[] { "--endpoint", "-b" }, () => null, "EndPoint to Bind To"),
             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
@@ -53,30 +51,21 @@ namespace Commander.Commands.Laucher
                 return false;
             }
 
+            var agent = context.Executor.CurrentAgent;
+            if (string.IsNullOrEmpty(context.Options.endpoint))
+            {
+                context.Terminal.WriteLine($"No Endpoint selected, taking the current agent enpoint ({agent.Metadata.EndPoint})");
+                context.Options.endpoint = agent.Metadata.EndPoint;
+            }
+
+            var endpoint = ConnexionUrl.FromString(context.Options.endpoint);
+            if (!endpoint.IsValid)
+            {
+                context.Terminal.WriteError($"[X] EndPoint is not valid !");
+                return false;
+            }
+
             string id = ShortGuid.NewGuid();
-            string dotnetparms = string.Empty;
-            if (context.Options.listenerName == "piperunner")
-            {
-                dotnetparms = $"pipe:{id}";
-                context.Terminal.WriteInfo($"[*] /!\\ The PipeRunner Id is {id}, it should be use for linking once launched.");
-            }
-            else
-            {
-                var listeners = context.CommModule.GetListeners();
-                var listener = listeners.FirstOrDefault(l => l.Name.ToLower() == context.Options.listenerName.ToLower());
-
-                if (listener == null)
-                {
-                    context.Terminal.WriteLine($"No Listener named {context.Options.listenerName}");
-                    return false;
-                }
-                string protocol = "http";
-                if (listener.Secured)
-                    protocol = "https";
-
-                dotnetparms = $"{protocol}:{listener.Ip}:{listener.PublicPort}";
-            }
-
             string outFile = Path.Combine("/tmp", "tmp" + id);
 
             var fileName = "Agent";
@@ -84,10 +73,9 @@ namespace Commander.Commands.Laucher
                 fileName += "-x86";
             fileName += ".exe";
 
-
             context.Terminal.WriteLine($"[>] Generating binary...");
 
-            var executionResult = BuildHelper.GenerateBin(fileName, outFile, context.Options.x86, dotnetparms);
+            var executionResult = BuildHelper.GenerateBin(fileName, outFile, context.Options.x86, endpoint.ToString());
 
             fileName = outFile;
 

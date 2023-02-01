@@ -8,7 +8,6 @@ namespace ApiModels.Requests
 {
     public class FileWebHost
     {
-        public string ListenerId { get; set; }
         public string FileName { get; set; }
         public byte[] Data { get; set; }
     }

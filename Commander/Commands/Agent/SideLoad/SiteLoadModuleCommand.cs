@@ -64,7 +64,7 @@ namespace Commander.Commands.SideLoad
             ExecutionContext exeCtxt = new ExecutionContext()
             {
                 i = listener.Ip,
-                p = listener.PublicPort,
+                p = listener.BindPort,
                 s = listener.Secured ? "y" : "n",
                 id = taskId,
                 a = this.ComputeParams(context.Options.parameters)

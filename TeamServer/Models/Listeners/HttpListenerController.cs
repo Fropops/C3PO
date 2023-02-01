@@ -35,32 +35,34 @@ namespace TeamServer.Models
 
         public async Task<IActionResult> WebHost(string id)
         {
+            //Logger.Log($"WebHost {this.Request.GetListenerUri()} : {id}");
             //var logger = _loggerFactory.CreateLogger("WebHost");
             //logger.LogInformation($"{id}");
-            string fileName = Path.GetFileName(id);
 
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
-
-            if (listener == null)
+            try
             {
-                //logger.LogError($"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}");
-                Logger.Log($"NOT FOUND {fileName} => No listener at {this.Request.GetListenerUri()}");
-                return this.NotFound();
+                string fileName = Path.GetFileName(id);
+
+               
+                //Logger.Log($"{listener.Name}");
+                var path = _fileService.GetWebHostPath(fileName);
+
+                if (!System.IO.File.Exists(path))
+                {
+                    //logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
+                    Logger.Log($"NOT FOUND {path}");
+                    return this.NotFound();
+                }
+
+                Logger.Log($"GET {fileName}");
+
+                return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
             }
-
-            var path = _fileService.GetListenerPath(listener.Name);
-            path = Path.Combine(path, fileName);
-
-            if (!System.IO.File.Exists(path))
+            catch(Exception ex)
             {
-                //logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
-                Logger.Log($"NOT FOUND {fileName} from listener {listener.Name}");
-                return this.NotFound();
+                Logger.Log($"WebHost Error : {ex}");
+                return NotFound("Error");
             }
-
-            Logger.Log($"GET {fileName} from listener {listener.Name}");
-
-            return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
         }
 
 
@@ -68,11 +70,9 @@ namespace TeamServer.Models
         {
             var agent = this.CheckIn(id);
 
-            //string calledUri = this.Request.GetListenerUri();
-
             //System.IO.File.AppendAllText("log.log", calledUri + Environment.NewLine);
 
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.Uri == this.Request.GetListenerUri());
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
             if (listener != null)
             {
                 //System.IO.File.AppendAllText("log.log", $"Found listener {listener.Id} with {listener.Uri}" + Environment.NewLine);

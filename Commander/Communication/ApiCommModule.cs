@@ -218,7 +218,6 @@ namespace Commander.Communication
                     Name = lr.Name,
                     Id = lr.Id,
                     BindPort = lr.BindPort,
-                    PublicPort = lr.PublicPort,
                     Secured = lr.Secured,
                     
                     Ip = lr.Ip,
@@ -227,7 +226,6 @@ namespace Commander.Communication
                 this._listeners.AddOrUpdate(lr.Name, listener, (key, current) =>
                 {
                     current.BindPort = listener.BindPort;
-                    current.PublicPort = listener.PublicPort;
                     current.Secured = listener.Secured;
                     current.Ip = listener.Ip;
                     return current;
@@ -362,14 +360,13 @@ namespace Commander.Communication
 
 
 
-        public async Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured, int publicPort)
+        public async Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured)
         {
             var requestObj = new ApiModels.Requests.StartHttpListenerRequest();
             requestObj.Name = name;
             requestObj.BindPort  = port;
             requestObj.Ip = address;
             requestObj.Secured = secured;
-            requestObj.PublicPort = publicPort;
             var requestContent = JsonConvert.SerializeObject(requestObj);
 
             return await _client.PostAsync("/Listeners/", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
@@ -562,11 +559,10 @@ namespace Commander.Communication
             return desc.Id;
         }
 
-        public async void WebHost(string listenerId, string fileName, byte[] fileContent)
+        public async void WebHost(string fileName, byte[] fileContent)
         {
             var wh = new FileWebHost()
             {
-                ListenerId = listenerId,
                 FileName = fileName,
                 Data = fileContent,
             };

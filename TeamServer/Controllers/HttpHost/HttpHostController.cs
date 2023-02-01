@@ -36,8 +36,7 @@ namespace TeamServer.Controllers.HttpHost
             if (listener == null)
                 return this.NotFound();
 
-            var path = _fileService.GetListenerPath(listener.Name);
-            path = Path.Combine(path, fileName);
+            var path = _fileService.GetListenerPath(listener.Name, fileName);
 
             if(!System.IO.File.Exists(path))
                 return this.NotFound();

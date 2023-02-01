@@ -17,8 +17,6 @@ namespace TeamServer.Models
 
         public virtual int BindPort { get; protected set; }
 
-        public virtual int PublicPort { get; protected set; }
-
         public virtual string Protocol { get; protected set; }
 
         protected IAgentService _agentService;
@@ -27,20 +25,14 @@ namespace TeamServer.Models
         protected IListenerService _listenerService;
         protected ILogger _logger;
 
-        public Listener(string name, int bindPort, string Ip, int? publicPort = null)
+        public Listener(string name, int bindPort, string Ip)
         {
             this.Name = name;
             this.Ip = Ip;
             this.BindPort = bindPort;
-            if (!publicPort.HasValue)
-                this.PublicPort = bindPort;
-            else
-                this.PublicPort = publicPort.Value;
 
             this.Id = Guid.NewGuid().ToString();
         }
-
-        public abstract string Uri { get; }
 
         public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger)
         {

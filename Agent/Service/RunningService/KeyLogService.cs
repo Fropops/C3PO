@@ -38,10 +38,8 @@ namespace Agent.Service
             base.Start();
         }
 
-        public override void Process()
+        public override async Task Process()
         {
-            base.Process();
-
             activeProcessName = GetActiveWindowProcessName().ToLower();
             bool isOldProcess = activeProcessName.Equals(prevProcessName);
             if (!isOldProcess)

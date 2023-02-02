@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Agent
@@ -10,7 +11,12 @@ namespace Agent
     {
         public static string NewGuid()
         {
-            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
+            var newGuid = string.Empty;
+            do
+                newGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
+            while (Regex.IsMatch(newGuid, @"^\d+$")); //only digits
+
+            return newGuid;
         }
     }
 }

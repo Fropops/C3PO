@@ -28,7 +28,7 @@ namespace Commander.Commands.Agent
         public static string START = "start";
         public static string RUN = "run";
 
-        public static string KEYLOG = "keylog";
+        
 
         public static string EXECUTEASSEMBLY = "execute-assembly";
         public static string SIDELOAD = "side-load";
@@ -48,6 +48,7 @@ namespace Commander.Commands.Agent
 
         public static string SERVICE = "service";
         public static string PIVOT = "pivot";
+        public static string KEYLOG = "keylog";
 
         public override string Category => CommandCategory.Core;
 

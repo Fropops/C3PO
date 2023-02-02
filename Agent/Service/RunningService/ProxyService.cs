@@ -25,9 +25,8 @@ namespace Agent.Service
         {
         }
 
-        public override void Process()
+        public override async Task Process()
         {
-            base.Process();
             SocksMessage received = null;
             while ((received = this.DequeueRequest()) != null)
             {

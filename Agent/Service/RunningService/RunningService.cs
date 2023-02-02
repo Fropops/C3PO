@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -20,17 +21,29 @@ namespace Agent.Service
 
         public int MinimumDelay { get; set; } = 10;
 
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        protected CancellationTokenSource _tokenSource;
 
         public virtual async void Start()
         {
-            this.Status = RunningStatus.Running;
-            while (!_tokenSource.IsCancellationRequested)
+            try
             {
-                this.Process();
-                await Task.Delay(this.MinimumDelay);
+                _tokenSource = new CancellationTokenSource();
+                this.Status = RunningStatus.Running;
+                while (!_tokenSource.IsCancellationRequested)
+                {
+                    await this.Process();
+                    await Task.Delay(this.MinimumDelay);
+                }
+                
             }
-            this.Status = RunningStatus.Stoped;
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                this.Status = RunningStatus.Stoped;
+            }
         }
 
         public virtual async void Stop()
@@ -41,7 +54,7 @@ namespace Agent.Service
             this._tokenSource.Cancel();
         }
 
-        public virtual void Process()
+        public virtual async Task Process()
         {
 
         }

@@ -44,7 +44,7 @@ namespace Agent.Commands
             }
 
             this.Service.Stop();
-            context.Result.Result = $"Proxy stoped";
+            context.Result.Result = $"Proxy stopped";
         }
 
         protected override void Show(AgentTask task, AgentCommandContext context, string[] args)

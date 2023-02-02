@@ -499,7 +499,7 @@ namespace Commander.Communication
             }
         }
 
-        public const int ChunkSize = 256000;
+        public const int ChunkSize = 100000;
 
         public async Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
         {

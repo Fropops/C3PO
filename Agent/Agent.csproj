@@ -97,6 +97,7 @@
     <Compile Include="Communication\ConnexionUrl.cs" />
     <Compile Include="Communication\TcpCommModule.cs" />
     <Compile Include="Helpers\HttpExtensions.cs" />
+    <Compile Include="Helpers\PipeExtensions.cs" />
     <Compile Include="Helpers\TcpExtensions.cs" />
     <Compile Include="Internal\Executor.cs" />
     <Compile Include="Internal\Extension.cs" />
@@ -112,13 +113,13 @@
     <Compile Include="Models\Agent.cs" />
     <None Include="Communication\Pipe\CryptoPipeServer.cs.old" />
     <Compile Include="Models\Message.cs" />
-    <None Include="Communication\PipeCommModule.cs.old" />
-    <Compile Include="Communication\Pipe\PipeActions.cs" />
-    <Compile Include="Communication\Pipe\PipeClient.cs" />
-    <Compile Include="Communication\Pipe\PipeLink.cs" />
+    <Compile Include="Communication\PipeCommModule.cs" />
+    <None Include="Communication\Pipe\PipeActions.cs.old" />
+    <None Include="Communication\Pipe\PipeClient.cs.old" />
+    <None Include="Communication\Pipe\PipeLink.cs.old" />
     <None Include="Communication\Pipe\PipeServer.cs.old" />
-    <Compile Include="Communication\Pipe\CryptoPipeClient.cs" />
-    <Compile Include="Communication\Pipe\SimplePipeClient.cs" />
+    <None Include="Communication\Pipe\CryptoPipeClient.cs.old" />
+    <None Include="Communication\Pipe\SimplePipeClient.cs.old" />
     <Compile Include="Models\ResultData.cs" />
     <Compile Include="Models\AgentMetadata.cs" />
     <Compile Include="Models\AgentTask.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Service\IRunningService.cs" />
     <Compile Include="Service\Pivoting\PivotHttpServer.cs" />
     <Compile Include="Service\Pivoting\PivotServer.cs" />
+    <Compile Include="Service\Pivoting\PivotPipeServer.cs" />
     <Compile Include="Service\Pivoting\PivotTCPServer.cs" />
     <Compile Include="Service\PivotService.cs" />
     <Compile Include="Service\ProxyService.cs" />

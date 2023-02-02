@@ -134,7 +134,7 @@ namespace Agent.Commands
                         }
                         var dest = Clients[id];
                         var data = Convert.FromBase64String(received.Data);
-                        dest.SendData(data);
+                        dest.SendMessage(data);
                         Debug.WriteLine($"Data sent to {id} ({data.Length})");
                     }
 

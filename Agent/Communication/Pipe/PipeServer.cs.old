@@ -10,28 +10,7 @@ using System.Threading.Tasks;
 
 namespace Agent.Models
 {
-    public static class NamedPipeServerStreamExtension
-    {
-        public static bool WaitForConnection(this NamedPipeServerStream server, CancellationToken token)
-        {
-            using (token.Register(server.Close))
-            {
-                try
-                {
-                    server.WaitForConnection();
-                    return true;
-                }
-                catch (System.IO.IOException ex)
-                {
-                    // Token was canceled - swallow the exception and return null
-                    if (token.IsCancellationRequested)
-                        return false;
-                    throw ex;
-                }
-            }
-        }
-
-    }
+    
 
     public abstract class PipeServer
     {

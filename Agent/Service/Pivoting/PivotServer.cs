@@ -1,4 +1,5 @@
 ﻿using Agent.Communication;
+using Agent.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,17 @@ namespace Agent.Service.Pivoting
         public void Stop()
         {
             _tokenSource.Cancel();
+        }
+
+        protected List<string> ExtractRelays(List<MessageResult> responses)
+        {
+            List<string> relays = new List<string>();
+            foreach (var mr in responses)
+            {
+                if (!relays.Contains(mr.Header.Owner))
+                    relays.Add(mr.Header.Owner);
+            }
+            return relays;
         }
     }
 }

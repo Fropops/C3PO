@@ -20,6 +20,8 @@ namespace Agent.Communication
                     return new HttpCommModule(conn, ServiceProvider.GetService<IMessageService>(), ServiceProvider.GetService<IFileService>(), ServiceProvider.GetService<IProxyService>());
                 case ConnexionType.Tcp:
                     return new TcpCommModule(conn, ServiceProvider.GetService<IMessageService>(), ServiceProvider.GetService<IFileService>(), ServiceProvider.GetService<IProxyService>());
+                case ConnexionType.NamedPipe:
+                    return new PipeCommModule(conn, ServiceProvider.GetService<IMessageService>(), ServiceProvider.GetService<IFileService>(), ServiceProvider.GetService<IProxyService>());
             }
             return null;
         }

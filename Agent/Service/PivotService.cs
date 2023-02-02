@@ -40,6 +40,10 @@ namespace Agent.Service
                 case ConnexionType.Tcp:
                     {
                         server = new PivotTCPServer(conn);
+                    }break;
+                case ConnexionType.NamedPipe:
+                    {
+                        server = new PivotPipeServer(conn);
                     }
                     break;
                 default: return false;

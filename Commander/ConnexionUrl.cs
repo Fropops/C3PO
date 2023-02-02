@@ -74,7 +74,7 @@ namespace Commander
                     conn.Protocol = ConnexionType.Tcp;
                     conn.IsSecure = false;
                     conn.Address = address;
-                    conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
+                    conn.Port = int.Parse(complement);
                     conn.IsValid = true;
                     return conn;
                 }
@@ -84,17 +84,7 @@ namespace Commander
                     conn.Protocol = ConnexionType.Tcp;
                     conn.IsSecure = true;
                     conn.Address = address;
-                    conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
-                    conn.IsValid = true;
-                    return conn;
-                }
-
-                if (protocol == "tcps")
-                {
-                    conn.Protocol = ConnexionType.Tcp;
-                    conn.IsSecure = true;
-                    conn.Address = address;
-                    conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
+                    conn.Port = int.Parse(complement);
                     conn.IsValid = true;
                     return conn;
                 }
@@ -104,8 +94,8 @@ namespace Commander
                     conn.Protocol = ConnexionType.NamedPipe;
                     conn.IsSecure = false;
                     conn.Address = address;
-                    conn.PipeName = complement;
-                    conn.IsValid = string.IsNullOrEmpty(complement.Trim());
+                    conn.PipeName = complement.Trim();
+                    conn.IsValid = !string.IsNullOrEmpty(complement.Trim());
                     return conn;
                 }
 
@@ -114,8 +104,8 @@ namespace Commander
                     conn.Protocol = ConnexionType.NamedPipe;
                     conn.IsSecure = true;
                     conn.Address = address;
-                    conn.PipeName = complement;
-                    conn.IsValid = string.IsNullOrEmpty(complement.Trim());
+                    conn.PipeName = complement.Trim();
+                    conn.IsValid = !string.IsNullOrEmpty(complement.Trim());
                     return conn;
                 }
 

@@ -110,7 +110,7 @@ namespace Agent.Helpers
 
         }
 
-        public static void SendData(this TcpClient client, byte[] data)
+        public static void SendMessage(this TcpClient client, byte[] data)
         {
             // Get the client's NetworkStream
             var stream = client.GetStream();

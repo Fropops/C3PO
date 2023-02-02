@@ -13,7 +13,7 @@ namespace Commander.Commands.Agent
     public class ProxyCommandOptions
     {
         public string verb { get; set; }
-        public int port { get; set; }
+        public int? port { get; set; }
     }
 
     public class ProxyCommand : EnhancedCommand<ProxyCommandOptions>
@@ -26,8 +26,8 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("verb", "Start | Stop").FromAmong("start", "stop"),
-                new Option<int>(new[] { "--port", "-p" }, () => 1080, "port to use on the server"),
+                new Argument<string>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
+                new Option<int?>(new[] { "--port", "-p" }, () => 1080, "port to use on the server"),
             };
 
         protected async override Task<bool> HandleCommand(CommandContext<ProxyCommandOptions> context)
@@ -35,23 +35,29 @@ namespace Commander.Commands.Agent
             var agent = context.Executor.CurrentAgent;
 
 
+
             if (context.Options.verb == "start")
             {
-                var res = await context.CommModule.StartProxy(agent.Metadata.Id, context.Options.port);
-                if(!res)
+                if(!context.Options.port.HasValue)
                 {
-                    context.Terminal.WriteError("Cannot start proxy on the server!");
+                    context.Terminal.WriteError("[X] Port is required to start the proxy!");
+                    return false;
+                }
+                var res = await context.CommModule.StartProxy(agent.Metadata.Id, context.Options.port.Value);
+                if (!res)
+                {
+                    context.Terminal.WriteError("[X] Cannot start proxy on the server!");
                     return false;
                 }
 
             }
-            
-            if(context.Options.verb == "stop")
+
+            if (context.Options.verb == "stop")
             {
                 var res = await context.CommModule.StopProxy(agent.Metadata.Id);
                 if (!res)
                 {
-                    context.Terminal.WriteError("Cannot stop proxy on the server!");
+                    context.Terminal.WriteError("[X] Cannot stop proxy on the server!");
                 }
             }
 
@@ -63,5 +69,5 @@ namespace Commander.Commands.Agent
         }
     }
 
-    
+
 }

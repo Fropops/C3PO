@@ -24,10 +24,10 @@ namespace Agent
 
 #if DEBUG
             if (args.Count() == 0)
-                //args = new string[] { "https://192.168.56.103:443" };
+                args = new string[] { "https://192.168.56.103:443" };
             //args = new string[] { "pipe://192.168.56.103:aaaaaaaaaa" };
             //args = new string[] { "tcps://127.0.0.1:4545" };
-            args = new string[] { "pipes://127.0.0.1:foo" };
+            //args = new string[] { "pipes://127.0.0.1:foo" };
 #endif
             if (args.Count() == 0)
             {

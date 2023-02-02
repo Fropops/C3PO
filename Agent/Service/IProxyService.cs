@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Agent.Service
 {
-    public interface IProxyService
+    public interface IProxyService : IRunningService
     {
         void EnqueueResponse(SocksMessage mess);
         List<SocksMessage> GetResponses();

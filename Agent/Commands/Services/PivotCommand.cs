@@ -1,4 +1,5 @@
-﻿using Agent.Communication;
+﻿using Agent.Commands.Services;
+using Agent.Communication;
 using Agent.Models;
 using Agent.Service;
 using System;
@@ -13,16 +14,12 @@ namespace Agent.Commands
 {
     public class PivotCommand : AgentCommand
     {
-        const string StartVerb = "start";
-        const string StopVerb = "stop";
-        const string ShowVerb = "show";
-
         public override string Name => "pivot";
 
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             var pivotService = ServiceProvider.GetService<IPivotService>();
-            if (task.SplittedArgs[0] == ShowVerb)
+            if (task.SplittedArgs[0] == ServiceVerbs.ShowVerb)
             {
                 if (!pivotService.Pivots.Any())
                 {
@@ -45,7 +42,7 @@ namespace Agent.Commands
             }
 
 
-            if (task.SplittedArgs[0] == StartVerb)
+            if (task.SplittedArgs[0] == ServiceVerbs.StartVerb)
             {
                 if (pivotService.Status == RunningStatus.Stoped)
                 {
@@ -79,7 +76,7 @@ namespace Agent.Commands
 
             }
 
-            if (task.SplittedArgs[0] == StopVerb)
+            if (task.SplittedArgs[0] == ServiceVerbs.StopVerb)
             {
                 var url = task.SplittedArgs[1].ToLower();
                 var conn = ConnexionUrl.FromString(url);

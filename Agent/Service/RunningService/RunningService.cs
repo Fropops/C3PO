@@ -30,6 +30,7 @@ namespace Agent.Service
                 this.Process();
                 await Task.Delay(this.MinimumDelay);
             }
+            this.Status = RunningStatus.Stoped;
         }
 
         public virtual async void Stop()

@@ -60,13 +60,19 @@ namespace Agent.Helpers
             // Check if data is available to be read
             if (stream.DataAvailable)
             {
-                // Read data from the stream
+                var data = new byte[0];
                 var buffer = new byte[1024];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                int bytesRead;
+                do
+                {
+                    bytesRead = stream.Read(buffer, 0, buffer.Length);
 
-                // Return the data that was read
-                var data = new byte[bytesRead];
-                Array.Copy(buffer, 0, data, 0, bytesRead);
+                    // Return the data that was read
+                    var index = data.Length;
+                    Array.Resize(ref data, index + bytesRead);
+                    Array.Copy(buffer, 0, data, index, bytesRead);
+                }
+                while (bytesRead == buffer.Length);
                 return data;
             }
             else

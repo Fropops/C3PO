@@ -91,7 +91,7 @@ namespace Agent.Service.Pivoting
 
         private void HandleNonSecureClient(TcpClient client)
         {
-            var req = client.ReceivedMessage();
+            var req = client.ReceivedData();
             //Convert.FromBase64String(b64results).Deserialize<List<MessageResult>>();
             var responses = req.Deserialize<List<MessageResult>>();
             _messageService.EnqueueResults(responses);
@@ -127,7 +127,7 @@ namespace Agent.Service.Pivoting
             Debug.WriteLine($"TCPS Pivot : EncryptedKeyIV = {encryptedKeyIV.Length} " + string.Join(",", encryptedKeyIV.Select(a => ((int)a).ToString())));
             client.SendMessage(encryptedKeyIV);
 
-            var req = client.ReceivedMessage(true);
+            var req = client.ReceivedData();
             //Debug.WriteLine("TCPS Pivot : Encrypted Message (read " + req.Length + ") = " + string.Join(",", req.Select(a => ((int)a).ToString())));
             byte[] decryptedBytes = rijndael.CreateDecryptor().TransformFinalBlock(req, 0, req.Length);
             var responses = decryptedBytes.Deserialize<List<MessageResult>>();

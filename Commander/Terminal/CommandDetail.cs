@@ -21,7 +21,7 @@ namespace Commander.Terminal
         public CommandDetail(int y, string prompt, string value = null)
         {
             CursorStartY = y;
-            Prompt = prompt;
+            Prompt = prompt; // + "(" + y + ")>";
             Value = value ?? String.Empty;
         }
         public int CursorStartY { get; set; }
@@ -45,13 +45,30 @@ namespace Commander.Terminal
         {
             this.ResetPosition();
             this.PrintPromp();
-            Console.Write(Value);
+            this.PrintToConsole(this.Value);
         }
+
+        private void PrintToConsole(string val)
+        {
+            foreach(var c in val)
+            {
+                if(Console.CursorLeft == Console.WindowWidth -1)
+                {
+                    Console.WriteLine();
+                    if(Console.WindowHeight - 1 == Console.CursorTop)
+                    {
+                        this.CursorStartY -= 1;
+                    }
+                }
+                Console.Write(c);
+            }
+        }
+
         private void Clean()
         {
             ResetPosition();
-            Console.Write(string.Empty.PadLeft(this.Prompt.Length));
-            Console.Write(string.Empty.PadLeft(this.Value.Length));
+            PrintToConsole(string.Empty.PadLeft(this.Prompt.Length));
+            PrintToConsole(string.Empty.PadLeft(this.Value.Length));
         }
         public void Interrupt()
         {
@@ -106,12 +123,12 @@ namespace Commander.Terminal
 
         private void ClearAfter(int index)
         {
-            Console.Write(String.Empty.PadLeft(Value.Length - index));
+            PrintToConsole(String.Empty.PadLeft(Value.Length - index));
         }
 
         private void PrintAfter(int index)
         {
-            Console.Write(Value.Substring(CursorValueIndex, Value.Length - index));
+            PrintToConsole(Value.Substring(CursorValueIndex, Value.Length - index));
         }
 
         private void PlaceCursorAtIndex(int index)

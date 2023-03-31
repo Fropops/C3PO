@@ -26,6 +26,7 @@ namespace Commander.Terminal
         }
         public async Task Start()
         {
+            //this.WriteLine(Console.WindowWidth + "-" + Console.WindowHeight);
             this.NewLine(false);
             while (!_token.IsCancellationRequested)
             {
@@ -58,6 +59,8 @@ namespace Commander.Terminal
 
         protected void HandleKey(ConsoleKeyInfo key)
         {
+           
+
             if (!this.CanHandleInput)
                 return;
             switch (key.Key)
@@ -94,6 +97,7 @@ namespace Commander.Terminal
                             if (this.History.IsMostRecent(cmd))
                             {
                                 this.CurrentCommand.Interrupt();
+                                cmd.CursorStartY = this.CurrentCommand.CursorStartY;
                                 this.CurrentCommand = cmd;
                                 this.CurrentCommand.Print();
                             }
@@ -137,8 +141,8 @@ namespace Commander.Terminal
             int top = Console.CursorTop;
             if (replace)
             {
-                top = this.CurrentCommand.CursorStartY;
                 this.CurrentCommand.Interrupt();
+                top = this.CurrentCommand.CursorStartY;
             }
 
             this.CurrentCommand = new CommandDetail(top, this.Prompt, cmd);

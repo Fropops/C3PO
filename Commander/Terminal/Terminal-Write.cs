@@ -39,22 +39,22 @@ namespace Commander.Terminal
                     Console.ForegroundColor = TerminalConstants.InfoColor;
                     break;
                 default:
-                    Console.ForegroundColor = this.DefaultColor;
+                    Console.ForegroundColor = TerminalConstants.DefaultForeGroundColor;
                     break;
 
             }
             InnerWriteLine(strs);
-            Console.ForegroundColor = this.DefaultColor;
+            Console.ForegroundColor = TerminalConstants.DefaultForeGroundColor;
         }
 
 
-        public void WritePrompt()
-        {
-            Console.ForegroundColor = TerminalConstants.PromptColor;
-            Console.Write(this.Prompt);
-            Console.ForegroundColor = this.DefaultColor;
+        //public void WritePrompt()
+        //{
+        //    Console.ForegroundColor = TerminalConstants.PromptColor;
+        //    Console.Write(this.Prompt);
+        //    Console.ForegroundColor = this.DefaultColor;
 
-        }
+        //}
 
         public void WriteSuccess(params string[] parm)
         {

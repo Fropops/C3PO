@@ -67,7 +67,7 @@ namespace Commander.Commands.Agent
 
             indent += indentOffset + (maxLength / 2);
 
-            context.Terminal.SetForeGroundColor(context.Terminal.DefaultColor);
+            context.Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
 
             foreach (var child in node.Children)
                 RenderNode(child, context, indent);

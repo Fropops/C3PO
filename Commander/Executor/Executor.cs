@@ -55,8 +55,6 @@ namespace Commander.Executor
             this.CommModule.AgentsUpdated +=CommModule_AgentsUpdated;
             this.CommModule.AgentAdded +=CommModule_AgentAdded;
             //end events
-
-            this.Terminal.NewLine(false);
         }
 
         private void CommModule_AgentAdded(object sender, Agent e)
@@ -290,7 +288,7 @@ namespace Commander.Executor
         public void InputHandled(ExecutorCommand cmd, bool cmdResult)
         {
             this.Terminal.CanHandleInput = true;
-            this.Terminal.NewLine(false);
+            this.Terminal.NewLine();
         }
 
         public void Start()

@@ -14,7 +14,7 @@ namespace Commander.Terminal
 
         string Prompt { get; set; }
 
-        public ConsoleColor DefaultColor { get; set; }
+        //public ConsoleColor DefaultColor { get; set; }
         Task Start();
 
         void stop();
@@ -23,12 +23,12 @@ namespace Commander.Terminal
 
         void Restore();
 
-        void NewLine(bool lineBreak = true);
+        void NewLine(bool brk = true);
 
 
         void WriteLine(TerminalMessageType typ, params string[] strs);
 
-        void WritePrompt();
+       // void WritePrompt();
 
         public void WriteSuccess(params string[] parm);
         public void WriteError(params string[] parm);

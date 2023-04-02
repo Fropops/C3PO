@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31911.196
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamServer", "TeamServer\TeamServer.csproj", "{99CDB51E-5094-4262-9B1A-C6C9682F29A3}"
 EndProject
@@ -26,23 +26,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8BA2B05D-B7F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUAC", "Tests\TestUAC\TestUAC.csproj", "{F87A950E-3435-493A-8B10-C626E5D5A38F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dropper", "Stager\Dropper.csproj", "{EAA75F4D-6C11-4304-AC0B-566694B538A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dropper", "Launcher\Stager\Dropper.csproj", "{EAA75F4D-6C11-4304-AC0B-566694B538A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encloser", "Encloser\Encloser.csproj", "{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Encloser", "Launcher\Encloser\Encloser.csproj", "{4C99D738-7FE8-4F0A-B56C-6FDD252EF077}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Launcher", "Launcher", "{2DE697B9-6FF7-4ACE-B03E-2F34009507C7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Depndencies", "Depndencies", "{289AF798-1663-40B6-B63D-E1E3B790D87C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stage1", "Launcher\Stage1\Stage1.csproj", "{32297F2D-1AAF-4681-8310-C1177F64357E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeClient", "PipeClient\PipeClient.csproj", "{BB58D666-DC99-491E-B254-A328FA9CA9D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeClient", "Tests\PipeClient\PipeClient.csproj", "{BB58D666-DC99-491E-B254-A328FA9CA9D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeServer", "PipeServer\PipeServer.csproj", "{487CC2CE-CBD1-4D34-85FF-38FEBFE9C805}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipeServer", "Tests\PipeServer\PipeServer.csproj", "{487CC2CE-CBD1-4D34-85FF-38FEBFE9C805}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptor", "Tests\Cryptor\Cryptor.csproj", "{A6FA1707-CC85-4D15-ADD3-D9D4A7BE91A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksProxy", "SocksProxy\SocksProxy.csproj", "{9507A0CA-DDF6-4FE1-829E-65849DDD4303}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocksProxy", "Tests\SocksProxy\SocksProxy.csproj", "{9507A0CA-DDF6-4FE1-829E-65849DDD4303}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Token", "Tests\Token\Token.csproj", "{7C1159A7-06FD-4318-88DB-931E9C9167BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -534,6 +534,42 @@ Global
 		{9507A0CA-DDF6-4FE1-829E-65849DDD4303}.ReleaseX86|x64.Build.0 = ReleaseX86|Any CPU
 		{9507A0CA-DDF6-4FE1-829E-65849DDD4303}.ReleaseX86|x86.ActiveCfg = ReleaseX86|Any CPU
 		{9507A0CA-DDF6-4FE1-829E-65849DDD4303}.ReleaseX86|x86.Build.0 = ReleaseX86|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release|x64.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release|x86.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX64|Any CPU.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX64|Any CPU.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX64|x64.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX64|x64.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX64|x86.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX64|x86.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX86|Any CPU.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX86|Any CPU.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX86|x64.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX86|x64.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX86|x86.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.Release-ServiceX86|x86.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX64|Any CPU.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX64|Any CPU.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX64|x64.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX64|x64.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX64|x86.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX64|x86.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX86|Any CPU.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX86|Any CPU.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX86|x64.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX86|x64.Build.0 = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX86|x86.ActiveCfg = Release|Any CPU
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC}.ReleaseX86|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -548,6 +584,7 @@ Global
 		{487CC2CE-CBD1-4D34-85FF-38FEBFE9C805} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
 		{A6FA1707-CC85-4D15-ADD3-D9D4A7BE91A3} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
 		{9507A0CA-DDF6-4FE1-829E-65849DDD4303} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
+		{7C1159A7-06FD-4318-88DB-931E9C9167BC} = {0B76A01A-0714-4F9E-A419-38C3CB2CD0DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F1C3E1B-972F-4903-9445-6F9834624107}

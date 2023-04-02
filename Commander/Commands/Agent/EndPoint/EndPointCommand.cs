@@ -50,6 +50,10 @@ namespace Commander.Commands.Agent
         public static string PIVOT = "pivot";
         public static string KEYLOG = "keylog";
 
+        public static string MAKE_TOKEN = "make-token";
+        public static string REVERT_SELF = "revert-self";
+        public static string STEAL_TOKEN = "steal-token";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);

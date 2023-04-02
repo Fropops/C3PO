@@ -1,11 +1,14 @@
 ﻿using Agent.Commands;
 using Agent.Commands.Services;
 using Agent.Communication;
+using Agent.Helpers;
 using Agent.Service;
+using Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,8 +87,22 @@ namespace Agent.Models
         {
             foreach (var task in tasks)
             {
-                Thread t = new Thread(this.StartHandleTask);
-                t.Start(task);
+                if (ImpersonationHelper.HasCurrentImpersonation)
+                {
+                    //Console.WriteLine($"run command {task.Command} impersonnated");
+                    using (var context = WindowsIdentity.Impersonate(ImpersonationHelper.ImpersonatedToken))
+                    {
+                        Thread t = new Thread(this.StartHandleTask);
+                        t.Start(task);
+                    }
+                }
+                else
+                {
+                    //Console.WriteLine($"run command {task.Command} not impersonnated");
+                    Thread t = new Thread(this.StartHandleTask);
+                    t.Start(task);
+                }
+
             }
         }
 

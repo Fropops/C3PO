@@ -1,4 +1,5 @@
 ﻿using Agent.Commands;
+using Agent.Helpers;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,7 @@ namespace Commands
                    {
                     var identity = new WindowsIdentity(hToken);
                     context.Result.Result += $"Successfully impersonated {identity.Name}";
+                    ImpersonationHelper.Impersonate(hToken);
                     return;
                 }
 

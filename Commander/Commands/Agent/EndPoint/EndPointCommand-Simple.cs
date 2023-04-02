@@ -62,4 +62,22 @@ namespace Commander.Commands.Agent
         public override string Name => EndPointCommand.SERVICE;
     }
 
+    public class StealTokenCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Steal the token of a process";
+        public override string Name => EndPointCommand.STEAL_TOKEN;
+    }
+
+    public class MakeTokenCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Make token for a specified user";
+        public override string Name => EndPointCommand.MAKE_TOKEN;
+    }
+
+    public class Rev2SelfCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Make token for a specified user";
+        public override string Name => EndPointCommand.REVERT_SELF;
+    }
+
 }

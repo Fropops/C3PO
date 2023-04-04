@@ -94,7 +94,7 @@ namespace Commander.Executor
 
             this.Terminal.Interrupt();
             task.Print(res, this.Terminal);
-            foreach(var file in res.Files.Where(f => !f.IsDownloaded))
+            foreach (var file in res.Files.Where(f => !f.IsDownloaded))
             {
                 bool first = true;
                 var bytes = this.CommModule.Download(file.FileId, a =>
@@ -179,13 +179,19 @@ namespace Commander.Executor
             {
                 case ConnectionStatus.Connected:
                     {
-                        status = $"Commander is now connected to {this.CommModule.ConnectAddress}:{this.CommModule.ConnectPort}.";
+                        status = $"Commander is now connected to {this.CommModule.Config.EndPoint}.";
                         this.Terminal.WriteSuccess(status);
+                    }
+                    break;
+                case ConnectionStatus.Unauthorized:
+                    {
+                        status = $"Commander is not Authorized to connect to {this.CommModule.Config.EndPoint}.";
+                        this.Terminal.WriteError(status);
                     }
                     break;
                 default:
                     {
-                        status = $"Commander cannot connect to {this.CommModule.ConnectAddress}:{this.CommModule.ConnectPort}.";
+                        status = $"Commander cannot connect to {this.CommModule.Config.EndPoint}.";
                         this.Terminal.WriteError(status);
                     }
                     break;
@@ -240,6 +246,9 @@ namespace Commander.Executor
 
         public IEnumerable<ExecutorCommand> GetCommandsInMode(ExecutorMode mode)
         {
+            if (!this._commands.ContainsKey(mode))
+                return new List<ExecutorCommand>();
+
             return this._commands[mode];
         }
 

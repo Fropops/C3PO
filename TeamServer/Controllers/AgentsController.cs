@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Helper;
 using TeamServer.Models;
 using TeamServer.Services;
 
@@ -11,6 +12,7 @@ namespace TeamServer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class AgentsController : ControllerBase
     {
         private readonly IAgentService _agentService;

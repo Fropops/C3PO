@@ -22,9 +22,7 @@ namespace Commander.Communication
 
         ConnectionStatus ConnectionStatus { get; set; }
 
-        string ConnectAddress { get; set; }
-        int ConnectPort { get; set; }
-        int Delay { get; set; }
+        CommanderConfig Config { get; }
 
         List<Agent> GetAgents();
 

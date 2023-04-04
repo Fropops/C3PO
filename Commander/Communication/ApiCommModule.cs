@@ -1,18 +1,20 @@
-﻿using ApiModels.Requests;
-using ApiModels.Response;
-using Commander.Models;
-using Commander.Terminal;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ApiModels.Requests;
+using ApiModels.Response;
+using Commander.Models;
+using Commander.Terminal;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Commander.Communication
 {
@@ -27,13 +29,6 @@ namespace Commander.Communication
 
         public event EventHandler<Agent> AgentAdded;
 
-        public string ConnectAddress { get; set; }
-        public int ConnectPort { get; set; }
-
-        public int Delay { get; set; } = 1000;
-
-
-
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
@@ -46,12 +41,11 @@ namespace Commander.Communication
 
         private ITerminal Terminal;
 
-        public ApiCommModule(ITerminal terminal, string connectAddress, int connectPort)
+        public CommanderConfig Config { get; set; }
+        public ApiCommModule(ITerminal terminal, CommanderConfig config)
         {
             this.Terminal = terminal;
-
-            ConnectAddress=connectAddress;
-            ConnectPort=connectPort;
+            this.Config = config;
 
             this.UpdateConfig();
         }
@@ -60,19 +54,35 @@ namespace Commander.Communication
         {
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 5);
-            _client.BaseAddress = new Uri($"http://{this.ConnectAddress}:{this.ConnectPort}");
+            _client.BaseAddress = new Uri($"http://{this.Config.EndPoint}");
             _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ GenerateToken());
 
             this._agents.Clear();
             this._tasks.Clear();
             this._results.Clear();
             this._listeners.Clear();
 
-            this.ConnectionStatus = ConnectionStatus.Disconnected;
+            this.ConnectionStatus = ConnectionStatus.Unknown;
             this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
         }
 
-        public ConnectionStatus ConnectionStatus { get; set; }
+        private string GenerateToken()
+        {
+            // generate token that is valid for 7 days
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(this.Config.ApiKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", Config.User) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public ConnectionStatus ConnectionStatus { get; set; } = ConnectionStatus.Unknown;
 
         bool firstLoad = true;
 
@@ -101,9 +111,18 @@ namespace Commander.Communication
                 {
                     if ((e.InnerException != null && e.InnerException is TimeoutException) || e is HttpRequestException)
                     {
-                        if (this.ConnectionStatus != ConnectionStatus.Disconnected)
+                        var newStatus = ConnectionStatus.Disconnected;
+                        if (e is HttpRequestException)
                         {
-                            this.ConnectionStatus = ConnectionStatus.Disconnected;
+                            var htEx = e as HttpRequestException;
+                            if (htEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                                newStatus = ConnectionStatus.Unauthorized;
+                        }
+
+
+                        if (this.ConnectionStatus != newStatus)
+                        {
+                            this.ConnectionStatus = newStatus;
                             this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                         }
                     }
@@ -111,7 +130,7 @@ namespace Commander.Communication
                         this.Terminal.WriteError(e.ToString());
                 }
 
-                await Task.Delay(this.Delay);
+                await Task.Delay(this.Config.Delay);
             }
         }
 

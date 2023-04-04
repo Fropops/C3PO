@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Commander.Commands
 {
-    public class Config
+    public class CommanderConfig
     {
     }
 }

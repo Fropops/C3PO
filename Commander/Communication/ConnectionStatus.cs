@@ -11,5 +11,6 @@ namespace Commander.Communication
         Unknown,
         Connected,
         Disconnected,
+        Unauthorized,
     }
 }

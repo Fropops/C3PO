@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamServer.Controllers;
+using TeamServer.MiddleWare;
 using TeamServer.Models;
 using TeamServer.Services;
 
@@ -45,7 +46,8 @@ namespace TeamServer
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
             services.AddSingleton<ISocksService, SocksService>();
-
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IJwtUtils, JwtUtils>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,10 +56,11 @@ namespace TeamServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
             }
-            
+
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseRouting();
 
@@ -70,7 +73,9 @@ namespace TeamServer
 
 
             //this.StartHttpHost(app);
+            this.PopulateUsers(app);
             this.StartDefaultListener(app);
+
         }
 
 
@@ -87,7 +92,7 @@ namespace TeamServer
                 {
                     host.UseUrls($"http://*:80");
                     host.Configure(ConfigureHttpHostApp);
-                    host.ConfigureServices(ConfigureHttpHostServices);                
+                    host.ConfigureServices(ConfigureHttpHostServices);
                 });
             var host = hostBuilder.Build();
             host.RunAsync();
@@ -106,10 +111,26 @@ namespace TeamServer
             app.UseRouting();
             app.UseEndpoints(e =>
             {
-                
+
                 e.MapControllerRoute("/", "/{id}", new { Controller = "HttpHost", Action = "Dload" });
                 e.MapControllerRoute("/", "/", new { Controller = "HttpHost", Action = "Index" });
             });
+        }
+
+        private void PopulateUsers(IApplicationBuilder app)
+        {
+            var config = app.ApplicationServices.GetService<IConfiguration>();
+            var users = app.ApplicationServices.GetService<IUserService>();
+
+            foreach (var cfgUser in config.GetSection("Users").GetChildren())
+            {
+                var user = new User();
+                user.Id = cfgUser.GetValue<string>("Id");
+                user.Key = cfgUser.GetValue<string>("Key");
+
+                users.AddUser(user);
+            }
+
         }
 
         private void StartDefaultListener(IApplicationBuilder app)

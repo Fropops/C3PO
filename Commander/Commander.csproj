@@ -13,10 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Commands\Agent\Execute-Assembly\ExecuteAssemblyCommand.cs.old" />
+    <None Remove="Commands\Agent\Execute-Assembly\ExecuteAssemblyModuleCommand.cs.old" />
     <None Remove="Commands\Laucher\BuildPipeRunnerCommand.cs.old" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Commands\Agent\Execute-Assembly\ExecuteAssemblyCommand.cs.old" />
+    <Compile Include="Commands\Agent\Execute-Assembly\ExecuteAssemblyModuleCommand.cs.old" />
     <Compile Include="Commands\Laucher\BuildPipeRunnerCommand.cs.old" />
   </ItemGroup>
 

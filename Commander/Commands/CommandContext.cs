@@ -19,9 +19,6 @@ namespace Commander.Commands
         public string CommandLabel { get; set; }
 
         public string CommandParameters { get; set; }
-
-
-
     }
 
     public class CommandContext<T> : CommandContext

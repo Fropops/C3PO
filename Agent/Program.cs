@@ -148,7 +148,7 @@ namespace Agent
                 Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "Net v7.0",
+                Version = "Net v8.0",
             };
 
             return metadata;

@@ -20,6 +20,14 @@ namespace Commander.Commands.Agent
         }
     }
 
+    public abstract class MetaEndPointCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Ask to refresh Metadata";
+        public override string Name => EndPointCommand.META;
+    }
+
+
+
     public class ShellCommand : SimpleEndPointCommand
     {
         public override string Description => "Send a command to be executed by the agent shell";

@@ -14,6 +14,7 @@ namespace Commander.Commands.Agent
     public abstract class EndPointCommand<T> : EnhancedCommand<T>
     {
         public static string SLEEP = "sleep";
+        public static string META = "meta";
 
         public static string WHOAMI = "whoami";
         public static string DOWNLOAD = "download";

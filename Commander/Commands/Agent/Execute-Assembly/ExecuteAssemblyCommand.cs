@@ -1,7 +1,5 @@
-﻿using Commander.Executor;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,51 +7,47 @@ using System.Threading.Tasks;
 
 namespace Commander.Commands.Agent.Execute_Assembly
 {
-    public class ExecuteAssemblyCommandOptions
-    {
-        public string dotnetfile { get; set; }
 
-        public string parameters { get; set; }
-    }
-    public class ExecuteAssemblyCommand : EnhancedCommand<ExecuteAssemblyCommandOptions>
+    public class ExecuteAssemblyCommand : SimpleEndPointCommand
     {
-        public override string Category => CommandCategory.Core;
         public override string Description => "Execute a dot net assembly in memory";
         public override string Name => EndPointCommand.EXECUTEASSEMBLY;
-        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
-        public override RootCommand Command => new RootCommand(this.Description)
-            {
-                new Argument<string>("dotnetfile", "path of the file to execute"),
-                new Argument<string>("parameters", () => "", "parameters to pass"),
-            };
-
-        protected override async Task<bool> HandleCommand(CommandContext<ExecuteAssemblyCommandOptions> context)
+        protected override void InnerExecute(CommandContext context)
         {
-            if(!File.Exists(context.Options.dotnetfile))
+            var args = context.CommandParameters.GetArgs();
+            if(args.Length == 0)
             {
-                context.Terminal.WriteError($"File {context.Options.dotnetfile} not found");
-                return false;
+                context.Terminal.WriteLine($"Usage : {this.Name} ExePath [Arguments]");
+                return;
+            }
+
+            var exePath = args[0];
+
+            if (!File.Exists(exePath))
+            {
+                context.Terminal.WriteError($"File {exePath} not found");
+                return;
             }
             byte[] fileBytes = null;
-            using (FileStream fs = File.OpenRead(context.Options.dotnetfile))
+            using (FileStream fs = File.OpenRead(exePath))
             {
                 fileBytes = new byte[fs.Length];
                 fs.Read(fileBytes, 0, (int)fs.Length);
             }
 
-            string fileName = Path.GetFileName(context.Options.dotnetfile);
+            string fileName = Path.GetFileName(exePath);
             bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
+            var fileId = context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
             {
                 context.Terminal.ShowProgress("uploading", a, first);
                 first = false;
-            });
+            }).Result;
 
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, context.Options.parameters);
+            context.Terminal.WriteLine("Parms = " + context.CommandParameters.ExtractAfterParam(0));
+
+            context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, context.CommandParameters.ExtractAfterParam(0)).Wait();
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
-            return true;
         }
     }
 }
-

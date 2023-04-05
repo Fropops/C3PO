@@ -24,6 +24,7 @@ namespace TeamServer.Models
         protected IBinMakerService _binMakerService;
         protected IListenerService _listenerService;
         protected ILogger _logger;
+        protected IChangeTrackingService _changeTrackingService;
 
         public Listener(string name, int bindPort, string Ip)
         {
@@ -34,13 +35,14 @@ namespace TeamServer.Models
             this.Id = Guid.NewGuid().ToString();
         }
 
-        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger)
+        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger, IChangeTrackingService changeTrackingService)
         {
             this._agentService = service;
             this._fileService = fileService;
             this._binMakerService = binMakerService;
             this._listenerService = listenerService;
             this._logger = logger;
+            this._changeTrackingService = changeTrackingService;
         }
 
         public abstract Task Start();

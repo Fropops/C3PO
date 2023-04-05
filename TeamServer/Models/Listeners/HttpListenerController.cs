@@ -1,4 +1,5 @@
-﻿using ApiModels.Response;
+﻿using ApiModels.Changes;
+using ApiModels.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,14 +23,16 @@ namespace TeamServer.Models
         private IListenerService _listenerService;
         private IBinMakerService _binMakerService;
         private ILoggerFactory _loggerFactory;
+        private readonly IChangeTrackingService _changeTrackingService;
 
-        public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService, ILoggerFactory loggerFactory)
+        public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService, ILoggerFactory loggerFactory, IChangeTrackingService changeTrackingService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
             this._listenerService = listenerService;
             this._binMakerService = binMakerService;
             this._loggerFactory = loggerFactory;
+            this._changeTrackingService = changeTrackingService;
         }
 
 
@@ -43,7 +46,7 @@ namespace TeamServer.Models
             {
                 string fileName = Path.GetFileName(id);
 
-               
+
                 //Logger.Log($"{listener.Name}");
                 var path = _fileService.GetWebHostPath(fileName);
 
@@ -58,7 +61,7 @@ namespace TeamServer.Models
 
                 return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Log($"WebHost Error : {ex}");
                 return NotFound("Error");
@@ -76,7 +79,11 @@ namespace TeamServer.Models
             if (listener != null)
             {
                 //System.IO.File.AppendAllText("log.log", $"Found listener {listener.Id} with {listener.Uri}" + Environment.NewLine);
-                agent.ListenerId = listener.Id;
+                if (agent.ListenerId != listener.Id)
+                {
+                    agent.ListenerId = listener.Id;
+                    this._changeTrackingService.TrackChange(ChangingElement.Agent, agent.Id);
+                }
             }
 
             if (HttpContext.Request.Method == "POST")
@@ -87,19 +94,29 @@ namespace TeamServer.Models
 
                 var result = JsonConvert.DeserializeObject<List<MessageResult>>(json);
 
-                foreach(var messRes in result)
+                foreach (var messRes in result)
                 {
                     var agentId = messRes.Header.Owner;
                     var messAgent = this.CheckIn(messRes.Header.Owner);
-                  
+
                     if (messRes.MetaData != null)
+                    {
                         messAgent.Metadata = messRes.MetaData;
+                        this._changeTrackingService.TrackChange(ChangingElement.Agent, messAgent.Id);
+                    }
 
                     messAgent.AddTaskResults(messRes.Items);
+                    foreach (var res in messRes.Items)
+                        this._changeTrackingService.TrackChange(ChangingElement.Result, res.Id);
+
                     messAgent.RelayId = id;
-                    messAgent.Path = messRes.Header.Path;
-                    if(messRes.FileChunk != null)
-                         _fileService.AddAgentFileChunk(messRes.FileChunk);
+                    if (messAgent.Path != messRes.Header.Path)
+                    {
+                        messAgent.Path = messRes.Header.Path;
+                        this._changeTrackingService.TrackChange(ChangingElement.Agent, messAgent.Id);
+                    }
+                    if (messRes.FileChunk != null)
+                        _fileService.AddAgentFileChunk(messRes.FileChunk);
 
                     messAgent.AddProxyResponses(messRes.ProxyMessages);
 
@@ -116,42 +133,48 @@ namespace TeamServer.Models
                 if (mess != null)
                     messages.Add(mess);
             }
-          
+
             return Ok(messages);
         }
 
         private Agent CheckIn(string agentId)
         {
             var agent = this._agentService.GetAgent(agentId);
+            
+            this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
+
             if (agent == null)
             {
                 agent = new Agent(agentId);
-                agent.QueueTask(new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString(), Label = "MetaData", RequestDate = DateTime.Now });
                 this._agentService.AddAgent(agent);
+                var meta = new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString(), Label = "MetaData", RequestDate = DateTime.UtcNow };
+                agent.QueueTask(meta);
+                this._changeTrackingService.TrackChange(ChangingElement.Task, meta.Id);
             }
 
             agent.CheckIn();
+
             return agent;
         }
 
 
 
-        private AgentMetadata ExtractMetadata(IHeaderDictionary headers)
-        {
-            //Auhorization: Bearer <base64>
-            if (!headers.TryGetValue("Authorization", out var encodedMetaDataHeader))
-                return null;
+        //private AgentMetadata ExtractMetadata(IHeaderDictionary headers)
+        //{
+        //    //Auhorization: Bearer <base64>
+        //    if (!headers.TryGetValue("Authorization", out var encodedMetaDataHeader))
+        //        return null;
 
-            var encodedMetaData = encodedMetaDataHeader.ToString();
+        //    var encodedMetaData = encodedMetaDataHeader.ToString();
 
-            if (!encodedMetaData.StartsWith("Bearer "))
-                return null;
+        //    if (!encodedMetaData.StartsWith("Bearer "))
+        //        return null;
 
-            encodedMetaData = encodedMetaData.Substring(7, encodedMetaData.Length - 7);
+        //    encodedMetaData = encodedMetaData.Substring(7, encodedMetaData.Length - 7);
 
-            var json = Encoding.UTF8.GetString(Convert.FromBase64String(encodedMetaData));
-            return JsonConvert.DeserializeObject<AgentMetadata>(json);
-        }
-    
+        //    var json = Encoding.UTF8.GetString(Convert.FromBase64String(encodedMetaData));
+        //    return JsonConvert.DeserializeObject<AgentMetadata>(json);
+        //}
+
     }
 }

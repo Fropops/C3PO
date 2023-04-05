@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Helper;
 using TeamServer.Models;
 using TeamServer.Services;
 
@@ -12,6 +13,7 @@ namespace TeamServer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly IAgentService _agentService;
@@ -21,62 +23,93 @@ namespace TeamServer.Controllers
             this._agentService = agentService;
         }
 
-        [HttpGet]
-        public IActionResult GetTasks()
-        {
-            var results = new List<AgentTaskResponse>();
-            var agents = _agentService.GetAgents();
+        //[HttpGet]
+        //public IActionResult GetTasks()
+        //{
+        //    var results = new List<AgentTaskResponse>();
+        //    var agents = _agentService.GetAgents();
 
-           foreach(var agent in agents)
-            {
-                foreach(var task in agent.TaskHistory)
-                {
-                    results.Add(new AgentTaskResponse()
-                    {
-                        Label = task.Label,
-                        AgentId = agent.Metadata.Id,
-                        Arguments = task.Arguments,
-                        Command = task.Command,
-                        Id = task.Id,
-                        RequestDate = task.RequestDate,
-                    });
-                }
+        //   foreach(var agent in agents)
+        //    {
+        //        foreach(var task in agent.TaskHistory)
+        //        {
+        //            results.Add(new AgentTaskResponse()
+        //            {
+        //                Label = task.Label,
+        //                AgentId = agent.Metadata.Id,
+        //                Arguments = task.Arguments,
+        //                Command = task.Command,
+        //                Id = task.Id,
+        //                RequestDate = task.RequestDate,
+        //            });
+        //        }
                 
-            }
-            return Ok(results);
-        }
+        //    }
+        //    return Ok(results);
+        //}
 
-        [HttpGet("results")]
-        public IActionResult GetResults()
+        [HttpGet("{id}")]
+        public ActionResult Result(string id)
         {
-            var results = new List<AgentTaskResultResponse>();
-            var agents = _agentService.GetAgents();
-
-            foreach (var agent in agents)
+            AgentTaskResponse task = null;
+            foreach (var agent in this._agentService.GetAgents())
             {
-                foreach (var res in agent.GetTaskResults())
+                var t = agent.TaskHistory.FirstOrDefault(t => t.Id == id);
+                if (t != null)
                 {
-                    var ret = new AgentTaskResultResponse()
+                    task = new AgentTaskResponse()
                     {
-                        Id = res.Id,
-                        Result = res.Result,
-                        Info = res.Info,
-                        Status = (int)res.Status,
+                        AgentId = agent.Id,
+                        Arguments = t.Arguments,
+                        Command = t.Command,
+                        Id = t.Id,
+                        Label = t.Label,
+                        RequestDate = t.RequestDate,
                     };
-
-                    foreach(var file in res.Files)
-                    ret.Files.Add(new ApiModels.Response.TaskFileResult()
-                    {
-                        FileId = file.FileId,
-                        FileName = file.FileName,
-                        IsDownloaded = file.IsDownloaded,
-                    });
-
-                    results.Add(ret);
+                    break;
                 }
-
             }
-            return Ok(results);
+
+            
+
+            if (task != null)
+                return Ok(task);
+            else
+                return NotFound(task);
         }
+
+
+        //[HttpGet("results")]
+        //public IActionResult GetResults()
+        //{
+        //    var results = new List<AgentTaskResultResponse>();
+        //    var agents = _agentService.GetAgents();
+
+        //    foreach (var agent in agents)
+        //    {
+        //        foreach (var res in agent.GetTaskResults())
+        //        {
+        //            var ret = new AgentTaskResultResponse()
+        //            {
+        //                Id = res.Id,
+        //                Result = res.Result,
+        //                Info = res.Info,
+        //                Status = (int)res.Status,
+        //            };
+
+        //            foreach(var file in res.Files)
+        //            ret.Files.Add(new ApiModels.Response.TaskFileResult()
+        //            {
+        //                FileId = file.FileId,
+        //                FileName = file.FileName,
+        //                IsDownloaded = file.IsDownloaded,
+        //            });
+
+        //            results.Add(ret);
+        //        }
+
+        //    }
+        //    return Ok(results);
+        //}
     }
 }

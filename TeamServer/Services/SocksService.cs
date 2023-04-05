@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace TeamServer.Services
 {
+    public interface ISocksService
+    {
+        bool StartProxy(string agentId, int port);
+        bool StopProxy(string agentId);
+    }
     public class SocksService : ISocksService
     {
         private readonly IAgentService agentService;

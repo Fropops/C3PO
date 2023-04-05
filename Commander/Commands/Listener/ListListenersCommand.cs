@@ -52,7 +52,7 @@ namespace Commander.Commands.Listener
                     Index = index,
                     Name = listener.Name,
                     BindPort = listener.BindPort,
-                    Address = listener.Ip,
+                    Address = listener.Ip ?? "*",
                     Id = listener.Id,
                     Secured = listener.Secured ? "Yes" : "No",
                 });
@@ -85,5 +85,12 @@ namespace Commander.Commands.Listener
                 new SharpSploitResultProperty { Name = nameof(Secured), Value = Secured },
             };
         }
+
+    }
+
+    public class ListListenersEverywhereCommand : ListListenersCommand
+    {
+        public override ExecutorMode AvaliableIn => ExecutorMode.All;
+        public override string Name => "listeners";
     }
 }

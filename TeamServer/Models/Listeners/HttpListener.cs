@@ -89,6 +89,7 @@ namespace TeamServer.Models
             service.AddSingleton(this._agentService);
             service.AddSingleton(this._fileService);
             service.AddSingleton(this._binMakerService);
+            service.AddSingleton(this._changeTrackingService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)

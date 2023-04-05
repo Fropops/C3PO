@@ -117,7 +117,13 @@ namespace Commander.Commands.Agent
             };
         }
 
-    }
+        public class ListAgentsEverywhareCommand : ListAgentsCommand
+        {
+            public override string Name => "agents";
 
+            public override ExecutorMode AvaliableIn => ExecutorMode.All;
+        }
+
+    }
 
 }

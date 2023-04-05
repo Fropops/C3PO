@@ -6,13 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Helper;
 using TeamServer.Models;
 using TeamServer.Services;
+using ApiModels.Changes;
 
 namespace TeamServer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ListenersController : ControllerBase
     {
         private readonly IListenerService _listenerService;
@@ -20,14 +23,16 @@ namespace TeamServer.Controllers
         private readonly IFileService _fileService;
         private readonly IBinMakerService _binMakerService;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly IChangeTrackingService _changeTrackingService;
 
-        public ListenersController(ILoggerFactory loggerFactory, IListenerService listenerService, IAgentService agentService, IFileService fileService, IBinMakerService binMakerService)
+        public ListenersController(ILoggerFactory loggerFactory, IListenerService listenerService, IAgentService agentService, IFileService fileService, IBinMakerService binMakerService, IChangeTrackingService trackService)
         {
             this._listenerService = listenerService;
             _agentService=agentService;
             _fileService = fileService;
             _binMakerService = binMakerService;
             _loggerFactory = loggerFactory;
+            _changeTrackingService = trackService;
         }
 
         [HttpGet]
@@ -37,10 +42,10 @@ namespace TeamServer.Controllers
             return Ok(listeners);
         }
 
-        [HttpGet("{name}")]
-        public IActionResult GetListener(string name)
+        [HttpGet("{id}")]
+        public IActionResult GetListener(string id)
         {
-            var listener = _listenerService.GetListener(name);
+            var listener = _listenerService.GetListener(id);
             if (listener == null)
                 return NotFound();
 
@@ -52,10 +57,12 @@ namespace TeamServer.Controllers
         {
             var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
-            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger);
+            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger, _changeTrackingService);
             listener.Start();
 
             _listenerService.AddListener(listener);
+
+            this._changeTrackingService.TrackChange(ChangingElement.Listener, listener.Id);
 
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
             var path = $"{root}/{listener.Name}";
@@ -72,6 +79,8 @@ namespace TeamServer.Controllers
 
             listener.Stop();
             _listenerService.RemoveListener(listener);
+
+            this._changeTrackingService.TrackChange(ChangingElement.Listener, listener.Id);
 
             if (clean == true)
             {

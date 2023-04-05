@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiModels.Requests;
 using ApiModels.Response;
+using ApiModels.Changes;
 using Commander.Models;
 using Commander.Terminal;
 using Microsoft.IdentityModel.Tokens;
@@ -74,7 +75,7 @@ namespace Commander.Communication
             var key = Encoding.ASCII.GetBytes(this.Config.ApiKey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", Config.User) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("id", Config.User), new Claim("session", Config.Session) }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -84,8 +85,7 @@ namespace Commander.Communication
 
         public ConnectionStatus ConnectionStatus { get; set; } = ConnectionStatus.Unknown;
 
-        bool firstLoad = true;
-
+        bool isSyncing = true;
         public async Task Start()
         {
             _tokenSource = new CancellationTokenSource();
@@ -94,10 +94,7 @@ namespace Commander.Communication
             {
                 try
                 {
-                    await this.UpdateAgents();
-                    await this.UpdateListeners();
-                    await this.UpdateTasks();
-                    await this.UpdateResults();
+                    var changes = await this.GetChanges(this.isSyncing);
 
                     if (this.ConnectionStatus != ConnectionStatus.Connected)
                     {
@@ -105,7 +102,33 @@ namespace Commander.Communication
                         this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                     }
 
-                    firstLoad = false;
+                    if (isSyncing)
+                    {
+                        this._listeners.Clear();
+                        this._agents.Clear();
+                        this._tasks.Clear();
+                        this._results.Clear();
+
+                        Terminal.Interrupt();
+                        Terminal.CanHandleInput = false;
+                        Terminal.WriteInfo($"Syncing whith TeamServer ({changes.Count}) :");
+                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Listener)} Listeners to load.");
+                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Agent)} Agents to load.");
+                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Task)} Tasks to load.");
+                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Result)} Results to load.");
+                        foreach (var change in changes)
+                            await this.HandleChange(change);
+                        Terminal.WriteSuccess($"Syncing done.");
+                        Terminal.Restore();
+                        Terminal.CanHandleInput = true;
+                    }
+                    else
+                    {
+                        foreach (var change in changes)
+                            await this.HandleChange(change);
+                    }
+
+                    isSyncing = false;
                 }
                 catch (Exception e)
                 {
@@ -134,142 +157,79 @@ namespace Commander.Communication
             }
         }
 
-
-        private async Task UpdateTasks()
+        private async Task HandleChange(Change change)
         {
-            var response = await _client.GetStringAsync("/Tasks/");
-
-            var tasksResponse = JsonConvert.DeserializeObject<IEnumerable<AgentTaskResponse>>(response);
-
-            foreach (var tr in tasksResponse)
+            switch (change.Element)
             {
-                var task = new AgentTask()
-                {
-                    AgentId = tr.AgentId,
-                    Label = tr.Label,
-                    Arguments = tr.Arguments,
-                    Command = tr.Command,
-                    Id = tr.Id,
-                    RequestDate = tr.RequestDate,
-                };
-
-                this._tasks.AddOrUpdate(tr.Id, task, (key, current) =>
-                {
-                    current.RequestDate = task.RequestDate;
-                    return current;
-                });
+                case ChangingElement.Listener:
+                    await this.UpdateListener(change.Id);
+                    break;
+                case ChangingElement.Agent:
+                    await this.UpdateAgent(change.Id);
+                    break;
+                case ChangingElement.Task:
+                    await this.UpdateTask(change.Id);
+                    break;
+                case ChangingElement.Result:
+                    await this.UpdateResult(change.Id);
+                    break;
             }
         }
 
-        private async Task UpdateResults()
+        private async Task<List<Change>> GetChanges(bool first)
         {
-            var response = await _client.GetStringAsync("/Tasks/results");
-            var resultsResponse = JsonConvert.DeserializeObject<IEnumerable<AgentTaskResultResponse>>(response);
-
-            foreach (var tr in resultsResponse)
-            {
-                var res = new AgentTaskResult()
-                {
-                    Id = tr.Id,
-                    Result = tr.Result,
-                    Info = tr.Info,
-                    Status = (AgentResultStatus)tr.Status,
-                };
-
-                foreach(var file in tr.Files)
-                    res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName, IsDownloaded = file.IsDownloaded });
-
-                //new respone or response change detected
-
-                if (!_results.ContainsKey(res.Id)) // new response
-                {
-                    if (res.Status == AgentResultStatus.Completed && !firstLoad)
-                        this.TaskResultUpdated?.Invoke(this, res);
-                }
-                else
-                {
-                    //Change detected :
-                    var existing = this._results[res.Id];
-                    if (res.Result != existing.Result
-                        || res.Status  != existing.Status
-                        || res.Info != existing.Info
-                        || res.Files.Count != existing.Files.Count
-//                        || res.Files.Count(f => f.IsDownloaded) != existing.Files.Count(f => f.IsDownloaded)
-                        )
-                    {
-                        if (res.Status == AgentResultStatus.Completed && !firstLoad)
-                            this.TaskResultUpdated?.Invoke(this, res);
-                    }
-                }
-
-                this._results.AddOrUpdate(tr.Id, res, (key, current) =>
-                {
-                    current.Result = res.Result;
-                    current.Info = res.Info;
-                    current.Status = res.Status;
-                    current.Files.Clear();
-                    foreach(var file in res.Files)
-                    {
-                        current.Files.Add(file);
-                    }
-                    return current;
-                });
-
-                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || this._results[t.Id].Status != AgentResultStatus.Completed).ToList();
-                this.RunningTaskChanged?.Invoke(this, running);
-            }
+            var response = await _client.GetStringAsync($"/Changes?history={first}");
+            var tasksResponse = JsonConvert.DeserializeObject<List<Change>>(response);
+            return tasksResponse;
         }
 
-
-
-
-
-        private async Task UpdateListeners()
+        private async Task UpdateListener(string id)
         {
-            var response = await _client.GetStringAsync("/Listeners/");
-            var listenerResponse = JsonConvert.DeserializeObject<IEnumerable<ListenerResponse>>(response);
-
-            this._listeners.Clear();
-            foreach (var lr in listenerResponse)
+            try
             {
+                var response = await _client.GetStringAsync($"/Listeners/{id}");
+                var lr = JsonConvert.DeserializeObject<ListenerResponse>(response);
+
                 var listener = new Listener()
                 {
                     Name = lr.Name,
                     Id = lr.Id,
                     BindPort = lr.BindPort,
                     Secured = lr.Secured,
-                    
+
                     Ip = lr.Ip,
                 };
 
-                this._listeners.AddOrUpdate(lr.Name, listener, (key, current) =>
+                this._listeners.AddOrUpdate(lr.Id, listener, (key, current) =>
                 {
+                    current.Name = listener.Name;
                     current.BindPort = listener.BindPort;
                     current.Secured = listener.Secured;
                     current.Ip = listener.Ip;
                     return current;
                 });
             }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._listeners.ContainsKey(id))
+                        this._listeners.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
         }
 
-        private async Task UpdateAgents()
+        private async Task UpdateAgent(string id)
         {
-            //Terminal.WriteInfo(_client.BaseAddress.ToString());
-            var response = await _client.GetStringAsync("Agents");
-            var agentResponse = JsonConvert.DeserializeObject<IEnumerable<AgentResponse>>(response);
-
-            var agentIds = agentResponse.Select(a => a.Metadata.Id);
-
-
-            var addedAgents = new List<Agent>();
-
-            //del agents
-            foreach (var toRemove in this._agents.Keys.Where(k => !agentIds.Contains(k)))
-                this._agents.Remove(toRemove, out _);
-
-            //add or update new
-            foreach (var ar in agentResponse)
+            try
             {
+                //Terminal.WriteInfo(_client.BaseAddress.ToString());
+                var response = await _client.GetStringAsync($"Agents/{id}");
+                var ar = JsonConvert.DeserializeObject<AgentResponse>(response);
+
+                //add or update new
                 var agent = new Agent()
                 {
                     Metadata = new AgentMetadata()
@@ -289,9 +249,7 @@ namespace Commander.Communication
                     Path = ar.Path
                 };
 
-                if (!this._agents.ContainsKey(agent.Metadata.Id))
-                    addedAgents.Add(agent);
-
+                bool isNew = !this._agents.ContainsKey(agent.Metadata.Id);
                 this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
                 {
                     current.Metadata.Architecture = agent.Metadata.Architecture;
@@ -307,11 +265,127 @@ namespace Commander.Communication
                     current.ListenerId = agent.ListenerId;
                     return current;
                 });
-            }
 
-            this.AgentsUpdated?.Invoke(this, new EventArgs());
-            foreach (var added in addedAgents)
-                this.AgentAdded?.Invoke(this, added);
+                this.AgentsUpdated?.Invoke(this, new EventArgs());
+                if (isNew && !this.isSyncing)
+                    this.AgentAdded?.Invoke(this, agent);
+
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._agents.ContainsKey(id))
+                        this._agents.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
+        }
+
+        private async Task UpdateTask(string id)
+        {
+            try
+            {
+                var response = await _client.GetStringAsync($"Tasks/{id}");
+
+                var tr = JsonConvert.DeserializeObject<AgentTaskResponse>(response);
+
+                var task = new AgentTask()
+                {
+                    AgentId = tr.AgentId,
+                    Label = tr.Label,
+                    Arguments = tr.Arguments,
+                    Command = tr.Command,
+                    Id = tr.Id,
+                    RequestDate = tr.RequestDate,
+                };
+
+                this._tasks.AddOrUpdate(tr.Id, task, (key, current) =>
+                {
+                    current.RequestDate = task.RequestDate;
+                    return current;
+                });
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._tasks.ContainsKey(id))
+                        this._tasks.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
+        }
+
+        private async Task UpdateResult(string id)
+        {
+            try
+            {
+                var response = await _client.GetStringAsync($"Results/{id}");
+                var tr = JsonConvert.DeserializeObject<AgentTaskResultResponse>(response);
+
+                var res = new AgentTaskResult()
+                {
+                    Id = tr.Id,
+                    Result = tr.Result,
+                    Info = tr.Info,
+                    Status = (AgentResultStatus)tr.Status,
+                };
+
+                foreach (var file in tr.Files)
+                    res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName, IsDownloaded = file.IsDownloaded });
+
+                //new respone or response change detected
+
+                if (!_results.ContainsKey(res.Id)) // new response
+                {
+                    if (res.Status == AgentResultStatus.Completed && !this.isSyncing)
+                        this.TaskResultUpdated?.Invoke(this, res);
+                }
+                else
+                {
+                    //Change detected :
+                    var existing = this._results[res.Id];
+                    if (res.Result != existing.Result
+                        || res.Status  != existing.Status
+                        || res.Info != existing.Info
+                        || res.Files.Count != existing.Files.Count
+                        //                        || res.Files.Count(f => f.IsDownloaded) != existing.Files.Count(f => f.IsDownloaded)
+                        )
+                    {
+                        if (res.Status == AgentResultStatus.Completed && !this.isSyncing)
+                            this.TaskResultUpdated?.Invoke(this, res);
+                    }
+                }
+
+                this._results.AddOrUpdate(tr.Id, res, (key, current) =>
+                {
+                    current.Result = res.Result;
+                    current.Info = res.Info;
+                    current.Status = res.Status;
+                    current.Files.Clear();
+                    foreach (var file in res.Files)
+                    {
+                        current.Files.Add(file);
+                    }
+                    return current;
+                });
+
+                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || this._results[t.Id].Status != AgentResultStatus.Completed).ToList();
+                this.RunningTaskChanged?.Invoke(this, running);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._results.ContainsKey(id))
+                        this._results.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
         }
 
         public void Stop()
@@ -568,7 +642,7 @@ namespace Commander.Communication
             {
                 await PostFileChunk(chunk);
                 var newprogress = index * 100 / desc.ChunkCount;
-                if(progress != newprogress)
+                if (progress != newprogress)
                     OnCompletionChanged?.Invoke(progress);
                 index++;
                 progress = newprogress;

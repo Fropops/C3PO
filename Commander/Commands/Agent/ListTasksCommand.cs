@@ -83,10 +83,11 @@ namespace Commander.Commands.Agent
                     {
                         Index = index,
                         Id = task.Id,
-                        Command = task.Label ?? string.Empty,
+                        Command = task.DisplayCommand ?? string.Empty,
                         //Arguments = task.Arguments,
                         Info = result == null ? string.Empty : result.Info ?? string.Empty,
                         Status = result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
+                        Date = task.RequestDate.ToLocalTime().ToString(),
                     });
                     index++;
                 }
@@ -108,6 +109,8 @@ namespace Commander.Commands.Agent
 
             public string Info { get; set; } = string.Empty;
 
+            public string Date { get; set; } = string.Empty;
+
             protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
             {
                 new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
@@ -116,6 +119,7 @@ namespace Commander.Commands.Agent
                 //new SharpSploitResultProperty { Name = nameof(Arguments), Value = Arguments },
                 new SharpSploitResultProperty { Name = nameof(Status), Value = Status },
                 new SharpSploitResultProperty { Name = nameof(Info), Value = Info },
+                new SharpSploitResultProperty { Name = nameof(Date), Value = Date },
             };
         }
 

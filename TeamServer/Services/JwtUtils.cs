@@ -12,7 +12,18 @@ namespace TeamServer.Services
     public interface IJwtUtils
     {
         public string GenerateToken(User user);
-        public User ValidateToken(string token);
+        public UserContext ValidateToken(string token);
+    }
+
+    public class UserContext
+    {
+        public UserContext(User user, string session)
+        {
+            this.User = user;
+            this.Session = session;
+        }
+        public User User { get; set; }
+        public string Session { get;private set; }
     }
 
     public class JwtUtils : IJwtUtils
@@ -39,7 +50,7 @@ namespace TeamServer.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public User ValidateToken(string token)
+        public UserContext ValidateToken(string token)
         {
             if (token == null)
                 return null;
@@ -51,7 +62,10 @@ namespace TeamServer.Services
                 var rt = tokenHandler.ReadJwtToken(token);
                 if (!rt.Payload.ContainsKey("id"))
                     return null;
+                if (!rt.Payload.ContainsKey("session"))
+                    return null;
                 var userId = rt.Payload["id"].ToString();
+                var session = rt.Payload["session"].ToString();
                 var user = _userService.GetUser(userId);
                 if (user == null)
                     return null;
@@ -70,7 +84,7 @@ namespace TeamServer.Services
                 //userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
                 // return user id from JWT token if validation successful
-                return user;
+                return new UserContext(user, session);
             }
             catch
             {

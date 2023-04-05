@@ -35,8 +35,8 @@ namespace Commander.Commands.Listener
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("name", "name of the listener"),
-                new Option<string>(new[] { "--address", "-a" }, "The listening address."),
-                new Option<int?>(new[] { "--port", "-p" }, () => null, "The listening port."),
+                new Option<string>(new[] { "--address", "-a" }, () => "*", "The listening address."),
+                new Option<int?>(new[] { "--port", "-p" }, () => 443, "The listening port."),
                 new Option<bool>(new[] { "--secured", "-s" }, () => true, "HTTPS if secured else HTTP"),
                 new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
             };

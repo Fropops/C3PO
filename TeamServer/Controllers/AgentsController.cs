@@ -18,12 +18,14 @@ namespace TeamServer.Controllers
         private readonly IAgentService _agentService;
         private readonly IFileService _fileService;
         private readonly ISocksService _socksService;
+        private readonly IChangeTrackingService _changeService;
 
-        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService)
+        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService)
         {
             this._agentService = agentService;
             this._fileService = fileService;
             this._socksService = socksService;
+            this._changeService = changeService;
         }
 
         [HttpGet]
@@ -33,10 +35,10 @@ namespace TeamServer.Controllers
             return Ok(agents);
         }
 
-        [HttpGet("{name}")]
-        public IActionResult GetAgent(string name)
+        [HttpGet("{id}")]
+        public IActionResult GetAgent(string id)
         {
-            var agent = _agentService.GetAgent(name);
+            var agent = _agentService.GetAgent(id);
             if (agent == null)
                 return NotFound();
 
@@ -93,6 +95,7 @@ namespace TeamServer.Controllers
             };
 
             agent.QueueTask(task);
+            this._changeService.TrackChange(ApiModels.Changes.ChangingElement.Task, request.Id);
             if (!string.IsNullOrEmpty(request.FileId))
                 agent.QueueDownload(this._fileService.GetFileChunksForAgent(request.FileId));
 
@@ -109,6 +112,7 @@ namespace TeamServer.Controllers
                 return NotFound("Agent not found");
 
             this._agentService.RemoveAgent(agent);
+            this._changeService.TrackChange(ApiModels.Changes.ChangingElement.Agent, agentId);
 
             return Ok();
         }

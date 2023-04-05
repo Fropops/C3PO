@@ -11,6 +11,33 @@ using TeamServer.Models.File;
 
 namespace TeamServer.Services
 {
+    public interface IFileService
+    {
+
+        FileDescriptor GetFile(string id);
+
+        void AddFile(FileDescriptor desc);
+
+        void CleanDownloaded();
+
+
+        string GetFullPath(string fileName);
+        string GetAgentPath(string agentId, string fileName);
+
+        string GetAgentPath(string agentId);
+
+        public string GetListenerPath(string listenerName, string fileName);
+
+        public string GetListenerPath(string listenerName);
+
+        public string GetWebHostPath(string fileName);
+
+        void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results);
+
+        public List<AgentFileChunck> GetFileChunksForAgent(string id);
+
+        public void AddAgentFileChunk(AgentFileChunck chunk);
+    }
     public class FileService : IFileService
     {
         public static int ChunkSize = 200000;

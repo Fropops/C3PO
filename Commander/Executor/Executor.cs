@@ -179,19 +179,19 @@ namespace Commander.Executor
             {
                 case ConnectionStatus.Connected:
                     {
-                        status = $"Commander is now connected to {this.CommModule.Config.EndPoint}.";
+                        status = $"Commander is now connected to {this.CommModule.Config.ApiConfig.EndPoint}.";
                         this.Terminal.WriteSuccess(status);
                     }
                     break;
                 case ConnectionStatus.Unauthorized:
                     {
-                        status = $"Commander is not Authorized to connect to {this.CommModule.Config.EndPoint}.";
+                        status = $"Commander is not Authorized to connect to {this.CommModule.Config.ApiConfig.EndPoint}.";
                         this.Terminal.WriteError(status);
                     }
                     break;
                 default:
                     {
-                        status = $"Commander cannot connect to {this.CommModule.Config.EndPoint}.";
+                        status = $"Commander cannot connect to {this.CommModule.Config.ApiConfig.EndPoint}.";
                         this.Terminal.WriteError(status);
                     }
                     break;

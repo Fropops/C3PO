@@ -55,7 +55,7 @@ namespace Commander.Communication
         {
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 5);
-            _client.BaseAddress = new Uri($"http://{this.Config.EndPoint}");
+            _client.BaseAddress = new Uri($"http://{this.Config.ApiConfig.EndPoint}");
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ GenerateToken());
 
@@ -72,10 +72,10 @@ namespace Commander.Communication
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(this.Config.ApiKey);
+            var key = Encoding.ASCII.GetBytes(this.Config.ApiConfig.ApiKey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", Config.User), new Claim("session", Config.Session) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("id", Config.ApiConfig.User), new Claim("session", Config.Session) }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -153,7 +153,7 @@ namespace Commander.Communication
                         this.Terminal.WriteError(e.ToString());
                 }
 
-                await Task.Delay(this.Config.Delay);
+                await Task.Delay(this.Config.ApiConfig.Delay);
             }
         }
 

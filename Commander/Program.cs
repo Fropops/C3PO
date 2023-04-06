@@ -13,18 +13,11 @@ namespace Commander
 
         static void Main(string[] args)
         {
-            IConfiguration Config = new ConfigurationBuilder()
+            IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appSettings.json")
                 .Build();
 
-            var c = new CommanderConfig();
-            var sec = Config.GetSection("Api");
-            c.Address = sec.GetValue<string>("Address");
-            c.Port = sec.GetValue<int>("Port");
-            c.User = sec.GetValue<string>("User");
-            c.ApiKey = sec.GetValue<string>("ApiKey");
-
-
+            var c = new CommanderConfig(config);
 
             var terminal = new Terminal.Terminal();
             ServiceProvider.RegisterSingleton<ITerminal>(terminal);

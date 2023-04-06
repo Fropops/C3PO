@@ -41,6 +41,7 @@ namespace Commander.Commands
                 CommModule = comm,
                 CommandLabel = label,
                 CommandParameters = parms,
+                Config = comm.Config,
             };
           
             InnerExecute(context);
@@ -88,7 +89,9 @@ namespace Commander.Commands
                 CommModule = comm,
                 CommandLabel = this.currentLabel,
                 CommandParameters = this.currentParams,
-                Options = options
+                Options = options,
+                Config = comm.Config,
+                
             };
 
 

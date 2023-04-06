@@ -7,4 +7,5 @@ Console.WriteLine("Paylod Generation Test!");
 //gen.GeneratePayload(@"E:\Share\Projects\C2Sharp\Payload\tes_pay_start.exe");
 
 var gen = new PayloadGenerator(@"/mnt/Share/Projects/C2Sharp/Payload/Source");
-gen.GeneratePayload(@"/mnt/Share/Projects/C2Sharp/Payload/tes_pay_lin.exe");
+var bytes = gen.GeneratePayload();
+File.WriteAllBytes(@"/mnt/Share/Projects/C2Sharp/Payload/tes_pay_lin.exe", bytes);

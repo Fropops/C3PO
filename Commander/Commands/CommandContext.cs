@@ -16,6 +16,9 @@ namespace Commander.Commands
         public ITerminal Terminal { get; set; }
 
         public ICommModule CommModule { get; set; }
+
+        public CommanderConfig Config { get; set; }
+
         public string CommandLabel { get; set; }
 
         public string CommandParameters { get; set; }

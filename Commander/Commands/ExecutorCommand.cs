@@ -33,7 +33,8 @@ namespace Commander.Commands
                 CommandParameters = parms,
                 CommModule = comm,
                 Executor = executor,
-                Terminal = terminal
+                Terminal = terminal,
+                Config = comm.Config
             };
 
             InnerExecute(context);

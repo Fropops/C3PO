@@ -43,7 +43,7 @@ namespace Commander.Commands.Agent
             results.Add(new StatusResult() { Name = "Integrity", Value = agent.Metadata?.Integrity ?? string.Empty });
             results.Add(new StatusResult() { Name = "EndPoint", Value = agent.Metadata?.EndPoint ?? string.Empty });
             results.Add(new StatusResult() { Name = "Version", Value = agent.Metadata?.Version ?? string.Empty });
-            results.Add(new StatusResult() { Name = "Last Seen", Value = agent.LastSeen.ToLocalTime().ToString("dd/MM/yyyy hh:mm:ss") });
+            results.Add(new StatusResult() { Name = "Last Seen", Value = agent.LastSeen.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") });
             context.Terminal.WriteLine(results.ToString());
             return true;
         }

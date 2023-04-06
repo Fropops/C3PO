@@ -44,7 +44,7 @@ namespace Commander.Commands.Agent.Execute_Assembly
                 first = false;
             }).Result;
 
-            context.Terminal.WriteLine("Parms = " + context.CommandParameters.ExtractAfterParam(0));
+            //context.Terminal.WriteLine("Parms = " + context.CommandParameters.ExtractAfterParam(0));
 
             context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, context.CommandParameters.ExtractAfterParam(0)).Wait();
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");

@@ -35,8 +35,22 @@ namespace Agent.Communication
             _client.BaseAddress = new Uri($"{conn}");
             //Console.WriteLine(_client.BaseAddress);
             _client.DefaultRequestHeaders.Clear();
+            //_client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ GenerateToken());
 
         }
+
+        //private string GenerateToken()
+        //{
+        //    var id = this.MessageService.AgentMetaData.Id;
+        //    var secretKey = "GQDstcKsx0NHjPOuXOYg5MbeJ1XT0uFiwDVvVBrk";
+
+        //    RijndaelManaged rijndael = new RijndaelManaged();
+        //    rijndael.KeySize = 256;
+        //    rijndael.BlockSize = 128;
+        //    rijndael.Key = decryptedKey;
+        //    rijndael.IV = decryptedIv;
+        //    rijndael.Padding = PaddingMode.PKCS7;
+        //}
 
 
         protected override async Task<List<MessageTask>> CheckIn(List<MessageResult> results)
@@ -47,6 +61,6 @@ namespace Agent.Communication
             return responseContent.Deserialize<List<MessageTask>>();
         }
 
-      
+
     }
 }

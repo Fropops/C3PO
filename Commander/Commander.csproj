@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ApiModels\ApiModels.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

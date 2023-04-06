@@ -71,7 +71,7 @@ namespace Agent.Internal
             if (arguments is null)
                 arguments = new string[] { };
 
-            Console.WriteLine($"Exec assembly {arguments.Length} : {string.Join("|",arguments)}");
+            //Console.WriteLine($"Exec assembly {arguments.Length} : {string.Join("|",arguments)}");
 
             var currentOut = Console.Out;
             var currentError = Console.Out;

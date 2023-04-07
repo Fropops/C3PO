@@ -257,11 +257,19 @@ namespace Commander.Commands.Laucher
 
         private string GetOutputFilePath(CommandContext<BuildPayloadCommandOptions> context, PayloadGenerationOptions options)
         {
-            var outFile = context.Options.fileName;
-            if (string.IsNullOrEmpty(outFile))
-            {
+            
+            var customFileName = !string.IsNullOrEmpty(context.Options.fileName);
+            var outFile = string.Empty;
+            if (!customFileName)
                 outFile = "payload_" + options.Endpoint.ProtocolString + "_" + System.Text.RegularExpressions.Regex.Replace(options.Endpoint.Address, @"[^\w\s]", "_");
-            }
+            else
+                outFile = Path.GetFileNameWithoutExtension(context.Options.fileName);
+
+            if (options.Type == PayloadType.Service && (context.Options.type == "all" || !customFileName))
+                outFile += "_svc";
+
+            if (context.Options.type == "all")
+                outFile += options.Architecture == PayloadArchitecture.x86 ? "_x86" : "_64";
 
             switch (options.Type)
             {

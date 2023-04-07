@@ -29,6 +29,9 @@ namespace Common.Payload
             else
                 parms.Add( $"--cpu:amd64");
 
+            if(isDll)
+                parms.Add($"--nomain");
+
             if (!isDebug)
             {
                 parms.Add("-d:release");

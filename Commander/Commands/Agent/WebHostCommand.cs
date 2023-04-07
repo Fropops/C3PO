@@ -1,6 +1,5 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
-using Commander.Internal;
 using Commander.Terminal;
 using System;
 using System.Collections.Generic;
@@ -110,12 +109,12 @@ namespace Commander.Commands.Agent
                 }
             }
 
-            if (context.Options.verb == "stage")
-            {
-                await this.Stage(context);
-                context.Terminal.WriteSuccess($"Stagers files tasked to  be host on the agent {context.Executor.CurrentAgent.Metadata.Id}.");
-                return true;
-            }
+            //if (context.Options.verb == "stage")
+            //{
+            //    await this.Stage(context);
+            //    context.Terminal.WriteSuccess($"Stagers files tasked to  be host on the agent {context.Executor.CurrentAgent.Metadata.Id}.");
+            //    return true;
+            //}
 
             context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, commandArgs).Wait();
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
@@ -124,33 +123,33 @@ namespace Commander.Commands.Agent
             return true;
         }
 
-        private async Task Stage(CommandContext<WebHostCommandOptions> context)
-        {
-            var files = new List<string> { "Agent.exe", "Agent-x86.exe", "Stage1.dll", "Stage1-x86.dll" };
-            foreach(var f in files)
-            {
-                var fileBytes = GenerateB64(f);
-                var fileName = Path.GetFileNameWithoutExtension(f) + ".b64";
-                bool first = true;
-                var fileId = await context.CommModule.Upload(fileBytes, fileName, a =>
-                {
-                    context.Terminal.ShowProgress("uploading", a, first);
-                    first = false;
-                });
-                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, "push");
-                //context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
-            }
+        //private async Task Stage(CommandContext<WebHostCommandOptions> context)
+        //{
+        //    var files = new List<string> { "Agent.exe", "Agent-x86.exe", "Stage1.dll", "Stage1-x86.dll" };
+        //    foreach(var f in files)
+        //    {
+        //        var fileBytes = GenerateB64(f);
+        //        var fileName = Path.GetFileNameWithoutExtension(f) + ".b64";
+        //        bool first = true;
+        //        var fileId = await context.CommModule.Upload(fileBytes, fileName, a =>
+        //        {
+        //            context.Terminal.ShowProgress("uploading", a, first);
+        //            first = false;
+        //        });
+        //        await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, "push");
+        //        //context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
+        //    }
 
             
-        }
+        //}
 
-        public byte[] GenerateB64(string sourceFile)
-        {
-            var inputFile = Path.Combine(BuildHelper.SourceFolder, sourceFile);
-            byte[] bytes = File.ReadAllBytes(inputFile);
-            string base64 = Convert.ToBase64String(bytes);
-            return Encoding.UTF8.GetBytes(base64);
-        }
+        //public byte[] GenerateB64(string sourceFile)
+        //{
+        //    var inputFile = Path.Combine(BuildHelper.SourceFolder, sourceFile);
+        //    byte[] bytes = File.ReadAllBytes(inputFile);
+        //    string base64 = Convert.ToBase64String(bytes);
+        //    return Encoding.UTF8.GetBytes(base64);
+        //}
 
         public static async Task PushFile(CommandContext context, string fileName, byte[] fileBytes)
         {

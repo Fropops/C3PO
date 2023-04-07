@@ -9,12 +9,19 @@ namespace Common.Config
 {
     public class PayloadConfig
     {
-        public string Source { get; set; }
-        public string DefaultOutpath { get; set; }
+        public string SourceFolder { get; set; }
+        public string OutputFolder { get; set; }
+        public string WorkingFolder { get; set; }
+        public string NimPath { get; set; }
+        public string DonutPath { get; set; }
+
         public void FromSection(IConfigurationSection section)
         {
-            this.Source = section.GetValue<string>("Source");
-            this.DefaultOutpath = section.GetValue<string>("DefaultOutpath");
+            this.SourceFolder = section.GetValue<string>("SourceFolder");
+            this.OutputFolder = section.GetValue<string>("OutputFolder", "/tmp");
+            this.WorkingFolder = section.GetValue<string>("WorkingFolder", "/tmp");
+            this.NimPath = section.GetValue<string>("NimPath", "/usr/bin/nim");
+            this.DonutPath = section.GetValue<string>("DonutPath", "/opt/donut/donut");
         }
     }
 }

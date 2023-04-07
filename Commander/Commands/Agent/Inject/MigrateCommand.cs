@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Commander.Internal;
 using System.IO;
 using Commander.Models;
 using Commander.Commands.Agent;
@@ -46,7 +45,8 @@ namespace Commander.Commands.Laucher
 
         protected override async Task<bool> HandleCommand(CommandContext<MigrateCommandOptions> context)
         {
-            if (!context.Options.processId.HasValue && string.IsNullOrEmpty(context.Options.processName))
+            throw new NotImplementedException();
+            /*if (!context.Options.processId.HasValue && string.IsNullOrEmpty(context.Options.processName))
             {
                 context.Terminal.WriteError($"[X] Migrate Command requires either a processId or a processName");
                 return false;
@@ -124,7 +124,7 @@ namespace Commander.Commands.Laucher
 
             context.Terminal.WriteInfo($"File uploaded to the server, agent tasked to download the file and migrate.");
 
-            return true;
+            return true;*/
         }
     }
 

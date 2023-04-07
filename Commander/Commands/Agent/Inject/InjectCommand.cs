@@ -62,7 +62,8 @@ namespace Commander
 
         protected override async Task<bool> HandleCommand(CommandContext<InjectCommandOptions> context)
         {
-            string binFileName = string.Empty;
+            throw new NotImplementedException();
+            /*string binFileName = string.Empty;
             if (!context.Options.raw)
             {
                 var parms = this.ComputeParams(context.Options.parameters);
@@ -136,11 +137,11 @@ namespace Commander
             }
 
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
-            return true;
+            return true;*/
         }
 
 
-        public static string GetRandomName()
+        /*public static string GetRandomName()
         {
             return Guid.NewGuid().ToString();
         }
@@ -151,7 +152,7 @@ namespace Commander
             string ret = Internal.BinMaker.GenerateBin(inputPath, name, parameters);
             binPath = name;
             return ret;
-        }
+        }*/
 
 
     }

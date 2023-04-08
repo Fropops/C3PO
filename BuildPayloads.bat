@@ -27,38 +27,38 @@ del %builddir%\* /f /q
 
 
 echo Decoder
-%msbuild% %decoderProj% /p:configuration=releasex86 /p:platform=x86 /p:outputpath=%builddir%
+%msbuild% %decoderProj% /p:configuration=releasex86 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\DecoderDll.dll %destx86Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %decoderProj% /p:configuration=releasex64 /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %decoderProj% /p:configuration=releasex64 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\DecoderDll.dll %destx64Dir%\
 del %builddir%\* /f /q
 
 echo Patcher
-%msbuild% %patcherProj% /p:configuration=releasex86 /p:platform=x86 /p:outputpath=%builddir%
+%msbuild% %patcherProj% /p:configuration=releasex86 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\PatcherDll.dll %destx86Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %patcherProj% /p:configuration=releasex64 /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %patcherProj% /p:configuration=releasex64 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\PatcherDll.dll %destx64Dir%\
 del %builddir%\* /f /q
 
 echo Starter
-%msbuild% %starterProj% /p:configuration=releasex86 /p:platform=x86 /p:outputpath=%builddir%
+%msbuild% %starterProj% /p:configuration=releasex86 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\Starter.exe %destx86Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %starterProj% /p:configuration=releasex64 /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %starterProj% /p:configuration=releasex64 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\Starter.exe %destx64Dir%\
 del %builddir%\* /f /q
 
 echo Service
-%msbuild% %serviceProj% /p:configuration=releasex86 /p:platform=x86 /p:outputpath=%builddir%
+%msbuild% %serviceProj% /p:configuration=releasex86 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\Service.exe %destx86Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %serviceProj% /p:configuration=releasex64 /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %serviceProj% /p:configuration=releasex64 /p:platform=AnyCPU /p:outputpath=%builddir%
 copy %builddir%\Service.exe %destx64Dir%\
 del %builddir%\* /f /q
 

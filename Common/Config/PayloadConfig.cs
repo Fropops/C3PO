@@ -14,6 +14,7 @@ namespace Common.Config
         public string WorkingFolder { get; set; }
         public string NimPath { get; set; }
         public string DonutPath { get; set; }
+        public string ReanimatorPath { get; set; }
 
         public void FromSection(IConfigurationSection section)
         {
@@ -22,6 +23,7 @@ namespace Common.Config
             this.WorkingFolder = section.GetValue<string>("WorkingFolder", "/tmp");
             this.NimPath = section.GetValue<string>("NimPath", "/usr/bin/nim");
             this.DonutPath = section.GetValue<string>("DonutPath", "/opt/donut/donut");
+            this.ReanimatorPath = section.GetValue<string>("ReanimatorPath", "/mnt/Share/Projects/reaNimator-modif/reaNimator");
         }
     }
 }

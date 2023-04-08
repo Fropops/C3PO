@@ -146,8 +146,6 @@ namespace TeamServer
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
 
-            binMakerService.GenerateB64s();
-
             var defaultListenersConfig = config.GetValue<string>("ListenersConfig");
             IEnumerable<ListenerConfig> listeners = JsonConvert.DeserializeObject<IEnumerable<ListenerConfig>>(defaultListenersConfig);
             foreach (var listenerConf in listeners)

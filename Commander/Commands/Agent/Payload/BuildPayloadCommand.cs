@@ -48,7 +48,7 @@ namespace Commander.Commands.Laucher
         {
             new Argument<string>("endpoint", "endpoint to connect to"),
             //new Option<string>(new[] { "--url", "-u" }, () => null, "url to download stage from"),
-            new Option<string>(new[] { "--type", "-t" }, () => "exe" ,"exe | dll | svc | ps | bin").FromAmong("exe", "dll", "svc", "ps", "bin"),
+            new Option<string>(new[] { "--type", "-t" }, () => "exe" ,"exe | dll | svc | ps | bin | all").FromAmong("exe", "dll", "svc", "ps", "bin", "all"),
             new Option<string>(new[] { "--fileName", "-f" }, () => null ,"Name of the file to be crafted"),
             new Option(new[] { "--debug", "-d" }, "Keep debugging info when building"),
             new Option<string>(new[] { "--path", "-p" }, () => null, "Folder to save the generated file"),
@@ -97,55 +97,54 @@ namespace Commander.Commands.Laucher
 
             url += "/wh/";
             */
-
-            var t = PayloadType.Executable;
-            switch(context.Options.type)
+            if (context.Options.type == "all")
             {
-                case "dll": t = PayloadType.Library; break;
-                case "svc": t = PayloadType.Service; break;
-                case "ps": t = PayloadType.PowerShell; break;
-                case "bin": t = PayloadType.Binary; break;
-                default: break;
+                foreach (var arch in Enum.GetValues(typeof(PayloadArchitecture)))
+                {
+                    var archType = (PayloadArchitecture)arch;
+                    foreach (var typ in Enum.GetValues(typeof(PayloadType)))
+                    {
+                        var payType = (PayloadType)typ;
+
+                        var options = new PayloadGenerationOptions()
+                        {
+                            Architecture = archType,
+                            Endpoint = endpoint,
+                            IsDebug = context.Options.debug,
+                            IsVerbose = context.Options.verbose,
+                            ServerKey = context.Options.serverKey,
+                            Type = payType
+                        };
+
+                        this.GeneratePayload(context, options);
+                    }
+                }
             }
-
-            var options = new PayloadGenerationOptions()
+            else
             {
-                Architecture = context.Options.x86 ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
-                Endpoint = endpoint,
-                IsDebug = context.Options.debug,
-                IsVerbose = context.Options.verbose,
-                ServerKey = context.Options.serverKey,
-                Type = t
-            };
+                var t = PayloadType.Executable;
+                switch (context.Options.type)
+                {
+                    case "dll": t = PayloadType.Library; break;
+                    case "svc": t = PayloadType.Service; break;
+                    case "ps": t = PayloadType.PowerShell; break;
+                    case "bin": t = PayloadType.Binary; break;
+                    default: break;
+                }
 
-            byte[] pay;
-            try
-            {
-                var generator = new PayloadGenerator(context.Config.PayloadConfig);
-                generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
-                pay = generator.GeneratePayload(options);
+                var options = new PayloadGenerationOptions()
+                {
+                    Architecture = context.Options.x86 ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
+                    Endpoint = endpoint,
+                    IsDebug = context.Options.debug,
+                    IsVerbose = context.Options.verbose,
+                    ServerKey = context.Options.serverKey,
+                    Type = t
+                };
+
+                return this.GeneratePayload(context, options);
+
             }
-            catch (Exception ex)
-            {
-                context.Terminal.WriteError($"[X] Generation Failed!");
-                if (context.Options.verbose)
-                    context.Terminal.WriteError(ex.ToString());
-                return false;
-            }
-
-            if(pay == null)
-            {
-                context.Terminal.WriteError($"[X] Generation Failed!");
-                return false;
-            }
-
-            var outPath = GetOutputFilePath(context, options);
-            File.WriteAllBytes(outPath, pay);
-
-            context.Terminal.WriteSuccess($"[*] Generation succeed.");
-            context.Terminal.WriteInfo($"Payload can be found at {outPath}");
-            return true;
-
 
 
             /* var outFile = context.Options.fileName;
@@ -254,10 +253,42 @@ namespace Commander.Commands.Laucher
             return true;
         }
 
+        private bool GeneratePayload(CommandContext<BuildPayloadCommandOptions> context, PayloadGenerationOptions options)
+        {
+            context.Terminal.WriteInfo($"[>] Generating Payload {options.Type} for Endpoint {options.Endpoint} (arch = {options.Architecture}).");
+            byte[] pay;
+            try
+            {
+                var generator = new PayloadGenerator(context.Config.PayloadConfig);
+                generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
+                pay = generator.GeneratePayload(options);
+            }
+            catch (Exception ex)
+            {
+                context.Terminal.WriteError($"[X] Generation Failed!");
+                if (context.Options.verbose)
+                    context.Terminal.WriteError(ex.ToString());
+                return false;
+            }
+
+            if (pay == null)
+            {
+                context.Terminal.WriteError($"[X] Generation Failed!");
+                return false;
+            }
+
+            var outPath = GetOutputFilePath(context, options);
+            File.WriteAllBytes(outPath, pay);
+
+            context.Terminal.WriteSuccess($"[*] Generation succeed.");
+            context.Terminal.WriteInfo($"Payload can be found at {outPath}");
+            return true;
+        }
+
 
         private string GetOutputFilePath(CommandContext<BuildPayloadCommandOptions> context, PayloadGenerationOptions options)
         {
-            
+
             var customFileName = !string.IsNullOrEmpty(context.Options.fileName);
             var outFile = string.Empty;
             if (!customFileName)
@@ -269,7 +300,7 @@ namespace Commander.Commands.Laucher
                 outFile += "_svc";
 
             if (context.Options.type == "all")
-                outFile += options.Architecture == PayloadArchitecture.x86 ? "_x86" : "_64";
+                outFile += options.Architecture == PayloadArchitecture.x86 ? "_x86" : "_x64";
 
             switch (options.Type)
             {

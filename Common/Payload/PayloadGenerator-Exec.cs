@@ -54,6 +54,7 @@ namespace Common.Payload
             }
             catch (Exception ex)
             {
+                //Console.WriteLine(ex.ToString());
                 result.Result = -1;
                 result.Out = ex.ToString();
             }

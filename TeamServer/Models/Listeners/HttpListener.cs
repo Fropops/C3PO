@@ -73,6 +73,7 @@ namespace TeamServer.Models
                 });
             var host = hostBuilder.Build();
 
+
             _tokenSource = new CancellationTokenSource();
             host.RunAsync(_tokenSource.Token);
         }
@@ -95,10 +96,12 @@ namespace TeamServer.Models
         private void ConfigureApp(IApplicationBuilder app)
         {
             app.UseRouting();
+
             app.UseEndpoints(e =>
             {
-                e.MapControllerRoute("wh", "/wh/{id}", new { Controller = "HttpListener", Action = "WebHost" });
-                e.MapControllerRoute("ci", "/ci/{id}", new { Controller = "HttpListener", Action = "HandleImplant" });
+                //e.MapControllerRoute("ci", "/{*url}", new { Controller = "HttpListener", Action = "HandleImplant" });
+                //e.MapControllerRoute("wh", "/wh/{id}", new { Controller = "HttpListener", Action = "WebHost" });
+                e.MapControllerRoute("request", "/{*relativeUrl}", new { Controller = "HttpListener", Action = "HandleRequest" });
             });
         }
 

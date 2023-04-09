@@ -35,6 +35,8 @@ namespace Agent.Communication
             _client.BaseAddress = new Uri($"{conn}");
             //Console.WriteLine(_client.BaseAddress);
             _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("Authorization", messManager.AgentMetaData.Id);
+            
             //_client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ GenerateToken());
 
         }
@@ -56,7 +58,8 @@ namespace Agent.Communication
         protected override async Task<List<MessageTask>> CheckIn(List<MessageResult> results)
         {
             var content = new StringContent(Encoding.UTF8.GetString(results.Serialize()), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"/ci/{this.MessageService.AgentMetaData.Id}", content);
+            var file = ShortGuid.NewGuid() + ".jpeg";
+            var response = await _client.PostAsync($"/", content);
             var responseContent = await response.Content.ReadAsByteArrayAsync();
             return responseContent.Deserialize<List<MessageTask>>();
         }

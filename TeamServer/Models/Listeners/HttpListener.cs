@@ -78,19 +78,20 @@ namespace TeamServer.Models
             host.RunAsync(_tokenSource.Token);
         }
 
-        private void ConfigureServices(IServiceCollection service)
+        private void ConfigureServices(IServiceCollection services)
         {
-            service.AddControllers(); //adds all controllers
+            services.AddControllers(); //adds all controllers
             //service.AddControllers(mvcOptions =>
             //{
             //    mvcOptions.Filters.Add<HttpListenerActionFilter>();
             //    mvcOptions.
             //});
-            service.AddSingleton(this._listenerService);
-            service.AddSingleton(this._agentService);
-            service.AddSingleton(this._fileService);
-            service.AddSingleton(this._binMakerService);
-            service.AddSingleton(this._changeTrackingService);
+            services.AddSingleton(this._listenerService);
+            services.AddSingleton(this._agentService);
+            services.AddSingleton(this._fileService);
+            services.AddSingleton(this._binMakerService);
+            services.AddSingleton(this._changeTrackingService);
+            services.AddSingleton(this._webHostService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)

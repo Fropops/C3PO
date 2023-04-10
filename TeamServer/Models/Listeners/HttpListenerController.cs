@@ -24,8 +24,15 @@ namespace TeamServer.Models
         private IBinMakerService _binMakerService;
         private ILoggerFactory _loggerFactory;
         private readonly IChangeTrackingService _changeTrackingService;
+        private readonly IWebHostService _webHostService;
 
-        public HttpListenerController(IAgentService agentService, IFileService fileService, IListenerService listenerService, IBinMakerService binMakerService, ILoggerFactory loggerFactory, IChangeTrackingService changeTrackingService)
+        public HttpListenerController(IAgentService agentService, 
+            IFileService fileService, 
+            IListenerService listenerService, 
+            IBinMakerService binMakerService, 
+            ILoggerFactory loggerFactory, 
+            IChangeTrackingService changeTrackingService,
+            IWebHostService webHostService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -33,33 +40,30 @@ namespace TeamServer.Models
             this._binMakerService = binMakerService;
             this._loggerFactory = loggerFactory;
             this._changeTrackingService = changeTrackingService;
+            this._webHostService = webHostService;
         }
 
 
-        private async Task<IActionResult> WebHost(string id)
+        private async Task<IActionResult> WebHost(string path)
         {
-            //Logger.Log($"WebHost {this.Request.GetListenerUri()} : {id}");
+            Logger.Log($"WebHost request {path}");
             //var logger = _loggerFactory.CreateLogger("WebHost");
             //logger.LogInformation($"{id}");
 
             try
             {
-                string fileName = Path.GetFileName(id);
+                var fileContent = _webHostService.Get(path);
 
-
-                //Logger.Log($"{listener.Name}");
-                var path = _fileService.GetWebHostPath(fileName);
-
-                if (!System.IO.File.Exists(path))
+                if(fileContent == null)
                 {
                     //logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
                     Logger.Log($"NOT FOUND {path}");
                     return this.NotFound();
                 }
 
-                Logger.Log($"GET {fileName}");
+                Logger.Log($"GET {path}");
 
-                return this.File(System.IO.File.ReadAllBytes(path), "application/octet-stream");
+                return this.File(fileContent, "application/octet-stream");
             }
             catch (Exception ex)
             {

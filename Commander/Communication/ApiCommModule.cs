@@ -656,7 +656,7 @@ namespace Commander.Communication
         {
             var wh = new FileWebHost()
             {
-                FileName = fileName,
+                Path = fileName,
                 Data = fileContent,
             };
             var requestContent = JsonConvert.SerializeObject(wh);

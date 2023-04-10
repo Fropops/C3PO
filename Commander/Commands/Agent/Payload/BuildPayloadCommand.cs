@@ -177,6 +177,8 @@ namespace Commander.Commands.Laucher
             {
                 byte[] fileContent = File.ReadAllBytes(ret);
                 var path = context.Options.webhost;
+                while(path.StartsWith('/'))
+                    path = path.Substring(1);
 
                 if (!string.IsNullOrEmpty(context.Options.webhostAgent))
                 {

@@ -19,6 +19,8 @@ namespace ApiModels.Response
 
         public string EndPoint { get; set; }
         public string Version { get; set; }
+        public int SleepInterval { get; set; }
+        public int SleepJitter { get; set; }
 
     }
 

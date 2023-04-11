@@ -18,6 +18,27 @@ namespace Commander.Models
         public string EndPoint { get; set; }
         public string Version { get; set; }
 
+        public int SleepInterval { get; set; }
+        public int SleepJitter { get; set; }
+
+       
+
+
+
+        public string Sleep
+        {
+            get
+            {
+                if (this.SleepInterval == 0)
+                    return "Interactive";
+
+                var sleep = this.SleepInterval.ToString() + "s";
+                if(this.SleepJitter != 0)
+                    sleep += " - " + this.SleepJitter.ToString() + "%";
+                return sleep;
+            }
+        }
+
         public string Desc
         {
             get

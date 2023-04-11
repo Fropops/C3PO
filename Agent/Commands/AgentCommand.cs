@@ -24,6 +24,8 @@ namespace Agent.Commands
 
     public abstract class AgentCommand
     {
+
+        protected bool SendMetadataWithResult = false;
         public virtual string Name { get; set; }
 
         public string Module => Assembly.GetExecutingAssembly().GetName().Name;
@@ -47,7 +49,7 @@ namespace Agent.Commands
             {
                 context.Result.Info = string.Empty;
                 context.Result.Status = AgentResultStatus.Completed;
-                context.MessageService.SendResult(context.Result);
+                context.MessageService.SendResult(context.Result, this.SendMetadataWithResult);
             }
           
         }
@@ -74,7 +76,7 @@ namespace Agent.Commands
                 }
 
                 if(percent != 100)
-                    Thread.Sleep(context.Agent.Communicator.Interval);
+                    Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
             }
 
             this.Notify(context, $"{task.FileName} Downloaded");
@@ -94,7 +96,7 @@ namespace Agent.Commands
                 }
 
                 if (percent != 100)
-                    Thread.Sleep(context.Agent.Communicator.Interval);
+                    Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
             }
 
             this.Notify(context, $"{fileName} uploaded");

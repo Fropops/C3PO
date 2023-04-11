@@ -1,6 +1,7 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,6 @@ namespace Commander.Commands
 
         protected override void InnerExecute(CommandContext context)
         {
-            var results = new SharpSploitResultList<HelpResult>();
-
             var mode = context.Executor.Mode;
 
             List<ExecutorCommand> cmds = new List<ExecutorCommand>();
@@ -30,44 +29,32 @@ namespace Commander.Commands
             bool first = true;
             foreach (var cat in CommandCategory.All)
             {
+                var table = new Table();
+                table.Border(TableBorder.Rounded);
+                // Add some columns
+                table.AddColumn(new TableColumn("Name").LeftAligned());
+                table.AddColumn(new TableColumn("Description").LeftAligned());
+
                 var tmpCmds = cmds.Where(c => c.Category == cat);
                 if (!tmpCmds.Any())
                     continue;
-                if (first)
+                /*if (first)
                     first = false;
                 else
-                    context.Terminal.WriteLine();
-                context.Terminal.WriteLine(" " + cat + " ");
-                context.Terminal.WriteLine(string.Empty.PadLeft(cat.Length + 2, '='));
+                    context.Terminal.WriteLine();*/
+                context.Terminal.Write(new Rule(cat));
+
 
                 foreach (var cmd in tmpCmds.OrderBy(c => c.Name))
                 {
-                    results.Add(new HelpResult()
-                    {
-                        Name = cmd.Name,
-                        Description = cmd.Description ?? string.Empty,
-                    });
+                    table.AddRow(cmd.Name, cmd.Description);
                 }
 
-                context.Terminal.WriteLine(results.ToString());
-                results.Clear();
+                table.Expand();
+                context.Terminal.Write(table);
             }
 
-
-
-
         }
 
-        public sealed class HelpResult : SharpSploitResult
-        {
-            public string Name { get; set; }
-            public string Description { get; set; }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
-                new SharpSploitResultProperty { Name = nameof(Description), Value = Description },
-            };
-        }
     }
 }

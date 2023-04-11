@@ -42,7 +42,7 @@ namespace Commander.Models
             }
         }
 
-        public void Print(AgentTaskResult result, ITerminal terminal)
+        public void Print(AgentTaskResult result, ITerminal terminal, bool fullLabel = false)
         {
             //terminal.WriteInfo($"Task {this.Id}");
             //terminal.WriteInfo($"Label = {this.Label}");
@@ -58,7 +58,7 @@ namespace Commander.Models
             //if (!string.IsNullOrEmpty(result.Result))
             //    terminal.WriteLine(result.Result);
 
-            var cmd = this.DisplayCommand;
+            var cmd = fullLabel ? this.DisplayCommand : this.Label;
             var status = result.Status;
 
             terminal.WriteInfo($"Task {cmd} is {status}");

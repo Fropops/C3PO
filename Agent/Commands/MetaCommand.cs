@@ -14,7 +14,7 @@ namespace Agent.Commands
 
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            context.MessageService.SendResult(context.Result, true);
+            this.SendMetadataWithResult = true;
         }
     }
 }

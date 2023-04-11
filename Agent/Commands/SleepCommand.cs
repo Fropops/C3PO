@@ -16,28 +16,28 @@ namespace Agent.Commands
         {
             if (task.SplittedArgs.Count() == 0)
             {
-                context.Result.Result = $"Delay is {context.Agent.Communicator.Interval/1000}s +/- {context.Agent.Communicator.Jitter*100}%";
+                context.Result.Result = $"Delay is {context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval}s +/- {context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter*100}%";
                 return;
             }
 
-            double delay = double.Parse(task.SplittedArgs[0]);
-            double jitter = 0;
+            int delay = int.Parse(task.SplittedArgs[0]);
+            int jitter = 0;
             if (task.SplittedArgs.Count() > 1)
             {
-                jitter = double.Parse(task.SplittedArgs[1]) / 100;
+                jitter = int.Parse(task.SplittedArgs[1]);
             }
 
-            if(jitter < 0 || jitter >= 1)
+            if(jitter < 0 || jitter >= 100)
             {
                 context.Result.Result = "Jitter is not correct (should be 0-99%)";
             }
 
-         
-            delay = delay * 1000;
-            context.Agent.Communicator.Interval = (int)Math.Round(delay);
-            context.Agent.Communicator.Jitter = jitter;
+            context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval = delay;
+            context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter = jitter;
 
-            context.Result.Result = $"Delay is set to {context.Agent.Communicator.Interval/1000.0}s +/- {context.Agent.Communicator.Jitter*100}%";
+            context.Result.Result = $"Delay is set to {context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval}s - {context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter}%";
+
+            this.SendMetadataWithResult = true;
         }
     }
 }

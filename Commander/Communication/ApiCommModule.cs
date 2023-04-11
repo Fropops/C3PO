@@ -16,6 +16,7 @@ using Commander.Models;
 using Commander.Terminal;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Spectre.Console;
 
 namespace Commander.Communication
 {
@@ -111,13 +112,38 @@ namespace Commander.Communication
 
                         Terminal.Interrupt();
                         Terminal.CanHandleInput = false;
-                        Terminal.WriteInfo($"Syncing whith TeamServer ({changes.Count}) :");
-                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Listener)} Listeners to load.");
-                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Agent)} Agents to load.");
-                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Task)} Tasks to load.");
-                        Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Result)} Results to load.");
-                        foreach (var change in changes)
-                            await this.HandleChange(change);
+
+                        await AnsiConsole.Progress()
+                            .Columns(new ProgressColumn[]
+                            {
+                                new TaskDescriptionColumn(),    // Task description
+                                new ProgressBarColumn(),        // Progress bar
+                                new PercentageColumn(),         // Percentage
+                                new SpinnerColumn(Spinner.Known.Default).Style(Style.Parse("cyan")),            // Spinner
+                            })
+                        .StartAsync(async ctx =>
+                        {
+                            var task1 = ctx.AddTask($"[cyan]Syncing whith TeamServer ({changes.Count} items)[/]");
+
+                            task1.MaxValue = changes.Count;
+                            //// Simulate some work
+                            //AnsiConsole.MarkupLine("Doing some more work...");
+                            //Thread.Sleep(2000);
+                            foreach (var change in changes)
+                            {
+                                //await Task.Delay(10000);
+                                await this.HandleChange(change);
+                                task1.Increment(1);
+                            }
+                        });
+
+
+                        //Terminal.WriteInfo($"Syncing whith TeamServer ({changes.Count}) :");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Listener)} Listeners to load.");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Agent)} Agents to load.");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Task)} Tasks to load.");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Result)} Results to load.");
+
                         Terminal.WriteSuccess($"Syncing done.");
                         Terminal.Restore();
                         Terminal.CanHandleInput = true;
@@ -242,7 +268,9 @@ namespace Commander.Communication
                         ProcessName = ar.Metadata.ProcessName,
                         UserName = ar.Metadata.UserName,
                         EndPoint = ar.Metadata.EndPoint,
-                        Version = ar.Metadata.Version
+                        Version = ar.Metadata.Version,
+                        SleepInterval = ar.Metadata.SleepInterval,
+                        SleepJitter = ar.Metadata.SleepJitter,
                     },
                     LastSeen = ar.LastSeen,
                     ListenerId = ar.ListenerId,
@@ -260,6 +288,8 @@ namespace Commander.Communication
                     current.Metadata.UserName = agent.Metadata.UserName;
                     current.Metadata.EndPoint = agent.Metadata.EndPoint;
                     current.Metadata.Version = agent.Metadata.Version;
+                    current.Metadata.SleepInterval = agent.Metadata.SleepInterval;
+                    current.Metadata.SleepJitter = agent.Metadata.SleepJitter;
                     current.LastSeen = agent.LastSeen;
                     current.Path = agent.Path;
                     current.ListenerId = agent.ListenerId;

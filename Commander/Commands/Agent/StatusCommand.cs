@@ -1,6 +1,8 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
+using Commander.Models;
 using Commander.Terminal;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -27,37 +29,36 @@ namespace Commander.Commands.Agent
         protected async override Task<bool> HandleCommand(CommandContext<StatusCommandOptions> context)
         {
             var agent = context.Executor.CurrentAgent;
-            if (agent.LastSeen.AddSeconds(30) > DateTime.UtcNow)
+            if (agent.IsActive == true)
                 context.Terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
             else
                 context.Terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
 
-            //context.Terminal.WriteLine(agent.Metadata.ToString());
-            var results = new SharpSploitResultList<StatusResult>();
-            results.Add(new StatusResult() { Name = "Id", Value = agent.Metadata?.Id ?? string.Empty });
-            results.Add(new StatusResult() { Name = "Hostname", Value = agent.Metadata?.Hostname ?? string.Empty });
-            results.Add(new StatusResult() { Name = "UserName", Value = agent.Metadata?.UserName ?? string.Empty });
-            results.Add(new StatusResult() { Name = "ProcessId", Value = agent.Metadata?.ProcessId.ToString() });
-            results.Add(new StatusResult() { Name = "ProcessName", Value = agent.Metadata?.ProcessName ?? string.Empty });
-            results.Add(new StatusResult() { Name = "Architecture", Value = agent.Metadata?.Architecture ?? string.Empty });
-            results.Add(new StatusResult() { Name = "Integrity", Value = agent.Metadata?.Integrity ?? string.Empty });
-            results.Add(new StatusResult() { Name = "EndPoint", Value = agent.Metadata?.EndPoint ?? string.Empty });
-            results.Add(new StatusResult() { Name = "Version", Value = agent.Metadata?.Version ?? string.Empty });
-            results.Add(new StatusResult() { Name = "Last Seen", Value = agent.LastSeen.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss") });
-            context.Terminal.WriteLine(results.ToString());
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Item").LeftAligned());
+            table.AddColumn(new TableColumn("Value").LeftAligned());
+            table.HideHeaders();
+
+            table.AddRow("Id", agent.Metadata?.Id ?? string.Empty);
+            table.AddRow("Hostname", agent.Metadata?.Id ?? string.Empty);
+            table.AddRow("User Name", agent.Metadata?.UserName ?? string.Empty);
+            table.AddRow("Process Id", agent.Metadata?.ProcessId.ToString());
+            table.AddRow("Process Name", agent.Metadata?.ProcessName ?? string.Empty);
+            table.AddRow("Architecture", agent.Metadata?.Architecture ?? string.Empty);
+            table.AddRow("Integrity", agent.Metadata?.Integrity ?? string.Empty);
+            table.AddRow("EndPoint", agent.Metadata?.EndPoint ?? string.Empty);
+            table.AddRow("Version", agent.Metadata?.Version ?? string.Empty);
+            table.AddRow("Sleep", agent.Metadata?.Sleep ?? string.Empty);
+            table.AddRow("Last Seen", Math.Round(agent.LastSeenDelta.TotalSeconds,2).ToString() + "s" ?? string.Empty);
+            
+
+            context.Terminal.Write(table);
             return true;
         }
-    }
 
-    public sealed class StatusResult : SharpSploitResult
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
 
-        protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
-                new SharpSploitResultProperty { Name = nameof(Value), Value = Value },
-            };
+        
     }
 }

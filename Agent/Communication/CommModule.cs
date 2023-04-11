@@ -12,9 +12,7 @@ namespace Agent.Communication
     public abstract class CommModule
     {
         public bool IsRunning { get; protected set; } = false;
-        public int Interval { get; set; } = 2000;
-        public double Jitter { get; set; } = 0.5;
-
+ 
         private Random random = new Random();
 
         public ConnexionUrl Connexion { get; set; }
@@ -33,8 +31,9 @@ namespace Agent.Communication
 
         protected int GetDelay()
         {
-            var delta = random.Next(0, (int)(Jitter));
-            return this.Interval + delta;
+            int jit = (int)Math.Round(this.MessageService.AgentMetaData.SleepInterval * 1000 * (this.MessageService.AgentMetaData.SleepJitter / 100.0));
+            var delta = random.Next(0, jit);
+            return Math.Max(10,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
         }
 
         public virtual async void Stop()

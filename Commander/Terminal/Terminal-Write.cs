@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace Commander.Terminal
 {
@@ -19,9 +21,27 @@ namespace Commander.Terminal
     {
         private void InnerWriteLine(params string[] strs)
         {
+            //foreach (var str in strs)
+            //    Console.Write(str);
+            //Console.WriteLine();
             foreach (var str in strs)
                 Console.Write(str);
             Console.WriteLine();
+        }
+
+        public void Write(IRenderable item)
+        {
+            AnsiConsole.Write(item);
+        }
+
+        public void WriteMarkup(string markup)
+        {
+            AnsiConsole.Markup(markup);
+        }
+
+        public void WriteLineMarkup(string markup)
+        {
+            AnsiConsole.MarkupLine(markup);
         }
 
         public void WriteLine(TerminalMessageType typ, params string[] strs)

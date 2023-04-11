@@ -3,6 +3,7 @@ using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
 using Newtonsoft.Json;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -35,9 +36,13 @@ namespace Commander.Commands
 
         protected override async Task<bool> HandleCommand(CommandContext<LocalListDirectoryCommandOptions> context)
         {
-            var results = new SharpSploitResultList<ListDirectoryResult>();
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Name").LeftAligned());
+            table.AddColumn(new TableColumn("Length").LeftAligned());
+            table.AddColumn(new TableColumn("IsFile").LeftAligned());
 
-            var list = new List<ListDirectoryResult>();
             string path = Directory.GetCurrentDirectory();
 
             if (!string.IsNullOrEmpty(context.Options.path))
@@ -49,52 +54,26 @@ namespace Commander.Commands
             foreach (var dir in directories)
             {
                 var dirInfo = new DirectoryInfo(dir);
-                list.Add(new ListDirectoryResult()
-                {
-                    Name = dirInfo.Name,
-                    Length = 0,
-                    IsFile= false,
-                });
+                table.AddRow(
+                    dirInfo.Name,
+                    0.ToString(),
+                    "No"
+                );
             }
 
             var files = Directory.GetFiles(path);
             foreach (var file in files)
             {
                 var fileInfo = new FileInfo(file);
-                list.Add(new ListDirectoryResult()
-                {
-                    Name = Path.GetFileName(fileInfo.FullName),
-                    Length = fileInfo.Length,
-                    IsFile= true
-                });
+                table.AddRow(
+                    Path.GetFileName(fileInfo.FullName),
+                    fileInfo.Length.ToString(),
+                    "Yes"
+                );
             }
 
-
-            results.AddRange(list.OrderBy(f => f.IsFile).ThenBy(f => f.Name));
-            context.Terminal.WriteLine(results.ToString());
+            context.Terminal.Write(table);
             return true;
-        }
-
-        public sealed class ListDirectoryResult : SharpSploitResult
-        {
-            public long Length { get; set; }
-            public string Name { get; set; }
-            public bool IsFile { get; set; }
-
-            public string Type
-            {
-                get
-                {
-                    return IsFile ? "File" : "Folder";
-                }
-            }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Type), Value = Type },
-                new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
-                new SharpSploitResultProperty { Name = nameof(Length), Value = Length },
-            };
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
+using Spectre.Console;
+using Spectre.Console.Rendering;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -34,17 +36,26 @@ namespace Commander.Commands.Agent
 
         protected override async Task<bool> HandleCommand(CommandContext<ListAgentsCommandOptions> context)
         {
-            var results = new SharpSploitResultList<ListAgentResult>();
-
             var result = context.CommModule.GetAgents();
-
-
             if (result.Count() == 0)
             {
                 context.Terminal.WriteLine("No Agents running.");
                 return true;
             }
 
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Index").Centered());
+            table.AddColumn(new TableColumn("Id").LeftAligned());
+            table.AddColumn(new TableColumn("Active").LeftAligned());
+            table.AddColumn(new TableColumn("User").LeftAligned());
+            table.AddColumn(new TableColumn("Host").LeftAligned());
+            table.AddColumn(new TableColumn("Integrity").LeftAligned());
+            table.AddColumn(new TableColumn("Process").LeftAligned());
+            table.AddColumn(new TableColumn("Arch.").LeftAligned());
+            table.AddColumn(new TableColumn("End Point").LeftAligned());
+            table.AddColumn(new TableColumn("Last Seen").LeftAligned());
 
             var listeners = context.CommModule.GetListeners();
             var index = 0;
@@ -54,67 +65,39 @@ namespace Commander.Commands.Agent
                 if (string.IsNullOrEmpty(context.Options.listenerName) || listenerName.ToLower().Equals(context.Options.listenerName.ToLower()))
                 {
 
-                    results.Add(new ListAgentResult()
-                    {
-                        Index = index,
-                        Id = agent.Metadata.Id,
-                        LastSeen = agent.LastSeen.ToLocalTime(),
-                        Actif = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow ? "Yes" : "No",
-                        UserName = agent.Metadata.UserName,
-                        HostName = agent.Metadata.Hostname,
-                        Integrity = agent.Metadata.Integrity,
-                        Process = agent.Metadata.ProcessName,
-                        Architecture = agent.Metadata.Architecture,
-                        EndPoint = agent.Metadata.EndPoint,
-                        Version = agent.Metadata.Version,
-                        Listener = listenerName,
-                    });
+                    table.AddRow(
+                        SurroundIfDeadOrSelf(agent, context, index.ToString()),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Id),
+                        SurroundIfDeadOrSelf(agent, context, agent.IsActive == true ? "Yes" : "No"),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.UserName),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Hostname),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Integrity),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.ProcessName),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Architecture),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.EndPoint),
+                        SurroundIfDeadOrSelf(agent, context, Math.Round(agent.LastSeenDelta.TotalSeconds, 2) + "s")
+                        //Version = agent.Metadata.Version,
+                        //Listener = listenerName,
+                    );
                 }
                 index++;
             }
 
-            context.Terminal.WriteLine(results.ToString());
+            table.Expand();
+            context.Terminal.Write(table);
 
             return true;
         }
 
-        public sealed class ListAgentResult : SharpSploitResult
+        private IRenderable SurroundIfDeadOrSelf(Models.Agent agent, CommandContext ctxt, string value)
         {
-            public int Index { get; set; }
-            public string Id { get; set; }
+            if(ctxt.Executor.CurrentAgent != null && ctxt.Executor.CurrentAgent.Metadata.Id == agent.Metadata.Id)
+                return new Markup($"[cyan]{value}[/]");
 
-            public DateTime LastSeen { get; set; }
-            public string UserName { get; set; }
-            public string HostName { get; set; }
-
-            public string Process { get; set; }
-
-            public string Integrity { get; set; }
-
-            public string Architecture { get; set; }
-
-            public string Actif { get; set; }
-
-            public string Listener { get; set; }
-
-            public string Version { get; set; }
-
-            public string EndPoint { get; set; }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
-                new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
-                new SharpSploitResultProperty { Name = nameof(Actif), Value = Actif },
-                new SharpSploitResultProperty { Name = nameof(Process), Value = Process },
-                new SharpSploitResultProperty { Name = nameof(Integrity), Value = Integrity },
-                new SharpSploitResultProperty { Name = nameof(Architecture), Value = Architecture },
-                new SharpSploitResultProperty { Name = nameof(UserName), Value = UserName },
-                new SharpSploitResultProperty { Name = nameof(HostName), Value = HostName },
-                new SharpSploitResultProperty { Name = nameof(LastSeen), Value = LastSeen },
-                new SharpSploitResultProperty { Name = nameof(EndPoint), Value = EndPoint },
-                new SharpSploitResultProperty { Name = nameof(Listener), Value = Listener },
-            };
+            if (agent.IsActive != true)
+                return new Markup($"[grey]{value}[/]");
+            else
+                return new Markup(value);
         }
 
         public class ListAgentsEverywhareCommand : ListAgentsCommand

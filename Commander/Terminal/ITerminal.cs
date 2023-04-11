@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace Commander.Terminal
 {
@@ -40,6 +42,12 @@ namespace Commander.Terminal
         void Write(string text, int count);
 
         void WriteLine(params string[] parm);
+
+        void Write(IRenderable table);
+
+        void WriteMarkup(string markup);
+
+        void WriteLineMarkup(string markup);
 
         void SaveCursorPosition();
 

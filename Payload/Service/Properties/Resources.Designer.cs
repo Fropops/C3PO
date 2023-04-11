@@ -72,6 +72,25 @@ namespace Service.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Patcher {
+            get {
+                object obj = ResourceManager.GetObject("Patcher", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string PatchKey {
+            get {
+                return ResourceManager.GetString("PatchKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Payload {
             get {
                 object obj = ResourceManager.GetObject("Payload", resourceCulture);

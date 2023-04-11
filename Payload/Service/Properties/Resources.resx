@@ -121,6 +121,12 @@
     <value>000000000000000000000000000000000000000000000000</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Patcher" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Patcher;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="PatchKey" xml:space="preserve">
+    <value />
+  </data>
   <data name="Payload" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Payload;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

@@ -25,23 +25,13 @@ copy %builddir%\Agent.exe %destx64Dir%\
 del %builddir%\* /f /q
 
 
-
-echo Decoder
-%msbuild% %decoderProj% /p:configuration=releasex86 /p:platform=AnyCPU /p:outputpath=%builddir%
-copy %builddir%\DecoderDll.dll %destx86Dir%\
-del %builddir%\* /f /q
-
-%msbuild% %decoderProj% /p:configuration=releasex64 /p:platform=AnyCPU /p:outputpath=%builddir%
-copy %builddir%\DecoderDll.dll %destx64Dir%\
-del %builddir%\* /f /q
-
 echo Patcher
 %msbuild% %patcherProj% /p:configuration=releasex86 /p:platform=AnyCPU /p:outputpath=%builddir%
-copy %builddir%\PatcherDll.dll %destx86Dir%\
+copy %builddir%\Patcher.dll %destx86Dir%\
 del %builddir%\* /f /q
 
 %msbuild% %patcherProj% /p:configuration=releasex64 /p:platform=AnyCPU /p:outputpath=%builddir%
-copy %builddir%\PatcherDll.dll %destx64Dir%\
+copy %builddir%\Patcher.dll %destx64Dir%\
 del %builddir%\* /f /q
 
 echo Starter

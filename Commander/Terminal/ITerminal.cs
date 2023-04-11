@@ -43,7 +43,7 @@ namespace Commander.Terminal
 
         void WriteLine(params string[] parm);
 
-        void Write(IRenderable table);
+        void Write(IRenderable renderabel);
 
         void WriteMarkup(string markup);
 

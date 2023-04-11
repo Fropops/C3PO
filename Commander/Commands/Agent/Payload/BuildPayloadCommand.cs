@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using Common;
 using Common.Payload;
 using Commander.Commands.Agent;
+using Spectre.Console;
 
 namespace Commander.Commands.Laucher
 {
@@ -236,12 +237,16 @@ namespace Commander.Commands.Laucher
         private string GeneratePayload(CommandContext<BuildPayloadCommandOptions> context, PayloadGenerationOptions options)
         {
             context.Terminal.WriteInfo($"[>] Generating Payload {options.Type} for Endpoint {options.Endpoint} (arch = {options.Architecture}).");
-            byte[] pay;
+            byte[] pay = null;
             try
             {
-                var generator = new PayloadGenerator(context.Config.PayloadConfig);
-                generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
-                pay = generator.GeneratePayload(options);
+                AnsiConsole.Status()
+                .Start($"[olive]Generating Payload {options.Type} for Endpoint {options.Endpoint} (arch = {options.Architecture}).[/]", ctx =>
+                {
+                    var generator = new PayloadGenerator(context.Config.PayloadConfig);
+                    generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
+                    pay = generator.GeneratePayload(options);
+                });
             }
             catch (Exception ex)
             {

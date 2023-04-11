@@ -20,9 +20,7 @@ namespace Agent.Commands
             this.CheckFileDownloaded(task, context);
 
             var file = context.FileService.ConsumeDownloadedFile(task.FileId);
-            var fileContent = file.GetFileContent();
-
-            var shellcode = fileContent;
+            var shellcode = file.GetFileContent();
 
             int processId = int.Parse(task.SplittedArgs[0]);
 

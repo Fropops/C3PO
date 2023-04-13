@@ -28,22 +28,22 @@ namespace Agent.Service
             return servers.Any();
         }
 
-        public bool AddPivot(ConnexionUrl conn)
+        public bool AddPivot(ConnexionUrl conn, string serverKey)
         {
             PivotServer server = null;
             switch (conn.Protocol)
             {
                 case ConnexionType.Http:
                     {
-                        server = new PivotHttpServer(conn);
+                        server = new PivotHttpServer(conn, serverKey);
                     }break;
                 case ConnexionType.Tcp:
                     {
-                        server = new PivotTCPServer(conn);
+                        server = new PivotTCPServer(conn, serverKey);
                     }break;
                 case ConnexionType.NamedPipe:
                     {
-                        server = new PivotPipeServer(conn);
+                        server = new PivotPipeServer(conn, serverKey);
                     }
                     break;
                 default: return false;

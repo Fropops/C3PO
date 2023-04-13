@@ -1,4 +1,5 @@
-﻿using Agent.Models;
+﻿using Agent.Communication;
+using Agent.Models;
 using Agent.Service;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Agent.Commands
         public Models.Agent Agent { get; set; }
         public IMessageService MessageService { get; set; }
 
+        public CommModule commModule { get; set; }
         public IFileService FileService { get; set; }
 
         public IProxyService ProxyService { get; set; }

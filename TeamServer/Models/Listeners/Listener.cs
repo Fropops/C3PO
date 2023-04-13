@@ -26,6 +26,7 @@ namespace TeamServer.Models
         protected ILogger _logger;
         protected IChangeTrackingService _changeTrackingService;
         protected IWebHostService _webHostService;
+        protected ICryptoService _cryptoService;
 
         public Listener(string name, int bindPort, string Ip)
         {
@@ -37,7 +38,8 @@ namespace TeamServer.Models
         }
 
         public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger, IChangeTrackingService changeTrackingService,
-            IWebHostService webHostService)
+            IWebHostService webHostService,
+            ICryptoService cryptoService)
         {
             this._agentService = service;
             this._fileService = fileService;
@@ -46,6 +48,7 @@ namespace TeamServer.Models
             this._logger = logger;
             this._changeTrackingService = changeTrackingService;
             this._webHostService = webHostService;
+            this._cryptoService = cryptoService;
         }
 
         public abstract Task Start();

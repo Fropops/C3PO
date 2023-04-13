@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Common.Config;
+using ApiModels;
 
 namespace Commander
 {
@@ -34,6 +35,7 @@ namespace Commander
         public ApiConfig ApiConfig { get; private set; }
         public PayloadConfig PayloadConfig { get; private set; }
 
+        public ServerConfig ServerConfig { get; set; }
         public string Session { get; private set; }
 
         public CommanderConfig()

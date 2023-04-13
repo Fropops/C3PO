@@ -16,43 +16,25 @@ namespace TeamServer.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class ChangesController : ControllerBase
+    public class ConfigController : ControllerBase
     {
         private UserContext UserContext => this.HttpContext.Items["User"] as UserContext;
 
-        private readonly IChangeTrackingService _changeTrackingService;
-        private readonly IListenerService _listenerService;
-        private readonly IAgentService _agentService;
+        private readonly ICryptoService _cryptoService;
 
-        public ChangesController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService)
+        public ConfigController(ICryptoService cryptoService)
         {
-            _changeTrackingService = trackService;
-            _listenerService = listenerService;
-            _agentService = agentService;
+            this._cryptoService = cryptoService;
         }
 
         [HttpGet]
-        public IActionResult Changes(bool history = false)
+        public IActionResult Config()
         {
-            if (!history)
-                return Ok(this._changeTrackingService.ConsumeChanges(this.UserContext.Session).OrderBy(c => c.Element));
-            else
+            var config = new ApiModels.ServerConfig()
             {
-                List<Change> changes = new List<Change>();
-                foreach (var listener in this._listenerService.GetListeners())
-                    changes.Add(new Change(ChangingElement.Listener, listener.Id));
-                foreach (var agent in this._agentService.GetAgents())
-                {
-                    changes.Add(new Change(ChangingElement.Agent, agent.Id));
-                    foreach(var task in agent.TaskHistory)
-                        changes.Add(new Change(ChangingElement.Task, task.Id));
-                    foreach (var res in agent.GetTaskResults())
-                        changes.Add(new Change(ChangingElement.Result, res.Id));
-
-                }
-
-                return Ok(changes);
-            }
+                Key = _cryptoService.Key
+            };
+            return Ok(config);
         }
 
 

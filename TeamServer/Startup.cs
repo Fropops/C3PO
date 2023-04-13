@@ -15,6 +15,7 @@ using TeamServer.Controllers;
 using TeamServer.MiddleWare;
 using TeamServer.Models;
 using TeamServer.Services;
+using TeamServer.Ext;
 
 namespace TeamServer
 {
@@ -50,14 +51,18 @@ namespace TeamServer
             services.AddSingleton<IJwtUtils, JwtUtils>();
             services.AddSingleton<IChangeTrackingService, ChangeTrackingService>();
             services.AddSingleton<IWebHostService, WebHostService>();
+            services.AddSingleton<ICryptoService, CryptoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                
+
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
             }
@@ -144,6 +149,7 @@ namespace TeamServer
             var config = app.ApplicationServices.GetService<IConfiguration>();
             var change = app.ApplicationServices.GetService<IChangeTrackingService>();
             var webHost = app.ApplicationServices.GetService<IWebHostService>();
+            var crypto = app.ApplicationServices.GetService<ICryptoService>();
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
@@ -153,7 +159,7 @@ namespace TeamServer
             foreach (var listenerConf in listeners)
             {
                 var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
-                listener.Init(agentService, fileService, binMakerService, listenerService, logger, change, webHost);
+                listener.Init(agentService, fileService, binMakerService, listenerService, logger, change, webHost, crypto);
                 listener.Start();
                 listenerService.AddListener(listener);
             }

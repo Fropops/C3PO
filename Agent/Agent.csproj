@@ -226,6 +226,7 @@
     <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
     <Compile Include="Commands\Execution\PowershellRunner.cs" />
     <Compile Include="Commands\FileSystem\CatCommand.cs" />
+    <Compile Include="Communication\Encryptor.cs" />
     <Compile Include="Helpers\ImpersonationHelper.cs" />
     <Compile Include="Commands\Services\WebHostCommand.cs" />
     <Compile Include="Commands\Services\ProxyCommand.cs" />

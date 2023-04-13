@@ -42,7 +42,7 @@ namespace Commander.Commands.Agent
             table.HideHeaders();
 
             table.AddRow("Id", agent.Metadata?.Id ?? string.Empty);
-            table.AddRow("Hostname", agent.Metadata?.Id ?? string.Empty);
+            table.AddRow("Hostname", agent.Metadata?.Hostname ?? string.Empty);
             table.AddRow("User Name", agent.Metadata?.UserName ?? string.Empty);
             table.AddRow("Process Id", agent.Metadata?.ProcessId.ToString());
             table.AddRow("Process Name", agent.Metadata?.ProcessName ?? string.Empty);

@@ -18,7 +18,7 @@ namespace Agent.Service.Pivoting
     public class PivotTCPServer : PivotServer
     {
 
-        public PivotTCPServer(ConnexionUrl conn) : base(conn)
+        public PivotTCPServer(ConnexionUrl conn, string serverKey) : base(conn, serverKey)
         {
         }
 
@@ -68,10 +68,7 @@ namespace Agent.Service.Pivoting
                     if (!client.DataAvailable())
                         continue;
 
-                    if (this.Connexion.IsSecure)
-                        HandleSecureClient(client);
-                    else
-                        HandleNonSecureClient(client);
+                    this.Handle(client);
                 }
 
                 // sos cpu
@@ -89,58 +86,21 @@ namespace Agent.Service.Pivoting
             }
         }
 
-        private void HandleNonSecureClient(TcpClient client)
+        private void Handle(TcpClient client)
         {
             var req = client.ReceivedData();
-            //Convert.FromBase64String(b64results).Deserialize<List<MessageResult>>();
-            var responses = req.Deserialize<List<MessageResult>>();
+            var dec= this.Encryptor.Decrypt(req);
+
+            var responses = dec.Deserialize<List<MessageResult>>();
             _messageService.EnqueueResults(responses);
 
             var relays = this.ExtractRelays(responses);
 
             Debug.WriteLine($"TCP Pivot {Connexion.ToString()} Sending task to Relays {string.Join(",", relays)}");
             var tasks = this._messageService.GetMessageTasksToRelay(relays);
-            client.SendMessage(tasks.Serialize());
-        }
-
-        private void HandleSecureClient(TcpClient client)
-        {
-            //receive public key
-            string xmlPubKey = Encoding.UTF8.GetString(client.ReceivedMessage(true));
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            rsa.FromXmlString(xmlPubKey);
-
-            RijndaelManaged rijndael = new RijndaelManaged();
-            rijndael.KeySize = 256; // Set the key size to 256 bits
-            rijndael.BlockSize = 128;
-            rijndael.GenerateKey(); // Generate a random key
-            rijndael.Padding = PaddingMode.PKCS7;
-
-            //Send symetric Key & IV
-            byte[] encryptedKey = rsa.Encrypt(rijndael.Key, false);
-            byte[] encryptedIV = rsa.Encrypt(rijndael.IV, false);
-
-            byte[] encryptedKeyIV = new byte[encryptedKey.Length + encryptedIV.Length];
-            System.Buffer.BlockCopy(encryptedKey, 0, encryptedKeyIV, 0, encryptedKey.Length);
-            System.Buffer.BlockCopy(encryptedIV, 0, encryptedKeyIV, encryptedKey.Length, encryptedIV.Length);
-
-            Debug.WriteLine($"TCPS Pivot : EncryptedKeyIV = {encryptedKeyIV.Length} " + string.Join(",", encryptedKeyIV.Select(a => ((int)a).ToString())));
-            client.SendMessage(encryptedKeyIV);
-
-            var req = client.ReceivedData();
-            //Debug.WriteLine("TCPS Pivot : Encrypted Message (read " + req.Length + ") = " + string.Join(",", req.Select(a => ((int)a).ToString())));
-            byte[] decryptedBytes = rijndael.CreateDecryptor().TransformFinalBlock(req, 0, req.Length);
-            var responses = decryptedBytes.Deserialize<List<MessageResult>>();
-            _messageService.EnqueueResults(responses);
-
-            var relays = this.ExtractRelays(responses);
-
-            Debug.WriteLine($"TCPS Pivot {Connexion.ToString()} Sending task to Relays {string.Join(",", relays)}");
-            var tasks = this._messageService.GetMessageTasksToRelay(relays);
-
-            var meesage = tasks.Serialize();
-            var encryptedMessageBytes = rijndael.CreateEncryptor().TransformFinalBlock(meesage, 0, meesage.Length);
-            client.SendMessage(encryptedMessageBytes);
+            var ser = tasks.Serialize();
+            var enc = this.Encryptor.Encrypt(ser);
+            client.SendMessage(enc);
         }
     }
 }

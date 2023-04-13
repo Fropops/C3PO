@@ -37,11 +37,25 @@ namespace Encoder
 
         static void Main(string[] args)
         {
-            InitDecoder();
-            
-            Encode(@"E:\Share\Projects\C2Sharp\Agent\bin\Debug\Agent.exe", @"E:\Share\Projects\C2Sharp\Payload\agent.enc");
+            int length = 48;
+            Random random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-            Encode(@"E:\Share\Projects\C2Sharp\Payload\PatcherDll\bin\Debug\Patcherdll.dll", @"E:\Share\Projects\C2Sharp\Payload\patcher.enc");
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < length; i++)
+            {
+                builder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            string randomString = builder.ToString();
+            Console.WriteLine(randomString);
+
+            Console.ReadKey();
+            //InitDecoder();
+            
+            //Encode(@"E:\Share\Projects\C2Sharp\Agent\bin\Debug\Agent.exe", @"E:\Share\Projects\C2Sharp\Payload\agent.enc");
+
+            //Encode(@"E:\Share\Projects\C2Sharp\Payload\PatcherDll\bin\Debug\Patcherdll.dll", @"E:\Share\Projects\C2Sharp\Payload\patcher.enc");
         }
 
         static void Encode(string i, string o)

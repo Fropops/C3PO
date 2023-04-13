@@ -14,15 +14,17 @@ namespace Agent.Service.Pivoting
     {
         public ConnexionUrl Connexion { get; private set; }
 
+        public Encryptor Encryptor { get; private set; }
+
         protected IMessageService _messageService;
 
         public RunningStatus Status = RunningStatus.Stoped;
 
-        public PivotServer(ConnexionUrl conn)
+        public PivotServer(ConnexionUrl conn, string serverKey)
         {
             Connexion = conn;
+            this.Encryptor = new Encryptor(serverKey);
             _messageService = ServiceProvider.GetService<IMessageService>();
-
         }
 
         protected readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();

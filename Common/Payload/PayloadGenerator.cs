@@ -257,6 +257,9 @@ public partial class PayloadGenerator
         this.MessageSent?.Invoke(this, $"Configuring Agent...");
         byte[] agent = LoadAssembly(this.Source(AgentSrcFile, options.Architecture));
 
+        this.MessageSent?.Invoke(this, $"Using Endpoint {options.Endpoint}...");
+        this.MessageSent?.Invoke(this, $"Using ServerKey {options.ServerKey}...");
+
         agent = AssemblyEditor.ReplaceRessources(agent, new Dictionary<string, object>()
         {
             { "EndPoint", options.Endpoint.ToString() },

@@ -134,7 +134,8 @@ namespace Agent.Models
                     Agent = this,
                     MessageService = _messageService,
                     FileService = _fileService,
-                    ProxyService = _proxyService
+                    ProxyService = _proxyService,
+                    commModule = this.Communicator,
                 };
                 command.Execute(task, ctxt);
             }

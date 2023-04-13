@@ -12,7 +12,7 @@ namespace Agent.Service
     {
         List<PivotServer> Pivots { get; }
 
-        bool AddPivot(ConnexionUrl conn);
+        bool AddPivot(ConnexionUrl conn, string serverKey);
         bool RemovePivot(ConnexionUrl conn);
 
         bool HasPivots();

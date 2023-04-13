@@ -10,10 +10,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Common;
 using Common.Payload;
-using Commander.Commands.Agent;
 using Spectre.Console;
 
-namespace Commander.Commands.Laucher
+namespace Commander.Commands
 {
     public class BuildPayloadCommandOptions
     {
@@ -126,6 +125,16 @@ namespace Commander.Commands.Laucher
                 return false;
             }
 
+            string serverKey = context.Config.ServerConfig?.Key;
+            if (string.IsNullOrEmpty(serverKey) && string.IsNullOrEmpty(context.Options.serverKey))
+            {
+                context.Terminal.WriteError($"[X] ServerKey is not available, you must provide it in the command line!");
+                return false;
+            }
+
+            if(!string.IsNullOrEmpty(context.Options.serverKey))
+                serverKey = context.Options.serverKey;
+
             if (context.Options.type == "all")
             {
                 foreach (var arch in Enum.GetValues(typeof(PayloadArchitecture)))
@@ -141,7 +150,7 @@ namespace Commander.Commands.Laucher
                             Endpoint = endpoint,
                             IsDebug = context.Options.debug,
                             IsVerbose = context.Options.verbose,
-                            ServerKey = context.Options.serverKey,
+                            ServerKey = serverKey,
                             Type = payType
                         };
 
@@ -168,7 +177,7 @@ namespace Commander.Commands.Laucher
                 Endpoint = endpoint,
                 IsDebug = context.Options.debug,
                 IsVerbose = context.Options.verbose,
-                ServerKey = context.Options.serverKey,
+                ServerKey = serverKey,
                 Type = t
             };
 

@@ -15,18 +15,25 @@ namespace Agent.Communication
  
         private Random random = new Random();
 
+        public string ServerKey { get; private set; }
+
         public ConnexionUrl Connexion { get; set; }
+
+        public Encryptor Encryptor { get; set; }
 
         public IProxyService ProxyService { get; protected set; }
         public IMessageService MessageService { get; protected set; }
         public IFileService FileService { get; protected set; }
 
-        public CommModule(ConnexionUrl connection, IMessageService messageManager, IFileService fileService, IProxyService proxyService)
+        public CommModule(ConnexionUrl connection, string serverKey, IMessageService messageManager, IFileService fileService, IProxyService proxyService)
         {
             this.Connexion = connection;
             this.MessageService = messageManager;
             this.FileService = fileService;
             this.ProxyService = proxyService;
+
+            this.ServerKey = serverKey;
+            this.Encryptor = new Encryptor(serverKey);
         }
 
         protected int GetDelay()

@@ -11,6 +11,9 @@ set destx86Dir=E:\Share\Projects\C2Sharp\Payloads\x86
 set destx64Dir=E:\Share\Projects\C2Sharp\Payloads\x64
 set scriptDir=E:\Share\Projects\C2Sharp\Payload\Scripts
 
+del %destx86Dir%\* /f /q
+del %destx64Dir%\* /f /q
+
 echo Scripts
 copy %scriptDir%\*.* %destx86Dir%\ 
 copy %scriptDir%\*.* %destx64Dir%\ 

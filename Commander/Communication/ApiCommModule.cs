@@ -17,6 +17,7 @@ using Commander.Terminal;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Spectre.Console;
+using ApiModels;
 
 namespace Commander.Communication
 {
@@ -105,6 +106,10 @@ namespace Commander.Communication
 
                     if (isSyncing)
                     {
+                        var serverConfig = await this.ServerConfig();
+                        this.Config.ServerConfig = serverConfig;
+                        
+
                         this._listeners.Clear();
                         this._agents.Clear();
                         this._tasks.Clear();
@@ -145,6 +150,7 @@ namespace Commander.Communication
                         //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Result)} Results to load.");
 
                         Terminal.WriteSuccess($"Syncing done.");
+                        //Terminal.WriteInfo($"ServerKey is {this.Config.ServerConfig.Key}");
                         Terminal.Restore();
                         Terminal.CanHandleInput = true;
                     }
@@ -680,6 +686,18 @@ namespace Commander.Communication
             OnCompletionChanged?.Invoke(100);
 
             return desc.Id;
+        }
+
+        public async Task<ServerConfig> ServerConfig()
+        {
+            var response = await _client.GetAsync($"/Config");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var conf = JsonConvert.DeserializeObject<ServerConfig>(json);
+            return conf;
         }
 
         public async void WebHost(string fileName, byte[] fileContent)

@@ -79,18 +79,6 @@ namespace Agent.Communication
                     return conn;
                 }
 
-                if (protocol == "tcps")
-                {
-                    conn.Protocol = ConnexionType.Tcp;
-                    conn.IsSecure = true;
-                    conn.Address = address;
-                    conn.Port = int.Parse(complement);
-                    conn.IsValid = true;
-                    return conn;
-                }
-
-             
-
                 if (protocol == "pipe")
                 {
                     conn.Protocol = ConnexionType.NamedPipe;
@@ -100,17 +88,6 @@ namespace Agent.Communication
                     conn.IsValid = !string.IsNullOrEmpty(complement.Trim());
                     return conn;
                 }
-
-                if (protocol == "pipes")
-                {
-                    conn.Protocol = ConnexionType.NamedPipe;
-                    conn.IsSecure = true;
-                    conn.Address = address;
-                    conn.PipeName = complement.Trim();
-                    conn.IsValid = !string.IsNullOrEmpty(complement.Trim());
-                    return conn;
-                }
-
             }
             catch
             {
@@ -133,16 +110,12 @@ namespace Agent.Communication
                 case ConnexionType.NamedPipe:
                     {
                         var prot = "pipe";
-                        if (this.IsSecure)
-                            prot += "s";
                         return $"{prot}://{this.Address}:{this.PipeName}";
                     }
                     break;
                 case ConnexionType.Tcp:
                     {
                         var prot = "tcp";
-                        if (this.IsSecure)
-                            prot += "s";
                         return $"{prot}://{this.Address}:{this.Port}";
                     }
             }

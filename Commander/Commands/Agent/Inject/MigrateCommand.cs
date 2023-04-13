@@ -26,6 +26,8 @@ namespace Commander.Commands.Laucher
         public string processName { get; set; }
 
         public int? processId { get; set; }
+
+        public string serverKey { get; set; }
     }
     public class MigrateCommand : EnhancedCommand<MigrateCommandOptions>
     {
@@ -40,6 +42,7 @@ namespace Commander.Commands.Laucher
             new Option<int?>(new[] { "--processId", "-pid" }, () => null, "id of the process to injects to"),
             new Option<string>(new[] { "--processName", "-p" }, () => null, "name of process to spawn"),
             new Option<string>(new[] { "--endpoint", "-b" }, () => null, "EndPoint to Bind To"),
+            new Option<string>(new[] { "--serverKey", "-k" }, () => null, "The server unique key of the endpoint"),
             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
@@ -74,7 +77,7 @@ namespace Commander.Commands.Laucher
                 Endpoint = endpoint,
                 IsDebug = context.Options.debug,
                 IsVerbose = context.Options.verbose,
-                //ServerKey = context.Options.serverKey,
+                ServerKey = string.IsNullOrEmpty(context.Options.serverKey) ? context.Config.ServerConfig.Key : context.Options.serverKey,
                 Type = PayloadType.Binary
             };
             var generator = new PayloadGenerator(context.Config.PayloadConfig);

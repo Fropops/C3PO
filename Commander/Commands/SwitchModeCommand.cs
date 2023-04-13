@@ -43,11 +43,11 @@ namespace Commander.Commands
 
     }
 
-    public class LauncherModeCommand : SwitchModeCommand
-    {
-        public override ExecutorMode AvaliableIn => ExecutorMode.All;
-        public override string Name => "launcher";
-        public override ExecutorMode TargetMode => ExecutorMode.Launcher;
+    //public class LauncherModeCommand : SwitchModeCommand
+    //{
+    //    public override ExecutorMode AvaliableIn => ExecutorMode.All;
+    //    public override string Name => "launcher";
+    //    public override ExecutorMode TargetMode => ExecutorMode.Launcher;
 
-    }
+    //}
 }

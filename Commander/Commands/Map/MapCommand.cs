@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common;
+using Spectre.Console;
 
 namespace Commander.Commands.Agent
 {
@@ -37,41 +38,32 @@ namespace Commander.Commands.Agent
 
         private void RenderTree(MapTreeNode root, CommandContext<MapCommandOptions> context)
         {
-            this.RenderNode(root, context);
+            //this.RenderNode(root, context);
+            var guiTree = new Tree(new Markup("[" + (root.IsAlive ? "green" : "grey") + "]" + root.Name + "[/]")).Guide(TreeGuide.Line);
+            guiTree.Style = new Style(Spectre.Console.Color.Olive);
+
+            foreach (var child in root.Children)
+            {
+                guiTree.AddNode(RenderNode(child));
+            }
+
+            context.Terminal.Write(guiTree);
+
 
         }
 
-        private void RenderNode(MapTreeNode node, CommandContext<MapCommandOptions> context, int indent = 0)
+        private TreeNode AsGuiNode(MapTreeNode node)
         {
-            int indentOffset = (indent == 0 ? 0 : node.LinkToParent.Length + 5);
+            return new TreeNode(new Markup("[cyan]" + node.LinkToParent + "[/] <=> [" + (node.IsAlive ? "green" : "grey") + "]" + node.Name + " - " + node.Id +  "[/]"));
+        }
 
-            context.Terminal.Write(" ", indent);
-            if (indent != 0)
-            {
-                context.Terminal.Write("|-");
-                context.Terminal.Write(node.LinkToParent);
-                context.Terminal.Write("-> ");
-            }
-            if (node.IsAlive)
-                context.Terminal.SetForeGroundColor(ConsoleColor.Green);
-            else
-                context.Terminal.SetForeGroundColor(ConsoleColor.Red);
-            context.Terminal.WriteLine(node.Name);
-            if (!string.IsNullOrEmpty(node.ShortId))
-            {
-                context.Terminal.Write(" ", indent + indentOffset + (node.Name.Length - node.ShortId.Length) / 2);
-                context.Terminal.WriteLine(node.ShortId);
-            }
-
-
-            var maxLength = Math.Max(node.Name.Length, node.ShortId.Length);
-
-            indent += indentOffset + (maxLength / 2);
-
-            context.Terminal.SetForeGroundColor(TerminalConstants.DefaultForeGroundColor);
-
+        private TreeNode RenderNode(MapTreeNode node)
+        {
+            var guiNode = AsGuiNode(node);
             foreach (var child in node.Children)
-                RenderNode(child, context, indent);
+                guiNode.AddNode(RenderNode(child));
+
+            return guiNode;
         }
 
         private MapTreeNode GenerateTree(CommandContext<MapCommandOptions> context)
@@ -86,7 +78,7 @@ namespace Commander.Commands.Agent
                 node.Name = agent.Metadata.Desc;
                 node.Id = agent.Metadata.Id;
                 node.ShortId = agent.Metadata.Id;
-                node.IsAlive = agent.LastSeen.AddSeconds(30) > DateTime.UtcNow;
+                node.IsAlive = agent.IsActive == true;
                 allNodes.Add(agent.Metadata.Id, node);
             }
 

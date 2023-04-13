@@ -72,7 +72,7 @@ namespace Agent.Service.Pivoting
                 }
 
                 // sos cpu
-                await Task.Delay(10);
+                await Task.Delay(100);
             }
             catch (Exception ex)
             {

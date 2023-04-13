@@ -40,7 +40,7 @@ namespace Agent.Communication
         {
             int jit = (int)Math.Round(this.MessageService.AgentMetaData.SleepInterval * 1000 * (this.MessageService.AgentMetaData.SleepJitter / 100.0));
             var delta = random.Next(0, jit);
-            return Math.Max(10,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
+            return Math.Max(100,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
         }
 
         public virtual async void Stop()

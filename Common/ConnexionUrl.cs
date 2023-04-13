@@ -81,7 +81,7 @@ namespace Common
 
                 if (protocol == "pipe")
                 {
-                    conn.Protocol = ConnexionType.NamedPipe;
+                    conn.Protocol = ConnexionType.Pipe;
                     conn.IsSecure = false;
                     conn.Address = address;
                     conn.PipeName = complement.Trim();
@@ -107,7 +107,7 @@ namespace Common
                             prot += "s";
                         return $"{prot}://{this.Address}:{this.Port}";
                     }
-                case ConnexionType.NamedPipe:
+                case ConnexionType.Pipe:
                     {
                         var prot = "pipe";
                         return $"{prot}://{this.Address}:{this.PipeName}";
@@ -127,6 +127,6 @@ namespace Common
     {
         Http,
         Tcp,
-        NamedPipe,
+        Pipe,
     }
 }

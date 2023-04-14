@@ -1,4 +1,5 @@
 ﻿using ApiModels.Response;
+using ApiModels.WebHost;
 using Commander.Models;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,13 @@ namespace Commander.Communication
        
         Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
-        void WebHost(string fileName, byte[] fileContent);
+        Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description);
+        Task<List<WebHostLog>> GetWebHostLogs();
+        Task<List<FileWebHost>> GetWebHosts();
+
+        Task RemoveWebHost(string path);
+        Task ClearWebHosts();
+
 
         Task<bool> StartProxy(string agentId, int port);
         Task<bool> StopProxy(string agentId);

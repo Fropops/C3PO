@@ -14,5 +14,10 @@ namespace Common.Payload
         public string ServerKey { get; set; }
         public bool IsDebug { get; set; }
         public bool IsVerbose { get; set; }
+
+        public override string ToString()
+        {
+            return $"Payload {Type.ToString()} {Architecture.ToString()} {Endpoint.ToString()}";
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ApiModels.Requests;
 using ApiModels.Response;
+using ApiModels.WebHost;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -117,24 +118,6 @@ namespace TeamServer.Controllers
                 //if(desc.IsUploaded)
                 //    Logger.Log($"File {desc.Name} uploaded with {desc.ChunkCount} chunks");
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return this.Problem(ex.ToString());
-            }
-        }
-
-        [HttpPost("WebHost")]
-        public IActionResult WebHost([FromBody] FileWebHost wb)
-        {
-            try
-            {
-                //var outPath = this._fileService.GetWebHostPath(wb.FileName);
-                //System.IO.File.WriteAllBytes(outPath, wb.Data);
-                Logger.Log($"WebHost push {wb.Path}");
-
-                this._webHostService.Add(wb.Path, wb.Data);
                 return Ok();
             }
             catch (Exception ex)

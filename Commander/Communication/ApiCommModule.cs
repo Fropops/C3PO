@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Spectre.Console;
 using ApiModels;
+using ApiModels.WebHost;
 
 namespace Commander.Communication
 {
@@ -700,20 +701,9 @@ namespace Commander.Communication
             return conf;
         }
 
-        public async void WebHost(string fileName, byte[] fileContent)
-        {
-            var wh = new FileWebHost()
-            {
-                Path = fileName,
-                Data = fileContent,
-            };
-            var requestContent = JsonConvert.SerializeObject(wh);
+        
 
-            var response = await _client.PostAsync($"/Files/WebHost", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"{response}");
-        }
-
+        #region Proxy
         public async Task<bool> StartProxy(string agentId, int port)
         {
             var resp = await _client.GetAsync($"/Agents/{agentId}/startproxy?port={port}");
@@ -736,5 +726,71 @@ namespace Commander.Communication
                 return false;
             }
         }
+        #endregion
+
+        #region WebHost
+        public async Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description)
+        {
+            var wh = new FileWebHost()
+            {
+                Path = path,
+                Data = fileContent,
+                IsPowershell = isPowerShell,
+                Description = description
+            };
+            var requestContent = JsonConvert.SerializeObject(wh);
+
+            var response = await _client.PostAsync($"/WebHost", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+        public async Task<List<FileWebHost>> GetWebHosts()
+        {
+            var response = await _client.GetAsync($"/WebHost");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<FileWebHost>>(json);
+            return list;
+
+        }
+
+        public async Task<List<WebHostLog>> GetWebHostLogs()
+        {
+            var response = await _client.GetAsync($"/WebHost/Logs");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<WebHostLog>>(json);
+            return list;
+
+        }
+
+        public async Task RemoveWebHost(string path)
+        {
+            var wh = new FileWebHost()
+            {
+                Path = path,
+            };
+            var requestContent = JsonConvert.SerializeObject(wh);
+            var response = await _client.PostAsync($"/WebHost/Remove", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+        public async Task ClearWebHosts()
+        {
+            var response = await _client.GetAsync($"/WebHost/Clear");
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+
+        #endregion
     }
 }

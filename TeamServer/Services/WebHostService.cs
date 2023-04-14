@@ -1,25 +1,40 @@
 using System.Collections.Generic;
+using System.Linq;
+using ApiModels.Requests;
+using ApiModels.WebHost;
 
 namespace TeamServer.Services;
 
 public interface IWebHostService
 {
-    void Add(string path, byte[] fileContent);
+    void Add(string path, FileWebHost file);
     void Remove(string path);
-    byte[] Get(string path);
+    byte[] GetFile(string path);
+
+    FileWebHost Get(string path);
+
+    public List<FileWebHost> GetAll();
+
     void Clear();
+
+    List<WebHostLog> GetLogs();
+    void ClearLogs();
+
+    void Addlog(WebHostLog log);
+
 }
 
 public class WebHostService : IWebHostService
 {
-    private Dictionary<string, byte[]> files = new Dictionary<string, byte[]>();
+    private Dictionary<string, FileWebHost> files = new Dictionary<string, FileWebHost>();
+    private List<WebHostLog> logs = new List<WebHostLog>();
 
-    public void Add(string path, byte[] fileContent)
+    public void Add(string path, FileWebHost file)
     {
         if (!this.files.ContainsKey(path))
-            files.Add(path, fileContent);
+            files.Add(path, file);
         else
-            files[path] = fileContent;
+            files[path] = file;
     }
 
 
@@ -29,11 +44,23 @@ public class WebHostService : IWebHostService
             this.files.Remove(path);
     }
 
-    public byte[] Get(string path)
+    public byte[] GetFile(string path)
+    {
+        if (this.files.ContainsKey(path))
+            return this.files[path].Data;
+        return null;
+    }
+
+    public FileWebHost Get(string path)
     {
         if (this.files.ContainsKey(path))
             return this.files[path];
         return null;
+    }
+
+    public List<FileWebHost> GetAll()
+    {
+        return this.files.Values.ToList();
     }
 
     public void Clear()
@@ -41,5 +68,18 @@ public class WebHostService : IWebHostService
         this.files.Clear();
     }
 
+    public List<WebHostLog> GetLogs()
+    {
+        return logs;
+    }
+    public void ClearLogs()
+    {
+        this.logs.Clear();
+    }
+
+    public void Addlog(WebHostLog log)
+    {
+        this.logs.Add(log);
+    }
 
 }

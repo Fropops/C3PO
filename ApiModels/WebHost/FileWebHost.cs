@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiModels.Requests
+namespace ApiModels.WebHost
 {
     public class FileWebHost
     {
         public string Path { get; set; }
+        public string Description { get; set; }
+
+        public bool IsPowershell { get; set; }
         public byte[] Data { get; set; }
     }
 }

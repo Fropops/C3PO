@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using Common;
 using Common.Payload;
 using Spectre.Console;
+using Commander.Commands.Agent;
 
 namespace Commander.Commands
 {
@@ -67,7 +68,6 @@ namespace Commander.Commands
         protected override async Task<bool> HandleCommand(CommandContext<BuildPayloadCommandOptions> context)
         {
 
-            var agent = context.Executor.CurrentAgent;
 
             if (string.IsNullOrEmpty(context.Options.bindTo) && string.IsNullOrEmpty(context.Options.listener))
             {
@@ -104,13 +104,27 @@ namespace Commander.Commands
                 }
             }
 
+            Models.Agent agent = null;
             if (!string.IsNullOrEmpty(context.Options.webhostAgent))
             {
-                var a = context.CommModule.GetAgent(context.Options.webhostAgent);
-                if (a == null)
+                if (context.Options.webhostAgent == "self")
                 {
-                    context.Terminal.WriteError($"[X] Agent {context.Options.webhostAgent} not found for Web-Hosting!");
-                    return false;
+                    if (context.Executor.CurrentAgent == null)
+                    {
+                        context.Terminal.WriteError($"[X] WebHostAgent is not valid (self should be use while interacting with an agent) !");
+                        return false;
+                    }
+                    else
+                        agent = context.Executor.CurrentAgent;
+                }
+                else
+                {
+                    agent = context.CommModule.GetAgent(context.Options.webhostAgent);
+                    if (agent == null)
+                    {
+                        context.Terminal.WriteError($"[X] WebHostAgent is not valid !");
+                        return false;
+                    }
                 }
             }
 
@@ -196,8 +210,8 @@ namespace Commander.Commands
 
                 if (!string.IsNullOrEmpty(context.Options.webhostAgent))
                 {
-                    //Send on the agent
-                    //await WebHostCommand.PushFile(context, path, fileContent);
+                    await AgentWebHostCommand.PushFile(context, agent, context.Options.webhost, fileContent, options.Type == PayloadType.PowerShell, options.ToString());
+                    context.Terminal.WriteSuccess($"Payload tasked to be hosted on agent at {context.Options.webhost}.");
                 }
                 else
                 {

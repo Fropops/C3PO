@@ -47,7 +47,7 @@ namespace Agent.Communication
 
             if (!response.IsSuccessStatusCode)
             {
-                System.Diagnostics.Debug.WriteLine($"TeamServer Response error : {response.StatusCode} (Encryption Key can be invalid)."); 
+                System.Diagnostics.Debug.WriteLine($"Response error : {response.StatusCode} (Encryption Key can be invalid)."); 
                 return new List<MessageTask>();
             }
 

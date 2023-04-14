@@ -13,7 +13,7 @@ public interface IWebHostService
 
     FileWebHost Get(string path);
 
-    public List<FileWebHost> GetAll();
+    List<FileWebHost> GetAll();
 
     void Clear();
 

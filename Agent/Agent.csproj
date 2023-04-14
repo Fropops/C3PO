@@ -300,7 +300,6 @@
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\IFileService.cs" />
     <Compile Include="Service\IMessageService.cs" />
-    <Compile Include="Service\RunningService\IWebHostService.cs" />
     <Compile Include="Service\RunningService\IKeyLogService.cs" />
     <Compile Include="Service\RunningService\IPivotService.cs" />
     <Compile Include="Service\IProxyService.cs" />
@@ -309,7 +308,7 @@
     <Compile Include="Service\Pivoting\PivotServer.cs" />
     <Compile Include="Service\Pivoting\PivotPipeServer.cs" />
     <Compile Include="Service\Pivoting\PivotTCPServer.cs" />
-    <Compile Include="Service\RunningService\WebHostService.cs" />
+    <Compile Include="Service\WebHostService.cs" />
     <Compile Include="Service\RunningService\KeyLogService.cs" />
     <Compile Include="Service\RunningService\PivotService.cs" />
     <Compile Include="Service\RunningService\ProxyService.cs" />

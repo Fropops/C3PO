@@ -39,7 +39,7 @@ namespace Commander.Commands
     {
         public override string Category => CommandCategory.Network;
         public override string Description => "WebHost file on the TeasmServer";
-        public override string Name => "host";
+        public override string Name => "whost";
 
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 

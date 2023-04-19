@@ -78,7 +78,7 @@ namespace Commander
 
                 context.Terminal.WriteLine($"Generating payload with params {parms}...");
 
-                var generator = new PayloadGenerator(context.Config.PayloadConfig);
+                var generator = new PayloadGenerator(context.Config.PayloadConfig, context.Config.SpawnConfig);
                 binFileName = Path.Combine(context.Config.PayloadConfig.WorkingFolder, ShortGuid.NewGuid() + ".bin");
                 var result = generator.GenerateBin(context.Options.fileToInject, binFileName, context.Options.x86 ,parms);
                 if (context.Options.verbose)
@@ -103,12 +103,7 @@ namespace Commander
                 context.Terminal.WriteLine($"Shellcode size = {fileBytes.Length}");
             }
 
-            bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, binFileName, a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            });
+            var fileId = await context.UploadAndDisplay(fileBytes, binFileName);
 
             if (!context.Options.raw)
             {

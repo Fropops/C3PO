@@ -15,7 +15,7 @@ namespace Agent.Commands
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             var identity = WindowsIdentity.GetCurrent();
-            context.Result.Result = identity.Name;
+            context.Result.Result = identity.Name + Environment.NewLine;
         }
     }
 }

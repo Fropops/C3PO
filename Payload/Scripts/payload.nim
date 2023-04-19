@@ -1,4 +1,3 @@
-import os
 import std/base64
 import winim/clr
 import strformat

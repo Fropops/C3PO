@@ -12,7 +12,8 @@ namespace Common.Payload
         Library,
         Service,
         PowerShell,
-        Binary
+        Binary,
+        Injector
     }
 
     public enum PayloadArchitecture

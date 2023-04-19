@@ -68,7 +68,7 @@ namespace Agent.Models
                         if (mess.ProxyMessages != null)
                             this._proxyService.AddRequests(mess.ProxyMessages);
 
-                        HandleTask(mess.Items);
+                        HandleTasks(mess.Items);
                     }
 
                 }
@@ -83,48 +83,71 @@ namespace Agent.Models
             this.Communicator.Stop();
         }
 
-        public void HandleTask(IEnumerable<AgentTask> tasks)
+        public void HandleTasks(IEnumerable<AgentTask> tasks)
         {
             foreach (var task in tasks)
             {
-                if (ImpersonationHelper.HasCurrentImpersonation)
-                {
-                    //Console.WriteLine($"run command {task.Command} impersonnated");
-                    using (var context = WindowsIdentity.Impersonate(ImpersonationHelper.ImpersonatedToken))
-                    {
-                        Thread t = new Thread(this.StartHandleTask);
-                        t.Start(task);
-                    }
-                }
-                else
-                {
-                    //Console.WriteLine($"run command {task.Command} not impersonnated");
-                    Thread t = new Thread(this.StartHandleTask);
-                    t.Start(task);
-                }
+                this.HandleTask(task);
 
             }
         }
 
-        public void StartHandleTask(object task)
+        public Thread HandleTask(AgentTask task, AgentTaskResult res = null, bool subCmd = false)
         {
-            this.HandleTask(task as AgentTask);
+            var tr = new TaskAndResult
+            {
+                Task = task,
+                Result = res ?? new AgentTaskResult(),
+                SubCmd = subCmd
+            };
+
+            if (ImpersonationHelper.HasCurrentImpersonation)
+            {
+                //Console.WriteLine($"run command {task.Command} impersonnated");
+                using (var context = WindowsIdentity.Impersonate(ImpersonationHelper.ImpersonatedToken))
+                {
+                    return StartTaskAsNewThread(tr);
+                }
+            }
+            else
+            {
+                //Console.WriteLine($"run command {task.Command} not impersonnated");
+                return StartTaskAsNewThread(tr);
+            }
         }
 
-        public void HandleTask(AgentTask task)
+
+        private Thread StartTaskAsNewThread(TaskAndResult tr)
         {
-            var command = this._commands.FirstOrDefault(c => c.Name == task.Command);
+            Thread t = new Thread(this.StartHandleTask);
+            t.Start(tr);
+            return t;
+        }
+
+        public class TaskAndResult
+        {
+            public AgentTask Task { get; set; }
+            public AgentTaskResult Result { get; set; }
+            public bool SubCmd { get; set; }
+        }
+
+        private void StartHandleTask(object taskandResult)
+        {
+
+            this.HandleTaskInternal(taskandResult as TaskAndResult);
+        }
+
+        private void HandleTaskInternal(TaskAndResult tr)
+        {
+            var command = this._commands.FirstOrDefault(c => c.Name == tr.Task.Command);
 
             AgentTaskResult result = null;
 
             if (command is null)
             {
-                result = new AgentTaskResult()
-                {
-                    Id = task.Id,
-                    Result = $"Agent has no {task.Command} command registered!",
-                    Status = AgentResultStatus.Completed,
-                };
+                tr.Result.Id = tr.Task.Id;
+                tr.Result.Result = $"Agent has no {tr.Task.Command} command registered!";
+                tr.Result.Status = AgentResultStatus.Completed;
                 this._messageService.SendResult(result);
             }
             else
@@ -136,8 +159,10 @@ namespace Agent.Models
                     FileService = _fileService,
                     ProxyService = _proxyService,
                     commModule = this.Communicator,
+                    Result = tr.Result,
                 };
-                command.Execute(task, ctxt);
+                command.IsSubCommand = tr.SubCmd;
+                command.Execute(tr.Task, ctxt);
             }
         }
     }

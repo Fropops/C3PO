@@ -42,6 +42,8 @@ namespace Commander.Communication
         Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null);
         Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
 
+        Task TaskAgentToDownloadFile(string agentId, string fileId);
+
         Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
        
         Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);

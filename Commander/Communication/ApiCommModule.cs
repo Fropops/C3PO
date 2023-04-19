@@ -701,7 +701,15 @@ namespace Commander.Communication
             return conf;
         }
 
-        
+        public async Task TaskAgentToDownloadFile(string agentId, string fileId)
+        {
+            var response = await _client.GetAsync($"/Agents/{agentId}/File?fileId={fileId}");
+
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+        }
 
         #region Proxy
         public async Task<bool> StartProxy(string agentId, int port)

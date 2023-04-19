@@ -104,6 +104,18 @@ namespace TeamServer.Controllers
             return Created(path, task);
         }
 
+        [HttpGet("{agentId}/File")]
+        public ActionResult RequestAgentDowload(string agentId, string fileId)
+        {
+            var agent = this._agentService.GetAgent(agentId);
+            if (agent is null)
+                return NotFound();
+
+            agent.QueueDownload(this._fileService.GetFileChunksForAgent(fileId));
+
+            return Ok();
+        }
+
         [HttpGet("{agentId}/stop")]
         public ActionResult StopAgent(string agentId)
         {

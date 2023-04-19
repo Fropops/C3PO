@@ -69,10 +69,11 @@ namespace Agent.Service.Pivoting
                         continue;
 
                     this.Handle(client);
+
+                    // sos cpu
+                    await Task.Delay(10);
                 }
 
-                // sos cpu
-                await Task.Delay(100);
             }
             catch (Exception ex)
             {

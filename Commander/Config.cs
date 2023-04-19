@@ -34,7 +34,7 @@ namespace Commander
     {
         public ApiConfig ApiConfig { get; private set; }
         public PayloadConfig PayloadConfig { get; private set; }
-
+        public SpawnConfig SpawnConfig { get; private set;}
         public ServerConfig ServerConfig { get; set; }
         public string Session { get; private set; }
 
@@ -42,6 +42,7 @@ namespace Commander
         {
             this.ApiConfig = new ApiConfig();
             this.PayloadConfig = new PayloadConfig();
+            this.SpawnConfig = new SpawnConfig();
             this.Session = Guid.NewGuid().ToString();
         }
 
@@ -49,6 +50,7 @@ namespace Commander
         {
             this.ApiConfig.FromSection(config.GetSection("Api"));
             this.PayloadConfig.FromSection(config.GetSection("Payload"));
+            this.SpawnConfig.FromSection(config.GetSection("Spawn"));
         }
 
 

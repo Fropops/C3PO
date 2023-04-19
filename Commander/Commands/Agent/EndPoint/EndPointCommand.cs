@@ -17,6 +17,8 @@ namespace Commander.Commands.Agent
         public static string SLEEP = "sleep";
         public static string META = "meta";
 
+        public static string ECHO = "echo";
+
         public static string WHOAMI = "whoami";
         public static string DOWNLOAD = "download";
         public static string UPLOAD = "upload";
@@ -25,6 +27,7 @@ namespace Commander.Commands.Agent
         public static string PS = "ps";
         public static string PWD = "pwd";
         public static string TERMINATE = "terminate";
+        public static string DELAY = "delay";
 
         public static string SHELL = "shell";
         public static string START = "start";
@@ -251,12 +254,8 @@ namespace Commander.Commands.Agent
                 }
 
                 string fileName = Path.GetFileName(context.Options.scriptfile);
-                bool first = true;
-                var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
-                {
-                    context.Terminal.ShowProgress("uploading", a, first);
-                    first = false;
-                });
+
+                var fileId = await context.UploadAndDisplay(fileBytes, Path.GetFileName(fileName));
 
                 File.Delete(fileName);
 

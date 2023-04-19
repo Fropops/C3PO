@@ -53,7 +53,7 @@ namespace Commander.Commands
         {
             new Option<string>(new[] { "--bindTo", "-b" }, () => null, "endpoint to connect to"),
             new Option<string>(new[] { "--listener", "-l" }, () => null, "listener to connect to"),
-            new Option<string>(new[] { "--type", "-t" }, () => "exe" ,"exe | dll | svc | ps | bin | all").FromAmong("exe", "dll", "svc", "ps", "bin", "all"),
+            new Option<string>(new[] { "--type", "-t" }, () => "exe" ,"exe | dll | svc | ps | bin | inj | all").FromAmong("exe", "dll", "svc", "ps", "bin", "inj", "all"),
             new Option<string>(new[] { "--fileName", "-f" }, () => null ,"Name of the file to be crafted"),
             new Option(new[] { "--debug", "-d" }, "Keep debugging info when building"),
             new Option<string>(new[] { "--path", "-p" }, () => null, "Folder to save the generated file"),
@@ -182,6 +182,7 @@ namespace Commander.Commands
                 case "svc": t = PayloadType.Service; break;
                 case "ps": t = PayloadType.PowerShell; break;
                 case "bin": t = PayloadType.Binary; break;
+                case "inj": t = PayloadType.Injector; break;
                 default: break;
             }
 
@@ -252,13 +253,7 @@ namespace Commander.Commands
             byte[] pay = null;
             try
             {
-                AnsiConsole.Status()
-                .Start($"[olive]Generating Payload {options.Type} for Endpoint {options.Endpoint} (arch = {options.Architecture}).[/]", ctx =>
-                {
-                    var generator = new PayloadGenerator(context.Config.PayloadConfig);
-                    generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
-                    pay = generator.GeneratePayload(options);
-                });
+                pay = context.GeneratePayloadAndDisplay(options, context.Options.verbose);
             }
             catch (Exception ex)
             {
@@ -296,6 +291,9 @@ namespace Commander.Commands
             if (options.Type == PayloadType.Service && (context.Options.type == "all" || !customFileName))
                 outFile += "_svc";
 
+            if (options.Type == PayloadType.Injector && (context.Options.type == "all" || !customFileName))
+                outFile += "_inj";
+
             if (context.Options.type == "all")
                 outFile += options.Architecture == PayloadArchitecture.x86 ? "_x86" : "_x64";
 
@@ -303,6 +301,7 @@ namespace Commander.Commands
             {
                 case PayloadType.Executable:
                 case PayloadType.Service:
+                case PayloadType.Injector:
                     if (!Path.GetExtension(outFile).Equals(".exe", StringComparison.OrdinalIgnoreCase))
                         outFile += ".exe";
                     break;

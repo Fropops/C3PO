@@ -18,6 +18,7 @@ namespace Commander.Commands
         public abstract ExecutorMode TargetMode { get; }
         protected override void InnerExecute(CommandContext context)
         {
+            context.Executor.CurrentAgent = null;
             context.Executor.Mode = TargetMode;
             if (TargetMode  == ExecutorMode.None)
                 context.Terminal.Prompt = Terminal.Terminal.DefaultPrompt;

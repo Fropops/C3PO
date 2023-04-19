@@ -129,6 +129,7 @@ namespace Commander.Commands
                             var url = listener.EndPoint + "/" +  item.Path;
                             context.Terminal.WriteLineMarkup($"[grey]{url}[/]");
                             context.Terminal.WriteLine(GeneratePowershellScript(url, listener.Secured));
+                            context.Terminal.WriteLine(GeneratePowershellScriptB64(url, listener.Secured));
                         }
                     }
                 }

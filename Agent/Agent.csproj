@@ -222,10 +222,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
+    <Compile Include="Commands\CompositeCommand.cs" />
+    <Compile Include="Commands\EchoCommand.cs" />
+    <Compile Include="Commands\ElevateCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
     <Compile Include="Commands\Execution\PowershellRunner.cs" />
     <Compile Include="Commands\FileSystem\CatCommand.cs" />
+    <Compile Include="Commands\DelayCommand.cs" />
     <Compile Include="Communication\Encryptor.cs" />
     <Compile Include="Helpers\ImpersonationHelper.cs" />
     <Compile Include="Commands\Services\WebHostCommand.cs" />

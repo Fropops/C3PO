@@ -30,30 +30,34 @@ namespace Agent.Commands
         protected bool SendMetadataWithResult = false;
         public virtual string Name { get; set; }
 
+        public bool IsSubCommand { get; set; } = false;
+
         public string Module => Assembly.GetExecutingAssembly().GetName().Name;
 
         public virtual void Execute(AgentTask task, AgentCommandContext context)
         {
-            context.Result = new AgentTaskResult();
             context.Result.Id = task.Id;
             try
             {
                 context.Result.Status = AgentResultStatus.Running;
-                context.MessageService.SendResult(context.Result);
+                if (!this.IsSubCommand) //sending will be handled in the composite command
+                    context.MessageService.SendResult(context.Result);
                 this.InnerExecute(task, context);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 context.Result.Result = "An unhandled error occured :" + Environment.NewLine;
                 context.Result.Result += e.ToString();
+                context.Result.Error = e.ToString();
             }
             finally
             {
                 context.Result.Info = string.Empty;
                 context.Result.Status = AgentResultStatus.Completed;
-                context.MessageService.SendResult(context.Result, this.SendMetadataWithResult);
+                if (!this.IsSubCommand) //sending will be handled in the composite command
+                    context.MessageService.SendResult(context.Result, this.SendMetadataWithResult);
             }
-          
+
         }
 
         public abstract void InnerExecute(AgentTask task, AgentCommandContext context);
@@ -61,7 +65,8 @@ namespace Agent.Commands
         public void Notify(AgentCommandContext context, string status)
         {
             context.Result.Info = status;
-            context.MessageService.SendResult(context.Result);
+            if (!this.IsSubCommand) //sending will be handled in the composite command
+                context.MessageService.SendResult(context.Result);
         }
 
 
@@ -77,7 +82,7 @@ namespace Agent.Commands
                     this.Notify(context, $"{task.FileName} Downloading {percent}%");
                 }
 
-                if(percent != 100)
+                if (percent != 100)
                     Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
             }
 

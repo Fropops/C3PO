@@ -18,6 +18,12 @@ namespace Agent.Commands
 
             var file = context.FileService.ConsumeDownloadedFile(task.FileId);
             string fileName = file.Name;
+
+            if (task.SplittedArgs.Count() > 0)
+            {
+                fileName = task.SplittedArgs[0];
+            }
+
             var fileContent = file.GetFileContent();
 
             using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
@@ -25,7 +31,7 @@ namespace Agent.Commands
                 fs.Write(fileContent, 0, fileContent.Length);
             }
 
-            context.Result.Result = $"File downloaded to {fileName}.";
+            context.Result.Result = $"File downloaded to {fileName}." + Environment.NewLine;
         }
     }
 }

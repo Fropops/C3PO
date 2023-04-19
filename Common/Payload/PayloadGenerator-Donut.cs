@@ -39,6 +39,29 @@ namespace Common.Payload
             return ret;
         }
 
+        public ExecuteResult GenerateInj(string binPath, string outPath, string processName)
+        {
+            var cmd = this.Config.ReanimatorPath;
+            var inputFile = binPath;
+            var outFile = outPath;
+
+            List<string> args = new List<string>();
+            args.Add("-f");
+            args.Add(inputFile);
+            args.Add("-t");
+            args.Add("raw");
+            args.Add($"-o");
+            args.Add(outFile);
+            args.Add($"-e");
+            args.Add($"-u");
+            args.Add($"-p");
+            args.Add(processName);
+
+            //Console.WriteLine(String.Join(' ', args));
+            var ret = ExecuteCommand(cmd, args, Path.GetDirectoryName(this.Config.ReanimatorPath));
+            return ret;
+        }
+
         public ExecuteResult GenerateBin(string inputPath, string outFile, bool x86, string dotNetParams = null)
         {
             var cmd = this.Config.DonutPath;

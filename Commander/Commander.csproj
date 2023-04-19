@@ -19,16 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Commands\Agent\Execute-Assembly\ExecuteAssemblyCommand.cs.old" />
-    <None Remove="Commands\Agent\Execute-Assembly\ExecuteAssemblyModuleCommand.cs.old" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Commands\Agent\Execute-Assembly\ExecuteAssemblyCommand.cs.old" />
-    <Compile Include="Commands\Agent\Execute-Assembly\ExecuteAssemblyModuleCommand.cs.old" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands.Agent.Execute_Assembly
+namespace Commander.Commands.Agent.Execute
 {
 
     public class ExecuteAssemblyCommand : SimpleEndPointCommand
@@ -37,13 +37,8 @@ namespace Commander.Commands.Agent.Execute_Assembly
             }
 
             string fileName = Path.GetFileName(exePath);
-            bool first = true;
-            var fileId = context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            }).Result;
-
+            var fileId = context.UploadAndDisplay(fileBytes, Path.GetFileName(fileName)).Result;
+           
             //context.Terminal.WriteLine("Parms = " + context.CommandParameters.ExtractAfterParam(0));
 
             context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName, context.CommandParameters.ExtractAfterParam(0)).Wait();

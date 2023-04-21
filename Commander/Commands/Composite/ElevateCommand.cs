@@ -96,7 +96,7 @@ namespace Commander.Commands.Composite
             this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\ms-settings\\CurVer -Recurse -Force -Verbose");
             this.Echo($"[*] Execution done!");
             this.Echo(Environment.NewLine);
-            this.Echo($"[!] Don't forget to remove executable after use! : shell sc del {path}");
+            this.Echo($"[!] Don't forget to remove executable after use! : shell del {path}");
 
             return true;
         }

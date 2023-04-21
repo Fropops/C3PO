@@ -61,6 +61,15 @@
     <Compile Include="Kernel32.cs" />
     <None Include="Program.save" />
     <None Include="Program2.save" />
+    <Compile Include="DInvoke.Process.cs" />
+    <Compile Include="DInvoke.Data.Native.cs" />
+    <Compile Include="DInvoke.Data.PE.cs" />
+    <Compile Include="DInvoke.Data.Win32.cs" />
+    <Compile Include="DInvoke.Generic.cs" />
+    <Compile Include="DInvoke.Native.cs" />
+    <Compile Include="DInvoke.Utilities.cs" />
+    <None Include="Program - Simple.cs.save" />
+    <None Include="Program - Dinvoke.cs.save" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -71,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Resources\Payload.bin" />
     <None Include="Resources\payload_https_192_168_174_128.bin" />
   </ItemGroup>
   <ItemGroup>

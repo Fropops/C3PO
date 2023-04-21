@@ -44,6 +44,7 @@ namespace Agent
             if (_args.Count() > 0)
             {
                 connUrl = _args[0];
+                
             }
 
             if (_args.Count() > 1)
@@ -54,6 +55,9 @@ namespace Agent
             {
                 serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2B664b65hAO7elTTM";
             }
+
+            connUrl = "https://192.168.174.128";
+
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);
 

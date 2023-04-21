@@ -272,7 +272,7 @@ public partial class PayloadGenerator
                         { "Key", encInject.Secret }
                     });
         var resultInjector = AssemblyEditor.ChangeName(starter, "InstallUtils");
-        File.WriteAllBytes("/mnt/Share/tmp/injector.exe", resultInjector);
+        //File.WriteAllBytes("/mnt/Share/tmp/injector.exe", resultInjector);
         #endregion
 
         #region executable

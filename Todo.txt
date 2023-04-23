@@ -1,14 +1,8 @@
-X Powershell
-X UAC bypass => not working automated => always trigger AV => to make manually
-X SharpChromium
-X Dropper
-X Download
-Encloser
-Scripts Command
-
-
-Commander :
-+ Config
-+ TS available
-+ Agent Available
-+ Input Multiline
++ Clean session at close
++ Fix SVC Injector
++ Improve Composite Command
++ Improve Command Error, Notify
++ Fix migrate
++ Order of agents (Add First Call)
++ Elevate : other ways
++ Get-system : Task schedule

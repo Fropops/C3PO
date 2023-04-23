@@ -15,6 +15,11 @@ namespace Common.Payload
         public bool IsDebug { get; set; }
         public bool IsVerbose { get; set; }
 
+        public bool IsInjected { get; set; }
+
+        public int InjectionDelay { get; set; } = 60;
+        public string InjectionProcess { get; set; }
+
         public override string ToString()
         {
             return $"Payload {Type.ToString()} {Architecture.ToString()} {Endpoint.ToString()}";

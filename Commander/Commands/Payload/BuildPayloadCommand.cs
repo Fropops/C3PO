@@ -38,6 +38,13 @@ namespace Commander.Commands
         public string serverKey { get; set; }
 
         public string type { get; set; }
+
+        public bool inject { get; set; }
+
+        public int? injectDelay { get; set; }
+
+        public string injectProcess { get; set; }
+
     }
     public class BuildPayloadCommand : EnhancedCommand<BuildPayloadCommandOptions>
     {
@@ -53,7 +60,7 @@ namespace Commander.Commands
         {
             new Option<string>(new[] { "--bindTo", "-b" }, () => null, "endpoint to connect to"),
             new Option<string>(new[] { "--listener", "-l" }, () => null, "listener to connect to"),
-            new Option<string>(new[] { "--type", "-t" }, () => "exe" ,"exe | dll | svc | ps | bin | inj | all").FromAmong("exe", "dll", "svc", "ps", "bin", "inj", "all"),
+            new Option<string>(new[] { "--type", "-t" }, () => "exe" ,"exe | dll | svc | ps | bin | all").FromAmong("exe", "dll", "svc", "ps", "bin", "all"),
             new Option<string>(new[] { "--fileName", "-f" }, () => null ,"Name of the file to be crafted"),
             new Option(new[] { "--debug", "-d" }, "Keep debugging info when building"),
             new Option<string>(new[] { "--path", "-p" }, () => null, "Folder to save the generated file"),
@@ -61,6 +68,9 @@ namespace Commander.Commands
             new Option<string>(new[] { "--webhost", "-wh" },() => null, "Path of the file to be Web-Hosted"),
             new Option<string>(new[] { "--webhostAgent", "-wa" },() => null, "Id ot hte Agent to Web-Host on"),
             new Option<string>(new[] { "--webhostListener", "-wl" },() => null, "Listener used to generate Web-Host script (if different fom listener)"),
+            new Option(new[] { "--inject", "-i" }, "Îf the payload should be an injector"),
+            new Option<int?>(new[] { "--injectDelay", "-id" },() => null, "Delay before injection (AV evasion)"),
+            new Option<string>(new[] { "--injectProcess", "-ip" },() => null, "Process path used for injection"),
             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
@@ -165,8 +175,13 @@ namespace Commander.Commands
                             IsDebug = context.Options.debug,
                             IsVerbose = context.Options.verbose,
                             ServerKey = serverKey,
-                            Type = payType
+                            Type = payType,
+                            IsInjected = context.Options.inject
                         };
+                        if (context.Options.injectDelay.HasValue)
+                            opt.InjectionDelay = context.Options.injectDelay.Value;
+                        if (!string.IsNullOrEmpty(context.Options.injectProcess))
+                            opt.InjectionProcess = context.Options.injectProcess;
 
                         this.GeneratePayload(context, opt);
                     }
@@ -182,7 +197,6 @@ namespace Commander.Commands
                 case "svc": t = PayloadType.Service; break;
                 case "ps": t = PayloadType.PowerShell; break;
                 case "bin": t = PayloadType.Binary; break;
-                case "inj": t = PayloadType.Injector; break;
                 default: break;
             }
 
@@ -193,8 +207,14 @@ namespace Commander.Commands
                 IsDebug = context.Options.debug,
                 IsVerbose = context.Options.verbose,
                 ServerKey = serverKey,
-                Type = t
+                Type = t,
+                IsInjected = context.Options.inject
             };
+            if (context.Options.injectDelay.HasValue)
+                options.InjectionDelay = context.Options.injectDelay.Value;
+            if (!string.IsNullOrEmpty(context.Options.injectProcess))
+                options.InjectionProcess = context.Options.injectProcess;
+
 
             var ret = this.GeneratePayload(context, options);
             if(string.IsNullOrEmpty(ret))
@@ -291,7 +311,7 @@ namespace Commander.Commands
             if (options.Type == PayloadType.Service && (context.Options.type == "all" || !customFileName))
                 outFile += "_svc";
 
-            if (options.Type == PayloadType.Injector && (context.Options.type == "all" || !customFileName))
+            if (options.IsInjected && (context.Options.type == "all" || !customFileName))
                 outFile += "_inj";
 
             if (context.Options.type == "all")
@@ -301,7 +321,6 @@ namespace Commander.Commands
             {
                 case PayloadType.Executable:
                 case PayloadType.Service:
-                case PayloadType.Injector:
                     if (!Path.GetExtension(outFile).Equals(".exe", StringComparison.OrdinalIgnoreCase))
                         outFile += ".exe";
                     break;

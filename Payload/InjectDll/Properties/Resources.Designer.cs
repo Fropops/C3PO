@@ -61,6 +61,15 @@ namespace Inject.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 60.
+        /// </summary>
+        internal static string Delay {
+            get {
+                return ResourceManager.GetString("Delay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         internal static string Host {

@@ -63,7 +63,9 @@ namespace Commander.Executor
             string userName = e.Metadata.UserName;
             if (e.Metadata.Integrity == "High")
                 userName += "*";
-            Terminal.WriteInfo($"New Agent Checking in : {e.Metadata.Id.ToShortGuid()}");
+
+            var index = this.CommModule.GetAgents().OrderBy(a => a.FirstSeen).ToList().IndexOf(e);
+            Terminal.WriteInfo($"New Agent Checking in : {e.Metadata.Id.ToShortGuid()} ({index})");
             Terminal.Restore();
         }
 
@@ -229,6 +231,7 @@ namespace Commander.Executor
                 if (type.IsSubclassOf(typeof(ExecutorCommand)) && !type.IsAbstract)
                 {
                     var instance = Activator.CreateInstance(type) as ExecutorCommand;
+
                     if (!this._commands.ContainsKey(instance.AvaliableIn))
                     {
                         var list = new List<ExecutorCommand>() { instance };
@@ -263,7 +266,7 @@ namespace Commander.Executor
                 return null;
             }
 
-            var command = list.FirstOrDefault(c => c.Name == commandName);
+            var command = list.FirstOrDefault(c => c.Name == commandName || (c.Alternate != null && c.Alternate.Contains(commandName) ));
 
             if (command is null)
             {

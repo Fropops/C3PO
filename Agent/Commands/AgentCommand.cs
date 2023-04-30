@@ -13,6 +13,8 @@ namespace Agent.Commands
 {
     public class AgentCommandContext
     {
+        public AgentCommandContext ParentContext { get; set; }
+
         public Models.Agent Agent { get; set; }
         public IMessageService MessageService { get; set; }
 
@@ -50,20 +52,21 @@ namespace Agent.Commands
     public abstract class AgentCommand
     {
 
+        public AgentCommandContext Context { get; set; }
+
         protected bool SendMetadataWithResult = false;
         public virtual string Name { get; set; }
-
-        public bool IsSubCommand { get; set; } = false;
 
         public string Module => Assembly.GetExecutingAssembly().GetName().Name;
 
         public virtual void Execute(AgentTask task, AgentCommandContext context)
         {
+            this.Context = context;
             context.Result.Id = task.Id;
             try
             {
                 context.Result.Status = AgentResultStatus.Running;
-                if (!this.IsSubCommand) //sending will be handled in the composite command
+                if (context.ParentContext == null) //sending will be handled in the composite command
                     context.MessageService.SendResult(context.Result);
                 this.InnerExecute(task, context);
             }
@@ -81,7 +84,7 @@ namespace Agent.Commands
             {
                 context.Result.Info = string.Empty;
                 context.Result.Status = AgentResultStatus.Completed;
-                if (!this.IsSubCommand) //sending will be handled in the composite command
+                if (context.ParentContext == null) //sending will be handled in the composite command
                     context.MessageService.SendResult(context.Result, this.SendMetadataWithResult);
             }
 
@@ -91,9 +94,22 @@ namespace Agent.Commands
 
         public void Notify(AgentCommandContext context, string status)
         {
-            context.Result.Info = status;
-            if (!this.IsSubCommand) //sending will be handled in the composite command
-                context.MessageService.SendResult(context.Result);
+            if (context.ParentContext == null)
+                context.MessageService.SendResult(new AgentTaskResult()
+                {
+                    Id = context.Result.Id,
+                    Status = context.Result.Status,
+                    Info = status
+                });
+            else
+            {
+                context.ParentContext.MessageService.SendResult(new AgentTaskResult()
+                {
+                    Id = context.ParentContext.Result.Id,
+                    Status = context.ParentContext.Result.Status,
+                    Info = status
+                });
+            }
         }
 
 

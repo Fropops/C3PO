@@ -92,13 +92,13 @@ namespace Agent.Models
             }
         }
 
-        public Thread HandleTask(AgentTask task, AgentTaskResult res = null, bool subCmd = false)
+        public Thread HandleTask(AgentTask task, AgentTaskResult res = null, AgentCommandContext parent = null)
         {
             var tr = new TaskAndResult
             {
                 Task = task,
                 Result = res ?? new AgentTaskResult(),
-                SubCmd = subCmd
+                ParentCtxt = parent
             };
 
             if (ImpersonationHelper.HasCurrentImpersonation)
@@ -128,7 +128,7 @@ namespace Agent.Models
         {
             public AgentTask Task { get; set; }
             public AgentTaskResult Result { get; set; }
-            public bool SubCmd { get; set; }
+            public AgentCommandContext ParentCtxt { get; set; }
         }
 
         private void StartHandleTask(object taskandResult)
@@ -155,6 +155,7 @@ namespace Agent.Models
                 var clone = Activator.CreateInstance(command.GetType()) as AgentCommand;
                 var ctxt = new AgentCommandContext()
                 {
+                    ParentContext = tr.ParentCtxt,
                     Agent = this,
                     MessageService = _messageService,
                     FileService = _fileService,
@@ -162,7 +163,6 @@ namespace Agent.Models
                     commModule = this.Communicator,
                     Result = tr.Result,
                 };
-                clone.IsSubCommand = tr.SubCmd;
                 clone.Execute(tr.Task, ctxt);
             }
         }

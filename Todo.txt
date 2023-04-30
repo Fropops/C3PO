@@ -1,7 +1,7 @@
 + Clean session at close
-+ Improve Composite Command
-+ Improve Command Error, Notify, List result
-+ Fix migrate
-+ Order of agents (Add First Call)
++ Improve Command List result
 + Elevate : other ways
 + Get-system : Task schedule
++ Terminate without Environement.Exit
+
+

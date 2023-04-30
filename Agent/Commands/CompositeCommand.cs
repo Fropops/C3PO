@@ -28,16 +28,21 @@ namespace Agent.Commands
                     break;
 
                 //result += "[>] Executing " + task.Command + " " + task.Arguments + Environment.NewLine;
-                context.Result.Result = String.Empty;
-                var t = context.Agent.HandleTask(task, context.Result, true);
+                var tmpRes = new AgentTaskResult();
+
+                var t = context.Agent.HandleTask(task, tmpRes, context);
                 t.Join();
-                result += context.Result.Result;
+                result += tmpRes.Result;
                 if(!result.EndsWith(Environment.NewLine))
                     result += Environment.NewLine;
 
                 //command generate an error => stop executing
-                if(!string.IsNullOrEmpty(context.Result.Error))
+                if (!string.IsNullOrEmpty(tmpRes.Error))
+                {
+                    context.Error(tmpRes.Error);
                     break;
+                }
+                    
             }
 
 

@@ -17,6 +17,8 @@ namespace Commander.Commands
 
         public virtual string Category { get; protected set; } = "Others";
 
+        public virtual string[] Alternate { get; protected set; }
+
         public abstract ExecutorMode AvaliableIn { get; }
 
         public virtual void Execute(string parms)

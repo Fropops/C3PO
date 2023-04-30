@@ -70,6 +70,11 @@ namespace Commander.Commands.Composite
             this.RegisterTask(EndPointCommand.ECHO, message);
         }
 
+        protected void Step(string message)
+        {
+            this.RegisterTask(EndPointCommand.STEP, message);
+        }
+
         protected void Shell(string cmd)
         {
             this.RegisterTask(EndPointCommand.SHELL, cmd);

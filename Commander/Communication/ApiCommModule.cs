@@ -445,7 +445,7 @@ namespace Commander.Communication
 
         public Agent GetAgent(int index)
         {
-            var agents = GetAgents();
+            var agents = GetAgents().OrderBy(a => a.FirstSeen).ToList();
             if (index < 0)
                 return null;
             if (index > agents.Count() -1)

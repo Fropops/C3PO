@@ -27,6 +27,8 @@ namespace Commander.Commands.Agent
         public override string Name => "interact";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
+        public override string[] Alternate { get => new string[1] { "int" }; }
+
         public override RootCommand Command => new RootCommand(this.Description)
             {
                 new Argument<string>("id", "index or id of the agent"),

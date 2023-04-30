@@ -1,7 +1,6 @@
 + Clean session at close
-+ Fix SVC Injector
 + Improve Composite Command
-+ Improve Command Error, Notify
++ Improve Command Error, Notify, List result
 + Fix migrate
 + Order of agents (Add First Call)
 + Elevate : other ways

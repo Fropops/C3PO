@@ -13,6 +13,7 @@ namespace PatcherDll
     {
         public static void Start()
         {
+            //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} Running PatcherDll{Environment.NewLine}");
 #if DEBUG
             Console.WriteLine("Running PatcherDll.");
 #endif 

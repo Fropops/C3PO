@@ -19,6 +19,7 @@ namespace Inject
 #if DEBUG
             Console.WriteLine("Running Inject.");
 #endif
+            //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} RunningInjector{Environment.NewLine}");
 
             try
             {
@@ -32,8 +33,13 @@ namespace Inject
                 Console.WriteLine(app);
                 Console.WriteLine("version 2.3");
 
-                //File.AppendAllText(@"c:\users\olivier\log.txt",$"{DateTime.Now} RunningInjector{Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt",$"{DateTime.Now} RunningInjector{Environment.NewLine}");
 #endif
+
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} Creating Process !{Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} {app}{Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} version 2.3{Environment.NewLine}");
+
                 int delay = 60;
                 int.TryParse(Properties.Resources.Delay, out delay);
 
@@ -83,7 +89,7 @@ namespace Inject
 
                 //Thread.Sleep(90000);
 
-                //File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} Process Created{Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} Process Created{Environment.NewLine}");
 
                 const uint GENERIC_ALL = 0x10000000;
                 const uint PAGE_EXECUTE_READWRITE = 0x40;
@@ -109,8 +115,8 @@ namespace Inject
 
                 //string msg = $"{DateTime.Now} Self =  {self.ProcessName} {self.Handle} {Environment.NewLine}";
                 //var name = self.ProcessName; //NtMapViewOfSection will not work if i rmove this line. dunno why....
-                //File.AppendAllText(@"c:\users\olivier\log.txt", msg);
-                //File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} First map {maxSize},{hLocalSection}  {Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt", msg);
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} First map {maxSize},{hLocalSection}  {Environment.NewLine}");
 
                 status = Native.NtMapViewOfSection(
                     hLocalSection,
@@ -128,7 +134,7 @@ namespace Inject
 
                 var hRemoteBaseAddress = IntPtr.Zero;
 
-                //File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} Second map {Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} Second map {Environment.NewLine}");
 
                 status = Native.NtMapViewOfSection(
                     hLocalSection,
@@ -160,7 +166,7 @@ namespace Inject
 #if DEBUG
                 Console.WriteLine(e.ToString());
 #endif
-                File.AppendAllText(@"c:\users\olivier\log.txt", $"{DateTime.Now} : Error => {e.ToString()}{Environment.NewLine}");
+                //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} : Error => {e.ToString()}{Environment.NewLine}");
             }
             finally
             {

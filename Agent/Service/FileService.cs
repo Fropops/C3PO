@@ -13,7 +13,7 @@ namespace Agent.Service
         object _lockObjUpl = new object();
         object _lockObjDld = new object();
 
-        public static int ChunkSize = 100000;
+        public static int ChunkSize = 500000;
         private List<File> FilesToUpload { get; set; } = new List<File>();
 
         private List<File> FilesToDownload { get; set; } = new List<File>();

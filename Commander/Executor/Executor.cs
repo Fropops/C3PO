@@ -112,8 +112,6 @@ namespace Commander.Executor
             this.Terminal.Restore();
         }
 
-        int lastRunningCount = 0;
-
         private void CommModule_RunningTaskChanged(object sender, List<AgentTask> tasks)
         {
             //if(this.CurrentAgent == null)

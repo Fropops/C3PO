@@ -10,13 +10,6 @@ namespace Agent.Commands
 {
     public class CompositeCommand : AgentCommand
     {
-        //public List<AgentCommand> Commands { get; private set; } = new List<AgentCommand>();
-        //public List<AgentTask> CommandTasks { get; private set; } = new List<AgentTask>();
-
-        //public void RegisterTask(AgentTask t)
-        //{
-        //    this.CommandTasks.Add(t);
-        //}
         public override string Name => "composite";
 
         public override void InnerExecute(AgentTask taskAgent, AgentCommandContext context)
@@ -45,7 +38,6 @@ namespace Agent.Commands
                 //command generate an error => stop executing
                 if(!string.IsNullOrEmpty(context.Result.Error))
                     break;
-
             }
 
 

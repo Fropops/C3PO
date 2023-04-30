@@ -59,7 +59,7 @@ namespace Commander.Commands.Agent
 
             var listeners = context.CommModule.GetListeners();
             var index = 0;
-            foreach (var agent in result)
+            foreach (var agent in result.OrderBy(a => a.FirstSeen))
             {
                 var listenerName = listeners.FirstOrDefault(l => l.Id == agent.ListenerId)?.Name ?? string.Empty;
                 if (string.IsNullOrEmpty(context.Options.listenerName) || listenerName.ToLower().Equals(context.Options.listenerName.ToLower()))
@@ -69,12 +69,12 @@ namespace Commander.Commands.Agent
                         SurroundIfDeadOrSelf(agent, context, index.ToString()),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata.Id),
                         SurroundIfDeadOrSelf(agent, context, agent.IsActive == true ? "Yes" : "No"),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.UserName),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Hostname),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Integrity),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.ProcessName + " (" + agent.Metadata.ProcessId + ")"),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Architecture),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.EndPoint),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.UserName),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Hostname),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Integrity),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.ProcessName + " (" + agent.Metadata?.ProcessId + ")"),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Architecture),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.EndPoint),
                         SurroundIfDeadOrSelf(agent, context, Math.Round(agent.LastSeenDelta.TotalSeconds, 2) + "s")
                         //Version = agent.Metadata.Version,
                         //Listener = listenerName,
@@ -91,6 +91,9 @@ namespace Commander.Commands.Agent
 
         private IRenderable SurroundIfDeadOrSelf(Models.Agent agent, CommandContext ctxt, string value)
         {
+            if (string.IsNullOrEmpty(value))
+                return new Markup(string.Empty);
+
             if(ctxt.Executor.CurrentAgent != null && ctxt.Executor.CurrentAgent.Metadata.Id == agent.Metadata.Id)
                 return new Markup($"[cyan]{value}[/]");
 

@@ -40,7 +40,7 @@ namespace TeamServer.Services
     }
     public class FileService : IFileService
     {
-        public static int ChunkSize = 200000;
+        public static int ChunkSize = 500000;
         private readonly IConfiguration _configuration;
         public FileService(IConfiguration configuration)
         {

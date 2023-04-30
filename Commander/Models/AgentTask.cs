@@ -34,7 +34,7 @@ namespace Commander.Models
             get
             {
                 var full = this.Label ?? String.Empty;
-          
+
                 if (full.Length > 30)
                     return full.Substring(0, 30) + "...";
 
@@ -61,15 +61,24 @@ namespace Commander.Models
             var cmd = fullLabel ? this.DisplayCommand : this.Label;
             var status = result.Status;
 
-            terminal.WriteInfo($"Task {cmd} is {status}");
+            
             if (result.Status == AgentResultStatus.Running && !string.IsNullOrEmpty(result.Info))
+            {
                 terminal.WriteLine($"Task is {result.Status} : {result.Info}");
-            else
-            if (!string.IsNullOrEmpty(result.Result))
+                return;
+            }
+
+            terminal.WriteInfo($"Task {cmd} is {status}");
+
+            if (result.Status == AgentResultStatus.Completed)
             {
                 terminal.WriteInfo($"-------------------------------------------");
-                terminal.WriteLine(result.Result);
+                if (!string.IsNullOrEmpty(result.Result))
+                    terminal.WriteLine(result.Result);
+                if(!string.IsNullOrEmpty(result.Error))
+                    terminal.WriteError(result.Error);
             }
+            return;
         }
     }
 }

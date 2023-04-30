@@ -280,6 +280,7 @@ namespace Commander.Communication
                         SleepJitter = ar.Metadata.SleepJitter,
                     },
                     LastSeen = ar.LastSeen,
+                    FirstSeen = ar.FirstSeen,
                     ListenerId = ar.ListenerId,
                     Path = ar.Path
                 };
@@ -300,6 +301,7 @@ namespace Commander.Communication
                     current.LastSeen = agent.LastSeen;
                     current.Path = agent.Path;
                     current.ListenerId = agent.ListenerId;
+                    current.FirstSeen = agent.FirstSeen;
                     return current;
                 });
 
@@ -368,6 +370,8 @@ namespace Commander.Communication
                     Id = tr.Id,
                     Result = tr.Result,
                     Info = tr.Info,
+                    Error = tr.Error,
+                    Objects = tr.Objects,
                     Status = (AgentResultStatus)tr.Status,
                 };
 
@@ -386,6 +390,8 @@ namespace Commander.Communication
                     //Change detected :
                     var existing = this._results[res.Id];
                     if (res.Result != existing.Result
+                        || res.Error != existing.Error
+                        || res.Objects != existing.Objects
                         || res.Status  != existing.Status
                         || res.Info != existing.Info
                         || res.Files.Count != existing.Files.Count
@@ -400,6 +406,8 @@ namespace Commander.Communication
                 this._results.AddOrUpdate(tr.Id, res, (key, current) =>
                 {
                     current.Result = res.Result;
+                    current.Error = res.Error;
+                    current.Objects = res.Objects;
                     current.Info = res.Info;
                     current.Status = res.Status;
                     current.Files.Clear();

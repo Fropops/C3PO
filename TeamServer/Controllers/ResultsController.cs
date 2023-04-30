@@ -38,6 +38,8 @@ namespace TeamServer.Controllers
                         Id = r.Id,
                         Info = r.Info,
                         Result = r.Result,
+                        Error = r.Error,
+                        Objects = r.Objects,
                         Status = (int)r.Status
                     };
                     foreach(var file in r.Files)

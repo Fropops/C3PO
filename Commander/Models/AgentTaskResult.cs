@@ -15,6 +15,8 @@ namespace Commander.Models
     {
         public string Id { get; set; }
         public string Result { get; set; }
+        public string Objects { get; set; }
+        public string Error { get; set; }
         public string Info { get; set; }
         public AgentResultStatus Status { get; set; }
         public List<TaskFileResult> Files { get; set; } = new List<TaskFileResult>();

@@ -56,7 +56,7 @@ namespace Agent
                 serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2B664b65hAO7elTTM";
             }
 
-            connUrl = "https://192.168.174.128";
+            //connUrl = "https://192.168.174.128";
 
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);

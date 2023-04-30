@@ -12,6 +12,8 @@ namespace Commander.Models
 
         public DateTime LastSeen { get; set; }
 
+        public DateTime FirstSeen { get; set; }
+
         public bool? IsActive
         {
             get

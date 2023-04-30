@@ -152,6 +152,7 @@ namespace Agent.Models
             }
             else
             {
+                var clone = Activator.CreateInstance(command.GetType()) as AgentCommand;
                 var ctxt = new AgentCommandContext()
                 {
                     Agent = this,
@@ -161,8 +162,8 @@ namespace Agent.Models
                     commModule = this.Communicator,
                     Result = tr.Result,
                 };
-                command.IsSubCommand = tr.SubCmd;
-                command.Execute(tr.Task, ctxt);
+                clone.IsSubCommand = tr.SubCmd;
+                clone.Execute(tr.Task, ctxt);
             }
         }
     }

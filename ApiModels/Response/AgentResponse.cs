@@ -30,6 +30,8 @@ namespace ApiModels.Response
 
         public DateTime LastSeen { get; set; }
 
+        public DateTime FirstSeen { get; set; }
+
         public string ListenerId { get; set; }
         public List<string> Path { get; set; }
     }

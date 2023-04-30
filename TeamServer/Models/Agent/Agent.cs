@@ -19,6 +19,8 @@ namespace TeamServer.Models
 
         public DateTime LastSeen { get; protected set; }
 
+        public DateTime FirstSeen { get; protected set; }
+
         public string ListenerId { get; set; }
 
         private ConcurrentQueue<AgentTask> _pendingTasks = new();
@@ -105,6 +107,7 @@ namespace TeamServer.Models
             this.Metadata = new AgentMetadata();
             this.Metadata.Id = id;
             this.Id = id;
+            this.FirstSeen = DateTime.Now;
         }
 
         public void QueueDownload(List<AgentFileChunck> chunks)

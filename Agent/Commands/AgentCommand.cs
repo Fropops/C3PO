@@ -22,6 +22,29 @@ namespace Agent.Commands
         public IProxyService ProxyService { get; set; }
 
         public AgentTaskResult Result { get; set; }
+
+
+        public void AppendResult(string message, bool addEndLine = true)
+        {
+            if (string.IsNullOrEmpty(this.Result.Result))
+                Result.Result = message;
+            else
+                Result.Result += message;
+
+            if (addEndLine)
+                Result.Result += Environment.NewLine;
+        }
+
+        public void Error(string message, bool addEndLine = false)
+        {
+            if (string.IsNullOrEmpty(this.Result.Error))
+                Result.Error = message;
+            else
+                Result.Error += message;
+
+            if (addEndLine)
+                Result.Error += Environment.NewLine;
+        }
     }
 
     public abstract class AgentCommand
@@ -46,9 +69,13 @@ namespace Agent.Commands
             }
             catch (Exception e)
             {
-                context.Result.Result = "An unhandled error occured :" + Environment.NewLine;
-                context.Result.Result += e.ToString();
+                //context.Result.Result = "An unhandled error occured :" + Environment.NewLine;
+                //context.Result.Result += e.ToString();
+#if DEBUG
                 context.Result.Error = e.ToString();
+#else
+                context.Result.Error = e.Message;
+#endif
             }
             finally
             {

@@ -47,6 +47,11 @@ namespace Agent.Commands
             if (addEndLine)
                 Result.Error += Environment.NewLine;
         }
+
+        public void Objects<T>(T obj)
+        {
+            this.Result.Objects = Convert.ToBase64String(obj.Serialize());
+        }
     }
 
     public abstract class AgentCommand

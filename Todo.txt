@@ -1,5 +1,6 @@
 + Clean session at close
-+ Improve Command List result
++ Agent : Remove SharpSploit
++ Commander : ReArch Task Printing
 + Elevate : other ways
 + Get-system : Task schedule
 + Terminate without Environement.Exit

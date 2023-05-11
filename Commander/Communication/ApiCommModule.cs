@@ -211,9 +211,14 @@ namespace Commander.Communication
 
         private async Task<List<Change>> GetChanges(bool first)
         {
-            var response = await _client.GetStringAsync($"/Changes?history={first}");
+            var response = await _client.GetStringAsync($"/session/Changes?history={first}");
             var tasksResponse = JsonConvert.DeserializeObject<List<Change>>(response);
             return tasksResponse;
+        }
+
+        public async Task CloseSession()
+        {
+            var response = await _client.GetAsync($"/session/exit");
         }
 
         private async Task UpdateListener(string id)

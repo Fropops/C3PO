@@ -28,6 +28,7 @@ namespace TeamServer.Models
         private readonly IChangeTrackingService _changeTrackingService;
         private readonly IWebHostService _webHostService;
         private readonly ICryptoService _cryptoService;
+        private readonly IAuditService _auditService;
 
         public HttpListenerController(IAgentService agentService,
             IFileService fileService,
@@ -36,7 +37,8 @@ namespace TeamServer.Models
             ILoggerFactory loggerFactory,
             IChangeTrackingService changeTrackingService,
             IWebHostService webHostService,
-            ICryptoService cryptoService)
+            ICryptoService cryptoService,
+            IAuditService auditService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -46,6 +48,7 @@ namespace TeamServer.Models
             this._changeTrackingService = changeTrackingService;
             this._webHostService = webHostService;
             this._cryptoService = cryptoService;
+            this._auditService = auditService;
         }
 
 
@@ -228,6 +231,8 @@ namespace TeamServer.Models
                 var meta = new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString(), Label = "MetaData", RequestDate = DateTime.UtcNow };
                 agent.QueueTask(meta);
                 this._changeTrackingService.TrackChange(ChangingElement.Task, meta.Id);
+
+                this._auditService.Record(AuditType.Info, AuditCategory.Agent, agentId, string.Empty, $"Agent Checking In");
             }
 
             agent.CheckIn();

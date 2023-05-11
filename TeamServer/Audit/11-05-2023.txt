@@ -1,0 +1,6 @@
+11/05/2023 11:28:29 | Info | Agent | 38a1670b68 |  | Agent Checking In
+11/05/2023 11:28:31 | Info | Agent | 4ddc7b13e9 |  | Agent Checking In
+11/05/2023 11:28:39 | Info | User | Fropops-ad80f68c-6ea7-47f0-8afb-22ea6c741d12 |  | Connexion to TeamServer
+11/05/2023 11:28:40 | Info | User | Fropops-ad80f68c-6ea7-47f0-8afb-22ea6c741d12 |  | Connexion to TeamServer
+11/05/2023 11:29:01 | Info | User | Fropops-ad80f68c-6ea7-47f0-8afb-22ea6c741d12 | 4ddc7b13e9 | Command tasked to agent : shell hostname
+11/05/2023 11:29:08 | Info | User | Fropops-ad80f68c-6ea7-47f0-8afb-22ea6c741d12 | 38a1670b68 | Command tasked to agent : shell whoami

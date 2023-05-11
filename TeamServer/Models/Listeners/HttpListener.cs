@@ -93,6 +93,7 @@ namespace TeamServer.Models
             services.AddSingleton(this._changeTrackingService);
             services.AddSingleton(this._webHostService);
             services.AddSingleton(this._cryptoService);
+            services.AddSingleton(this._auditService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)

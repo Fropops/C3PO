@@ -7,7 +7,7 @@ public interface IChangeTrackingService
     List<Change> ConsumeChanges(string session);
     void CleanSession(string session);
     void RecordSession(string session);
-
+    bool ContainsSession(string session);
     void TrackChange(ChangingElement element, string id);
 }
 
@@ -42,6 +42,11 @@ public class ChangeTrackingService : IChangeTrackingService
         if (!this.TrackedChanges.ContainsKey(session))
             return;
         this.TrackedChanges.Remove(session);
+    }
+
+    public bool ContainsSession(string session)
+    {
+        return this.TrackedChanges.ContainsKey(session);
     }
 
     public void RecordSession(string session)

@@ -19,17 +19,20 @@ namespace TeamServer.Controllers
     [Authorize]
     public class WebHostController : ControllerBase
     {
+        private UserContext UserContext => this.HttpContext.Items["User"] as UserContext;
+
         private readonly IFileService _fileService;
         private readonly IListenerService _listenerService;
         private readonly IAgentService _agentService;
         private readonly IWebHostService _webHostService;
-        public WebHostController(IFileService fileService, IListenerService listenerService, IAgentService agentService, IWebHostService webHostService)
+        private readonly IAuditService _auditService;
+        public WebHostController(IFileService fileService, IListenerService listenerService, IAgentService agentService, IWebHostService webHostService, IAuditService auditService)
         {
             _fileService = fileService;
             _listenerService = listenerService;
             _agentService = agentService;
             _webHostService = webHostService;
-
+            _auditService = auditService;
         }
 
         [HttpPost]
@@ -42,6 +45,7 @@ namespace TeamServer.Controllers
                 //Logger.Log($"WebHost push {wb.Path}");
 
                 this._webHostService.Add(wb.Path, wb);
+                this._auditService.Record(this.UserContext, $"Web hosting {wb.Path}/{wb.Description}");
                 return Ok();
             }
             catch (Exception ex)
@@ -93,6 +97,7 @@ namespace TeamServer.Controllers
             try
             {
                 this._webHostService.Remove(wb.Path);
+                this._auditService.Record(this.UserContext, $"Web hosted {wb.Path} removed.");
                 return Ok();
             }
             catch (Exception ex)
@@ -106,7 +111,7 @@ namespace TeamServer.Controllers
         {
             try
             {
-
+                this._auditService.Record(this.UserContext, $"Web host cleard.");
                 this._webHostService.Clear();
                 return Ok();
             }

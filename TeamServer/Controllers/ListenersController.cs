@@ -26,10 +26,12 @@ namespace TeamServer.Controllers
         private readonly IChangeTrackingService _changeTrackingService;
         private readonly IWebHostService _webHostService;
         private readonly ICryptoService _cryptoService;
+        private readonly IAuditService _auditService;
 
         public ListenersController(ILoggerFactory loggerFactory, IListenerService listenerService, IAgentService agentService, IFileService fileService, IBinMakerService binMakerService, IChangeTrackingService trackService,
             IWebHostService webHostService,
-            ICryptoService cryptoService)
+            ICryptoService cryptoService,
+            IAuditService auditService)
         {
             this._listenerService = listenerService;
             _agentService=agentService;
@@ -39,6 +41,7 @@ namespace TeamServer.Controllers
             _changeTrackingService = trackService;
             _webHostService = webHostService;
             _cryptoService = cryptoService;
+            _auditService = auditService;
         }
 
         [HttpGet]
@@ -63,7 +66,7 @@ namespace TeamServer.Controllers
         {
             var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
-            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger, _changeTrackingService, this._webHostService, this._cryptoService);
+            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger, _changeTrackingService, this._webHostService, this._cryptoService, this._auditService);
             listener.Start();
 
             _listenerService.AddListener(listener);

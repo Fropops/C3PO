@@ -15,17 +15,21 @@ namespace TeamServer.Controllers
     [Authorize]
     public class AgentsController : ControllerBase
     {
+        private UserContext UserContext => this.HttpContext.Items["User"] as UserContext;
+
         private readonly IAgentService _agentService;
         private readonly IFileService _fileService;
         private readonly ISocksService _socksService;
         private readonly IChangeTrackingService _changeService;
+        private readonly IAuditService _auditService;
 
-        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService)
+        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService, IAuditService auditService)
         {
             this._agentService = agentService;
             this._fileService = fileService;
             this._socksService = socksService;
             this._changeService = changeService;
+            this._auditService = auditService;
         }
 
         [HttpGet]
@@ -101,6 +105,9 @@ namespace TeamServer.Controllers
 
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
             var path = $"{root}/tasks/{task.Id}";
+
+            this._auditService.Record(this.UserContext, agentId, $"Command tasked to agent : {request.Label}");
+
             return Created(path, task);
         }
 

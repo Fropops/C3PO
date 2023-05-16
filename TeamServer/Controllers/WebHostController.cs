@@ -45,7 +45,7 @@ namespace TeamServer.Controllers
                 //Logger.Log($"WebHost push {wb.Path}");
 
                 this._webHostService.Add(wb.Path, wb);
-                this._auditService.Record(this.UserContext, $"Web hosting {wb.Path}/{wb.Description}");
+                this._auditService.Record(this.UserContext, $"Web hosting {wb.Path} - {wb.Description}");
                 return Ok();
             }
             catch (Exception ex)

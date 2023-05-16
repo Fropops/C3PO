@@ -58,18 +58,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Kernel32.cs" />
     <None Include="Program.save" />
     <None Include="Program2.save" />
-    <Compile Include="DInvoke.Process.cs" />
-    <Compile Include="DInvoke.Data.Native.cs" />
-    <Compile Include="DInvoke.Data.PE.cs" />
-    <Compile Include="DInvoke.Data.Win32.cs" />
-    <Compile Include="DInvoke.Generic.cs" />
-    <Compile Include="DInvoke.Native.cs" />
-    <Compile Include="DInvoke.Utilities.cs" />
     <None Include="Program - Simple.cs.save" />
     <None Include="Program - Dinvoke.cs.save" />
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Advapi.cs">
+      <Link>WinAPI\DInvoke.Advapi.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Data.Native.cs">
+      <Link>WinAPI\DInvoke.Data.Native.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Data.PE.cs">
+      <Link>WinAPI\DInvoke.Data.PE.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Data.Win32.cs">
+      <Link>WinAPI\DInvoke.Data.Win32.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Generic.cs">
+      <Link>WinAPI\DInvoke.Generic.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Kernel32.cs">
+      <Link>WinAPI\DInvoke.Kernel32.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Native.cs">
+      <Link>WinAPI\DInvoke.Native.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Utilities.cs">
+      <Link>WinAPI\DInvoke.Utilities.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\PInvoke\Advapi.cs">
+      <Link>WinAPI\Advapi.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\PInvoke\Kernel32.cs">
+      <Link>WinAPI\Kernel32.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tests\WinAPI\PInvoke\Native.cs">
+      <Link>WinAPI\Native.cs</Link>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

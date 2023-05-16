@@ -5,10 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Native
+namespace Pinvoke
 {
-
-
     public static class Kernel32
     {
         [DllImport("kernel32.dll")]
@@ -150,17 +148,25 @@ namespace Native
         {
             public int nLength;
             public IntPtr lpSecurityDescriptor;
+            public bool bInheritHandle;
         }
 
         [Flags]
         public enum CreationFlags : uint
         {
             CreateSuspended = 0x00000004,
-            DetachedProcesds = 0x00000008,
+            DetachedProcess = 0x00000008,
             CreateNoWindow = 0x08000000,
-            ExtendedStartupInfoPresent = 0x00080000,
-            UseStdHandles = 0x00000100
+            ExtendedStartupInfoPresent = 0x00080000
         }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct STARTUPINFOEX
+        {
+            public STARTUPINFO StartupInfo;
+            public IntPtr lpAttributeList;
+        }
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct STARTUPINFO
@@ -193,5 +199,64 @@ namespace Native
             public int dwProcessId;
             public int dwThreadId;
         }
+
+        [Flags]
+        public enum HANDLE_FLAGS : uint
+        {
+            None = 0,
+            INHERIT = 1,
+            PROTECT_FROM_CLOSE = 2
+        }
+
+
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool CreateProcessW(
+            string lpApplicationName, 
+            string lpCommandLine,
+            ref SECURITY_ATTRIBUTES lpProcessAttributes,
+            ref SECURITY_ATTRIBUTES lpThreadAttributes,
+            bool bInheritHandles,
+            uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory,
+            [In] ref STARTUPINFOEX lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation);
+
+
+        
+
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool UpdateProcThreadAttribute(
+          IntPtr lpAttributeList, uint dwFlags, IntPtr Attribute, IntPtr lpValue,
+          IntPtr cbSize, IntPtr lpPreviousValue, IntPtr lpReturnSize);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool InitializeProcThreadAttributeList(
+            IntPtr lpAttributeList, int dwAttributeCount, int dwFlags, ref IntPtr lpSize);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteProcThreadAttributeList(IntPtr lpAttributeList);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool ReadFile(IntPtr hFile, [Out] byte[] lpBuffer,
+      uint nNumberOfBytesToRead, out uint lpNumberOfBytesRead, IntPtr lpOverlapped);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CreatePipe(out IntPtr hReadPipe, out IntPtr hWritePipe,
+        ref SECURITY_ATTRIBUTES lpPipeAttributes, uint nSize);
+
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetHandleInformation(IntPtr hObject, HANDLE_FLAGS dwMask, HANDLE_FLAGS dwFlags);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern uint GetProcessId(IntPtr handle);
+
+
+        
+
     }
 }

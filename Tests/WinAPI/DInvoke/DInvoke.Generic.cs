@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace DInvoke.DynamicInvoke
+namespace DInvoke
 {
 
     /// <summary>

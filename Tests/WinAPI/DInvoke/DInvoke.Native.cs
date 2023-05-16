@@ -5,7 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace DInvoke.DynamicInvoke
+namespace DInvoke
 {
 
     /// <summary>
@@ -454,6 +454,34 @@ namespace DInvoke.DynamicInvoke
                 ref Data.Native.IO_STATUS_BLOCK ioStatusBlock,
                 Data.Win32.Kernel32.FileShareFlags shareAccess,
                 Data.Win32.Kernel32.FileOpenFlags openOptions);
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate UInt32 NtQueueApcThread(
+           IntPtr ThreadHandle,
+           IntPtr ApcRoutine,
+           IntPtr ApcArgument1,
+           IntPtr ApcArgument2,
+           IntPtr ApcArgument3);
+
+            [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+            public delegate UInt32 NtResumeThread(
+                IntPtr ThreadHandle,
+                ref UInt32 PreviousSuspendCount);
         }
+
+
+        public static uint NtQueueApcThread(IntPtr ThreadHandle, IntPtr ApcRoutine, IntPtr ApcArgument1, IntPtr ApcArgument2, IntPtr ApcArgument3)
+        {
+            object[] parameters = { ThreadHandle, ApcRoutine, ApcArgument1, ApcArgument2, ApcArgument3 };
+            return (uint)Generic.DynamicApiInvoke(@"ntdll.dll", @"NtQueueApcThread", typeof(Delegates.NtQueueApcThread), ref parameters);
+        }
+
+        public static uint NtResumeThread(IntPtr ThreadHandle)
+        {
+            var suspendCount = (uint)0;
+            object[] parameters = { ThreadHandle, suspendCount };
+            return (uint)Generic.DynamicApiInvoke(@"ntdll.dll", @"NtResumeThread", typeof(Delegates.NtResumeThread), ref parameters);
+        }
+
     }
 }

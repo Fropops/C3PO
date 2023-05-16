@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace DInvoke.DynamicInvoke
+namespace DInvoke
 {
 
     public static class Utilities

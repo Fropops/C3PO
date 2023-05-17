@@ -8,6 +8,18 @@ using System.Threading.Tasks;
 
 namespace Agent.Service
 {
+    public interface IFileService
+    {
+        bool IsDownloadComplete(string fileId);
+        int GetDownloadPercent(string fileId);
+
+        File ConsumeDownloadedFile(string fileId);
+        bool IsUploadComplete(string fileId);
+        int GetUploadPercent(string fileId);
+        void AddFileChunck(FileChunk chunk);
+        void AddFileToUpload(string id, string fileName, byte[] data);
+        FileChunk GetChunkToSend();
+    }
     public class FileService : IFileService
     {
         object _lockObjUpl = new object();

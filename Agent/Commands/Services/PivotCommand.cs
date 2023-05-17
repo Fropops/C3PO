@@ -39,7 +39,7 @@ namespace Agent.Commands
 
 
 
-            if (!this.Service.AddPivot(conn, context.commModule.ServerKey))
+            if (!this.Service.AddPivot(conn, context.ConfigService.ServerKey))
             {
                 context.Result.Result = $"Cannot start pivot {conn}!";
                 return;

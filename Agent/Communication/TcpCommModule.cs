@@ -19,7 +19,7 @@ namespace Agent.Communication
 {
     public class TcpCommModule : CommModule
     {
-        public TcpCommModule(ConnexionUrl conn, string serverKey, IMessageService messManager, IFileService fileService, IProxyService proxyService) : base(conn, serverKey, messManager, fileService, proxyService)
+        public TcpCommModule(ConnexionUrl conn) : base(conn)
         {
         }
 

@@ -25,15 +25,18 @@ namespace Agent.Communication
         public IMessageService MessageService { get; protected set; }
         public IFileService FileService { get; protected set; }
 
-        public CommModule(ConnexionUrl connection, string serverKey, IMessageService messageManager, IFileService fileService, IProxyService proxyService)
+        public IConfigService ConfigService { get; protected set; }
+
+        public CommModule(ConnexionUrl connection)
         {
             this.Connexion = connection;
-            this.MessageService = messageManager;
-            this.FileService = fileService;
-            this.ProxyService = proxyService;
+            this.ConfigService = ServiceProvider.GetService<IConfigService>();
+            this.MessageService = ServiceProvider.GetService<IMessageService>();
+            this.FileService = ServiceProvider.GetService<IFileService>();
+            this.ProxyService =ServiceProvider.GetService<IProxyService>();
+            
 
-            this.ServerKey = serverKey;
-            this.Encryptor = new Encryptor(serverKey);
+            this.Encryptor = new Encryptor(this.ConfigService.ServerKey);
         }
 
         protected int GetDelay()

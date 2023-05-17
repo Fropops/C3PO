@@ -18,6 +18,7 @@ namespace Agent.Models
     public class Agent
     {
         public CommModule Communicator { get; set; }
+        private IConfigService _configService;
         private IMessageService _messageService;
         private IFileService _fileService;
         private IProxyService _proxyService;
@@ -49,6 +50,7 @@ namespace Agent.Models
             this._messageService = ServiceProvider.GetService<IMessageService>();
             this._fileService = ServiceProvider.GetService<IFileService>();
             this._proxyService = ServiceProvider.GetService<IProxyService>();
+            this._configService = ServiceProvider.GetService<IConfigService>();
 
             LoadCommands();
         }
@@ -160,7 +162,7 @@ namespace Agent.Models
                     MessageService = _messageService,
                     FileService = _fileService,
                     ProxyService = _proxyService,
-                    commModule = this.Communicator,
+                    ConfigService = _configService,
                     Result = tr.Result,
                 };
                 clone.Execute(tr.Task, ctxt);

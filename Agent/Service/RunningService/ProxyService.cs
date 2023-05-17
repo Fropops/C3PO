@@ -12,6 +12,13 @@ using Agent.Helpers;
 
 namespace Agent.Service
 {
+    public interface IProxyService : IRunningService
+    {
+        void EnqueueResponse(SocksMessage mess);
+        List<SocksMessage> GetResponses();
+        void AddRequests(IEnumerable<SocksMessage> messages);
+        SocksMessage DequeueRequest();
+    }
     public class ProxyService : RunningService, IProxyService
     {
         protected ConcurrentQueue<SocksMessage> _InboudMessages = new ConcurrentQueue<SocksMessage>();

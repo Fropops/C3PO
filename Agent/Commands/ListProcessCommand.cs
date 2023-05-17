@@ -1,4 +1,5 @@
 ﻿using Agent.Models;
+using DInvoke;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -74,7 +75,7 @@ namespace Agent.Commands
             var hToken = IntPtr.Zero;
             try
             {
-                if (!Native.Advapi.OpenProcessToken(proc.Handle, Native.Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
+                if (!Advapi.OpenProcessToken(proc.Handle, Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
                     return "-";
 
                 var identity = new WindowsIdentity(hToken);
@@ -86,7 +87,7 @@ namespace Agent.Commands
             }
             finally
             {
-                Native.Kernel32.CloseHandle(hToken);
+                Kernel32.CloseHandle(hToken);
             }
         }
 
@@ -100,7 +101,7 @@ namespace Agent.Commands
                     return false;
 
 
-                if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                if (!Pinvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return false;
 
                 if (isWow64)
@@ -124,7 +125,7 @@ namespace Agent.Commands
                     return "x86";
 
 
-                if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                if (!Pinvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return "-";
 
                 if (isWow64)

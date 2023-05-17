@@ -10,6 +10,15 @@ using System.Threading.Tasks;
 
 namespace Agent.Service
 {
+    public interface IPivotService : IRunningService
+    {
+        List<PivotServer> Pivots { get; }
+
+        bool AddPivot(ConnexionUrl conn, string serverKey);
+        bool RemovePivot(ConnexionUrl conn);
+
+        bool HasPivots();
+    }
     public class PivotService : RunningService, IPivotService
     {
         ConcurrentDictionary<string, PivotServer> servers = new ConcurrentDictionary<string, PivotServer>();

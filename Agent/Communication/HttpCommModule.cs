@@ -16,7 +16,7 @@ namespace Agent.Communication
     public class HttpCommModule : CommModule
     {
         private HttpClient _client;
-        public HttpCommModule(ConnexionUrl conn, string serverKey, IMessageService messManager, IFileService fileService, IProxyService proxyService) : base(conn, serverKey, messManager, fileService, proxyService)
+        public HttpCommModule(ConnexionUrl conn) : base(conn)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;

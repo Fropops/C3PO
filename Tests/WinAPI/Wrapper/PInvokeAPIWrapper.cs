@@ -156,7 +156,12 @@ namespace WinAPI.Wrapper
             byte[] chBuf = new byte[buffSize];
             bool bSuccess = ReadFile(pipe, chBuf, (uint)buffSize, out var nbBytesRead, IntPtr.Zero);
             if (!bSuccess)
-                throw new InvalidOperationException($"Failed reading pipe : {Marshal.GetLastWin32Error()}");
+            {
+                int lastError = Marshal.GetLastWin32Error();
+                if (lastError == 109) //Broken Pipe
+                    return null;
+                throw new InvalidOperationException($"Failed reading pipe : {lastError}");
+            }
 
             byte[] ret = new byte[nbBytesRead];
             Array.Copy(chBuf, ret, nbBytesRead);

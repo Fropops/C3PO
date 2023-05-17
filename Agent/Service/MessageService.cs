@@ -9,6 +9,20 @@ using System.Threading.Tasks;
 
 namespace Agent.Service
 {
+    public interface IMessageService
+    {
+        AgentMetadata AgentMetaData { get; }
+        void EnqueueTask(MessageTask task);
+        void EnqueueTasks(IEnumerable<MessageTask> tasks);
+        void EnqueueResults(IEnumerable<MessageResult> results);
+        List<MessageTask> GetMessageTasksForAgent(string id);
+        List<MessageTask> GetMessageTasksToRelay(List<string> agentIds);
+        List<MessageResult> GetMessageResultsToRelay();
+
+
+        void SendResult(AgentTaskResult res, bool includeMetaData = false);
+    }
+
     public class MessageService : IMessageService
     {
         protected ConcurrentQueue<MessageTask> _taskMessages = new ConcurrentQueue<MessageTask>();

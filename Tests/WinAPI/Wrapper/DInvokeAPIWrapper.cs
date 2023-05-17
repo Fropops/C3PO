@@ -146,11 +146,16 @@ namespace WinAPI.Wrapper
         public override byte[] ReadFromPipe(IntPtr pipe, uint buffSize = 1024)
         {
             if (!Kernel32.ReadFile(pipe, out var buff, buffSize))
-                throw new InvalidOperationException($"Failed reading pipe : {Marshal.GetLastWin32Error()}");
+            {
+                int lastError = Marshal.GetLastWin32Error();
+                if (lastError == 109) //Broken Pipe
+                    return null;
+                throw new InvalidOperationException($"Failed reading pipe : {lastError}");
+            }
             return buff;
         }
 
-        public override void InjectCreateRemoteThread(IntPtr processHandle,IntPtr threadHandle, byte[] shellcode)
+        public override void InjectCreateRemoteThread(IntPtr processHandle, IntPtr threadHandle, byte[] shellcode)
         {
             var baseAddress = Kernel32.VirtualAllocEx(
                 processHandle,

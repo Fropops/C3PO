@@ -18,9 +18,9 @@ namespace Agent.Commands
         public Models.Agent Agent { get; set; }
         public IMessageService MessageService { get; set; }
 
-        public CommModule commModule { get; set; }
         public IFileService FileService { get; set; }
 
+        public IConfigService ConfigService { get; set; }
         public IProxyService ProxyService { get; set; }
 
         public AgentTaskResult Result { get; set; }

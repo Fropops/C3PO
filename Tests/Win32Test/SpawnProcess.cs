@@ -85,8 +85,6 @@ namespace Win32Test
             Console.WriteLine($"[?] ProcessHandle = {procResult.ProcessHandle}");
             Console.WriteLine($"[?] PipeHandle = {procResult.OutPipeHandle}");
 
-
-
             if (procResult.ProcessId != 0 && creationParms.RedirectOutput)
             {
                 Console.WriteLine("[+] Result :");

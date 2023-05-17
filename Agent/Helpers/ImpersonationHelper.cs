@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DInvoke;
 
 namespace Agent.Helpers
 {
@@ -32,9 +33,9 @@ namespace Agent.Helpers
         {
             if (!HasCurrentImpersonation)
                 return;
-                Native.Kernel32.CloseHandle(ImpersonatedToken);
+            Kernel32.CloseHandle(ImpersonatedToken);
             ImpersonatedToken = IntPtr.Zero;
-            
+
         }
     }
 }

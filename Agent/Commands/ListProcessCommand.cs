@@ -1,23 +1,34 @@
 ﻿using Agent.Models;
+using DInvoke;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
+
+    public class PSResult
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
+        public int ParentId { get; set; }
+        public int SessionId { get; set; }
+        public string ProcessPath { get; set; }
+        public string Owner { get; set; }
+        public string Arch { get; set; }
+    }
     public class ListProcessCommand : AgentCommand
     {
         public override string Name => "ps";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-
-
-            var list = new List<ListProcessResult>();
+            var list = new List<PSResult>();
             string filter = null;
             if (task.SplittedArgs.Length == 1)
             {
@@ -30,10 +41,11 @@ namespace Agent.Commands
 
             foreach (var process in processes)
             {
-                var res = new ListProcessResult()
+                var res = new PSResult()
                 {
                     Name = process.ProcessName,
                     Id = process.Id,
+                    ParentId = GetParentId(process.Id),
                     SessionId = process.SessionId,
                     ProcessPath = GetProcessPath(process),
                     Owner = GetProcessOwner(process),
@@ -43,9 +55,7 @@ namespace Agent.Commands
                 list.Add(res);
             }
 
-            var results = new SharpSploitResultList<ListProcessResult>();
-            results.AddRange(list.OrderBy(f => f.Name).ThenBy(f => f.Name));
-            result.Result = results.ToString();
+            context.Objects(list);
         }
 
         private string GetProcessPath(Process proc)
@@ -65,7 +75,7 @@ namespace Agent.Commands
             var hToken = IntPtr.Zero;
             try
             {
-                if (!Native.Advapi.OpenProcessToken(proc.Handle, Native.Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
+                if (!Advapi.OpenProcessToken(proc.Handle, Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
                     return "-";
 
                 var identity = new WindowsIdentity(hToken);
@@ -77,7 +87,7 @@ namespace Agent.Commands
             }
             finally
             {
-                Native.Kernel32.CloseHandle(hToken);
+                Kernel32.CloseHandle(hToken);
             }
         }
 
@@ -91,7 +101,7 @@ namespace Agent.Commands
                     return false;
 
 
-                if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                if (!Pinvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return false;
 
                 if (isWow64)
@@ -115,7 +125,7 @@ namespace Agent.Commands
                     return "x86";
 
 
-                if (!Native.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                if (!Pinvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return "-";
 
                 if (isWow64)
@@ -129,30 +139,25 @@ namespace Agent.Commands
             }
         }
 
-
-        public sealed class ListProcessResult : SharpSploitResult
+        private int GetParentId(int processId)
         {
-            public string Name { get; set; }
-
-            public int Id { get; set; }
-
-            public int SessionId { get; set; }
-
-            public string ProcessPath { get; set; }
-
-            public string Owner { get; set; }
-
-            public string Arch { get; set; }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
+            try
             {
-                new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
-                new SharpSploitResultProperty { Name = "PID", Value = Id },
-                new SharpSploitResultProperty { Name = nameof(SessionId), Value = SessionId },
-                new SharpSploitResultProperty { Name = nameof(ProcessPath), Value = ProcessPath },
-                new SharpSploitResultProperty { Name = nameof(Owner), Value = Owner },
-                new SharpSploitResultProperty { Name = nameof(Arch), Value = Arch },
-            };
+                var query = string.Format("SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {0}", processId);
+                var search = new ManagementObjectSearcher("root\\CIMV2", query);
+                var results = search.Get().GetEnumerator();
+                results.MoveNext();
+                var queryObj = results.Current;
+                var parentId = (uint)queryObj["ParentProcessId"];
+                return (int)parentId;
+            }
+            catch
+            {
+                return 0;
+            }
         }
+
+
+
     }
 }

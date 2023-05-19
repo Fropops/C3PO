@@ -1,5 +1,6 @@
 ﻿using ApiModels.Requests;
 using ApiModels.Response;
+using ApiModels.WebHost;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Helper;
 using TeamServer.Models;
 using TeamServer.Models.File;
 using TeamServer.Services;
@@ -14,18 +16,20 @@ namespace TeamServer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class FilesController : ControllerBase
     {
-        IFileService _fileService;
-        IListenerService _listenerService;
-        IAgentService _agentService;
-       
-        public FilesController(IFileService fileService, IListenerService listenerService, IAgentService agentService)
+        private readonly IFileService _fileService;
+        private readonly IListenerService _listenerService;
+        private readonly IAgentService _agentService;
+        private readonly IWebHostService _webHostService;
+        public FilesController(IFileService fileService, IListenerService listenerService, IAgentService agentService, IWebHostService webHostService)
         {
             _fileService = fileService;
             _listenerService = listenerService;
             _agentService = agentService;
-            
+            _webHostService = webHostService;
+
         }
 
 
@@ -38,13 +42,13 @@ namespace TeamServer.Controllers
                 return NotFound();
 
 
-            foreach(var agent in _agentService.GetAgents())
+            foreach (var agent in _agentService.GetAgents())
             {
-                foreach(var res in agent.GetTaskResults())
+                foreach (var res in agent.GetTaskResults())
                 {
-                    foreach(var file in res.Files)
+                    foreach (var file in res.Files)
                     {
-                        if(file.FileId == id)
+                        if (file.FileId == id)
                         {
                             file.IsDownloaded = true;
                             break;
@@ -114,26 +118,6 @@ namespace TeamServer.Controllers
                 //if(desc.IsUploaded)
                 //    Logger.Log($"File {desc.Name} uploaded with {desc.ChunkCount} chunks");
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return this.Problem(ex.ToString());
-            }
-        }
-
-        [HttpPost("WebHost")]
-        public IActionResult WebHost([FromBody] FileWebHost wb)
-        {
-            try
-            {
-                var listener = _listenerService.GetListeners().FirstOrDefault(l => l.Id == wb.ListenerId);
-                if (listener == null)
-                    return NotFound();
-
-                var outPath = this._fileService.GetListenerPath(listener.Name, wb.FileName);
-                System.IO.File.WriteAllBytes(outPath, wb.Data);
-                
                 return Ok();
             }
             catch (Exception ex)

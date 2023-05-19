@@ -1,14 +1,13 @@
-X Powershell
-X UAC bypass => not working automated => always trigger AV => to make manually
-X SharpChromium
-X Dropper
-X Download
-Encloser
-Scripts Command
++ Agent : Remove SharpSploit
++ Commander : ReArch Task Printing
+
++ Terminate without Environement.Exit
+
+Sleep
+
++ Elevate : other ways
++ Get-system : Task schedule
+
++ Improve Audit
 
 
-Commander :
-+ Config
-+ TS available
-+ Agent Available
-+ Input Multiline

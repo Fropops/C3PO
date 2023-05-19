@@ -16,9 +16,17 @@ namespace Commander.Commands.Agent
         protected override void InnerExecute(CommandContext context)
         {
             context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, context.CommandParameters).Wait();
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
         }
     }
+
+    public abstract class MetaEndPointCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Ask to refresh Metadata";
+        public override string Name => EndPointCommand.META;
+    }
+
+
 
     public class ShellCommand : SimpleEndPointCommand
     {
@@ -54,6 +62,30 @@ namespace Commander.Commands.Agent
     {
         public override string Description => "Display the content of a file";
         public override string Name => EndPointCommand.CAT;
+    }
+
+    public class SERVICECommand : SimpleEndPointCommand
+    {
+        public override string Description => "Display the services";
+        public override string Name => EndPointCommand.SERVICE;
+    }
+
+    public class StealTokenCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Steal the token of a process";
+        public override string Name => EndPointCommand.STEAL_TOKEN;
+    }
+
+    public class MakeTokenCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Make token for a specified user";
+        public override string Name => EndPointCommand.MAKE_TOKEN;
+    }
+
+    public class Rev2SelfCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Make token for a specified user";
+        public override string Name => EndPointCommand.REVERT_SELF;
     }
 
 }

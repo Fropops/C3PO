@@ -2,6 +2,7 @@
 using Commander.Executor;
 using Commander.Models;
 using Commander.Terminal;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -37,14 +38,13 @@ namespace Commander.Commands.Agent
 
         protected override async Task<bool> HandleCommand(CommandContext<ViewTasksCommandOptions> context)
         {
-            var results = new SharpSploitResultList<ViewTaskResult>();
 
 
             if (context.Options.index.HasValue)
             {
                 //Show Result of the Task
                 var task = context.CommModule.GetTasks(context.Executor.CurrentAgent.Metadata.Id).Skip(context.Options.index.Value).FirstOrDefault();
-                if(task == null)
+                if (task == null)
                 {
                     context.Terminal.WriteError($"No task at index {context.Options.index}");
                     return true;
@@ -57,14 +57,25 @@ namespace Commander.Commands.Agent
                 }
                 else
                 {
-                    task.Print(result, context.Terminal);
+                    task.Print(result, context.Terminal, true);
                 }
-                
-                
+
+
                 return true;
             }
             else
             {
+                var table = new Table();
+                table.Border(TableBorder.Rounded);
+                // Add some columns
+                table.AddColumn(new TableColumn("Index").Centered());
+                table.AddColumn(new TableColumn("Id").LeftAligned());
+                table.AddColumn(new TableColumn("Command").LeftAligned());
+                table.AddColumn(new TableColumn("Info").LeftAligned());
+                table.AddColumn(new TableColumn("Status").LeftAligned());
+                table.AddColumn(new TableColumn("Date").LeftAligned());
+
+
                 int take = context.Options.Top ?? 10;
                 var tasks = context.CommModule.GetTasks(context.Executor.CurrentAgent.Metadata.Id).Take(take);
 
@@ -79,46 +90,25 @@ namespace Commander.Commands.Agent
                 {
                     var result = context.CommModule.GetTaskResult(task.Id);
 
-                    results.Add(new ViewTaskResult()
-                    {
-                        Index = index,
-                        Id = task.Id,
-                        Command = task.Label,
+                    table.AddRow(
+                        index.ToString(),
+                        task.Id,
+                        task.DisplayCommand ?? string.Empty,
                         //Arguments = task.Arguments,
-                        Info = result == null ? string.Empty : result.Info ?? string.Empty,
-                        Status = result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
-                    }); ;
+                        result == null ? string.Empty : result.Info ?? string.Empty,
+                        result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
+                        task.RequestDate.ToLocalTime().ToString()
+                    );
                     index++;
                 }
 
-                context.Terminal.WriteLine(results.ToString());
+                table.Expand();
+                context.Terminal.Write(table);
 
                 return true;
             }
-           
+
         }
-
-        public sealed class ViewTaskResult : SharpSploitResult
-        {
-            public int Index { get; set; }
-            public string Id { get; set; }
-            public string Command { get; set; }
-            //public string Arguments { get; set; }
-            public string Status { get; set; }
-
-            public string Info { get; set; }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
-                //new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
-                new SharpSploitResultProperty { Name = nameof(Command), Value = Command },
-                //new SharpSploitResultProperty { Name = nameof(Arguments), Value = Arguments },
-                new SharpSploitResultProperty { Name = nameof(Status), Value = Status },
-                new SharpSploitResultProperty { Name = nameof(Info), Value = Info },
-            };
-        }
-
     }
 
 

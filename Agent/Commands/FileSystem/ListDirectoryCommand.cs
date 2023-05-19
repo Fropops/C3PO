@@ -3,19 +3,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
+    public class LSResult
+    {
+        public long Length { get; set; }
+        public string Name { get; set; }
+        public bool IsFile { get; set; }
+    }
+
     public class ListirectoryCommand : AgentCommand
     {
         public override string Name => "ls";
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            var results = new SharpSploitResultList<ListDirectoryResult>();
-
-            var list = new List<ListDirectoryResult>();
+            var list = new List<LSResult>();
             string path;
             if (task.SplittedArgs.Length == 0)
             {
@@ -30,7 +36,7 @@ namespace Agent.Commands
             foreach (var dir in directories)
             {
                 var dirInfo = new DirectoryInfo(dir);
-                list.Add(new ListDirectoryResult()
+                list.Add(new LSResult()
                 {
                     Name = dirInfo.Name,
                     Length = 0,
@@ -42,7 +48,7 @@ namespace Agent.Commands
             foreach(var file in files)
             {
                 var fileInfo = new FileInfo(file);
-                list.Add(new ListDirectoryResult()
+                list.Add(new LSResult()
                 {
                     Name = Path.GetFileName(fileInfo.FullName),
                     Length = fileInfo.Length,
@@ -50,31 +56,9 @@ namespace Agent.Commands
                 });
             }
 
-
-            results.AddRange(list.OrderBy(f => f.IsFile).ThenBy(f => f.Name));
-            result.Result = results.ToString();
+            context.AppendResult($"Listing of {path}");
+            context.Objects(list);
         }
 
-        public sealed class ListDirectoryResult : SharpSploitResult
-        {
-            public long Length { get; set; }
-            public string Name { get; set; }
-            public bool IsFile { get; set; }
-
-            public string Type
-            {
-                get
-                {
-                    return IsFile ? "File" : "Folder";
-                }
-            }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Type), Value = Type },
-                new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
-                new SharpSploitResultProperty { Name = nameof(Length), Value = Length },
-            };
-        }
     }
 }

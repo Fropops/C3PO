@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Commander.Commands
 {
-   
+
 
 
     public abstract class EnhancedCommand<T> : ExecutorCommand
@@ -41,8 +41,9 @@ namespace Commander.Commands
                 CommModule = comm,
                 CommandLabel = label,
                 CommandParameters = parms,
+                Config = comm.Config,
             };
-          
+
             InnerExecute(context);
         }
 
@@ -88,7 +89,9 @@ namespace Commander.Commands
                 CommModule = comm,
                 CommandLabel = this.currentLabel,
                 CommandParameters = this.currentParams,
-                Options = options
+                Options = options,
+                Config = comm.Config,
+
             };
 
 
@@ -109,6 +112,7 @@ namespace Commander.Commands
         }
 
         protected abstract Task<bool> HandleCommand(CommandContext<T> context);
+    
     }
 
     public class EmptyCommandOptions
@@ -118,6 +122,8 @@ namespace Commander.Commands
     public abstract class EnhancedCommand : EnhancedCommand<EmptyCommandOptions>
     {
     }
+
+    
 
 
 

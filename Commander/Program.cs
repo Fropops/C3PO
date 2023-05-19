@@ -1,6 +1,7 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 
@@ -12,9 +13,15 @@ namespace Commander
 
         static void Main(string[] args)
         {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appSettings.json")
+                .Build();
+
+            var c = new CommanderConfig(config);
+
             var terminal = new Terminal.Terminal();
             ServiceProvider.RegisterSingleton<ITerminal>(terminal);
-            var apiCommModule = new ApiCommModule(terminal, "192.168.56.102", 5000);
+            var apiCommModule = new ApiCommModule(terminal, c);
             ServiceProvider.RegisterSingleton<ICommModule>(apiCommModule);
             var exec = new Executor.Executor(terminal, apiCommModule);
             ServiceProvider.RegisterSingleton<IExecutor>(exec);

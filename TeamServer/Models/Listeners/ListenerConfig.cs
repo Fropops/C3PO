@@ -10,7 +10,6 @@ namespace TeamServer
         public string Name { get; set; }
         public string Address { get; set; }
         public int BindPort { get; set; }
-        public int PublicPort { get; set; }
         public bool Secured { get; set; }
     }
 }

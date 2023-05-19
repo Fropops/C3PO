@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TeamServer.Helper;
 using TeamServer.Models;
 using TeamServer.Services;
 
@@ -11,13 +12,24 @@ namespace TeamServer.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class AgentsController : ControllerBase
     {
-        private readonly IAgentService _agentService;
+        private UserContext UserContext => this.HttpContext.Items["User"] as UserContext;
 
-        public AgentsController(IAgentService agentService)
+        private readonly IAgentService _agentService;
+        private readonly IFileService _fileService;
+        private readonly ISocksService _socksService;
+        private readonly IChangeTrackingService _changeService;
+        private readonly IAuditService _auditService;
+
+        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService, IAuditService auditService)
         {
             this._agentService = agentService;
+            this._fileService = fileService;
+            this._socksService = socksService;
+            this._changeService = changeService;
+            this._auditService = auditService;
         }
 
         [HttpGet]
@@ -27,10 +39,10 @@ namespace TeamServer.Controllers
             return Ok(agents);
         }
 
-        [HttpGet("{name}")]
-        public IActionResult GetAgent(string name)
+        [HttpGet("{id}")]
+        public IActionResult GetAgent(string id)
         {
-            var agent = _agentService.GetAgent(name);
+            var agent = _agentService.GetAgent(id);
             if (agent == null)
                 return NotFound();
 
@@ -45,7 +57,7 @@ namespace TeamServer.Controllers
             if (agent is null)
                 return NotFound("Agent not found");
 
-            
+
             var results = agent.GetTaskResults();
 
             //if (from.HasValue)
@@ -87,10 +99,28 @@ namespace TeamServer.Controllers
             };
 
             agent.QueueTask(task);
+            this._changeService.TrackChange(ApiModels.Changes.ChangingElement.Task, request.Id);
+            if (!string.IsNullOrEmpty(request.FileId))
+                agent.QueueDownload(this._fileService.GetFileChunksForAgent(request.FileId));
 
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
             var path = $"{root}/tasks/{task.Id}";
+
+            this._auditService.Record(this.UserContext, agentId, $"Command tasked to agent : {request.Label}");
+
             return Created(path, task);
+        }
+
+        [HttpGet("{agentId}/File")]
+        public ActionResult RequestAgentDowload(string agentId, string fileId)
+        {
+            var agent = this._agentService.GetAgent(agentId);
+            if (agent is null)
+                return NotFound();
+
+            agent.QueueDownload(this._fileService.GetFileChunksForAgent(fileId));
+
+            return Ok();
         }
 
         [HttpGet("{agentId}/stop")]
@@ -101,6 +131,25 @@ namespace TeamServer.Controllers
                 return NotFound("Agent not found");
 
             this._agentService.RemoveAgent(agent);
+            this._changeService.TrackChange(ApiModels.Changes.ChangingElement.Agent, agentId);
+
+            return Ok();
+        }
+
+        [HttpGet("{agentId}/startproxy")]
+        public ActionResult StartProxy(string agentId, int port)
+        {
+            if (!this._socksService.StartProxy(agentId, port))
+                return this.Problem($"Cannot start proxy on port {port}!");
+
+            return Ok();
+        }
+
+        [HttpGet("{agentId}/stopproxy")]
+        public ActionResult StopProxy(string agentId)
+        {
+            if (!this._socksService.StopProxy(agentId))
+                return this.Problem($"Cannot stop proxy!");
 
             return Ok();
         }

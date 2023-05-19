@@ -12,11 +12,11 @@ namespace Agent.Commands
     {
         public override string Name => "wget";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (task.SplittedArgs.Count() <1)
             {
-                result.Result = $"Usage : {this.Name} Url <fileName>";
+                context.Result.Result = $"Usage : {this.Name} Url <fileName>";
                 return;
             }
 
@@ -29,7 +29,7 @@ namespace Agent.Commands
             }
             catch
             {
-                result.Result += "Url was not in correct format" + Environment.NewLine;
+                context.Result.Result += "Url was not in correct format" + Environment.NewLine;
                 throw;
             }
 
@@ -46,14 +46,14 @@ namespace Agent.Commands
            var response =  client.GetAsync(uri).Result;
             if (!response.IsSuccessStatusCode)
             {
-                result.Result += $"Error downloading {uri} : HTTP Code {response.StatusCode}" + Environment.NewLine;
+                context.Result.Result += $"Error downloading {uri} : HTTP Code {response.StatusCode}" + Environment.NewLine;
                 return;
             }
 
             byte[] content = response.Content.ReadAsByteArrayAsync().Result;
 
             File.WriteAllBytes(outFile, content);
-            result.Result += $"{uri} Successfully dowloaded to {outFile}" + Environment.NewLine;
+            context.Result.Result += $"{uri} Successfully dowloaded to {outFile}" + Environment.NewLine;
 
 
         }

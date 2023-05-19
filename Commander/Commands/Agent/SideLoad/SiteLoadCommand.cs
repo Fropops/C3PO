@@ -1,4 +1,4 @@
-﻿using ApiModels.Response;
+﻿/*using ApiModels.Response;
 using Commander.Commands;
 using Commander.Commands.Agent;
 using Commander.Communication;
@@ -108,7 +108,7 @@ namespace Commander.Commands.SideLoad
             string fileName = Path.GetFileName(dllFileName);
 
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "side-load", fileId, fileName);
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
             return true;
         }
 
@@ -121,4 +121,4 @@ namespace Commander.Commands.SideLoad
             return ret;
         }
     }
-}
+}*/

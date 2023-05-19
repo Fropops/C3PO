@@ -1,6 +1,7 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -32,8 +33,7 @@ namespace Commander.Commands.Listener
 
         protected override async Task<bool> HandleCommand(CommandContext<ListListenersCommandOptions> context)
         {
-            var results = new SharpSploitResultList<ListListenersResult>();
-
+            
             if (context.Options.verbose)
                 context.Terminal.WriteLine("Hello from verbose output!");
 
@@ -44,49 +44,41 @@ namespace Commander.Commands.Listener
                 return true;
             }
 
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Index").Centered());
+            table.AddColumn(new TableColumn("Name").LeftAligned());
+            table.AddColumn(new TableColumn("Port").LeftAligned());
+            table.AddColumn(new TableColumn("Host").LeftAligned());
+            table.AddColumn(new TableColumn("Id").LeftAligned());
+            table.AddColumn(new TableColumn("Secure").LeftAligned());
+
             var index = 0;
             foreach (var listener in result)
             {
-                results.Add(new ListListenersResult()
-                {
-                    Index = index,
-                    Name = listener.Name,
-                    BindPort = listener.BindPort,
-                    PublicPort = listener.PublicPort,
-                    Address = listener.Ip,
-                    Id = listener.Id,
-                    Secured = listener.Secured ? "Yes" : "No",
-                });
+                table.AddRow(
+                    index.ToString(),
+                    listener.Name,
+                    listener.BindPort.ToString(),
+                    listener.Ip ?? "*",
+                    listener.Id,
+                    listener.Secured ? "Yes" : "No"
+                );
 
                 index++;
             }
 
-            context.Terminal.WriteLine(results.ToString());
-
+            table.Expand();
+            context.Terminal.Write(table);
             return true;
         }
 
+    }
 
-        public sealed class ListListenersResult : SharpSploitResult
-        {
-            public int Index { get; set; }
-            public string Id { get; set; }
-            public string Name { get; set; }
-            public string Address { get; set; }
-            public int BindPort { get; set; }
-            public int PublicPort { get; set; }
-            public string Secured { get; set; }
-
-            protected internal override IList<SharpSploitResultProperty> ResultProperties => new List<SharpSploitResultProperty>()
-            {
-                new SharpSploitResultProperty { Name = nameof(Index), Value = Index },
-                //new SharpSploitResultProperty { Name = nameof(Id), Value = Id },
-                new SharpSploitResultProperty { Name = nameof(Name), Value = Name },
-                new SharpSploitResultProperty { Name = nameof(Address), Value = Address },
-                new SharpSploitResultProperty { Name = nameof(BindPort), Value = BindPort },
-                new SharpSploitResultProperty { Name = nameof(Secured), Value = Secured },
-                new SharpSploitResultProperty { Name = nameof(PublicPort), Value = PublicPort },
-            };
-        }
+    public class ListListenersEverywhereCommand : ListListenersCommand
+    {
+        public override ExecutorMode AvaliableIn => ExecutorMode.All;
+        public override string Name => "listeners";
     }
 }

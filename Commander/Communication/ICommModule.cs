@@ -1,4 +1,5 @@
 ﻿using ApiModels.Response;
+using ApiModels.WebHost;
 using Commander.Models;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,9 @@ namespace Commander.Communication
         void Stop();
         void UpdateConfig();
 
-        string ConnectAddress { get; set; }
-        int ConnectPort { get; set; }
+        ConnectionStatus ConnectionStatus { get; set; }
+
+        CommanderConfig Config { get; }
 
         List<Agent> GetAgents();
 
@@ -34,17 +36,30 @@ namespace Commander.Communication
         void AddTask(AgentTask task);
         AgentTask GetTask(string taskId);
         AgentTaskResult GetTaskResult(string taskId);
-        Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured, int publicPort);
+        Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured);
         Task<HttpResponseMessage> StopListener(string id, bool clean);
         IEnumerable<Listener> GetListeners();
         Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null);
         Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
 
+        Task TaskAgentToDownloadFile(string agentId, string fileId);
+
         Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
        
         Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
-        void WebHost(string listenerId, string fileName, byte[] fileContent);
+        Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description);
+        Task<List<WebHostLog>> GetWebHostLogs();
+        Task<List<FileWebHost>> GetWebHosts();
+
+        Task RemoveWebHost(string path);
+        Task ClearWebHosts();
+
+
+        Task<bool> StartProxy(string agentId, int port);
+        Task<bool> StopProxy(string agentId);
+
+        Task CloseSession();
 
     }
 }

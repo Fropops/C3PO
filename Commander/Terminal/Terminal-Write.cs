@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace Commander.Terminal
 {
@@ -19,9 +21,27 @@ namespace Commander.Terminal
     {
         private void InnerWriteLine(params string[] strs)
         {
+            //foreach (var str in strs)
+            //    Console.Write(str);
+            //Console.WriteLine();
             foreach (var str in strs)
                 Console.Write(str);
             Console.WriteLine();
+        }
+
+        public void Write(IRenderable item)
+        {
+            AnsiConsole.Write(item);
+        }
+
+        public void WriteMarkup(string markup)
+        {
+            AnsiConsole.Markup(markup);
+        }
+
+        public void WriteLineMarkup(string markup)
+        {
+            AnsiConsole.MarkupLine(markup);
         }
 
         public void WriteLine(TerminalMessageType typ, params string[] strs)
@@ -39,22 +59,22 @@ namespace Commander.Terminal
                     Console.ForegroundColor = TerminalConstants.InfoColor;
                     break;
                 default:
-                    Console.ForegroundColor = this.DefaultColor;
+                    Console.ForegroundColor = TerminalConstants.DefaultForeGroundColor;
                     break;
 
             }
             InnerWriteLine(strs);
-            Console.ForegroundColor = this.DefaultColor;
+            Console.ForegroundColor = TerminalConstants.DefaultForeGroundColor;
         }
 
 
-        public void WritePrompt()
-        {
-            Console.ForegroundColor = TerminalConstants.PromptColor;
-            Console.Write(this.Prompt);
-            Console.ForegroundColor = this.DefaultColor;
+        //public void WritePrompt()
+        //{
+        //    Console.ForegroundColor = TerminalConstants.PromptColor;
+        //    Console.Write(this.Prompt);
+        //    Console.ForegroundColor = this.DefaultColor;
 
-        }
+        //}
 
         public void WriteSuccess(params string[] parm)
         {
@@ -77,6 +97,12 @@ namespace Commander.Terminal
         public void Write(string text)
         {
             Console.Write(text);
+        }
+
+        public void Write(string text, int count)
+        {
+            for(int  i = 0; i < count; ++i)
+                Console.Write(text);
         }
 
         public void WriteLine(params string[] parm)

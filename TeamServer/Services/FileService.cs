@@ -11,9 +11,36 @@ using TeamServer.Models.File;
 
 namespace TeamServer.Services
 {
+    public interface IFileService
+    {
+
+        FileDescriptor GetFile(string id);
+
+        void AddFile(FileDescriptor desc);
+
+        void CleanDownloaded();
+
+
+        string GetFullPath(string fileName);
+        string GetAgentPath(string agentId, string fileName);
+
+        string GetAgentPath(string agentId);
+
+        public string GetListenerPath(string listenerName, string fileName);
+
+        public string GetListenerPath(string listenerName);
+
+        public string GetWebHostPath(string fileName);
+
+        void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results);
+
+        public List<AgentFileChunck> GetFileChunksForAgent(string id);
+
+        public void AddAgentFileChunk(AgentFileChunck chunk);
+    }
     public class FileService : IFileService
     {
-        public static int ChunkSize = 10000;
+        public static int ChunkSize = 500000;
         private readonly IConfiguration _configuration;
         public FileService(IConfiguration configuration)
         {
@@ -112,13 +139,63 @@ namespace TeamServer.Services
 
         public string GetListenerPath(string listenerName, string fileName)
         {
-            return this.GetFullPath(Path.Combine("Listener", listenerName.Replace(" ", "_"), fileName));
+            return this.GetFullPath(Path.Combine("WebHost", listenerName.Replace(" ", "_"), fileName));
         }
 
         public string GetListenerPath(string listenerName)
         {
-            return this.GetFullPath(Path.Combine("Listener", listenerName.Replace(" ", "_")));
+            return this.GetFullPath(Path.Combine("WebHost", listenerName.Replace(" ", "_")));
         }
+
+        public string GetWebHostPath(string fileName)
+        {
+            return this.GetFullPath(Path.Combine("WebHost", fileName));
+        }
+
+
+
+
+        #region Agent
+        public List<AgentFileChunck> GetFileChunksForAgent(string id)
+        {
+            var file = this.GetFile(id);
+
+            List<AgentFileChunck> chunks = new List<AgentFileChunck>();
+            foreach(var ch in file.Chunks)
+            {
+                var chk = new AgentFileChunck();
+                chk.Count = file.ChunkCount;
+                chk.FileId = file.Id;
+                chk.FileName = file.Name;
+                chk.Index = ch.Index;
+                chk.Data = ch.Data;
+                chunks.Add(chk);
+            }
+            return chunks;
+        }
+
+        public void AddAgentFileChunk(AgentFileChunck chunk)
+        {
+            var file = this.GetFile(chunk.FileId);
+            if(file == null)
+            {
+                file = new FileDescriptor()
+                {
+                    ChunkCount = chunk.Count,
+                    Id = chunk.FileId,
+                    Name = chunk.FileName
+                };
+                Cache.Add(chunk.FileId, file);
+            }
+
+            file.Chunks.Add(new FileChunk()
+            {
+                Data = chunk.Data,
+                FileId = chunk.FileId,
+                Index = chunk.Index,
+            });
+        }
+        #endregion
 
 
         public void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results)

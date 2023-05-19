@@ -18,6 +18,7 @@ namespace Commander.Commands.Listener
 
         protected override void InnerExecute(CommandContext context)
         {
+            context.CommModule.CloseSession().Wait();
             context.Executor.Stop();
         }
     }

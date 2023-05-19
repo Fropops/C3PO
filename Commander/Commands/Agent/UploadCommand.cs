@@ -35,7 +35,7 @@ namespace Commander.Commands.Agent
             var filename = Path.GetFileName(path);
             if (!File.Exists(path))
             {
-                context.Terminal.WriteError("File {file} does not exists!");
+                context.Terminal.WriteError($"File {filename} does not exists!");
                 return false;
             }
 
@@ -54,12 +54,7 @@ namespace Commander.Commands.Agent
 
             context.Terminal.WriteLine($"Preparing to upload the file...");
 
-            bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, filename, a =>
-            {
-                context.Terminal.ShowProgress("uploading",a, first);
-                first = false;
-            });
+            var fileId = await context.UploadAndDisplay(fileBytes, filename);
 
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, EndPointCommand.DOWNLOAD, fileId, filename);
            

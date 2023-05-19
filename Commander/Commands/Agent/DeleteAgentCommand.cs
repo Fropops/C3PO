@@ -44,20 +44,22 @@ namespace Commander.Commands.Agent
             }
             else
             {
-                agents.Add(context.CommModule.GetAgent(context.Options.id));
+                var agt = context.CommModule.GetAgent(context.Options.id);
+                if (agt != null)
+                    agents.Add(agt);
             }
 
             foreach (var agent in agents)
             {
                 var result = await context.CommModule.StopAgent(agent.Metadata.Id);
-                
+
                 if (!result.IsSuccessStatusCode)
                 {
                     context.Terminal.WriteError($"An error occured : {result.StatusCode}");
                     cmdRes = false;
                 }
                 else
-                    context.Terminal.WriteSuccess($"{agent.Metadata.ShortId} was deleted.");
+                    context.Terminal.WriteSuccess($"{agent.Metadata.Id} was deleted.");
             }
 
             return cmdRes;

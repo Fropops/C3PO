@@ -55,8 +55,6 @@ namespace Commander.Executor
             this.CommModule.AgentsUpdated +=CommModule_AgentsUpdated;
             this.CommModule.AgentAdded +=CommModule_AgentAdded;
             //end events
-
-            this.Terminal.NewLine(false);
         }
 
         private void CommModule_AgentAdded(object sender, Agent e)
@@ -65,7 +63,9 @@ namespace Commander.Executor
             string userName = e.Metadata.UserName;
             if (e.Metadata.Integrity == "High")
                 userName += "*";
-            Terminal.WriteInfo($"New Agent Checking in : {userName}/{e.Metadata.Hostname} ({e.Metadata.Id.ToShortGuid()})");
+
+            var index = this.CommModule.GetAgents().OrderBy(a => a.FirstSeen).ToList().IndexOf(e);
+            Terminal.WriteInfo($"New Agent Checking in : {e.Metadata.Id.ToShortGuid()} ({index})");
             Terminal.Restore();
         }
 
@@ -82,21 +82,22 @@ namespace Commander.Executor
             var task = this.CommModule.GetTask(res.Id);
             if (task == null)
             {
-                task =  new AgentTask()
+                return;
+                /*task =  new AgentTask()
                 {
                     Id = res.Id,
                     AgentId = this.CurrentAgent.Metadata.Id,
                     Label = "unknown task",
                     Command = "unknown",
                 };
-                this.CommModule.AddTask(task);
+                this.CommModule.AddTask(task);*/
             }
             if (this.CurrentAgent == null || task.AgentId != this.CurrentAgent.Metadata.Id)
                 return;
 
             this.Terminal.Interrupt();
             task.Print(res, this.Terminal);
-            foreach(var file in res.Files.Where(f => !f.IsDownloaded))
+            foreach (var file in res.Files.Where(f => !f.IsDownloaded))
             {
                 bool first = true;
                 var bytes = this.CommModule.Download(file.FileId, a =>
@@ -113,8 +114,6 @@ namespace Commander.Executor
             }
             this.Terminal.Restore();
         }
-
-        int lastRunningCount = 0;
 
         private void CommModule_RunningTaskChanged(object sender, List<AgentTask> tasks)
         {
@@ -181,13 +180,19 @@ namespace Commander.Executor
             {
                 case ConnectionStatus.Connected:
                     {
-                        status = $"Commander is now connected to {this.CommModule.ConnectAddress}:{this.CommModule.ConnectPort}.";
+                        status = $"Commander is now connected to {this.CommModule.Config.ApiConfig.EndPoint}.";
                         this.Terminal.WriteSuccess(status);
+                    }
+                    break;
+                case ConnectionStatus.Unauthorized:
+                    {
+                        status = $"Commander is not Authorized to connect to {this.CommModule.Config.ApiConfig.EndPoint}.";
+                        this.Terminal.WriteError(status);
                     }
                     break;
                 default:
                     {
-                        status = $"Commander cannot connect to {this.CommModule.ConnectAddress}:{this.CommModule.ConnectPort}.";
+                        status = $"Commander cannot connect to {this.CommModule.Config.ApiConfig.EndPoint}.";
                         this.Terminal.WriteError(status);
                     }
                     break;
@@ -227,6 +232,7 @@ namespace Commander.Executor
                 if (type.IsSubclassOf(typeof(ExecutorCommand)) && !type.IsAbstract)
                 {
                     var instance = Activator.CreateInstance(type) as ExecutorCommand;
+
                     if (!this._commands.ContainsKey(instance.AvaliableIn))
                     {
                         var list = new List<ExecutorCommand>() { instance };
@@ -242,6 +248,9 @@ namespace Commander.Executor
 
         public IEnumerable<ExecutorCommand> GetCommandsInMode(ExecutorMode mode)
         {
+            if (!this._commands.ContainsKey(mode))
+                return new List<ExecutorCommand>();
+
             return this._commands[mode];
         }
 
@@ -258,7 +267,7 @@ namespace Commander.Executor
                 return null;
             }
 
-            var command = list.FirstOrDefault(c => c.Name == commandName);
+            var command = list.FirstOrDefault(c => c.Name == commandName || (c.Alternate != null && c.Alternate.Contains(commandName) ));
 
             if (command is null)
             {
@@ -290,7 +299,7 @@ namespace Commander.Executor
         public void InputHandled(ExecutorCommand cmd, bool cmdResult)
         {
             this.Terminal.CanHandleInput = true;
-            this.Terminal.NewLine(false);
+            this.Terminal.NewLine();
         }
 
         public void Start()

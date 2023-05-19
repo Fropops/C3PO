@@ -11,6 +11,8 @@ namespace ApiModels.Response
         public string Id { get; set; }
         public string Result { get; set; }
         public string Info { get; set; }
+        public string Objects { get; set; }
+        public string Error { get; set; }
         public int Status { get; set; }
 
         public List<TaskFileResult> Files { get; set; } = new List<TaskFileResult>();

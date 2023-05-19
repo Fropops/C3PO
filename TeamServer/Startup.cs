@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TeamServer.Controllers;
+using TeamServer.MiddleWare;
 using TeamServer.Models;
 using TeamServer.Services;
+using TeamServer.Ext;
 
 namespace TeamServer
 {
@@ -44,19 +46,29 @@ namespace TeamServer
             services.AddSingleton<IAgentService, AgentService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
-
+            services.AddSingleton<ISocksService, SocksService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IJwtUtils, JwtUtils>();
+            services.AddSingleton<IChangeTrackingService, ChangeTrackingService>();
+            services.AddSingleton<IWebHostService, WebHostService>();
+            services.AddSingleton<ICryptoService, CryptoService>();
+            services.AddSingleton<IAuditService, AuditService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
+                
+
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
             }
-            
+
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseRouting();
 
@@ -69,7 +81,9 @@ namespace TeamServer
 
 
             //this.StartHttpHost(app);
+            this.PopulateUsers(app);
             this.StartDefaultListener(app);
+
         }
 
 
@@ -86,7 +100,7 @@ namespace TeamServer
                 {
                     host.UseUrls($"http://*:80");
                     host.Configure(ConfigureHttpHostApp);
-                    host.ConfigureServices(ConfigureHttpHostServices);                
+                    host.ConfigureServices(ConfigureHttpHostServices);
                 });
             var host = hostBuilder.Build();
             host.RunAsync();
@@ -105,10 +119,26 @@ namespace TeamServer
             app.UseRouting();
             app.UseEndpoints(e =>
             {
-                
+
                 e.MapControllerRoute("/", "/{id}", new { Controller = "HttpHost", Action = "Dload" });
                 e.MapControllerRoute("/", "/", new { Controller = "HttpHost", Action = "Index" });
             });
+        }
+
+        private void PopulateUsers(IApplicationBuilder app)
+        {
+            var config = app.ApplicationServices.GetService<IConfiguration>();
+            var users = app.ApplicationServices.GetService<IUserService>();
+
+            foreach (var cfgUser in config.GetSection("Users").GetChildren())
+            {
+                var user = new User();
+                user.Id = cfgUser.GetValue<string>("Id");
+                user.Key = cfgUser.GetValue<string>("Key");
+
+                users.AddUser(user);
+            }
+
         }
 
         private void StartDefaultListener(IApplicationBuilder app)
@@ -118,6 +148,10 @@ namespace TeamServer
             var fileService = app.ApplicationServices.GetService<IFileService>();
             var binMakerService = app.ApplicationServices.GetService<IBinMakerService>();
             var config = app.ApplicationServices.GetService<IConfiguration>();
+            var change = app.ApplicationServices.GetService<IChangeTrackingService>();
+            var webHost = app.ApplicationServices.GetService<IWebHostService>();
+            var crypto = app.ApplicationServices.GetService<ICryptoService>();
+            var audit = app.ApplicationServices.GetService<IAuditService>();
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
@@ -126,8 +160,8 @@ namespace TeamServer
             IEnumerable<ListenerConfig> listeners = JsonConvert.DeserializeObject<IEnumerable<ListenerConfig>>(defaultListenersConfig);
             foreach (var listenerConf in listeners)
             {
-                var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured, listenerConf.PublicPort);
-                listener.Init(agentService, fileService, binMakerService, listenerService, logger);
+                var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
+                listener.Init(agentService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit);
                 listener.Start();
                 listenerService.AddListener(listener);
             }

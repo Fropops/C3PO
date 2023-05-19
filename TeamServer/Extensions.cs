@@ -20,5 +20,18 @@ namespace TeamServer
             }
             return $"{req.Scheme}://{req.Host.Host}:{port}".ToLower();
         }
+
+        public static int GetPort(this HttpRequest req)
+        {
+            var port = req.Host.Port;
+            if (!port.HasValue)
+            {
+                if (req.Scheme == "https")
+                    return 443;
+                else
+                    return 80;
+            }
+            return port.Value;
+        }
     }
 }

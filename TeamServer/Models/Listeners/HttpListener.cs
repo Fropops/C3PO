@@ -19,9 +19,7 @@ namespace TeamServer.Models
 
         public override string Protocol => this.Secured ? "https" : "http";
 
-        public override string Uri => $"{this.Protocol}://{this.Ip}:{this.PublicPort}".ToLower();
-
-        public HttpListener(string name, int bindPort, string ip, bool secured = true, int? publicPort = null) : base(name, bindPort, ip, publicPort)
+        public HttpListener(string name, int bindPort, string ip, bool secured = true) : base(name, bindPort, ip)
         {
             Secured = secured;
         }
@@ -32,7 +30,7 @@ namespace TeamServer.Models
         {
             if(_logger != null)
             {
-                _logger.LogInformation($"Starting HTTP Listener {this.Name} : {this.Protocol}://{this.Ip}:{this.PublicPort} => {this.BindPort}");
+                _logger.LogInformation($"Starting HTTP Listener {this.Name} : {this.Protocol}://{this.Ip}:{this.BindPort}");
             }
 
             var port = this.BindPort;
@@ -51,29 +49,13 @@ namespace TeamServer.Models
                 shouldStart = true;
             }
 
-            if (_logger != null)
-            {
-                _logger.LogInformation($"Creating binairies");
-                var result = _binMakerService.GenerateBins(this);
-                if(_logger != null)
-                    _logger.LogInformation(result);
-                try
-                {
-                    _binMakerService.GenerateB64s(this);
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(ex.ToString());
-                }
-            }
-
             if (!shouldStart)
                 return;
 
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHostDefaults(host =>
                 {
-                    host.UseUrls($"https://*:{BindPort}");
+                    host.UseUrls($"http://*:{BindPort}");
                     host.Configure(ConfigureApp);
                     host.ConfigureServices(ConfigureServices);
 
@@ -91,36 +73,38 @@ namespace TeamServer.Models
                 });
             var host = hostBuilder.Build();
 
+
             _tokenSource = new CancellationTokenSource();
             host.RunAsync(_tokenSource.Token);
         }
 
-        private void ConfigureServices(IServiceCollection service)
+        private void ConfigureServices(IServiceCollection services)
         {
-            service.AddControllers(); //adds all controllers
+            services.AddControllers(); //adds all controllers
             //service.AddControllers(mvcOptions =>
             //{
             //    mvcOptions.Filters.Add<HttpListenerActionFilter>();
             //    mvcOptions.
             //});
-            service.AddSingleton(this._listenerService);
-            service.AddSingleton(this._agentService);
-            service.AddSingleton(this._fileService);
-            service.AddSingleton(this._binMakerService);
+            services.AddSingleton(this._listenerService);
+            services.AddSingleton(this._agentService);
+            services.AddSingleton(this._fileService);
+            services.AddSingleton(this._binMakerService);
+            services.AddSingleton(this._changeTrackingService);
+            services.AddSingleton(this._webHostService);
+            services.AddSingleton(this._cryptoService);
+            services.AddSingleton(this._auditService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)
         {
             app.UseRouting();
+
             app.UseEndpoints(e =>
             {
-                e.MapControllerRoute("/", "/{id}", new { Controller = "HttpListener", Action = "WebHost" });
-                e.MapControllerRoute("/", "/", new { Controller = "HttpListener", Action = "HandleImplant" });
-                e.MapControllerRoute("SetupDownload", "/SetupDownload/{id}", new { Controller = "HttpListener", Action = "SetupDownload" });
-                e.MapControllerRoute("DownloadChunk", "/DownloadChunk/{id}/{chunkIndex}/", new { Controller = "HttpListener", Action = "DownloadChunk" });
-                e.MapControllerRoute("SetupUpload", "/Upload/Setup", new { Controller = "HttpListener", Action = "SetupUpload" });
-                e.MapControllerRoute("UploadChunk", "/Upload/Chunk", new { Controller = "HttpListener", Action = "UploadChunk" });
-                //e.MapControllerRoute("ModuleInfo", "/ModuleInfo/", new { Controller = "HttpListener", Action = "ModuleInfo" });
+                //e.MapControllerRoute("ci", "/{*url}", new { Controller = "HttpListener", Action = "HandleImplant" });
+                //e.MapControllerRoute("wh", "/wh/{id}", new { Controller = "HttpListener", Action = "WebHost" });
+                e.MapControllerRoute("request", "/{*relativeUrl}", new { Controller = "HttpListener", Action = "HandleRequest" });
             });
         }
 

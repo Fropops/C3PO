@@ -12,20 +12,20 @@ namespace Agent.Commands
     {
         public override string Name => "upload";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
             if (task.SplittedArgs.Length == 0)
             {
-                result.Result = "Please specify the name of the file to upload!";
+                context.Result.Result = "Please specify the name of the file to upload!";
                 return;
             }
 
             var path = task.SplittedArgs[0];
             var filename = Path.GetFileName(path);
-           
-            if(!File.Exists(path))
+
+            if (!File.Exists(path))
             {
-                result.Result = $"File {path} not found.";
+                context.Result.Result = $"File {path} not found.";
                 return;
             }
 
@@ -41,14 +41,19 @@ namespace Agent.Commands
             else
                 filename = Path.GetFileName(filename);
 
-            string fileId = commm.Upload(fileBytes, filename, a =>
-            {
-                result.Info = $"Uploading {filename} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
+            var fileId = Guid.NewGuid().ToString();
+            context.FileService.AddFileToUpload(fileId, filename, fileBytes);
 
-            result.Result = $"File {path} uploaded to the server.";
-            result.Files.Add(new TaskFileResult() { FileId = fileId, FileName = filename });
+            this.CheckFileUploaded(fileId, filename, context);
+
+
+            context.Result.Files.Add(new TaskFileResult()
+            {
+                FileId = fileId,
+                FileName = filename,
+            });
+
+
         }
     }
 }

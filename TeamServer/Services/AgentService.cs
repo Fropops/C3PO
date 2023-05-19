@@ -6,6 +6,15 @@ using TeamServer.Models;
 
 namespace TeamServer.Services
 {
+
+    public interface IAgentService
+    {
+        void AddAgent(Agent agent);
+        IEnumerable<Agent> GetAgents();
+        Agent GetAgent(string id);
+        void RemoveAgent(Agent agent);
+        List<Agent> GetAgentToRelay(string id);
+    }
     public class AgentService : IAgentService
     {
         private readonly List<Agent> _agents = new();
@@ -18,6 +27,11 @@ namespace TeamServer.Services
         public Agent GetAgent(string id)
         {
             return GetAgents().FirstOrDefault(a => a.Metadata.Id.Equals(id));
+        }
+
+        public List<Agent> GetAgentToRelay(string id)
+        {
+            return GetAgents().Where(a => a.Id == id || a.RelayId == id).ToList();
         }
 
         public IEnumerable<Agent> GetAgents()

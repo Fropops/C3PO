@@ -1,18 +1,24 @@
-﻿using ApiModels.Requests;
-using ApiModels.Response;
-using Commander.Models;
-using Commander.Terminal;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ApiModels.Requests;
+using ApiModels.Response;
+using ApiModels.Changes;
+using Commander.Models;
+using Commander.Terminal;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Spectre.Console;
+using ApiModels;
+using ApiModels.WebHost;
 
 namespace Commander.Communication
 {
@@ -27,9 +33,6 @@ namespace Commander.Communication
 
         public event EventHandler<Agent> AgentAdded;
 
-        public string ConnectAddress { get; set; }
-        public int ConnectPort { get; set; }
-
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
@@ -42,12 +45,11 @@ namespace Commander.Communication
 
         private ITerminal Terminal;
 
-        public ApiCommModule(ITerminal terminal, string connectAddress, int connectPort)
+        public CommanderConfig Config { get; set; }
+        public ApiCommModule(ITerminal terminal, CommanderConfig config)
         {
             this.Terminal = terminal;
-
-            ConnectAddress=connectAddress;
-            ConnectPort=connectPort;
+            this.Config = config;
 
             this.UpdateConfig();
         }
@@ -56,22 +58,37 @@ namespace Commander.Communication
         {
             _client = new HttpClient();
             _client.Timeout = new TimeSpan(0, 0, 5);
-            _client.BaseAddress = new Uri($"http://{this.ConnectAddress}:{this.ConnectPort}");
+            _client.BaseAddress = new Uri($"http://{this.Config.ApiConfig.EndPoint}");
             _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ GenerateToken());
 
             this._agents.Clear();
             this._tasks.Clear();
             this._results.Clear();
             this._listeners.Clear();
 
-            this.ConnectionStatus = ConnectionStatus.Disconnected;
+            this.ConnectionStatus = ConnectionStatus.Unknown;
             this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
         }
 
-        public ConnectionStatus ConnectionStatus { get; set; }
+        private string GenerateToken()
+        {
+            // generate token that is valid for 7 days
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(this.Config.ApiConfig.ApiKey);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", Config.ApiConfig.User), new Claim("session", Config.Session) }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
 
-        bool firstLoad = true;
+        public ConnectionStatus ConnectionStatus { get; set; } = ConnectionStatus.Unknown;
 
+        bool isSyncing = true;
         public async Task Start()
         {
             _tokenSource = new CancellationTokenSource();
@@ -80,10 +97,7 @@ namespace Commander.Communication
             {
                 try
                 {
-                    await this.UpdateAgents();
-                    await this.UpdateListeners();
-                    await this.UpdateTasks();
-                    await this.UpdateResults();
+                    var changes = await this.GetChanges(this.isSyncing);
 
                     if (this.ConnectionStatus != ConnectionStatus.Connected)
                     {
@@ -91,15 +105,80 @@ namespace Commander.Communication
                         this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                     }
 
-                    firstLoad = false;
+                    if (isSyncing)
+                    {
+                        var serverConfig = await this.ServerConfig();
+                        this.Config.ServerConfig = serverConfig;
+                        
+
+                        this._listeners.Clear();
+                        this._agents.Clear();
+                        this._tasks.Clear();
+                        this._results.Clear();
+
+                        Terminal.Interrupt();
+                        Terminal.CanHandleInput = false;
+
+                        await AnsiConsole.Progress()
+                            .Columns(new ProgressColumn[]
+                            {
+                                new TaskDescriptionColumn(),    // Task description
+                                new ProgressBarColumn(),        // Progress bar
+                                new PercentageColumn(),         // Percentage
+                                new SpinnerColumn(Spinner.Known.Default).Style(Style.Parse("cyan")),            // Spinner
+                            })
+                        .StartAsync(async ctx =>
+                        {
+                            var task1 = ctx.AddTask($"[cyan]Syncing whith TeamServer ({changes.Count} items)[/]");
+
+                            task1.MaxValue = changes.Count;
+                            //// Simulate some work
+                            //AnsiConsole.MarkupLine("Doing some more work...");
+                            //Thread.Sleep(2000);
+                            foreach (var change in changes)
+                            {
+                                //await Task.Delay(10000);
+                                await this.HandleChange(change);
+                                task1.Increment(1);
+                            }
+                        });
+
+
+                        //Terminal.WriteInfo($"Syncing whith TeamServer ({changes.Count}) :");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Listener)} Listeners to load.");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Agent)} Agents to load.");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Task)} Tasks to load.");
+                        //Terminal.WriteInfo($"{changes.Count(c => c.Element == ChangingElement.Result)} Results to load.");
+
+                        Terminal.WriteSuccess($"Syncing done.");
+                        //Terminal.WriteInfo($"ServerKey is {this.Config.ServerConfig.Key}");
+                        Terminal.Restore();
+                        Terminal.CanHandleInput = true;
+                    }
+                    else
+                    {
+                        foreach (var change in changes)
+                            await this.HandleChange(change);
+                    }
+
+                    isSyncing = false;
                 }
                 catch (Exception e)
                 {
                     if ((e.InnerException != null && e.InnerException is TimeoutException) || e is HttpRequestException)
                     {
-                        if (this.ConnectionStatus != ConnectionStatus.Disconnected)
+                        var newStatus = ConnectionStatus.Disconnected;
+                        if (e is HttpRequestException)
                         {
-                            this.ConnectionStatus = ConnectionStatus.Disconnected;
+                            var htEx = e as HttpRequestException;
+                            if (htEx.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                                newStatus = ConnectionStatus.Unauthorized;
+                        }
+
+
+                        if (this.ConnectionStatus != newStatus)
+                        {
+                            this.ConnectionStatus = newStatus;
                             this.ConnectionStatusChanged?.Invoke(this, this.ConnectionStatus);
                         }
                     }
@@ -107,19 +186,155 @@ namespace Commander.Communication
                         this.Terminal.WriteError(e.ToString());
                 }
 
-                await Task.Delay(5000);
+                await Task.Delay(this.Config.ApiConfig.Delay);
             }
         }
 
-
-        private async Task UpdateTasks()
+        private async Task HandleChange(Change change)
         {
-            var response = await _client.GetStringAsync("/Tasks/");
-
-            var tasksResponse = JsonConvert.DeserializeObject<IEnumerable<AgentTaskResponse>>(response);
-
-            foreach (var tr in tasksResponse)
+            switch (change.Element)
             {
+                case ChangingElement.Listener:
+                    await this.UpdateListener(change.Id);
+                    break;
+                case ChangingElement.Agent:
+                    await this.UpdateAgent(change.Id);
+                    break;
+                case ChangingElement.Task:
+                    await this.UpdateTask(change.Id);
+                    break;
+                case ChangingElement.Result:
+                    await this.UpdateResult(change.Id);
+                    break;
+            }
+        }
+
+        private async Task<List<Change>> GetChanges(bool first)
+        {
+            var response = await _client.GetStringAsync($"/session/Changes?history={first}");
+            var tasksResponse = JsonConvert.DeserializeObject<List<Change>>(response);
+            return tasksResponse;
+        }
+
+        public async Task CloseSession()
+        {
+            var response = await _client.GetAsync($"/session/exit");
+        }
+
+        private async Task UpdateListener(string id)
+        {
+            try
+            {
+                var response = await _client.GetStringAsync($"/Listeners/{id}");
+                var lr = JsonConvert.DeserializeObject<ListenerResponse>(response);
+
+                var listener = new Listener()
+                {
+                    Name = lr.Name,
+                    Id = lr.Id,
+                    BindPort = lr.BindPort,
+                    Secured = lr.Secured,
+
+                    Ip = lr.Ip,
+                };
+
+                this._listeners.AddOrUpdate(lr.Id, listener, (key, current) =>
+                {
+                    current.Name = listener.Name;
+                    current.BindPort = listener.BindPort;
+                    current.Secured = listener.Secured;
+                    current.Ip = listener.Ip;
+                    return current;
+                });
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._listeners.ContainsKey(id))
+                        this._listeners.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
+        }
+
+        private async Task UpdateAgent(string id)
+        {
+            try
+            {
+                //Terminal.WriteInfo(_client.BaseAddress.ToString());
+                var response = await _client.GetStringAsync($"Agents/{id}");
+                var ar = JsonConvert.DeserializeObject<AgentResponse>(response);
+
+                //add or update new
+                var agent = new Agent()
+                {
+                    Metadata = new AgentMetadata()
+                    {
+                        Architecture = ar.Metadata.Architecture,
+                        Hostname = ar.Metadata.Hostname,
+                        Id = ar.Metadata.Id,
+                        Integrity = ar.Metadata.Integrity,
+                        ProcessId = ar.Metadata.ProcessId,
+                        ProcessName = ar.Metadata.ProcessName,
+                        UserName = ar.Metadata.UserName,
+                        EndPoint = ar.Metadata.EndPoint,
+                        Version = ar.Metadata.Version,
+                        SleepInterval = ar.Metadata.SleepInterval,
+                        SleepJitter = ar.Metadata.SleepJitter,
+                    },
+                    LastSeen = ar.LastSeen,
+                    FirstSeen = ar.FirstSeen,
+                    ListenerId = ar.ListenerId,
+                    Path = ar.Path
+                };
+
+                bool isNew = !this._agents.ContainsKey(agent.Metadata.Id);
+                this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
+                {
+                    current.Metadata.Architecture = agent.Metadata.Architecture;
+                    current.Metadata.Hostname = agent.Metadata.Hostname;
+                    current.Metadata.Integrity = agent.Metadata.Integrity;
+                    current.Metadata.ProcessId = agent.Metadata.ProcessId;
+                    current.Metadata.ProcessName = agent.Metadata.ProcessName;
+                    current.Metadata.UserName = agent.Metadata.UserName;
+                    current.Metadata.EndPoint = agent.Metadata.EndPoint;
+                    current.Metadata.Version = agent.Metadata.Version;
+                    current.Metadata.SleepInterval = agent.Metadata.SleepInterval;
+                    current.Metadata.SleepJitter = agent.Metadata.SleepJitter;
+                    current.LastSeen = agent.LastSeen;
+                    current.Path = agent.Path;
+                    current.ListenerId = agent.ListenerId;
+                    current.FirstSeen = agent.FirstSeen;
+                    return current;
+                });
+
+                this.AgentsUpdated?.Invoke(this, new EventArgs());
+                if (isNew && !this.isSyncing)
+                    this.AgentAdded?.Invoke(this, agent);
+
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._agents.ContainsKey(id))
+                        this._agents.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
+        }
+
+        private async Task UpdateTask(string id)
+        {
+            try
+            {
+                var response = await _client.GetStringAsync($"Tasks/{id}");
+
+                var tr = JsonConvert.DeserializeObject<AgentTaskResponse>(response);
+
                 var task = new AgentTask()
                 {
                     AgentId = tr.AgentId,
@@ -136,31 +351,43 @@ namespace Commander.Communication
                     return current;
                 });
             }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._tasks.ContainsKey(id))
+                        this._tasks.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
         }
 
-        private async Task UpdateResults()
+        private async Task UpdateResult(string id)
         {
-            var response = await _client.GetStringAsync("/Tasks/results");
-            var resultsResponse = JsonConvert.DeserializeObject<IEnumerable<AgentTaskResultResponse>>(response);
-
-            foreach (var tr in resultsResponse)
+            try
             {
+                var response = await _client.GetStringAsync($"Results/{id}");
+                var tr = JsonConvert.DeserializeObject<AgentTaskResultResponse>(response);
+
                 var res = new AgentTaskResult()
                 {
                     Id = tr.Id,
                     Result = tr.Result,
                     Info = tr.Info,
+                    Error = tr.Error,
+                    Objects = tr.Objects,
                     Status = (AgentResultStatus)tr.Status,
                 };
 
-                foreach(var file in tr.Files)
+                foreach (var file in tr.Files)
                     res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName, IsDownloaded = file.IsDownloaded });
 
                 //new respone or response change detected
 
                 if (!_results.ContainsKey(res.Id)) // new response
                 {
-                    if (res.Status == AgentResultStatus.Completed && !firstLoad)
+                    if (res.Status == AgentResultStatus.Completed && !this.isSyncing)
                         this.TaskResultUpdated?.Invoke(this, res);
                 }
                 else
@@ -168,13 +395,15 @@ namespace Commander.Communication
                     //Change detected :
                     var existing = this._results[res.Id];
                     if (res.Result != existing.Result
+                        || res.Error != existing.Error
+                        || res.Objects != existing.Objects
                         || res.Status  != existing.Status
                         || res.Info != existing.Info
                         || res.Files.Count != existing.Files.Count
-//                        || res.Files.Count(f => f.IsDownloaded) != existing.Files.Count(f => f.IsDownloaded)
+                        //                        || res.Files.Count(f => f.IsDownloaded) != existing.Files.Count(f => f.IsDownloaded)
                         )
                     {
-                        if (res.Status == AgentResultStatus.Completed && !firstLoad)
+                        if (res.Status == AgentResultStatus.Completed && !this.isSyncing)
                             this.TaskResultUpdated?.Invoke(this, res);
                     }
                 }
@@ -182,10 +411,12 @@ namespace Commander.Communication
                 this._results.AddOrUpdate(tr.Id, res, (key, current) =>
                 {
                     current.Result = res.Result;
+                    current.Error = res.Error;
+                    current.Objects = res.Objects;
                     current.Info = res.Info;
                     current.Status = res.Status;
                     current.Files.Clear();
-                    foreach(var file in res.Files)
+                    foreach (var file in res.Files)
                     {
                         current.Files.Add(file);
                     }
@@ -195,90 +426,16 @@ namespace Commander.Communication
                 var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || this._results[t.Id].Status != AgentResultStatus.Completed).ToList();
                 this.RunningTaskChanged?.Invoke(this, running);
             }
-        }
-
-
-
-
-
-        private async Task UpdateListeners()
-        {
-            var response = await _client.GetStringAsync("/Listeners/");
-            var listenerResponse = JsonConvert.DeserializeObject<IEnumerable<ListenerResponse>>(response);
-
-            this._listeners.Clear();
-            foreach (var lr in listenerResponse)
+            catch (HttpRequestException e)
             {
-                var listener = new Listener()
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    Name = lr.Name,
-                    Id = lr.Id,
-                    BindPort = lr.BindPort,
-                    PublicPort = lr.PublicPort,
-                    Secured = lr.Secured,
-                    
-                    Ip = lr.Ip,
-                };
-
-                this._listeners.AddOrUpdate(lr.Name, listener, (key, current) =>
-                {
-                    current.BindPort = listener.BindPort;
-                    current.PublicPort = listener.PublicPort;
-                    current.Secured = listener.Secured;
-                    current.Ip = listener.Ip;
-                    return current;
-                });
+                    if (this._results.ContainsKey(id))
+                        this._results.Remove(id, out _);
+                }
+                else
+                    throw e;
             }
-        }
-
-        private async Task UpdateAgents()
-        {
-            //Terminal.WriteInfo(_client.BaseAddress.ToString());
-            var response = await _client.GetStringAsync("Agents");
-            var agentResponse = JsonConvert.DeserializeObject<IEnumerable<AgentResponse>>(response);
-
-            var agentIds = agentResponse.Select(a => a.Metadata.Id);
-
-
-            var addedAgents = new List<Agent>();
-
-            //del agents
-            foreach (var toRemove in this._agents.Keys.Where(k => !agentIds.Contains(k)))
-                this._agents.Remove(toRemove, out _);
-
-            //add or update new
-            foreach (var ar in agentResponse)
-            {
-                var agent = new Agent()
-                {
-                    Metadata = new AgentMetadata()
-                    {
-                        Architecture = ar.Metadata.Architecture,
-                        Hostname = ar.Metadata.Hostname,
-                        Id = ar.Metadata.Id,
-                        Integrity = ar.Metadata.Integrity,
-                        ProcessId = ar.Metadata.ProcessId,
-                        ProcessName = ar.Metadata.ProcessName,
-                        UserName = ar.Metadata.UserName,
-                    },
-                    LastSeen = ar.LastSeen,
-                    ListenerId = ar.ListenerId,
-                };
-
-                if (!this._agents.ContainsKey(agent.Metadata.Id))
-                    addedAgents.Add(agent);
-
-                this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
-                {
-                    current.LastSeen = agent.LastSeen;
-                    current.ListenerId = ar.ListenerId;
-                    return current;
-                });
-            }
-
-            this.AgentsUpdated?.Invoke(this, new EventArgs());
-            foreach (var added in addedAgents)
-                this.AgentAdded?.Invoke(this, added);
         }
 
         public void Stop()
@@ -293,7 +450,7 @@ namespace Commander.Communication
 
         public Agent GetAgent(int index)
         {
-            var agents = GetAgents();
+            var agents = GetAgents().OrderBy(a => a.FirstSeen).ToList();
             if (index < 0)
                 return null;
             if (index > agents.Count() -1)
@@ -304,6 +461,8 @@ namespace Commander.Communication
 
         public Agent GetAgent(string id)
         {
+            if (!this._agents.ContainsKey(id))
+                return null;
             return this._agents[id];
         }
 
@@ -344,14 +503,13 @@ namespace Commander.Communication
 
 
 
-        public async Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured, int publicPort)
+        public async Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured)
         {
             var requestObj = new ApiModels.Requests.StartHttpListenerRequest();
             requestObj.Name = name;
             requestObj.BindPort  = port;
             requestObj.Ip = address;
             requestObj.Secured = secured;
-            requestObj.PublicPort = publicPort;
             var requestContent = JsonConvert.SerializeObject(requestObj);
 
             return await _client.PostAsync("/Listeners/", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
@@ -484,7 +642,7 @@ namespace Commander.Communication
             }
         }
 
-        public const int ChunkSize = 10000;
+        public const int ChunkSize = 500000;
 
         public async Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null)
         {
@@ -534,7 +692,7 @@ namespace Commander.Communication
             {
                 await PostFileChunk(chunk);
                 var newprogress = index * 100 / desc.ChunkCount;
-                if(progress != newprogress)
+                if (progress != newprogress)
                     OnCompletionChanged?.Invoke(progress);
                 index++;
                 progress = newprogress;
@@ -544,19 +702,116 @@ namespace Commander.Communication
             return desc.Id;
         }
 
-        public async void WebHost(string listenerId, string fileName, byte[] fileContent)
+        public async Task<ServerConfig> ServerConfig()
+        {
+            var response = await _client.GetAsync($"/Config");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var conf = JsonConvert.DeserializeObject<ServerConfig>(json);
+            return conf;
+        }
+
+        public async Task TaskAgentToDownloadFile(string agentId, string fileId)
+        {
+            var response = await _client.GetAsync($"/Agents/{agentId}/File?fileId={fileId}");
+
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+        }
+
+        #region Proxy
+        public async Task<bool> StartProxy(string agentId, int port)
+        {
+            var resp = await _client.GetAsync($"/Agents/{agentId}/startproxy?port={port}");
+            if (resp.IsSuccessStatusCode)
+                return true;
+            else
+            {
+                Terminal.WriteError(resp.StatusCode + " " + resp.ReasonPhrase);
+                return false;
+            }
+        }
+        public async Task<bool> StopProxy(string agentId)
+        {
+            var resp = await _client.GetAsync($"/Agents/{agentId}/stopproxy");
+            if (resp.IsSuccessStatusCode)
+                return true;
+            else
+            {
+                Terminal.WriteError(resp.StatusCode + " " + resp.ReasonPhrase);
+                return false;
+            }
+        }
+        #endregion
+
+        #region WebHost
+        public async Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description)
         {
             var wh = new FileWebHost()
             {
-                ListenerId = listenerId,
-                FileName = fileName,
+                Path = path,
                 Data = fileContent,
+                IsPowershell = isPowerShell,
+                Description = description
             };
             var requestContent = JsonConvert.SerializeObject(wh);
 
-            var response = await _client.PostAsync($"/Files/WebHost", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            var response = await _client.PostAsync($"/WebHost", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"{response}");
         }
+
+        public async Task<List<FileWebHost>> GetWebHosts()
+        {
+            var response = await _client.GetAsync($"/WebHost");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<FileWebHost>>(json);
+            return list;
+
+        }
+
+        public async Task<List<WebHostLog>> GetWebHostLogs()
+        {
+            var response = await _client.GetAsync($"/WebHost/Logs");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<WebHostLog>>(json);
+            return list;
+
+        }
+
+        public async Task RemoveWebHost(string path)
+        {
+            var wh = new FileWebHost()
+            {
+                Path = path,
+            };
+            var requestContent = JsonConvert.SerializeObject(wh);
+            var response = await _client.PostAsync($"/WebHost/Remove", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+        public async Task ClearWebHosts()
+        {
+            var response = await _client.GetAsync($"/WebHost/Clear");
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+        }
+
+
+        #endregion
     }
 }

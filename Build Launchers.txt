@@ -1,5 +1,5 @@
 
-//Stager don't work linux not sup^porting .net 4.5
+//Stager don't work linux not supporting .net 4.5
 dotnet publish --configuration Release --runtime win-x64 --output /Share/tmp/publish/Stager -p:PublishSingleFile=true --self-contained True -p:PublishTrimmed=True -p:DebugType=None -p:DebugSymbols=False "/p:DefineConstants=\"C2BUILD;PATCHAMSI\""
 
 

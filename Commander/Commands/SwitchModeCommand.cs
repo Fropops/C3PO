@@ -18,6 +18,7 @@ namespace Commander.Commands
         public abstract ExecutorMode TargetMode { get; }
         protected override void InnerExecute(CommandContext context)
         {
+            context.Executor.CurrentAgent = null;
             context.Executor.Mode = TargetMode;
             if (TargetMode  == ExecutorMode.None)
                 context.Terminal.Prompt = Terminal.Terminal.DefaultPrompt;
@@ -43,11 +44,11 @@ namespace Commander.Commands
 
     }
 
-    public class LauncherModeCommand : SwitchModeCommand
-    {
-        public override ExecutorMode AvaliableIn => ExecutorMode.All;
-        public override string Name => "launcher";
-        public override ExecutorMode TargetMode => ExecutorMode.Launcher;
+    //public class LauncherModeCommand : SwitchModeCommand
+    //{
+    //    public override ExecutorMode AvaliableIn => ExecutorMode.All;
+    //    public override string Name => "launcher";
+    //    public override ExecutorMode TargetMode => ExecutorMode.Launcher;
 
-    }
+    //}
 }

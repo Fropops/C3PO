@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -41,15 +42,183 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>temporary.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX86|AnyCPU'">
+    <OutputPath>bin\ReleaseX86\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX86|x86'">
+    <OutputPath>bin\x86\ReleaseX86\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX64|AnyCPU'">
+    <OutputPath>bin\ReleaseX64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX64|x86'">
+    <OutputPath>bin\x86\ReleaseX64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX86|x64'">
+    <OutputPath>bin\x64\ReleaseX86\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX64|x64'">
+    <OutputPath>bin\x64\ReleaseX64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ServiceX86|AnyCPU'">
+    <OutputPath>bin\Release-ServiceX86\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ServiceX86|x86'">
+    <OutputPath>bin\x86\Release-ServiceX86\</OutputPath>
+    <DefineConstants>TRACE;SERVICE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ServiceX86|x64'">
+    <OutputPath>bin\x64\Release-ServiceX86\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ServiceX64|AnyCPU'">
+    <OutputPath>bin\Release-ServiceX64\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ServiceX64|x86'">
+    <OutputPath>bin\x86\Release-ServiceX64\</OutputPath>
+    <DefineConstants>TRACE;SERVICE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-ServiceX64|x64'">
+    <OutputPath>bin\x64\Release-ServiceX64\</OutputPath>
+    <DefineConstants>TRACE;SERVICE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\System.Management.Automation.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -59,25 +228,82 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Advapi.cs">
+      <Link>WinAPI\DInvoke.Advapi.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Data.Native.cs">
+      <Link>WinAPI\DInvoke.Data.Native.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Data.PE.cs">
+      <Link>WinAPI\DInvoke.Data.PE.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Data.Win32.cs">
+      <Link>WinAPI\DInvoke.Data.Win32.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Generic.cs">
+      <Link>WinAPI\DInvoke.Generic.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Kernel32.cs">
+      <Link>WinAPI\DInvoke.Kernel32.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Native.cs">
+      <Link>WinAPI\DInvoke.Native.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\DInvoke\DInvoke.Utilities.cs">
+      <Link>WinAPI\DInvoke.Utilities.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\PInvoke\Advapi.cs">
+      <Link>WinAPI\Advapi.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\PInvoke\Kernel32.cs">
+      <Link>WinAPI\Kernel32.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\PInvoke\Native.cs">
+      <Link>WinAPI\Native.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\Wrapper\DInvokeAPIWrapper.cs">
+      <Link>WinAPI\DInvokeAPIWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\Wrapper\PInvokeAPIWrapper.cs">
+      <Link>WinAPI\PInvokeAPIWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Tests\WinAPI\Wrapper\WinAPIWrapper.cs">
+      <Link>WinAPI\WinAPIWrapper.cs</Link>
+    </Compile>
     <Compile Include="Commands\AgentCommand.cs" />
+    <Compile Include="Commands\CompositeCommand.cs" />
+    <Compile Include="Commands\StepCommand.cs" />
+    <Compile Include="Commands\EchoCommand.cs" />
+    <Compile Include="Commands\ElevateCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
     <Compile Include="Commands\Execution\PowershellRunner.cs" />
     <Compile Include="Commands\FileSystem\CatCommand.cs" />
+    <Compile Include="Commands\DelayCommand.cs" />
+    <Compile Include="Communication\Encryptor.cs" />
+    <Compile Include="Helpers\ImpersonationHelper.cs" />
+    <Compile Include="Commands\Services\WebHostCommand.cs" />
+    <Compile Include="Commands\Services\ProxyCommand.cs" />
+    <Compile Include="Commands\Services\PivotCommand.cs" />
+    <Compile Include="Commands\Services\ServiceCommand.cs" />
+    <Compile Include="Commands\Services\ServicesCommand.cs" />
+    <None Include="Commands\UnLinkCommand.cs.old" />
     <Compile Include="Commands\ReverseShellCommand.cs" />
     <Compile Include="Commands\CaptureCommand.cs" />
     <Compile Include="Commands\Execution\SideLoadModuleCommand.cs" />
     <Compile Include="Commands\Execution\SideLoadCommand.cs" />
     <Compile Include="Commands\FileSystem\MakeDirectoryCommand.cs" />
     <Compile Include="Commands\FileSystem\DeleteDirectoryCommand.cs" />
-    <Compile Include="Commands\Injection\MigrateCommand.cs" />
     <Compile Include="Commands\Injection\RemoteInjectCommand.cs" />
     <Compile Include="Commands\Injection\SelfInjectCommand.cs" />
     <Compile Include="Commands\Injection\SpawnInjectCommand.cs" />
     <Compile Include="Commands\Execution\StartCommand.cs" />
-    <Compile Include="Commands\KeyLoggerCommand.cs" />
+    <Compile Include="Commands\Services\KeyLoggerCommand.cs" />
     <Compile Include="Commands\ListProcessCommand.cs" />
     <Compile Include="Commands\Server\WGetCommand.cs" />
+    <Compile Include="Commands\MetaCommand.cs" />
+    <None Include="Commands\LinkCommand.cs.old" />
+    <Compile Include="Commands\Services\ServiceVerbs.cs" />
     <Compile Include="Commands\TerminateCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />
@@ -86,43 +312,75 @@
     <Compile Include="Commands\Token\StealTokenCommand.cs" />
     <Compile Include="Commands\Token\RevertToSelfCommand.cs" />
     <Compile Include="Commands\Token\MakeTokenCommand.cs" />
-    <Compile Include="Commands\VersionCommand.cs" />
-    <Compile Include="Internal\Executor.cs" />
-    <Compile Include="Internal\Extension.cs" />
+    <None Include="Commands\VersionCommand.cs.old" />
+    <Compile Include="Commands\SleepCommand.cs" />
+    <Compile Include="Communication\CommModule.cs" />
+    <Compile Include="Communication\ConnexionUrl.cs" />
+    <Compile Include="Communication\TcpCommModule.cs" />
+    <Compile Include="Helpers\HttpExtensions.cs" />
+    <Compile Include="Helpers\PipeExtensions.cs" />
+    <Compile Include="Helpers\TcpExtensions.cs" />
+    <None Include="Internal\Executor.cs.old" />
     <Compile Include="Commands\FileSystem\ListDirectoryCommand.cs" />
     <Compile Include="Commands\FileSystem\ChangeDirectoryCommand.cs" />
     <Compile Include="Commands\FileSystem\PrintWorkingDirectoryCommand.cs" />
     <Compile Include="Commands\Execution\RunCommand.cs" />
     <Compile Include="Commands\Execution\ShellCommand.cs" />
-    <Compile Include="Commands\SleepCommand.cs" />
+    <Compile Include="Commands\WaitCommand.cs" />
     <Compile Include="Commands\WhoamiCommand.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Internal\Injector.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
+    <None Include="Internal\Injector.cs.old" />
     <Compile Include="Models\Agent.cs" />
+    <None Include="Communication\Pipe\CryptoPipeServer.cs.old" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Communication\PipeCommModule.cs" />
+    <None Include="Communication\Pipe\PipeActions.cs.old" />
+    <None Include="Communication\Pipe\PipeClient.cs.old" />
+    <None Include="Communication\Pipe\PipeLink.cs.old" />
+    <None Include="Communication\Pipe\PipeServer.cs.old" />
+    <None Include="Communication\Pipe\CryptoPipeClient.cs.old" />
+    <None Include="Communication\Pipe\SimplePipeClient.cs.old" />
+    <Compile Include="Models\ResultData.cs" />
     <Compile Include="Models\AgentMetadata.cs" />
     <Compile Include="Models\AgentTask.cs" />
     <Compile Include="Models\AgentTaskResult.cs" />
-    <Compile Include="Models\CommModule.cs" />
-    <Compile Include="Models\FileChunk.cs" />
-    <Compile Include="Models\FileDescriptor.cs" />
-    <Compile Include="Models\HttpCommModule.cs" />
-    <Compile Include="Native\Advapi.cs" />
-    <Compile Include="Native\Kernel32.cs" />
+    <Compile Include="Communication\CommunicationFactory.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Service\ConfigService.cs" />
+    <Compile Include="Service\FileService.cs" />
+    <Compile Include="Service\Pivoting\PivotHttpServer.cs" />
+    <Compile Include="Service\Pivoting\PivotServer.cs" />
+    <Compile Include="Service\Pivoting\PivotPipeServer.cs" />
+    <Compile Include="Service\Pivoting\PivotTCPServer.cs" />
+    <Compile Include="Service\RunningService\ProxyService.cs" />
+    <Compile Include="Service\WebHostService.cs" />
+    <Compile Include="Service\RunningService\KeyLogService.cs" />
+    <Compile Include="Service\RunningService\PivotService.cs" />
+    <Compile Include="Service\MessageService.cs" />
+    <Compile Include="Service\FileChunk.cs" />
+    <Compile Include="Communication\HttpCommModule.cs" />
+    <None Include="Communication\Pipe\SimplePipeServer.cs.old" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\RunningService\RunningService.cs" />
+    <Compile Include="Service\ServiceProvider.cs" />
     <Compile Include="SharpSploitResult.cs" />
+    <Compile Include="ShortGuid.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
     <None Include="temporary.snk" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\dnMerge.0.5.15\build\dnMerge.targets" Condition="Exists('..\packages\dnMerge.0.5.15\build\dnMerge.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\dnMerge.0.5.15\build\dnMerge.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\dnMerge.0.5.15\build\dnMerge.targets'))" />
-  </Target>
 </Project>

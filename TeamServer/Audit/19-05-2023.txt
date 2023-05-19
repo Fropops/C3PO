@@ -1,0 +1,6 @@
+19/05/2023 11:28:48 | Info | User | Fropops-59d0133e-fa70-4f98-bbdc-e84ba31663bf |  | Connexion to TeamServer
+19/05/2023 11:28:49 | Info | User | Fropops-59d0133e-fa70-4f98-bbdc-e84ba31663bf |  | Connexion to TeamServer
+19/05/2023 11:29:38 | Info | User | Fropops-59d0133e-fa70-4f98-bbdc-e84ba31663bf |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+19/05/2023 11:30:17 | Info | Agent | 533c1eec64 |  | Agent Checking In
+19/05/2023 11:30:43 | Info | User | Fropops-59d0133e-fa70-4f98-bbdc-e84ba31663bf | 533c1eec64 | Command tasked to agent : shell dir
+19/05/2023 11:31:54 | Info | User | Fropops-59d0133e-fa70-4f98-bbdc-e84ba31663bf |  | Exit TeamServer

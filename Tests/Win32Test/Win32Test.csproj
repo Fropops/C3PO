@@ -58,16 +58,16 @@
     <None Include="Resources\Payload.bin" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WinAPI\WinAPI.csproj">
-      <Project>{3e9a8ad8-1436-45ef-a2fe-24706eac474a}</Project>
-      <Name>WinAPI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WinAPI\WinAPI.csproj">
+      <Project>{3e9a8ad8-1436-45ef-a2fe-24706eac474a}</Project>
+      <Name>WinAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

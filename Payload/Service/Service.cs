@@ -73,7 +73,8 @@ namespace Service
         private static void Execute(byte[] assemblyBytes)
         {
             var assembly = System.Reflection.Assembly.Load(assemblyBytes);
-            var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            var type = assembly.GetType("EntryPoint.Entry");
+            var method = type.GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method.Invoke(null, new object[] { });
         }
 

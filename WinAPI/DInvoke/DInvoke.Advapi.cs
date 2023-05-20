@@ -8,7 +8,7 @@ using static DInvoke.Kernel32;
 
 namespace DInvoke
 {
-    static class Advapi
+    public static class Advapi
     {
         public enum DesiredAccess : uint
         {

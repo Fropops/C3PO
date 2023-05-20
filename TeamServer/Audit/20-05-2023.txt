@@ -1,0 +1,18 @@
+20/05/2023 02:01:38 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:05:46 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:08:54 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:09:46 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:09:50 | Info | Agent | 20ab9b6dc5 |  | Agent Checking In
+20/05/2023 02:10:17 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:12:09 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:13:38 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:14:09 | Info | Agent | fc9702ca0e |  | Agent Checking In
+20/05/2023 02:14:20 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 | fc9702ca0e | Command tasked to agent : terminate
+20/05/2023 02:14:30 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:15:47 | Info | Agent | fb9ee8a049 |  | Agent Checking In
+20/05/2023 02:16:09 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 | fb9ee8a049 | Command tasked to agent : terminate
+20/05/2023 02:18:47 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+20/05/2023 02:20:03 | Info | Agent | acc0f5630b |  | Agent Checking In
+20/05/2023 02:27:50 | Info | User | Fropops-36b65004-af1f-4ee0-ab4d-4b236871f942 |  | Exit TeamServer
+20/05/2023 02:28:14 | Info | User | Fropops-f99b6ed6-dadb-4505-bf74-aaf939845b43 |  | Connexion to TeamServer
+20/05/2023 02:28:15 | Info | User | Fropops-f99b6ed6-dadb-4505-bf74-aaf939845b43 |  | Connexion to TeamServer

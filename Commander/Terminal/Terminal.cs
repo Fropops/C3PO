@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Spectre.Console;
 
 namespace Commander.Terminal
 {
@@ -26,6 +27,15 @@ namespace Commander.Terminal
         }
         public async Task Start()
         {
+            this.Write(new FigletText("C3PO")
+            .LeftJustified()
+            .Color(Color.Green));
+
+            this.WriteLineMarkup("[cyan]Csharp Command and Control for Pentesting Operations[/]");
+            this.WriteLineMarkup("[cyan]Csharp Command and Control by  Pottiez    Olivier[/]");
+
+            this.WriteLine();
+
             //this.WriteLine(Console.WindowWidth + "-" + Console.WindowHeight);
             this.NewLine(false);
             while (!_token.IsCancellationRequested)

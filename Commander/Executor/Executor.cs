@@ -180,19 +180,19 @@ namespace Commander.Executor
             {
                 case ConnectionStatus.Connected:
                     {
-                        status = $"Commander is now connected to {this.CommModule.Config.ApiConfig.EndPoint}.";
+                        status = $"Connected to  TeamServer ({this.CommModule.Config.ApiConfig.EndPoint}).";
                         this.Terminal.WriteSuccess(status);
                     }
                     break;
                 case ConnectionStatus.Unauthorized:
                     {
-                        status = $"Commander is not Authorized to connect to {this.CommModule.Config.ApiConfig.EndPoint}.";
+                        status = $"Not Authorized to connect to TeamServer ({this.CommModule.Config.ApiConfig.EndPoint}).";
                         this.Terminal.WriteError(status);
                     }
                     break;
                 default:
                     {
-                        status = $"Commander cannot connect to {this.CommModule.Config.ApiConfig.EndPoint}.";
+                        status = $"Cannot connect to TeamServer ({this.CommModule.Config.ApiConfig.EndPoint}).";
                         this.Terminal.WriteError(status);
                     }
                     break;

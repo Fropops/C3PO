@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Configurations>Debug;Release;ReleaseX86;ReleaseX64;Release-ServiceX86;Release-ServiceX64</Configurations>
+    <Configurations>Debug;ReleaseX64</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

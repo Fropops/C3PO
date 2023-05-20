@@ -242,6 +242,8 @@ public partial class PayloadGenerator
         //    payload.Append("\"");
         //    payload.Append(Environment.NewLine);
         //}
+        //File.WriteAllBytes("/mnt/Share/tmp/full.exe", agent);
+
         var payload = this.Encode(agent);
 
         var psFile = "tmp" + ShortGuid.NewGuid() + ".ps1";
@@ -277,6 +279,8 @@ public partial class PayloadGenerator
             { "EndPoint", options.Endpoint.ToString() },
             { "Key", options.ServerKey ?? String.Empty }
         });
+
+        //File.WriteAllBytes("/mnt/Share/tmp/justAgent.exe", agent);
 
 
         this.MessageSent?.Invoke(this, $"Encrypting Agent...");

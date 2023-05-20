@@ -5,10 +5,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-using WinAPI.Wrapper;
-using WinAPI;
-using static Pinvoke.Kernel32;
-using Pinvoke;
 using System.Threading;
 
 namespace Win32Test

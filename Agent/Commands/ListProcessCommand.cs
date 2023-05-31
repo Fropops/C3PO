@@ -1,5 +1,4 @@
 ﻿using Agent.Models;
-using DInvoke;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +8,8 @@ using System.Management;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI.Data.AdvApi;
+using WinAPI.DInvoke;
 
 namespace Agent.Commands
 {
@@ -75,7 +76,7 @@ namespace Agent.Commands
             var hToken = IntPtr.Zero;
             try
             {
-                if (!Advapi.OpenProcessToken(proc.Handle, Advapi.DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
+                if (!Advapi.OpenProcessToken(proc.Handle, DesiredAccess.TOKEN_ALL_ACCESS, out hToken))
                     return "-";
 
                 var identity = new WindowsIdentity(hToken);
@@ -101,7 +102,7 @@ namespace Agent.Commands
                     return false;
 
 
-                if (!Pinvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                if (!WinAPI.PInvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return false;
 
                 if (isWow64)
@@ -125,7 +126,7 @@ namespace Agent.Commands
                     return "x86";
 
 
-                if (!Pinvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
+                if (!WinAPI.PInvoke.Kernel32.IsWow64Process(proc.Handle, out var isWow64))
                     return "-";
 
                 if (isWow64)

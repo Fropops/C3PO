@@ -43,6 +43,7 @@ namespace Commander.Commands.Agent
     public class PowerShellCommand : SimpleEndPointCommand
     {
         public override string Description => "Send a command to be executed by the agent shell";
+        public override string[] Alternate { get => new string[1] { "powerpick" }; }
         public override string Name => EndPointCommand.POWERSHELL;
     }
 

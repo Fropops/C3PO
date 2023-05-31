@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI;
 using WinAPI.Wrapper;
 
 namespace Agent.Commands
@@ -19,8 +20,6 @@ namespace Agent.Commands
             //cmd.exe /c <command>
             var cmd = $@"c:\windows\system32\cmd.exe /c {task.Arguments}";
 
-            var winAPI = WinAPIWrapper.CreateInstance();
-
             var creationParms = new ProcessCreationParameters()
             {
                 Command = cmd,
@@ -32,7 +31,7 @@ namespace Agent.Commands
             if (ImpersonationHelper.HasCurrentImpersonation)
                 creationParms.Token = ImpersonationHelper.ImpersonatedToken;
 
-            var procResult = winAPI.CreateProcess(creationParms);
+            var procResult = APIWrapper.CreateProcess(creationParms);
 
             if (procResult.ProcessId == 0)
             {
@@ -41,9 +40,7 @@ namespace Agent.Commands
             }
 
             if (creationParms.RedirectOutput)
-                winAPI.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
-
-           
+                APIWrapper.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
         }
     }
 }

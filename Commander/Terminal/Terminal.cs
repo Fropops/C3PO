@@ -31,8 +31,8 @@ namespace Commander.Terminal
             .LeftJustified()
             .Color(Color.Green));
 
-            this.WriteLineMarkup("[cyan]Csharp Command and Control for Pentesting Operations[/]");
-            this.WriteLineMarkup("[cyan]Csharp Command and Control by  Pottiez    Olivier[/]");
+            this.WriteLineMarkup("[green]C[/][cyan]sharp [/][green]C[/][cyan]ommand and [/][green]C[/][cyan]ontrol for [/][green]P[/][cyan]entesting [/][green]O[/][cyan]perations[/]");
+            this.WriteLineMarkup("[green]C[/][cyan]sharp [/][green]C[/][cyan]ommand and [/][green]C[/][cyan]ontrol by  [/][green]P[/][cyan]ottiez    [/][green]O[/][cyan]livier[/]");
 
             this.WriteLine();
 

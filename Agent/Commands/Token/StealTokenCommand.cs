@@ -12,6 +12,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WinAPI;
 using WinAPI.Wrapper;
 
 namespace Commands
@@ -27,8 +28,7 @@ namespace Commands
                 return;
             }
 
-            var wrapper = WinAPIWrapper.CreateInstance();
-            var hToken = wrapper.StealToken(pid);
+            var hToken = APIWrapper.StealToken(pid);
 
             ImpersonationHelper.Impersonate(hToken);
             var identity = new WindowsIdentity(hToken);

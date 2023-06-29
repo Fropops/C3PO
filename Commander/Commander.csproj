@@ -18,7 +18,6 @@
     <Compile Remove="Commands\Agent\DeleteAgentCommand.cs" />
     <Compile Remove="Commands\Agent\DownloadCommand.cs" />
     <Compile Remove="Commands\Agent\EndPoint\EndPointCommand-Simple.cs" />
-    <Compile Remove="Commands\Agent\EndPoint\EndPointCommand.cs" />
     <Compile Remove="Commands\Agent\Execute\ExecuteAssemblyCommand.cs" />
     <Compile Remove="Commands\Agent\Execute\ExecutePECommand.cs" />
     <Compile Remove="Commands\Agent\Inject\InjectCommand.cs" />
@@ -79,7 +78,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Agent\EndPoint\" />
     <Folder Include="Commands\Agent\Execute\" />
     <Folder Include="Commands\Agent\Module\" />
     <Folder Include="Commands\Agent\Token\" />

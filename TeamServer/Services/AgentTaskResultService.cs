@@ -17,26 +17,31 @@ namespace TeamServer.Services
     }
     public class AgentTaskResultService : IAgentTaskResultService
     {
-        private readonly List<AgentTaskResult> _results = new();
+        private readonly Dictionary<string, AgentTaskResult> _results = new();
 
         public void AddTaskResult(AgentTaskResult res)
         {
-            _results.Add(res);
+            if (!_results.ContainsKey(res.Id))
+                _results.Add(res.Id, res);
+            else
+                _results[res.Id] = res;
         }
 
         public AgentTaskResult GetAgentTaskResult(string id)
         {
-            return GetAgentTaskResults().FirstOrDefault(a => a.Id == id);
+            if (!_results.ContainsKey(id))
+                return null;
+            return _results[id];
         }
 
         public IEnumerable<AgentTaskResult> GetAgentTaskResults()
         {
-            return _results;
+            return _results.Values;
         }
 
         public void RemoveAgentTaskResults(AgentTaskResult res)
         {
-            _results.Remove(res);
+            _results.Remove(res.Id);
         }
     }
 }

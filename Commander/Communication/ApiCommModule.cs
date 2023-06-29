@@ -18,6 +18,7 @@ using Shared;
 using Common.Models;
 using Common.APIModels;
 using BinarySerializer;
+using Common;
 
 namespace Commander.Communication
 {
@@ -501,11 +502,11 @@ namespace Commander.Communication
         }
 
         
-        public async Task TaskAgent(string label, string taskId, string agentId, CommandId commandId, ParameterDictionary parms)
+        public async Task TaskAgent(string label, string agentId, CommandId commandId, ParameterDictionary parms)
         {
             var agentTask = new AgentTask()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = ShortGuid.NewGuid(),
                 CommandId = commandId,
                 Parameters = parms,
             };
@@ -514,7 +515,7 @@ namespace Commander.Communication
             var taskrequest = new CreateTaskRequest()
             {
                 Command = label,
-                Id = taskId,
+                Id = agentTask.Id,
                 TaskBin = Convert.ToBase64String(ser),
             };
 

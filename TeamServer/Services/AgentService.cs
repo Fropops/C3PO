@@ -17,16 +17,21 @@ namespace TeamServer.Services
     }
     public class AgentService : IAgentService
     {
-        private readonly List<Agent> _agents = new();
+        private readonly Dictionary<string, Agent> _agents = new();
 
         public void AddAgent(Agent agent)
         {
-            _agents.Add(agent);
+            if (!_agents.ContainsKey(agent.Id))
+                _agents.Add(agent.Id, agent);
+            else
+                _agents[agent.Id] = agent;
         }
 
         public Agent GetAgent(string id)
         {
-            return GetAgents().FirstOrDefault(a => a.Id.Equals(id));
+            if (!_agents.ContainsKey(id))
+                return null;
+            return _agents[id];
         }
 
         public List<Agent> GetAgentToRelay(string id)
@@ -36,12 +41,12 @@ namespace TeamServer.Services
 
         public IEnumerable<Agent> GetAgents()
         {
-            return _agents;
+            return _agents.Values;
         }
 
         public void RemoveAgent(Agent agent)
         {
-            _agents.Remove(agent);
+            _agents.Remove(agent.Id);
         }
     }
 }

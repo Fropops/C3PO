@@ -32,7 +32,7 @@ namespace TeamServer.Models
         private readonly IWebHostService _webHostService;
         private readonly ICryptoService _cryptoService;
         private readonly IAuditService _auditService;
-
+        private readonly IAgentTaskResultService _agentTaskResultService;
         public HttpListenerController(IAgentService agentService,
             IFileService fileService,
             IListenerService listenerService,
@@ -41,7 +41,8 @@ namespace TeamServer.Models
             IChangeTrackingService changeTrackingService,
             IWebHostService webHostService,
             ICryptoService cryptoService,
-            IAuditService auditService)
+            IAuditService auditService,
+            IAgentTaskResultService agentTaskResultService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -52,6 +53,7 @@ namespace TeamServer.Models
             this._webHostService = webHostService;
             this._cryptoService = cryptoService;
             this._auditService = auditService;
+            this._agentTaskResultService = agentTaskResultService;
         }
 
 
@@ -161,6 +163,7 @@ namespace TeamServer.Models
                         case NetFrameType.TaskResult:
                             {
                                 var taskOutput = await this.ExtractFrameData<Shared.AgentTaskResult>(frame);
+                                this._agentTaskResultService.AddTaskResult(taskOutput);
                                 this._changeTrackingService.TrackChange(ChangingElement.Result, taskOutput.Id);
                                 break;
                             }

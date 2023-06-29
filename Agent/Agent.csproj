@@ -117,7 +117,7 @@
     <Compile Include="Communication\CommunicationType.cs" />
     <Compile Include="Communication\EgressCommunicator.cs" />
     <Compile Include="Communication\Encryptor.cs" />
-    <Compile Include="Commands\CheckinCommand.cs" />
+    <Compile Include="Commands\Core\CheckinCommand.cs" />
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\ConnexionUrl.cs" />
     <Compile Include="Helpers\HttpExtensions.cs" />
@@ -125,7 +125,7 @@
     <Compile Include="Helpers\TcpExtensions.cs" />
     <None Include="dnMerge.config" />
     <None Include="Internal\Executor.cs.old" />
-    <Compile Include="Commands\WhoamiCommand.cs" />
+    <Compile Include="Commands\Core\WhoamiCommand.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <None Include="Internal\Injector.cs.old" />
     <Compile Include="Agent.cs" />

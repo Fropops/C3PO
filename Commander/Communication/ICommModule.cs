@@ -38,7 +38,7 @@ namespace Commander.Communication
         Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured);
         Task<HttpResponseMessage> StopListener(string id, bool clean);
         IEnumerable<TeamServerListener> GetListeners();
-        Task TaskAgent(string label, string taskId, string agentId, CommandId commandId, ParameterDictionary parms);
+        Task TaskAgent(string label, string agentId, CommandId commandId, ParameterDictionary parms = null);
         //Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
 
         //Task TaskAgentToDownloadFile(string agentId, string fileId);

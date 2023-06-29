@@ -4,6 +4,7 @@ using Agent.Service;
 using Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -74,6 +75,9 @@ namespace Agent.Commands
             context.Result.Id = task.Id;
             try
             {
+#if DEBUG
+                Debug.WriteLine($"Executing {task.CommandId} ...");
+#endif
                 context.Result.Status = AgentResultStatus.Running;
                 if (context.ParentContext == null) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
@@ -97,6 +101,9 @@ namespace Agent.Commands
                 if (context.ParentContext == null) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
             }
+#if DEBUG
+            Debug.WriteLine($"{task.CommandId} Executed ({context.Result.Status}).");
+#endif
 
         }
 

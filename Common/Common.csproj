@@ -4,7 +4,19 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;ReleaseButDebug</Configurations>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\AgentMetadata.cs" Link="Shared\AgentMetadata.cs" />
+    <Compile Include="..\Shared\AgentTask.cs" Link="Shared\AgentTask.cs" />
+    <Compile Include="..\Shared\AgentTaskResult.cs" Link="Shared\AgentTaskResult.cs" />
+    <Compile Include="..\Shared\Commands.cs" Link="Shared\Commands.cs" />
+    <Compile Include="..\Shared\NetFrame.cs" Link="Shared\NetFrame.cs" />
+    <Compile Include="..\Shared\NetFrameType.cs" Link="Shared\NetFrameType.cs" />
+    <Compile Include="..\Shared\ParameterDictionary.cs" Link="Shared\ParameterDictionary.cs" />
+    <Compile Include="..\Shared\ParameterId.cs" Link="Shared\ParameterId.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
@@ -12,6 +24,16 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BinarySerializer">
+      <HintPath>..\Dependencies\BinarySerializer.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

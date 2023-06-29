@@ -44,6 +44,7 @@ namespace TeamServer
 
             services.AddSingleton<IListenerService, ListenerService>();
             services.AddSingleton<IAgentService, AgentService>();
+            services.AddSingleton<IAgentTaskResultService, AgentTaskResultService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
             services.AddSingleton<ISocksService, SocksService>();
@@ -145,6 +146,7 @@ namespace TeamServer
         {
             var listenerService = app.ApplicationServices.GetService<IListenerService>();
             var agentService = app.ApplicationServices.GetService<IAgentService>();
+            var resultService = app.ApplicationServices.GetService<IAgentTaskResultService>();
             var fileService = app.ApplicationServices.GetService<IFileService>();
             var binMakerService = app.ApplicationServices.GetService<IBinMakerService>();
             var config = app.ApplicationServices.GetService<IConfiguration>();
@@ -161,7 +163,7 @@ namespace TeamServer
             foreach (var listenerConf in listeners)
             {
                 var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
-                listener.Init(agentService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit);
+                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit);
                 listener.Start();
                 listenerService.AddListener(listener);
             }

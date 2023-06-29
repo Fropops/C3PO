@@ -1,0 +1,2 @@
+08/06/2023 02:31:09 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 |  | Connexion to TeamServer
+08/06/2023 02:31:10 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 |  | Connexion to TeamServer

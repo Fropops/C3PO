@@ -1,16 +1,8 @@
-﻿using ApiModels.Requests;
-using ApiModels.Response;
-using ApiModels.WebHost;
+﻿using Common.APIModels.WebHost;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using TeamServer.Helper;
-using TeamServer.Models;
-using TeamServer.Models.File;
 using TeamServer.Services;
 namespace TeamServer.Controllers
 {

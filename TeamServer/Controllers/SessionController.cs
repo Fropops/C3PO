@@ -1,14 +1,8 @@
-﻿using ApiModels.Changes;
-using ApiModels.Requests;
-using ApiModels.Response;
+﻿using Common.APIModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TeamServer.Helper;
-using TeamServer.Models;
 using TeamServer.Services;
 
 namespace TeamServer.Controllers
@@ -24,13 +18,15 @@ namespace TeamServer.Controllers
         private readonly IListenerService _listenerService;
         private readonly IAgentService _agentService;
         private readonly IAuditService _auditService;
+        private readonly IAgentTaskResultService _resultService;
 
-        public SessionController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService, IAuditService auditService)
+        public SessionController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService, IAuditService auditService, IAgentTaskResultService resultService)
         {
             _changeTrackingService = trackService;
             _listenerService = listenerService;
             _agentService = agentService;
             _auditService = auditService;
+            _resultService = resultService;
         }
 
         [HttpGet("changes")]
@@ -52,11 +48,14 @@ namespace TeamServer.Controllers
                 foreach (var agent in this._agentService.GetAgents())
                 {
                     changes.Add(new Change(ChangingElement.Agent, agent.Id));
+                    changes.Add(new Change(ChangingElement.Metadata, agent.Id));
                     foreach (var task in agent.TaskHistory)
+                    {
                         changes.Add(new Change(ChangingElement.Task, task.Id));
-                    foreach (var res in agent.GetTaskResults())
-                        changes.Add(new Change(ChangingElement.Result, res.Id));
-
+                        var res = _resultService.GetAgentTaskResult(task.Id);
+                        if (res != null)
+                            changes.Add(new Change(ChangingElement.Result, res.Id));
+                    }
                 }
 
                 return Ok(changes);

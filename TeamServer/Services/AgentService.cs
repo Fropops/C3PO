@@ -26,7 +26,7 @@ namespace TeamServer.Services
 
         public Agent GetAgent(string id)
         {
-            return GetAgents().FirstOrDefault(a => a.Metadata.Id.Equals(id));
+            return GetAgents().FirstOrDefault(a => a.Id.Equals(id));
         }
 
         public List<Agent> GetAgentToRelay(string id)

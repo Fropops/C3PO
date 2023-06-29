@@ -20,6 +20,7 @@ namespace TeamServer.Models
         public virtual string Protocol { get; protected set; }
 
         protected IAgentService _agentService;
+        protected IAgentTaskResultService _resultService;
         protected IFileService _fileService;
         protected IBinMakerService _binMakerService;
         protected IListenerService _listenerService;
@@ -38,7 +39,9 @@ namespace TeamServer.Models
             this.Id = Guid.NewGuid().ToString();
         }
 
-        public void Init(IAgentService service, IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger, IChangeTrackingService changeTrackingService,
+        public void Init(IAgentService service, 
+            IAgentTaskResultService resultService,
+            IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger, IChangeTrackingService changeTrackingService,
             IWebHostService webHostService,
             ICryptoService cryptoService,
             IAuditService auditService)
@@ -52,6 +55,7 @@ namespace TeamServer.Models
             this._webHostService = webHostService;
             this._cryptoService = cryptoService;
             this._auditService = auditService;
+            this._resultService = resultService;
         }
 
         public abstract Task Start();

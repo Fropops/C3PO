@@ -1,5 +1,4 @@
-﻿using ApiModels.Requests;
-using ApiModels.Response;
+﻿using Common.APIModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 using TeamServer.Helper;
 using TeamServer.Models;
 using TeamServer.Services;
-using ApiModels.Changes;
 
 namespace TeamServer.Controllers
 {
@@ -20,6 +18,7 @@ namespace TeamServer.Controllers
     {
         private readonly IListenerService _listenerService;
         private readonly IAgentService _agentService;
+        private readonly IAgentTaskResultService _resultService;
         private readonly IFileService _fileService;
         private readonly IBinMakerService _binMakerService;
         private readonly ILoggerFactory _loggerFactory;
@@ -31,7 +30,8 @@ namespace TeamServer.Controllers
         public ListenersController(ILoggerFactory loggerFactory, IListenerService listenerService, IAgentService agentService, IFileService fileService, IBinMakerService binMakerService, IChangeTrackingService trackService,
             IWebHostService webHostService,
             ICryptoService cryptoService,
-            IAuditService auditService)
+            IAuditService auditService,
+            IAgentTaskResultService resultService)
         {
             this._listenerService = listenerService;
             _agentService=agentService;
@@ -42,6 +42,7 @@ namespace TeamServer.Controllers
             _webHostService = webHostService;
             _cryptoService = cryptoService;
             _auditService = auditService;
+            _resultService = resultService;
         }
 
         [HttpGet]
@@ -66,7 +67,7 @@ namespace TeamServer.Controllers
         {
             var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
-            listener.Init(this._agentService, this._fileService, this._binMakerService, this._listenerService, logger, _changeTrackingService, this._webHostService, this._cryptoService, this._auditService);
+            listener.Init(this._agentService, this._resultService , this._fileService, this._binMakerService, this._listenerService, logger, _changeTrackingService, this._webHostService, this._cryptoService, this._auditService);
             listener.Start();
 
             _listenerService.AddListener(listener);

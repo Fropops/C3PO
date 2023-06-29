@@ -14,7 +14,7 @@ using System.Text;
 
 namespace Agent.Models
 {
-    public class PipeCommModule : CommModule
+    public class PipeCommModule : Communicator
     {
         public PipeCommModule(ConnexionUrl conn) : base(conn)
         {

@@ -1,14 +1,6 @@
-﻿using ApiModels.Response;
-using Commander.Communication;
-using Commander.Executor;
-using Commander.Terminal;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using Commander.Executor;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Commander.Commands.Agent
@@ -51,9 +43,6 @@ namespace Commander.Commands.Agent
 
             context.Executor.CurrentAgent = agent;
             context.Executor.Mode = ExecutorMode.AgentInteraction;
-            var star = agent.Metadata.Integrity == "High" ? "*" : string.Empty;
-
-            context.Terminal.Prompt = $"${ExecutorMode.Agent}({agent.Metadata.Id}) {agent.Metadata.UserName}{star}@{agent.Metadata.Hostname}> ";
 
             return true;
         }

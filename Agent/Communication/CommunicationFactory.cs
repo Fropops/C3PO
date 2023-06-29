@@ -10,18 +10,18 @@ namespace Agent.Communication
 {
     public static class CommunicationFactory
     {
-        public static CommModule CreateCommunicator(ConnexionUrl conn)
+        internal static EgressCommunicator CreateEgressCommunicator(ConnexionUrl conn)
         {
             if (!conn.IsValid)
                 return null;
             switch (conn.Protocol)
             {
                 case ConnexionType.Http:
-                    return new HttpCommModule(conn);
-                case ConnexionType.Tcp:
-                    return new TcpCommModule(conn);
-                case ConnexionType.NamedPipe:
-                    return new PipeCommModule(conn);
+                    return new HttpCommmunicator(conn);
+                //case ConnexionType.Tcp:
+                //    return new TcpCommModule(conn);
+                //case ConnexionType.NamedPipe:
+                //    return new PipeCommModule(conn);
             }
             return null;
         }

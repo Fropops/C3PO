@@ -1,6 +1,4 @@
-﻿using ApiModels.Changes;
-using ApiModels.Requests;
-using ApiModels.Response;
+﻿using Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -30,7 +28,7 @@ namespace TeamServer.Controllers
         [HttpGet]
         public IActionResult Config()
         {
-            var config = new ApiModels.ServerConfig()
+            var config = new ServerConfig()
             {
                 Key = _cryptoService.Key
             };

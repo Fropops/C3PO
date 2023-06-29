@@ -61,13 +61,13 @@ namespace Commander.Commands.Agent
             var index = 0;
             foreach (var agent in result.OrderBy(a => a.FirstSeen))
             {
-                var listenerName = listeners.FirstOrDefault(l => l.Id == agent.ListenerId)?.Name ?? string.Empty;
-                if (string.IsNullOrEmpty(context.Options.listenerName) || listenerName.ToLower().Equals(context.Options.listenerName.ToLower()))
-                {
+                //var listenerName = listeners.FirstOrDefault(l => l.Id == agent.ListenerId)?.Name ?? string.Empty;
+                //if (string.IsNullOrEmpty(context.Options.listenerName) || listenerName.ToLower().Equals(context.Options.listenerName.ToLower()))
+                //{
 
                     table.AddRow(
                         SurroundIfDeadOrSelf(agent, context, index.ToString()),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata.Id),
+                        SurroundIfDeadOrSelf(agent, context, agent.Id),
                         SurroundIfDeadOrSelf(agent, context, agent.IsActive == true ? "Yes" : "No"),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.UserName),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Hostname),
@@ -79,7 +79,7 @@ namespace Commander.Commands.Agent
                         //Version = agent.Metadata.Version,
                         //Listener = listenerName,
                     );
-                }
+                //}
                 index++;
             }
 

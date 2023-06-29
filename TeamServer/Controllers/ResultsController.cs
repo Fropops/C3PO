@@ -1,12 +1,6 @@
-﻿using ApiModels.Requests;
-using ApiModels.Response;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using Shared;
 using TeamServer.Helper;
-using TeamServer.Models;
 using TeamServer.Services;
 
 namespace TeamServer.Controllers
@@ -16,49 +10,22 @@ namespace TeamServer.Controllers
     [Authorize]
     public class ResultsController : ControllerBase
     {
-        private readonly IAgentService _agentService;
+        private readonly IAgentTaskResultService _resultService;
 
-        public ResultsController(IAgentService agentService)
+        public ResultsController(IAgentTaskResultService resultService)
         {
-            this._agentService = agentService;
+            this._resultService = resultService;
         }
 
 
         [HttpGet("{id}")]
         public ActionResult Get(string id)
         {
-            AgentTaskResultResponse result = null;
-            foreach(var agent in this._agentService.GetAgents())
-            {
-                var r = agent.GetTaskResult(id);
-                if (r != null)
-                {
-                    result = new AgentTaskResultResponse()
-                    {
-                        Id = r.Id,
-                        Info = r.Info,
-                        Result = r.Result,
-                        Error = r.Error,
-                        Objects = r.Objects,
-                        Status = (int)r.Status
-                    };
-                    foreach(var file in r.Files)
-                    {
-                        result.Files.Add(new ApiModels.Response.TaskFileResult()
-                        {
-                            FileId = file.FileId,
-                            FileName = file.FileName,
-                            IsDownloaded = file.IsDownloaded,
-                        });
-                    }
-                    break;
-                }
-            }
+            AgentTaskResult res = this._resultService.GetAgentTaskResult(id);
+            if (res == null)
+                return NotFound(id);
 
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound(result);
+            return Ok(res);
         }
 
     }

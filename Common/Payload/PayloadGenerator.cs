@@ -325,8 +325,6 @@ public partial class PayloadGenerator
             var resultAgent = AssemblyEditor.ChangeName(service, "InstallSvc");
             return resultAgent;
         }
-
-        return null;
     }
 
     public byte[] PrepareInjectedAgent(PayloadGenerationOptions options, byte[] agent, bool isService)

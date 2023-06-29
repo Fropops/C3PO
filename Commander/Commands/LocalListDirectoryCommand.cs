@@ -1,16 +1,7 @@
-﻿using ApiModels.Response;
-using Commander.Communication;
-using Commander.Executor;
-using Commander.Terminal;
-using Newtonsoft.Json;
+﻿using Commander.Executor;
 using Spectre.Console;
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Commander.Commands

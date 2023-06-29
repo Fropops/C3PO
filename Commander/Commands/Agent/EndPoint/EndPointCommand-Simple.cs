@@ -34,6 +34,18 @@ namespace Commander.Commands.Agent
         public override string Name => EndPointCommand.SHELL;
     }
 
+    public class WINRMCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Send a command to be executed with winrm to the target";
+        public override string Name => EndPointCommand.WINRM;
+    }
+
+    public class PSEXECCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Send a command to be executed with psexec to the target";
+        public override string Name => EndPointCommand.PSEXEC;
+    }
+
     public class WgetCommand : SimpleEndPointCommand
     {
         public override string Description => "Download a page or file from an URL";
@@ -57,6 +69,12 @@ namespace Commander.Commands.Agent
     {
         public override string Description => "Start an executable/command on the agent";
         public override string Name => EndPointCommand.START;
+    }
+
+    public class StartAsCommand : SimpleEndPointCommand
+    {
+        public override string Description => "Start an executable/command on the agent as another user";
+        public override string Name => EndPointCommand.STARTAS;
     }
 
     public class CATCommand : SimpleEndPointCommand

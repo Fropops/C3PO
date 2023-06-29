@@ -2,8 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;ReleaseButDebug</Configurations>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Agent\AgentMetadata.cs" />
+    <Compile Remove="Models\Agent\AgentTask.cs" />
+    <Compile Remove="Models\Agent\AgentTaskResult.cs" />
+    <Compile Remove="Models\Agent\Message.cs" />
+    <Compile Remove="Models\Agent\ResultData.cs" />
+    <Compile Remove="Models\Agent\SocksMessage.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -12,7 +21,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ApiModels\ApiModels.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BinarySerializer">
+      <HintPath>..\Dependencies\BinarySerializer.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

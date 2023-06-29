@@ -1,6 +1,6 @@
-﻿using ApiModels.Response;
-using ApiModels.WebHost;
-using Commander.Models;
+﻿using Commander.Models;
+using Common.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ namespace Commander.Communication
     public interface ICommModule
     {
         event EventHandler<ConnectionStatus> ConnectionStatusChanged;
-        event EventHandler<List<AgentTask>> RunningTaskChanged;
+        event EventHandler<List<TeamServerAgentTask>> RunningTaskChanged;
         event EventHandler<AgentTaskResult> TaskResultUpdated;
-        event EventHandler AgentsUpdated;
+        event EventHandler<Agent> AgentMetaDataUpdated;
         event EventHandler<Agent> AgentAdded;
         Task Start();
         void Stop();
@@ -31,33 +31,32 @@ namespace Commander.Communication
         Agent GetAgent(string id);
 
         Task<HttpResponseMessage> StopAgent(string id);
-        IEnumerable<AgentTask> GetTasks(string id);
+        IEnumerable<TeamServerAgentTask> GetTasks(string id);
 
-        void AddTask(AgentTask task);
-        AgentTask GetTask(string taskId);
+        TeamServerAgentTask GetTask(string taskId);
         AgentTaskResult GetTaskResult(string taskId);
         Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured);
         Task<HttpResponseMessage> StopListener(string id, bool clean);
-        IEnumerable<Listener> GetListeners();
-        Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null);
-        Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
+        IEnumerable<TeamServerListener> GetListeners();
+        Task TaskAgent(string label, string taskId, string agentId, CommandId commandId, ParameterDictionary parms);
+        //Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
 
-        Task TaskAgentToDownloadFile(string agentId, string fileId);
+        //Task TaskAgentToDownloadFile(string agentId, string fileId);
 
-        Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
-       
-        Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
+        //Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
 
-        Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description);
-        Task<List<WebHostLog>> GetWebHostLogs();
-        Task<List<FileWebHost>> GetWebHosts();
+        //Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
-        Task RemoveWebHost(string path);
-        Task ClearWebHosts();
+        //Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description);
+        //Task<List<WebHostLog>> GetWebHostLogs();
+        //Task<List<FileWebHost>> GetWebHosts();
+
+        //Task RemoveWebHost(string path);
+        //Task ClearWebHosts();
 
 
-        Task<bool> StartProxy(string agentId, int port);
-        Task<bool> StopProxy(string agentId);
+        //Task<bool> StartProxy(string agentId, int port);
+        //Task<bool> StopProxy(string agentId);
 
         Task CloseSession();
 

@@ -23,5 +23,6 @@ namespace ApiModels.Changes
         Agent,
         Task,
         Result,
+        Metadata,
     }
 }

@@ -9,16 +9,15 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ApiModels.Requests;
-using ApiModels.Response;
-using ApiModels.Changes;
 using Commander.Models;
 using Commander.Terminal;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Spectre.Console;
-using ApiModels;
-using ApiModels.WebHost;
+using Shared;
+using Common.Models;
+using Common.APIModels;
+using BinarySerializer;
 
 namespace Commander.Communication
 {
@@ -26,22 +25,20 @@ namespace Commander.Communication
     {
         public event EventHandler<ConnectionStatus> ConnectionStatusChanged;
 
-        public event EventHandler<List<AgentTask>> RunningTaskChanged;
-        public event EventHandler AgentsUpdated;
-
+        public event EventHandler<List<TeamServerAgentTask>> RunningTaskChanged;
+        public event EventHandler<Agent> AgentMetaDataUpdated;
         public event EventHandler<AgentTaskResult> TaskResultUpdated;
-
         public event EventHandler<Agent> AgentAdded;
 
         private CancellationTokenSource _tokenSource;
 
         private HttpClient _client;
 
-
+        protected ConcurrentDictionary<string, TeamServerListener> _listeners = new ConcurrentDictionary<string, TeamServerListener>();
         protected ConcurrentDictionary<string, Agent> _agents = new ConcurrentDictionary<string, Agent>();
-        protected ConcurrentDictionary<string, Listener> _listeners = new ConcurrentDictionary<string, Listener>();
-        protected ConcurrentDictionary<string, AgentTask> _tasks = new ConcurrentDictionary<string, AgentTask>();
+        protected ConcurrentDictionary<string, TeamServerAgentTask> _tasks = new ConcurrentDictionary<string, TeamServerAgentTask>();
         protected ConcurrentDictionary<string, AgentTaskResult> _results = new ConcurrentDictionary<string, AgentTaskResult>();
+
 
         private ITerminal Terminal;
 
@@ -206,6 +203,9 @@ namespace Commander.Communication
                 case ChangingElement.Result:
                     await this.UpdateResult(change.Id);
                     break;
+                case ChangingElement.Metadata:
+                    await this.UpdateMetadata(change.Id);
+                    break;
             }
         }
 
@@ -226,19 +226,9 @@ namespace Commander.Communication
             try
             {
                 var response = await _client.GetStringAsync($"/Listeners/{id}");
-                var lr = JsonConvert.DeserializeObject<ListenerResponse>(response);
+                var listener = JsonConvert.DeserializeObject<TeamServerListener>(response);
 
-                var listener = new Listener()
-                {
-                    Name = lr.Name,
-                    Id = lr.Id,
-                    BindPort = lr.BindPort,
-                    Secured = lr.Secured,
-
-                    Ip = lr.Ip,
-                };
-
-                this._listeners.AddOrUpdate(lr.Id, listener, (key, current) =>
+                this._listeners.AddOrUpdate(listener.Id, listener, (key, current) =>
                 {
                     current.Name = listener.Name;
                     current.BindPort = listener.BindPort;
@@ -265,52 +255,22 @@ namespace Commander.Communication
             {
                 //Terminal.WriteInfo(_client.BaseAddress.ToString());
                 var response = await _client.GetStringAsync($"Agents/{id}");
-                var ar = JsonConvert.DeserializeObject<AgentResponse>(response);
+                var ar = JsonConvert.DeserializeObject<TeamServerAgent>(response);
 
-                //add or update new
                 var agent = new Agent()
                 {
-                    Metadata = new AgentMetadata()
-                    {
-                        Architecture = ar.Metadata.Architecture,
-                        Hostname = ar.Metadata.Hostname,
-                        Id = ar.Metadata.Id,
-                        Integrity = ar.Metadata.Integrity,
-                        ProcessId = ar.Metadata.ProcessId,
-                        ProcessName = ar.Metadata.ProcessName,
-                        UserName = ar.Metadata.UserName,
-                        EndPoint = ar.Metadata.EndPoint,
-                        Version = ar.Metadata.Version,
-                        SleepInterval = ar.Metadata.SleepInterval,
-                        SleepJitter = ar.Metadata.SleepJitter,
-                    },
-                    LastSeen = ar.LastSeen,
+                    Id = ar.Id,
                     FirstSeen = ar.FirstSeen,
-                    ListenerId = ar.ListenerId,
-                    Path = ar.Path
+                    LastSeen = ar.LastSeen,
                 };
 
-                bool isNew = !this._agents.ContainsKey(agent.Metadata.Id);
-                this._agents.AddOrUpdate(ar.Metadata.Id, agent, (key, current) =>
+                bool isNew = !this._agents.ContainsKey(agent.Id);
+                this._agents.AddOrUpdate(ar.Id, agent, (key, current) =>
                 {
-                    current.Metadata.Architecture = agent.Metadata.Architecture;
-                    current.Metadata.Hostname = agent.Metadata.Hostname;
-                    current.Metadata.Integrity = agent.Metadata.Integrity;
-                    current.Metadata.ProcessId = agent.Metadata.ProcessId;
-                    current.Metadata.ProcessName = agent.Metadata.ProcessName;
-                    current.Metadata.UserName = agent.Metadata.UserName;
-                    current.Metadata.EndPoint = agent.Metadata.EndPoint;
-                    current.Metadata.Version = agent.Metadata.Version;
-                    current.Metadata.SleepInterval = agent.Metadata.SleepInterval;
-                    current.Metadata.SleepJitter = agent.Metadata.SleepJitter;
                     current.LastSeen = agent.LastSeen;
-                    current.Path = agent.Path;
-                    current.ListenerId = agent.ListenerId;
-                    current.FirstSeen = agent.FirstSeen;
                     return current;
                 });
 
-                this.AgentsUpdated?.Invoke(this, new EventArgs());
                 if (isNew && !this.isSyncing)
                     this.AgentAdded?.Invoke(this, agent);
 
@@ -333,21 +293,14 @@ namespace Commander.Communication
             {
                 var response = await _client.GetStringAsync($"Tasks/{id}");
 
-                var tr = JsonConvert.DeserializeObject<AgentTaskResponse>(response);
+                var task = JsonConvert.DeserializeObject<TeamServerAgentTask>(response);
 
-                var task = new AgentTask()
-                {
-                    AgentId = tr.AgentId,
-                    Label = tr.Label,
-                    Arguments = tr.Arguments,
-                    Command = tr.Command,
-                    Id = tr.Id,
-                    RequestDate = tr.RequestDate,
-                };
-
-                this._tasks.AddOrUpdate(tr.Id, task, (key, current) =>
+                this._tasks.AddOrUpdate(task.Id, task, (key, current) =>
                 {
                     current.RequestDate = task.RequestDate;
+                    current.AgentId = task.AgentId;
+                    current.Id = task.Id;
+                    current.Command = task.Command;
                     return current;
                 });
             }
@@ -368,62 +321,50 @@ namespace Commander.Communication
             try
             {
                 var response = await _client.GetStringAsync($"Results/{id}");
-                var tr = JsonConvert.DeserializeObject<AgentTaskResultResponse>(response);
+                var result = JsonConvert.DeserializeObject<AgentTaskResult>(response);
 
-                var res = new AgentTaskResult()
-                {
-                    Id = tr.Id,
-                    Result = tr.Result,
-                    Info = tr.Info,
-                    Error = tr.Error,
-                    Objects = tr.Objects,
-                    Status = (AgentResultStatus)tr.Status,
-                };
-
-                foreach (var file in tr.Files)
-                    res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName, IsDownloaded = file.IsDownloaded });
+                //foreach (var file in tr.Files)
+                //    res.Files.Add(new Models.TaskFileResult() { FileId = file.FileId, FileName = file.FileName, IsDownloaded = file.IsDownloaded });
 
                 //new respone or response change detected
 
-                if (!_results.ContainsKey(res.Id)) // new response
+                if (!_results.ContainsKey(result.Id)) // new response
                 {
-                    if (res.Status == AgentResultStatus.Completed && !this.isSyncing)
-                        this.TaskResultUpdated?.Invoke(this, res);
+                    if ((result.Status == AgentResultStatus.Completed || result.Status == AgentResultStatus.Error) && !this.isSyncing)
+                        this.TaskResultUpdated?.Invoke(this, result);
                 }
                 else
                 {
                     //Change detected :
-                    var existing = this._results[res.Id];
-                    if (res.Result != existing.Result
-                        || res.Error != existing.Error
-                        || res.Objects != existing.Objects
-                        || res.Status  != existing.Status
-                        || res.Info != existing.Info
-                        || res.Files.Count != existing.Files.Count
-                        //                        || res.Files.Count(f => f.IsDownloaded) != existing.Files.Count(f => f.IsDownloaded)
+                    var existing = this._results[result.Id];
+                    if (result.Output != existing.Output
+                        || result.Error != existing.Error
+                        || result.Objects != existing.Objects
+                        || result.Status  != existing.Status
+                        || result.Info != existing.Info
                         )
                     {
-                        if (res.Status == AgentResultStatus.Completed && !this.isSyncing)
-                            this.TaskResultUpdated?.Invoke(this, res);
+                        if ((result.Status == AgentResultStatus.Completed || result.Status == AgentResultStatus.Error) && !this.isSyncing)
+                            this.TaskResultUpdated?.Invoke(this, result);
                     }
                 }
 
-                this._results.AddOrUpdate(tr.Id, res, (key, current) =>
+                this._results.AddOrUpdate(result.Id, result, (key, current) =>
                 {
-                    current.Result = res.Result;
-                    current.Error = res.Error;
-                    current.Objects = res.Objects;
-                    current.Info = res.Info;
-                    current.Status = res.Status;
-                    current.Files.Clear();
-                    foreach (var file in res.Files)
-                    {
-                        current.Files.Add(file);
-                    }
+                    current.Output = result.Output;
+                    current.Error = result.Error;
+                    current.Objects = result.Objects;
+                    current.Info = result.Info;
+                    current.Status = result.Status;
+                    //current.Files.Clear();
+                    //foreach (var file in res.Files)
+                    //{
+                    //    current.Files.Add(file);
+                    //}
                     return current;
                 });
 
-                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || this._results[t.Id].Status != AgentResultStatus.Completed).ToList();
+                var running = this._tasks.Values.Where(t => !this._results.ContainsKey(t.Id) || (this._results[t.Id].Status != AgentResultStatus.Completed && this._results[t.Id].Status != AgentResultStatus.Error)).ToList();
                 this.RunningTaskChanged?.Invoke(this, running);
             }
             catch (HttpRequestException e)
@@ -432,6 +373,44 @@ namespace Commander.Communication
                 {
                     if (this._results.ContainsKey(id))
                         this._results.Remove(id, out _);
+                }
+                else
+                    throw e;
+            }
+        }
+
+        private async Task UpdateMetadata(string id)
+        {
+            try
+            {
+                var response = await _client.GetStringAsync($"agents/{id}/metadata");
+
+                var metadata = JsonConvert.DeserializeObject<AgentMetadata>(response);
+
+                var agent = new Agent()
+                {
+                    Id = metadata.Id,
+                    Metadata = metadata,
+                };
+
+                bool isNew = !this._agents.ContainsKey(agent.Id);
+                this._agents.AddOrUpdate(agent.Id, agent, (key, current) =>
+                {
+                    current.Metadata = metadata;
+                    return current;
+                });
+
+                if(!isSyncing)
+                    this.AgentMetaDataUpdated?.Invoke(this, agent);
+                if (isNew && !this.isSyncing)
+                    this.AgentAdded?.Invoke(this, agent);
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    if (this._tasks.ContainsKey(id))
+                        this._tasks.Remove(id, out _);
                 }
                 else
                     throw e;
@@ -472,22 +451,18 @@ namespace Commander.Communication
                 this._agents.Remove(id, out var ret);
         }
 
-        public IEnumerable<AgentTask> GetTasks(string id)
+        public IEnumerable<TeamServerAgentTask> GetTasks(string id)
         {
             return this._tasks.Values.Where(t => t.AgentId == id).OrderByDescending(t => t.RequestDate);
         }
 
-        public void AddTask(AgentTask task)
-        {
-            this._tasks.AddOrUpdate(task.Id, task, (key, current) => { return current; });
-        }
         public async Task<HttpResponseMessage> StopAgent(string id)
         {
             this.DeleteAgent(id);
             return await _client.GetAsync($"/Agents/{id}/stop");
         }
 
-        public AgentTask GetTask(string taskId)
+        public TeamServerAgentTask GetTask(string taskId)
         {
             if (!this._tasks.ContainsKey(taskId))
                 return null;
@@ -505,7 +480,7 @@ namespace Commander.Communication
 
         public async Task<HttpResponseMessage> CreateListener(string name, int port, string address, bool secured)
         {
-            var requestObj = new ApiModels.Requests.StartHttpListenerRequest();
+            var requestObj = new StartHttpListenerRequest();
             requestObj.Name = name;
             requestObj.BindPort  = port;
             requestObj.Ip = address;
@@ -520,23 +495,28 @@ namespace Commander.Communication
             return await _client.DeleteAsync($"/Listeners/?id={id}&clean={clean}");
         }
 
-        public IEnumerable<Listener> GetListeners()
+        public IEnumerable<TeamServerListener> GetListeners()
         {
             return this._listeners.Values.ToList();
         }
 
-
-
-        public async Task TaskAgent(string label, string taskId, string agentId, string cmd, string parms = null)
+        
+        public async Task TaskAgent(string label, string taskId, string agentId, CommandId commandId, ParameterDictionary parms)
         {
-            var taskrequest = new TaskAgentRequest()
+            var agentTask = new AgentTask()
             {
-                Label = label,
-                Id = taskId,
-                Command = cmd,
+                Id = Guid.NewGuid().ToString(),
+                CommandId = commandId,
+                Parameters = parms,
             };
-            if (!string.IsNullOrEmpty(parms))
-                taskrequest.Arguments = parms;
+            var ser = await agentTask.BinarySerializeAsync();
+
+            var taskrequest = new CreateTaskRequest()
+            {
+                Command = label,
+                Id = taskId,
+                TaskBin = Convert.ToBase64String(ser),
+            };
 
             var requestContent = JsonConvert.SerializeObject(taskrequest);
 
@@ -545,7 +525,7 @@ namespace Commander.Communication
                 throw new Exception($"{response}");
         }
 
-        public async Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null)
+        /*public async Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null)
         {
             var taskrequest = new TaskAgentRequest()
             {
@@ -563,13 +543,13 @@ namespace Commander.Communication
             var response = await _client.PostAsync($"/Agents/{agentId}", new StringContent(requestContent, UnicodeEncoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"{response}");
-        }
+        }*/
 
 
 
 
 
-        private async Task<FileDescriptorResponse> SetupDownload(string id)
+        /*private async Task<FileDescriptorResponse> SetupDownload(string id)
         {
             var response = await _client.GetAsync($"/Files/SetupDownload/{id}");
 
@@ -700,7 +680,7 @@ namespace Commander.Communication
             OnCompletionChanged?.Invoke(100);
 
             return desc.Id;
-        }
+        }*/
 
         public async Task<ServerConfig> ServerConfig()
         {
@@ -714,7 +694,7 @@ namespace Commander.Communication
             return conf;
         }
 
-        public async Task TaskAgentToDownloadFile(string agentId, string fileId)
+        /*public async Task TaskAgentToDownloadFile(string agentId, string fileId)
         {
             var response = await _client.GetAsync($"/Agents/{agentId}/File?fileId={fileId}");
 
@@ -813,5 +793,6 @@ namespace Commander.Communication
 
 
         #endregion
+        */
     }
 }

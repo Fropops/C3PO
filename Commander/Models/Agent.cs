@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shared;
 
 namespace Commander.Models
 {
     public class Agent
     {
+        public string Id { get; set; }
+
         public AgentMetadata Metadata { get; set;  }
 
         public DateTime LastSeen { get; set; }
@@ -41,8 +44,5 @@ namespace Commander.Models
             }
         }
 
-        public List<string> Path { get; set; } = new List<string>();
-
-        public string ListenerId { get; set; }
     }
 }

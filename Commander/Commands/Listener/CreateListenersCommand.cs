@@ -1,14 +1,8 @@
-﻿using ApiModels.Response;
-using Commander.Communication;
-using Commander.Executor;
-using Commander.Terminal;
+﻿using Commander.Executor;
+using Common.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Commander.Commands.Listener
@@ -69,7 +63,7 @@ namespace Commander.Commands.Listener
             }
 
             var json = await result.Content.ReadAsStringAsync();
-            var listener = JsonConvert.DeserializeObject<ListenerResponse>(json);
+            var listener = JsonConvert.DeserializeObject<TeamServerListener>(json);
 
             context.Terminal.WriteSuccess($"Listener {listener.Name} started on port {listener.BindPort}.");
             return true;

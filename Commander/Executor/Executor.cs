@@ -1,10 +1,9 @@
-﻿using ApiModels.Response;
-using Commander.Commands;
-using Commander.Commands.Agent;
-using Commander.Commands.Listener;
+﻿using Commander.Commands;
 using Commander.Communication;
 using Commander.Models;
 using Commander.Terminal;
+using Common.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +28,30 @@ namespace Commander.Executor
             }
         }
 
-        public Agent CurrentAgent { get; set; }
+
+        private Agent _currentAgent = null;
+        public Agent CurrentAgent
+        {
+            get => _currentAgent; set
+            {
+                _currentAgent = value;
+                if (this._currentAgent != null)
+                    this.UpdateAgentPrompt();
+            }
+        }
+
+        private void UpdateAgentPrompt()
+        {
+            if (this._currentAgent.Metadata == null)
+            {
+                this.Terminal.Prompt = $"${ExecutorMode.Agent}({_currentAgent.Id})> ";
+            }
+            else
+            {
+                var star = _currentAgent.Metadata?.Integrity == "High" ? "*" : string.Empty;
+                this.Terminal.Prompt = $"${ExecutorMode.Agent}({_currentAgent.Id}) {_currentAgent.Metadata.UserName}{star}@{_currentAgent.Metadata.Hostname}> ";
+            }
+        }
         private ICommModule CommModule { get; set; }
         public ITerminal Terminal { get; set; }
 
@@ -52,7 +74,7 @@ namespace Commander.Executor
             this.CommModule.ConnectionStatusChanged +=CommModule_ConnectionStatusChanged;
             this.CommModule.RunningTaskChanged += CommModule_RunningTaskChanged;
             this.CommModule.TaskResultUpdated += CommModule_TaskResultUpdated;
-            this.CommModule.AgentsUpdated +=CommModule_AgentsUpdated;
+            this.CommModule.AgentMetaDataUpdated += CommModule_AgentMetadataUpdated;
             this.CommModule.AgentAdded +=CommModule_AgentAdded;
             //end events
         }
@@ -60,20 +82,21 @@ namespace Commander.Executor
         private void CommModule_AgentAdded(object sender, Agent e)
         {
             Terminal.Interrupt();
-            string userName = e.Metadata.UserName;
-            if (e.Metadata.Integrity == "High")
-                userName += "*";
+            //string userName = e.Metadata.UserName;
+            //if (e.Metadata.Integrity == "High")
+            //    userName += "*";
 
             var index = this.CommModule.GetAgents().OrderBy(a => a.FirstSeen).ToList().IndexOf(e);
-            Terminal.WriteInfo($"New Agent Checking in : {e.Metadata.Id.ToShortGuid()} ({index})");
+            Terminal.WriteInfo($"New Agent Checking in : {e.Id} ({index})");
             Terminal.Restore();
         }
 
-        private void CommModule_AgentsUpdated(object sender, EventArgs e)
+        private void CommModule_AgentMetadataUpdated(object sender, Agent e)
         {
-            if (this.CurrentAgent != null)
+            if (this.CurrentAgent != null && e.Id == this.CurrentAgent.Id)
             {
-                this.CurrentAgent = this.CommModule.GetAgent(this.CurrentAgent.Metadata.Id);
+                //this.CurrentAgent = this.CommModule.GetAgent(this.CurrentAgent.Id);
+                this.UpdateAgentPrompt();
             }
         }
 
@@ -96,8 +119,8 @@ namespace Commander.Executor
                 return;
 
             this.Terminal.Interrupt();
-            task.Print(res, this.Terminal);
-            foreach (var file in res.Files.Where(f => !f.IsDownloaded))
+            TaskPrinter.Print(task, res, this.Terminal);
+            /*foreach (var file in res.Files.Where(f => !f.IsDownloaded))
             {
                 bool first = true;
                 var bytes = this.CommModule.Download(file.FileId, a =>
@@ -111,11 +134,11 @@ namespace Commander.Executor
                     fs.Write(bytes, 0, bytes.Length);
                 }
                 this.Terminal.WriteSuccess($"File {file.FileName} successfully downloaded");
-            }
+            }*/
             this.Terminal.Restore();
         }
 
-        private void CommModule_RunningTaskChanged(object sender, List<AgentTask> tasks)
+        private void CommModule_RunningTaskChanged(object sender, List<TeamServerAgentTask> tasks)
         {
             //if(this.CurrentAgent == null)
             //{
@@ -267,7 +290,7 @@ namespace Commander.Executor
                 return null;
             }
 
-            var command = list.FirstOrDefault(c => c.Name == commandName || (c.Alternate != null && c.Alternate.Contains(commandName) ));
+            var command = list.FirstOrDefault(c => c.Name == commandName || (c.Alternate != null && c.Alternate.Contains(commandName)));
 
             if (command is null)
             {

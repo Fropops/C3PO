@@ -31,7 +31,11 @@ namespace Commander.Commands.Agent
         public static string DELAY = "delay";
 
         public static string SHELL = "shell";
+        public static string WINRM = "winrm";
+        public static string PSEXEC = "psexec";
+
         public static string START = "start";
+        public static string STARTAS = "startas";
         public static string RUN = "run";
 
         

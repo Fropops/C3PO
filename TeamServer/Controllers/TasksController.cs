@@ -1,12 +1,7 @@
-﻿using ApiModels.Requests;
-using ApiModels.Response;
+﻿using Common.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TeamServer.Helper;
-using TeamServer.Models;
 using TeamServer.Services;
 
 namespace TeamServer.Controllers
@@ -51,31 +46,18 @@ namespace TeamServer.Controllers
         [HttpGet("{id}")]
         public ActionResult Result(string id)
         {
-            AgentTaskResponse task = null;
+            TeamServerAgentTask task = null;
             foreach (var agent in this._agentService.GetAgents())
             {
-                var t = agent.TaskHistory.FirstOrDefault(t => t.Id == id);
-                if (t != null)
-                {
-                    task = new AgentTaskResponse()
-                    {
-                        AgentId = agent.Id,
-                        Arguments = t.Arguments,
-                        Command = t.Command,
-                        Id = t.Id,
-                        Label = t.Label,
-                        RequestDate = t.RequestDate,
-                    };
+                task = agent.TaskHistory.FirstOrDefault(t => t.Id == id);
+                if (task != null)
                     break;
-                }
             }
-
-            
 
             if (task != null)
                 return Ok(task);
             else
-                return NotFound(task);
+                return NotFound();
         }
 
 

@@ -33,7 +33,7 @@ del %builddir%\* /f /q
 copy %builddir%\Agent.exe %destx64Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %agentproj% /p:configuration=debug /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %agentproj% /p:configuration=ReleaseButDebug /p:platform=x64 /p:outputpath=%builddir%
 copy %builddir%\Agent.exe %destdebugDir%\
 del %builddir%\* /f /q
 
@@ -46,7 +46,7 @@ del %builddir%\* /f /q
 copy %builddir%\Patcher.dll %destx64Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %patcherProj% /p:configuration=debug /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %patcherProj% /p:configuration=ReleaseButDebug /p:platform=x64 /p:outputpath=%builddir%
 copy %builddir%\Patcher.dll %destdebugDir%\
 del %builddir%\* /f /q
 
@@ -59,7 +59,7 @@ del %builddir%\* /f /q
 copy %builddir%\Inject.dll %destx64Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %injectProj% /p:configuration=debug /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %injectProj% /p:configuration=ReleaseButDebug /p:platform=x64 /p:outputpath=%builddir%
 copy %builddir%\Inject.dll %destdebugDir%\
 del %builddir%\* /f /q
 
@@ -73,7 +73,7 @@ del %builddir%\* /f /q
 copy %builddir%\Starter.exe %destx64Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %starterProj% /p:configuration=debug /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %starterProj% /p:configuration=ReleaseButDebug /p:platform=x64 /p:outputpath=%builddir%
 copy %builddir%\Starter.exe %destdebugDir%\
 del %builddir%\* /f /q
 
@@ -86,7 +86,7 @@ del %builddir%\* /f /q
 copy %builddir%\Service.exe %destx64Dir%\
 del %builddir%\* /f /q
 
-%msbuild% %serviceProj% /p:configuration=debug /p:platform=x64 /p:outputpath=%builddir%
+%msbuild% %serviceProj% /p:configuration=ReleaseButDebug /p:platform=x64 /p:outputpath=%builddir%
 copy %builddir%\Service.exe %destdebugDir%\
 del %builddir%\* /f /q
 

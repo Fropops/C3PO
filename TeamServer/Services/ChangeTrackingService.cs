@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using TeamServer.Services;
-using ApiModels.Changes;
+using System.Linq;
+using Common.APIModels;
 
 public interface IChangeTrackingService
 {
@@ -17,10 +17,11 @@ public class ChangeTrackingService : IChangeTrackingService
 
     public void TrackChange(ChangingElement element, string id)
     {
-        foreach(var session in this.TrackedChanges.Keys)
+        foreach (var session in this.TrackedChanges.Keys)
         {
             var change = new Change(element, id);
-            this.TrackedChanges[session].Add(change);
+            if (!TrackedChanges[session].Any(c => c.Element == change.Element && c.Id == id))
+                this.TrackedChanges[session].Add(change);
         }
     }
 
@@ -31,7 +32,7 @@ public class ChangeTrackingService : IChangeTrackingService
             this.TrackedChanges.Add(session, new List<Change>());
             return new List<Change>();
         }
-        
+
         var lst = this.TrackedChanges[session];
         this.TrackedChanges[session] = new List<Change>();
         return lst;

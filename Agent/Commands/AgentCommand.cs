@@ -1,6 +1,7 @@
 ﻿using Agent.Communication;
 using Agent.Models;
 using Agent.Service;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,26 +16,27 @@ namespace Agent.Commands
     {
         public AgentCommandContext ParentContext { get; set; }
 
-        public Models.Agent Agent { get; set; }
-        public IMessageService MessageService { get; set; }
+        public Agent Agent { get; set; }
+
+        public INetworkService NetworkService { get; set; }
 
         public IFileService FileService { get; set; }
 
         public IConfigService ConfigService { get; set; }
-        public IProxyService ProxyService { get; set; }
+        //public IProxyService ProxyService { get; set; }
 
         public AgentTaskResult Result { get; set; }
 
 
         public void AppendResult(string message, bool addEndLine = true)
         {
-            if (string.IsNullOrEmpty(this.Result.Result))
-                Result.Result = message;
+            if (string.IsNullOrEmpty(this.Result.Output))
+                Result.Output = message;
             else
-                Result.Result += message;
+                Result.Output += message;
 
             if (addEndLine)
-                Result.Result += Environment.NewLine;
+                Result.Output += Environment.NewLine;
         }
 
         public void Error(string message, bool addEndLine = false)
@@ -50,7 +52,7 @@ namespace Agent.Commands
 
         public void Objects<T>(T obj)
         {
-            this.Result.Objects = Convert.ToBase64String(obj.Serialize());
+            this.Result.Objects = obj.Serialize();
         }
     }
 
@@ -60,11 +62,13 @@ namespace Agent.Commands
         public AgentCommandContext Context { get; set; }
 
         protected bool SendMetadataWithResult = false;
-        public virtual string Name { get; set; }
+        public virtual CommandId Command { get; protected set; }
 
-        public string Module => Assembly.GetExecutingAssembly().GetName().Name;
+        public bool Threaded { get; protected set; } = true;
 
-        public virtual void Execute(AgentTask task, AgentCommandContext context)
+        public CancellationToken CancellationToken { get; private set; }
+
+        public virtual async Task Execute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
             this.Context = context;
             context.Result.Id = task.Id;
@@ -72,8 +76,9 @@ namespace Agent.Commands
             {
                 context.Result.Status = AgentResultStatus.Running;
                 if (context.ParentContext == null) //sending will be handled in the composite command
-                    context.MessageService.SendResult(context.Result);
-                this.InnerExecute(task, context);
+                    await context.Agent.SendTaskResult(context.Result);
+                await this.InnerExecute(task, context, token);
+                context.Result.Status = AgentResultStatus.Completed;
             }
             catch (Exception e)
             {
@@ -83,79 +88,79 @@ namespace Agent.Commands
                 context.Result.Error = e.ToString();
 #else
                 context.Result.Error = e.Message;
+                context.Result.Status = AgentResultStatus.Error;
 #endif
             }
             finally
             {
                 context.Result.Info = string.Empty;
-                context.Result.Status = AgentResultStatus.Completed;
                 if (context.ParentContext == null) //sending will be handled in the composite command
-                    context.MessageService.SendResult(context.Result, this.SendMetadataWithResult);
+                    await context.Agent.SendTaskResult(context.Result);
             }
 
         }
 
-        public abstract void InnerExecute(AgentTask task, AgentCommandContext context);
+        public abstract Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token);
 
-        public void Notify(AgentCommandContext context, string status)
-        {
-            if (context.ParentContext == null)
-                context.MessageService.SendResult(new AgentTaskResult()
-                {
-                    Id = context.Result.Id,
-                    Status = context.Result.Status,
-                    Info = status
-                });
-            else
-            {
-                context.ParentContext.MessageService.SendResult(new AgentTaskResult()
-                {
-                    Id = context.ParentContext.Result.Id,
-                    Status = context.ParentContext.Result.Status,
-                    Info = status
-                });
-            }
-        }
+        //public void Notify(AgentCommandContext context, string status)
+        //{
+        //    if (context.ParentContext == null)
+        //        context.Agent.SendResult(new AgentTaskResult()
+        //        {
+        //            Id = context.Result.Id,
+        //            Status = context.Result.Status,
+        //            Info = status
+        //        });
+        //    else
+        //    {
+        //        context.ParentContext.Agent.SendResult(new AgentTaskResult()
+        //        {
+        //            Id = context.ParentContext.Result.Id,
+        //            Status = context.ParentContext.Result.Status,
+        //            Info = status
+        //        });
+        //    }
+        //}
 
 
-        protected void CheckFileDownloaded(AgentTask task, AgentCommandContext context)
-        {
-            int percent = -1;
-            while (!context.FileService.IsDownloadComplete(task.FileId))
-            {
-                var newpercent = context.FileService.GetDownloadPercent(task.FileId);
-                if (newpercent != percent)
-                {
-                    percent = newpercent;
-                    this.Notify(context, $"{task.FileName} Downloading {percent}%");
-                }
+        //protected void CheckFileDownloaded(AgentTask task, AgentCommandContext context)
+        //{
+        //    int percent = -1;
+        //    while (!context.FileService.IsDownloadComplete(task.FileId))
+        //    {
+        //        var newpercent = context.FileService.GetDownloadPercent(task.FileId);
+        //        if (newpercent != percent)
+        //        {
+        //            percent = newpercent;
+        //            this.Notify(context, $"{task.FileName} Downloading {percent}%");
+        //        }
 
-                if (percent != 100)
-                    Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
-            }
+        //        if (percent != 100)
+        //            Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
+        //    }
 
-            this.Notify(context, $"{task.FileName} Downloaded");
+        //    this.Notify(context, $"{task.FileName} Downloaded");
 
-        }
+        //}
 
-        protected void CheckFileUploaded(string fileId, string fileName, AgentCommandContext context)
-        {
-            int percent = -1;
-            while (!context.FileService.IsUploadComplete(fileId))
-            {
-                var newpercent = context.FileService.GetUploadPercent(fileId);
-                if (newpercent != percent)
-                {
-                    percent = newpercent;
-                    this.Notify(context, $"{fileName} uploading {percent}%");
-                }
+        //protected void CheckFileUploaded(string fileId, string fileName, AgentCommandContext context)
+        //{
+        //    int percent = -1;
+        //    while (!context.FileService.IsUploadComplete(fileId))
+        //    {
+        //        var newpercent = context.FileService.GetUploadPercent(fileId);
+        //        if (newpercent != percent)
+        //        {
+        //            percent = newpercent;
+        //            this.Notify(context, $"{fileName} uploading {percent}%");
+        //        }
 
-                if (percent != 100)
-                    Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
-            }
+        //        if (percent != 100)
+        //            Thread.Sleep(context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval);
+        //    }
 
-            this.Notify(context, $"{fileName} uploaded");
+        //    this.Notify(context, $"{fileName} uploaded");
 
-        }
+        //}
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Agent.Communication;
 using Agent.Helpers;
-using Agent.Service.Pivoting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

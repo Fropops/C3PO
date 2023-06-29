@@ -17,7 +17,7 @@ using System.Diagnostics;
 
 namespace Agent.Communication
 {
-    public class TcpCommModule : CommModule
+    public class TcpCommModule : Communicator
     {
         public TcpCommModule(ConnexionUrl conn) : base(conn)
         {

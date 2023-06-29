@@ -1,5 +1,4 @@
-﻿using ApiModels.Response;
-using Commander.Communication;
+﻿using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
 using Newtonsoft.Json;

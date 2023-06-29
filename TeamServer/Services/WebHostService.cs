@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using ApiModels.Requests;
-using ApiModels.WebHost;
+using Common.APIModels.WebHost;
 
 namespace TeamServer.Services;
 

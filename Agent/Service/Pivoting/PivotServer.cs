@@ -16,7 +16,7 @@ namespace Agent.Service.Pivoting
 
         public Encryptor Encryptor { get; private set; }
 
-        protected IMessageService _messageService;
+        protected INetworkService _networkService;
 
         public RunningStatus Status = RunningStatus.Stoped;
 
@@ -24,7 +24,7 @@ namespace Agent.Service.Pivoting
         {
             Connexion = conn;
             this.Encryptor = new Encryptor(serverKey);
-            _messageService = ServiceProvider.GetService<IMessageService>();
+            _networkService = ServiceProvider.GetService<INetworkService>();
         }
 
         protected readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();

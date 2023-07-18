@@ -1,0 +1,29 @@
+30/06/2023 01:50:30 | Info | User | Fropops-ad17446a-c11d-4f9c-9c7b-950176be3b8d |  | Connexion to TeamServer
+30/06/2023 01:50:31 | Info | User | Fropops-ad17446a-c11d-4f9c-9c7b-950176be3b8d |  | Connexion to TeamServer
+30/06/2023 01:51:24 | Info | User | Fropops-ad17446a-c11d-4f9c-9c7b-950176be3b8d |  | Exit TeamServer
+30/06/2023 01:51:55 | Info | User | Fropops-4dd89c13-99d6-4ca6-b569-9362bbbba693 |  | Connexion to TeamServer
+30/06/2023 01:51:56 | Info | User | Fropops-4dd89c13-99d6-4ca6-b569-9362bbbba693 |  | Connexion to TeamServer
+30/06/2023 01:53:33 | Info | User | Fropops-4dd89c13-99d6-4ca6-b569-9362bbbba693 |  | Exit TeamServer
+30/06/2023 01:53:38 | Info | User | Fropops-76cb7137-ee75-44c7-a8ca-38c8124d0299 |  | Connexion to TeamServer
+30/06/2023 01:53:39 | Info | User | Fropops-76cb7137-ee75-44c7-a8ca-38c8124d0299 |  | Connexion to TeamServer
+30/06/2023 01:56:05 | Info | User | Fropops-76cb7137-ee75-44c7-a8ca-38c8124d0299 |  | Exit TeamServer
+30/06/2023 01:56:10 | Info | User | Fropops-4f8847f8-692d-458d-92ee-a16b976254be |  | Connexion to TeamServer
+30/06/2023 01:56:11 | Info | User | Fropops-4f8847f8-692d-458d-92ee-a16b976254be |  | Connexion to TeamServer
+30/06/2023 02:03:20 | Info | User | Fropops-4f8847f8-692d-458d-92ee-a16b976254be |  | Exit TeamServer
+30/06/2023 02:03:59 | Info | User | Fropops-ac7e541c-fd3f-4204-98c2-b50ecc8a3312 |  | Connexion to TeamServer
+30/06/2023 02:04:00 | Info | User | Fropops-ac7e541c-fd3f-4204-98c2-b50ecc8a3312 |  | Connexion to TeamServer
+30/06/2023 02:33:24 | Info | User | Fropops-ac7e541c-fd3f-4204-98c2-b50ecc8a3312 |  | Exit TeamServer
+30/06/2023 02:33:37 | Info | User | Fropops-f8f180db-0d2a-4194-b7d0-08367aa547bf |  | Connexion to TeamServer
+30/06/2023 02:33:39 | Info | User | Fropops-f8f180db-0d2a-4194-b7d0-08367aa547bf |  | Connexion to TeamServer
+30/06/2023 11:20:51 | Info | User | Fropops-f8f180db-0d2a-4194-b7d0-08367aa547bf |  | Exit TeamServer
+30/06/2023 11:21:00 | Info | User | Fropops-cd686f5a-1d28-44ac-b7d4-d56b5cd48840 |  | Connexion to TeamServer
+30/06/2023 11:21:01 | Info | User | Fropops-cd686f5a-1d28-44ac-b7d4-d56b5cd48840 |  | Connexion to TeamServer
+30/06/2023 11:22:02 | Info | User | Fropops-cd686f5a-1d28-44ac-b7d4-d56b5cd48840 |  | Exit TeamServer
+30/06/2023 11:22:09 | Info | User | Fropops-b41b42d9-ef29-42b3-a979-dee4bb144363 |  | Connexion to TeamServer
+30/06/2023 11:22:10 | Info | User | Fropops-b41b42d9-ef29-42b3-a979-dee4bb144363 |  | Connexion to TeamServer
+30/06/2023 11:24:02 | Info | User | Fropops-b41b42d9-ef29-42b3-a979-dee4bb144363 |  | Exit TeamServer
+30/06/2023 11:24:17 | Info | User | Fropops-00db022c-b130-4c54-98e1-970e7efff34e |  | Connexion to TeamServer
+30/06/2023 11:24:18 | Info | User | Fropops-00db022c-b130-4c54-98e1-970e7efff34e |  | Connexion to TeamServer
+30/06/2023 11:27:33 | Info | User | Fropops-00db022c-b130-4c54-98e1-970e7efff34e |  | Exit TeamServer
+30/06/2023 11:27:40 | Info | User | Fropops-67a71485-31db-465a-95ac-04488e960208 |  | Connexion to TeamServer
+30/06/2023 11:27:41 | Info | User | Fropops-67a71485-31db-465a-95ac-04488e960208 |  | Connexion to TeamServer

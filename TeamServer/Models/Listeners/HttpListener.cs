@@ -95,6 +95,7 @@ namespace TeamServer.Models
             services.AddSingleton(this._cryptoService);
             services.AddSingleton(this._auditService);
             services.AddSingleton(this._resultService);
+            services.AddSingleton(this._frameService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)

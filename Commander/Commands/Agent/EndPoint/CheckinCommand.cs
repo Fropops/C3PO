@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Commander.Executor;
 using Shared;
+using System.Security.Cryptography;
 
 namespace Commander.Commands.Agent.EndPoint
 {

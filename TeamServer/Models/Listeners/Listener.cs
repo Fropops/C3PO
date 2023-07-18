@@ -29,6 +29,7 @@ namespace TeamServer.Models
         protected IWebHostService _webHostService;
         protected ICryptoService _cryptoService;
         protected IAuditService _auditService;
+        protected IFrameService _frameService;
 
         public Listener(string name, int bindPort, string Ip)
         {
@@ -44,7 +45,8 @@ namespace TeamServer.Models
             IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger, IChangeTrackingService changeTrackingService,
             IWebHostService webHostService,
             ICryptoService cryptoService,
-            IAuditService auditService)
+            IAuditService auditService,
+            IFrameService frameService)
         {
             this._agentService = service;
             this._fileService = fileService;
@@ -56,6 +58,7 @@ namespace TeamServer.Models
             this._cryptoService = cryptoService;
             this._auditService = auditService;
             this._resultService = resultService;
+            this._frameService = frameService;
         }
 
         public abstract Task Start();

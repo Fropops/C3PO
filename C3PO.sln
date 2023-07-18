@@ -36,6 +36,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{56CFE9F9-B12F-45A1-BAC3-3D4C6E58936D}"
 	ProjectSection(SolutionItems) = preProject
 		Payload\Scripts\Payload = Payload\Scripts\Payload
+		Payload\Scripts\payload-dll.nim = Payload\Scripts\payload-dll.nim
 		Payload\Scripts\payload.nim = Payload\Scripts\payload.nim
 		Payload\Scripts\payload.ps1 = Payload\Scripts\payload.ps1
 	EndProjectSection

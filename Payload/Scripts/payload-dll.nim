@@ -36,19 +36,16 @@ proc DllMain(hinstDLL: HINSTANCE, fdwReason: DWORD, lpvReserved: LPVOID) : BOOL 
   
   MessageBox(0, "Before loading", "Nim is Powerful", 0)
   
-  try:
-    var assembly = load(bytes)
-    MessageBox(0, "Assembly start", "Nim is Powerful", 0)
-    var arr = toCLRVariant([""], VT_BSTR) # Passing no arguments
-    assembly.EntryPoint.Invoke(nil, toCLRVariant([arr]))
+  #try:
+  var assembly = load(bytes)
+  discard MessageBox(0, "Assembly start", "Nim is Powerful", 0)
+  var arr = toCLRVariant([""], VT_BSTR) # Passing no arguments
+  assembly.EntryPoint.Invoke(nil, toCLRVariant([arr]))
 
-  except CatchableError as e:
-  
-    echo e.msg
+  #except CatchableError as e:
+  #  MessageBox(0, "error", "Nim is Powerful", 0)
 
-    MessageBox(0, "error", "Nim is Powerful", 0)
-
-  
+  discard MessageBox(0, "Assembly lodaed", "Nim is Powerful", 0)
 
   return true
 

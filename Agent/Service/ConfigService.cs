@@ -16,11 +16,15 @@ namespace Agent.Service
         //WinAPI.Wrapper.APIAccessType APIAccessType { get; set; }
 
         //WinAPI.Wrapper.InjectionMethod APIInjectionMethod { get; set; }
+
+        bool EncryptFrames { get; set; }
     }
     public class ConfigService : IConfigService
     {
         public string ServerKey { get; set; }
         public string SpawnToX64 { get; set; } = @"c:\windows\system32\dllhost.exe";
+
+        public bool EncryptFrames { get; set; } = true;
 
         //public WinAPI.Wrapper.APIAccessType APIAccessType { get; set; } = WinAPI.Wrapper.APIAccessType.DInvoke;
 

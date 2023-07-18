@@ -20,6 +20,7 @@ namespace Agent
         private IConfigService _configService;
         private INetworkService _networkService;
         private IFileService _fileService;
+        private IFrameService _frameService;
         //private IProxyService _proxyService;
         public AgentMetadata MetaData { get; protected set; }
 
@@ -65,6 +66,7 @@ namespace Agent
             this._fileService = ServiceProvider.GetService<IFileService>();
             //this._proxyService = ServiceProvider.GetService<IProxyService>();
             this._configService = ServiceProvider.GetService<IConfigService>();
+            this._frameService = ServiceProvider.GetService<IFrameService>();
 
             LoadCommands();
 
@@ -118,6 +120,7 @@ namespace Agent
 
                 case NetFrameType.Task:
                     {
+                        var framesData = this._frameService.GetData(frame);
                         var task = await frame.Data.BinaryDeserializeAsync<AgentTask>();
                         await HandleTask(task);
                         break;
@@ -239,13 +242,13 @@ namespace Agent
 
         public async Task SendMetaData()
         {
-            var frame = new NetFrame(this.MetaData.Id, NetFrameType.CheckIn, await this.MetaData.BinarySerializeAsync());
+            var frame = this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.CheckIn, await this.MetaData.BinarySerializeAsync());
             this._networkService.EnqueueFrame(frame);
         }
 
         public async Task SendTaskResult(AgentTaskResult result)
         {
-            var frame = new NetFrame(this.MetaData.Id, NetFrameType.TaskResult, await result.BinarySerializeAsync());
+            var frame = this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.TaskResult, await result.BinarySerializeAsync());
             this._networkService.EnqueueFrame(frame);
         }
 

@@ -54,6 +54,7 @@ namespace TeamServer
             services.AddSingleton<IWebHostService, WebHostService>();
             services.AddSingleton<ICryptoService, CryptoService>();
             services.AddSingleton<IAuditService, AuditService>();
+            services.AddSingleton<IFrameService, FrameService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -154,6 +155,7 @@ namespace TeamServer
             var webHost = app.ApplicationServices.GetService<IWebHostService>();
             var crypto = app.ApplicationServices.GetService<ICryptoService>();
             var audit = app.ApplicationServices.GetService<IAuditService>();
+            var frame = app.ApplicationServices.GetService<IFrameService>();
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
@@ -163,7 +165,7 @@ namespace TeamServer
             foreach (var listenerConf in listeners)
             {
                 var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
-                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit);
+                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame);
                 listener.Start();
                 listenerService.AddListener(listener);
             }

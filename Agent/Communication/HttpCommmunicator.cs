@@ -58,7 +58,7 @@ namespace Agent.Communication
             }
         }
 
-        bool lastCallError = false;
+        bool lastCallError = true;
         protected override async Task<List<NetFrame>> CheckIn(List<NetFrame> results)
         {
             try

@@ -7,82 +7,85 @@ namespace TeamServer.Services;
 
 public interface ICryptoService
 {
-    public string Key { get; }
-    byte[] Encrypt(byte[] src);
-    byte[] Encrypt(string src);
-    byte[] Decrypt(byte[] src);
-    string DecryptAsString(byte[] src);
-    byte[] Decrypt(string src);
-    string DecryptAsString(string src);
-    string DecryptFromBase64(string src);
-    string EncryptAsBase64(string src);
-
+    byte[] Key { get; }
+    bool EncryptFrames { get; }
+    byte[] Encrypt(byte[] data);
+    byte[] Decrypt(byte[] data);
 }
 
 public class CryptoService : ICryptoService
 {
     private readonly IConfiguration _configService;
+    public byte[] Key { get; private set; }
 
-    public string Key { get; private set; }
-    private RijndaelManaged rijndael;
+    public bool EncryptFrames { get; private set; }
     public CryptoService(IConfiguration configService)
     {
         _configService = configService;
         
-        Key = configService.GetValue<string>("ServerKey");
-
-        //Logger.Log($"Usgin ServerKey = {Key}");
-
-        var keyBytes = System.Text.Encoding.UTF8.GetBytes(Key);
-
-        byte[] key = keyBytes.Take(32).ToArray();
-        byte[] iv = keyBytes.Take(16).ToArray();
-
-        rijndael = new RijndaelManaged();
-        rijndael.KeySize = 256;
-        rijndael.BlockSize = 128;
-        rijndael.Key = key;
-        rijndael.IV = iv;
-        rijndael.Padding = PaddingMode.PKCS7;
+        Key = System.Text.Encoding.UTF8.GetBytes(configService.GetValue<string>("ServerKey"));
+        var enc = configService.GetValue<bool?>("EncryptFrames");
+        EncryptFrames = !enc.HasValue || enc.Value;
     }
 
-    public byte[] Encrypt(byte[] src)
+    public byte[] Encrypt(byte[] data)
     {
-        return rijndael.CreateEncryptor().TransformFinalBlock(src, 0, src.Length);
+        using (var aes = Aes.Create())
+        {
+            aes.Mode = CipherMode.CBC;
+            aes.Key = this.Key;
+            aes.GenerateIV();
+
+            using (var transform = aes.CreateEncryptor())
+            {
+
+                var enc = transform.TransformFinalBlock(data, 0, data.Length);
+                var checksum = ComputeHmac(enc);
+
+                var buf = new byte[aes.IV.Length + checksum.Length + enc.Length];
+
+                Buffer.BlockCopy(aes.IV, 0, buf, 0, aes.IV.Length);
+                Buffer.BlockCopy(checksum, 0, buf, aes.IV.Length, checksum.Length);
+                Buffer.BlockCopy(enc, 0, buf, aes.IV.Length + checksum.Length, enc.Length);
+
+                return buf;
+            }
+        }
     }
 
-    public byte[] Encrypt(string src)
+    public byte[] Decrypt(byte[] data)
     {
-        return Encrypt(System.Text.Encoding.UTF8.GetBytes(src));
+        var iv = new byte[16];
+        Buffer.BlockCopy(data, 0, iv, 0, iv.Length);
+
+        var checksum = new byte[32];
+        Buffer.BlockCopy(data, 16, checksum, 0, checksum.Length);
+
+        var enc = new byte[data.Length - 48];
+        Buffer.BlockCopy(data, 48, enc, 0, data.Length - 48);
+
+        if (!ComputeHmac(enc).SequenceEqual(checksum))
+            throw new Exception("Invalid Checksum");
+
+        using (var aes = Aes.Create())
+        {
+            aes.Mode = CipherMode.CBC;
+            aes.Key = this.Key;
+            aes.IV = iv;
+
+            using (var transform = aes.CreateDecryptor())
+            {
+                var dec = transform.TransformFinalBlock(enc, 0, enc.Length);
+                return dec;
+            }
+        }
     }
 
-    public byte[] Decrypt(byte[] src)
+    private byte[] ComputeHmac(byte[] data)
     {
-        return rijndael.CreateDecryptor().TransformFinalBlock(src, 0, src.Length);
-    }
-
-    public string DecryptAsString(byte[] src)
-    {
-        return System.Text.Encoding.UTF8.GetString(Decrypt(src));
-    }
-
-    public byte[] Decrypt(string src)
-    {
-        return Decrypt(System.Text.Encoding.UTF8.GetBytes(src));
-    }
-
-    public string DecryptAsString(string src)
-    {
-        return DecryptAsString(System.Text.Encoding.UTF8.GetBytes(src));
-    }
-
-    public string DecryptFromBase64(string src)
-    {
-        return this.DecryptAsString(Convert.FromBase64String(src));
-    }
-
-    public string EncryptAsBase64(string src)
-    {
-        return Convert.ToBase64String(this.Encrypt(src));
+        using (var hmac = new HMACSHA256(this.Key))
+        {
+            return hmac.ComputeHash(data);
+        }
     }
 }

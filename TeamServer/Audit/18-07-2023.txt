@@ -1,0 +1,4 @@
+18/07/2023 07:56:08 | Info | User | Fropops-44264ffa-8a27-4f96-a95b-cac1a5f3eb52 |  | Connexion to TeamServer
+18/07/2023 07:56:09 | Info | User | Fropops-44264ffa-8a27-4f96-a95b-cac1a5f3eb52 |  | Connexion to TeamServer
+18/07/2023 07:56:27 | Info | User | Fropops-44264ffa-8a27-4f96-a95b-cac1a5f3eb52 | 5c233534ee | Command tasked to agent : CheckIn
+18/07/2023 07:56:34 | Info | User | Fropops-44264ffa-8a27-4f96-a95b-cac1a5f3eb52 | 5c233534ee | Command tasked to agent : Whoami

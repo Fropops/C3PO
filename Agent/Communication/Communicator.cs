@@ -22,8 +22,6 @@ namespace Agent.Communication
 
         public ConnexionUrl Connexion { get; set; }
 
-        public Encryptor Encryptor { get; set; }
-
         //public IProxyService ProxyService { get; protected set; }
         public INetworkService NetworkeService { get; protected set; }
         public IFileService FileService { get; protected set; }
@@ -37,9 +35,6 @@ namespace Agent.Communication
             this.NetworkeService = ServiceProvider.GetService<INetworkService>();
             this.FileService = ServiceProvider.GetService<IFileService>();
             //this.ProxyService =ServiceProvider.GetService<IProxyService>();
-            
-
-            this.Encryptor = new Encryptor(this.ConfigService.ServerKey);
         }
 
         protected virtual int GetDelay()

@@ -33,6 +33,7 @@ namespace TeamServer.Models
         private readonly ICryptoService _cryptoService;
         private readonly IAuditService _auditService;
         private readonly IAgentTaskResultService _agentTaskResultService;
+        private readonly IFrameService _frameService;
         public HttpListenerController(IAgentService agentService,
             IFileService fileService,
             IListenerService listenerService,
@@ -42,7 +43,8 @@ namespace TeamServer.Models
             IWebHostService webHostService,
             ICryptoService cryptoService,
             IAuditService auditService,
-            IAgentTaskResultService agentTaskResultService)
+            IAgentTaskResultService agentTaskResultService,
+            IFrameService frameService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -54,6 +56,7 @@ namespace TeamServer.Models
             this._cryptoService = cryptoService;
             this._auditService = auditService;
             this._agentTaskResultService = agentTaskResultService;
+            this._frameService = frameService;
         }
 
 
@@ -123,13 +126,15 @@ namespace TeamServer.Models
 
         private async Task<NetFrame> CreateTaskFrame(string destination, AgentTask task)
         {
+
             var taskSer = await task.BinarySerializeAsync();
-            return new NetFrame(string.Empty, destination, NetFrameType.Task, taskSer);
+            return this._frameService.CreateFrame(destination, NetFrameType.Task, taskSer);
         }
 
         private async Task<T> ExtractFrameData<T>(NetFrame frame)
         {
-            return await frame.Data.BinaryDeserializeAsync<T>();
+            var data = this._frameService.GetData(frame);
+            return await data.BinaryDeserializeAsync<T>();
         }
 
 

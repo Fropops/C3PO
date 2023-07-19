@@ -16,6 +16,7 @@
     <Compile Include="..\Shared\NetFrameType.cs" Link="Shared\NetFrameType.cs" />
     <Compile Include="..\Shared\ParameterDictionary.cs" Link="Shared\ParameterDictionary.cs" />
     <Compile Include="..\Shared\ParameterId.cs" Link="Shared\ParameterId.cs" />
+    <Compile Include="..\Shared\ResultObjects\ListDirectoryResult.cs" Link="Shared\ResultObjects\ListDirectoryResult.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\" />
+    <Folder Include="Shared\ResultObjects\" />
   </ItemGroup>
 
   <ItemGroup>

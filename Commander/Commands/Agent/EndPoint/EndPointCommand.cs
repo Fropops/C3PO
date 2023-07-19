@@ -21,21 +21,31 @@ namespace Commander.Commands.Agent
 
         public abstract CommandId CommandId { get; }
 
-        protected async Task CallEndPointCommand(CommandContext context)
+        protected async Task CallEndPointCommand(CommandContext<T> context)
         {
             var agent = context.Executor.CurrentAgent;
+
+            
+
             await context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, this.SpecifyParameters(context));
 
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
 
-        protected virtual ParameterDictionary SpecifyParameters(CommandContext context)
+        protected virtual async Task<bool> CheckParams(CommandContext<T> context)
+        {
+            return true;
+        }
+
+        protected virtual ParameterDictionary SpecifyParameters(CommandContext<T> context)
         {
             return null;
         }
 
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
         {
+            if (!await this.CheckParams(context))
+                return false;
             await this.CallEndPointCommand(context);
             return true;
         }

@@ -1,6 +1,10 @@
-﻿using Commander.Terminal;
+﻿using System.Collections.Generic;
+using BinarySerializer;
+using Commander.Terminal;
 using Common.Models;
 using Shared;
+using Shared.ResultObjects;
+using Spectre.Console;
 
 namespace Commander.Models
 {
@@ -8,20 +12,6 @@ namespace Commander.Models
     {
         public static void Print(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal, bool fullLabel = false)
         {
-            //terminal.WriteInfo($"Task {this.Id}");
-            //terminal.WriteInfo($"Label = {this.Label}");
-            //terminal.WriteInfo($"Cmd = {this.FullCommand}");
-            //if(result.Status == AgentResultStatus.Completed)
-            //    terminal.WriteInfo($"Task is {result.Status} ");
-            //else
-            //    if(result.Status == AgentResultStatus.Running && !string.IsNullOrEmpty(result.Info))
-            //    terminal.WriteLine($"Task is {result.Status} : {result.Info}");
-            //else
-            //    terminal.WriteLine($"Task is {result.Status} ");
-            //terminal.WriteInfo($"-------------------------------------------");
-            //if (!string.IsNullOrEmpty(result.Result))
-            //    terminal.WriteLine(result.Result);
-
             var cmd = task.Command;
             var status = result.Status;
 
@@ -34,7 +24,7 @@ namespace Commander.Models
 
             terminal.WriteInfo($"Task {cmd} is {status}");
 
-            if (result.Status == AgentResultStatus.Completed)
+            if (result.Status == AgentResultStatus.Completed || result.Status == AgentResultStatus.Error)
             {
                 terminal.WriteInfo($"-------------------------------------------");
                 if (!string.IsNullOrEmpty(result.Output))
@@ -43,136 +33,175 @@ namespace Commander.Models
 
                 if (!string.IsNullOrEmpty(result.Error))
                     terminal.WriteError(result.Error);
+
+                WriteObjects(task, result, terminal);
             }
             return;
         }
 
-       /* private void WriteObjects(AgentTaskResult result, ITerminal terminal)
+        private static void WriteObjects(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
         {
-            if (string.IsNullOrEmpty(result.Objects))
+            if (result.Objects == null || result.Objects.Length == 0)
                 return;
 
-
-            if (this.Command == EndPointCommand.LS)
+            switch (task.CommandId)
             {
-                var json = result.ObjectsAsJson;
-                var list = JsonConvert.DeserializeObject<List<LSResult>>(json);
-                var table = new Table();
-                table.Border(TableBorder.Rounded);
-                // Add some columns
-                table.AddColumn(new TableColumn("Name").LeftAligned());
-                table.AddColumn(new TableColumn("Type").LeftAligned());
-                table.AddColumn(new TableColumn("Length").LeftAligned());
-                foreach (var item in list)
-                {
-                    long lengthInBytes = item.Length;
-                    double lengthInKb = lengthInBytes / 1024.0;
-                    double lengthInMb = lengthInKb / 1024.0;
-                    double lengthInGb = lengthInMb / 1024.0;
+                case CommandId.Ls:  PrintLs(task, result, terminal);
+                    break;
 
-                    string lengthString = lengthInBytes < 1024
-                    ? $"{item.Length} bytes"
-                    : lengthInKb < 1024
-                        ? $"{lengthInKb:F1} KB"
-                        : lengthInMb < 1024
-                            ? $"{lengthInMb:F1} MB"
-                            : $"{lengthInGb:F1} GB";
-                    table.AddRow(item.Name, item.IsFile ? "File" : "Dirrectory", lengthString);
-                }
-
-                terminal.Write(table);
-                return;
-            }
-
-            if (this.Command == EndPointCommand.PS)
-            {
-                var json = result.ObjectsAsJson;
-                var list = JsonConvert.DeserializeObject<List<PSResult>>(json);
-
-                var table = new Table();
-                table.Border(TableBorder.Rounded);
-                // Add some columns
-                table.AddColumn(new TableColumn("Name").LeftAligned());
-                table.AddColumn(new TableColumn("Id").LeftAligned());
-                table.AddColumn(new TableColumn("ParentId").LeftAligned());
-                table.AddColumn(new TableColumn("Owner").LeftAligned());
-                table.AddColumn(new TableColumn("Arch.").LeftAligned());
-                table.AddColumn(new TableColumn("Session").LeftAligned());
-                table.AddColumn(new TableColumn("Path").LeftAligned());
-
-                this.RenderPSTree(list, table);
-
-                terminal.Write(table);
-                return;
+                default: break;
             }
         }
 
-        private void RenderPSTree(List<PSResult> nodes, Table table)
+        private static void PrintLs(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
         {
-
-            var rootsNodes = new List<PSResult>();
-            foreach (var node in nodes)
+           var list = result.Objects.BinaryDeserializeAsync<List<ListDirectoryResult>>().Result;
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Name").LeftAligned());
+            table.AddColumn(new TableColumn("Type").LeftAligned());
+            table.AddColumn(new TableColumn("Length").LeftAligned());
+            foreach (var item in list)
             {
-                if (node.Name == "brave")
-                {
-                    int i = 0;
-                }
-                if (node.Id == 0)
-                    continue;
-                if (node.ParentId == 0)
-                    rootsNodes.Add(node);
-                if (!nodes.Any(p => p.Id == node.ParentId))
-                    rootsNodes.Add(node);
+                long lengthInBytes = item.Length;
+                double lengthInKb = lengthInBytes / 1024.0;
+                double lengthInMb = lengthInKb / 1024.0;
+                double lengthInGb = lengthInMb / 1024.0;
+
+                string lengthString = lengthInBytes < 1024
+                ? $"{item.Length} bytes"
+                : lengthInKb < 1024
+                    ? $"{lengthInKb:F1} KB"
+                    : lengthInMb < 1024
+                        ? $"{lengthInMb:F1} MB"
+                        : $"{lengthInGb:F1} GB";
+                table.AddRow(item.Name, item.IsFile ? "File" : "Dir", lengthString);
             }
 
-            foreach (var child in rootsNodes.OrderBy(n => n.Name))
-                RenderNode(nodes, child, table, 0);
-
+            terminal.Write(table);
         }
 
-        private void RenderNode(List<PSResult> nodes, PSResult node, Table table, int indent)
-        {
-            table.AddRow(
-                SurroundIfSelf(node, node.Name.PadLeft(indent + node.Name.Length)),
-                SurroundIfSelf(node, node.Id.ToString()),
-                SurroundIfSelf(node, node.ParentId.ToString()),
-                SurroundIfSelf(node, node.Owner),
-                SurroundIfSelf(node, node.Arch),
-                SurroundIfSelf(node, node.SessionId.ToString()),
-                SurroundIfSelf(node, node.ProcessPath));
-            foreach (var child in nodes.Where(p => p.ParentId == node.Id).OrderBy(n => n.Name))
-                RenderNode(nodes, child, table, indent + 3);
-        }
+        /* if (this.Command == EndPointCommand.LS)
+         {
+             var json = result.ObjectsAsJson;
+             var list = JsonConvert.DeserializeObject<List<LSResult>>(json);
+             var table = new Table();
+             table.Border(TableBorder.Rounded);
+             // Add some columns
+             table.AddColumn(new TableColumn("Name").LeftAligned());
+             table.AddColumn(new TableColumn("Type").LeftAligned());
+             table.AddColumn(new TableColumn("Length").LeftAligned());
+             foreach (var item in list)
+             {
+                 long lengthInBytes = item.Length;
+                 double lengthInKb = lengthInBytes / 1024.0;
+                 double lengthInMb = lengthInKb / 1024.0;
+                 double lengthInGb = lengthInMb / 1024.0;
 
-        private IRenderable SurroundIfSelf(PSResult res, string value)
-        {
-            if (string.IsNullOrEmpty(value))
-                return new Markup(string.Empty);
+                 string lengthString = lengthInBytes < 1024
+                 ? $"{item.Length} bytes"
+                 : lengthInKb < 1024
+                     ? $"{lengthInKb:F1} KB"
+                     : lengthInMb < 1024
+                         ? $"{lengthInMb:F1} MB"
+                         : $"{lengthInGb:F1} GB";
+                 table.AddRow(item.Name, item.IsFile ? "File" : "Dirrectory", lengthString);
+             }
 
-            var exec = ServiceProvider.GetService<IExecutor>();
-            if (exec.CurrentAgent != null && exec.CurrentAgent.Metadata.ProcessId == res.Id)
-                return new Markup($"[cyan]{value}[/]");
+             terminal.Write(table);
+             return;
+         }
 
-            return new Markup(value);
-        }
+         if (this.Command == EndPointCommand.PS)
+         {
+             var json = result.ObjectsAsJson;
+             var list = JsonConvert.DeserializeObject<List<PSResult>>(json);
+
+             var table = new Table();
+             table.Border(TableBorder.Rounded);
+             // Add some columns
+             table.AddColumn(new TableColumn("Name").LeftAligned());
+             table.AddColumn(new TableColumn("Id").LeftAligned());
+             table.AddColumn(new TableColumn("ParentId").LeftAligned());
+             table.AddColumn(new TableColumn("Owner").LeftAligned());
+             table.AddColumn(new TableColumn("Arch.").LeftAligned());
+             table.AddColumn(new TableColumn("Session").LeftAligned());
+             table.AddColumn(new TableColumn("Path").LeftAligned());
+
+             this.RenderPSTree(list, table);
+
+             terminal.Write(table);
+             return;
+         }
+     }
+
+     private void RenderPSTree(List<PSResult> nodes, Table table)
+     {
+
+         var rootsNodes = new List<PSResult>();
+         foreach (var node in nodes)
+         {
+             if (node.Name == "brave")
+             {
+                 int i = 0;
+             }
+             if (node.Id == 0)
+                 continue;
+             if (node.ParentId == 0)
+                 rootsNodes.Add(node);
+             if (!nodes.Any(p => p.Id == node.ParentId))
+                 rootsNodes.Add(node);
+         }
+
+         foreach (var child in rootsNodes.OrderBy(n => n.Name))
+             RenderNode(nodes, child, table, 0);
+
+     }
+
+     private void RenderNode(List<PSResult> nodes, PSResult node, Table table, int indent)
+     {
+         table.AddRow(
+             SurroundIfSelf(node, node.Name.PadLeft(indent + node.Name.Length)),
+             SurroundIfSelf(node, node.Id.ToString()),
+             SurroundIfSelf(node, node.ParentId.ToString()),
+             SurroundIfSelf(node, node.Owner),
+             SurroundIfSelf(node, node.Arch),
+             SurroundIfSelf(node, node.SessionId.ToString()),
+             SurroundIfSelf(node, node.ProcessPath));
+         foreach (var child in nodes.Where(p => p.ParentId == node.Id).OrderBy(n => n.Name))
+             RenderNode(nodes, child, table, indent + 3);
+     }
+
+     private IRenderable SurroundIfSelf(PSResult res, string value)
+     {
+         if (string.IsNullOrEmpty(value))
+             return new Markup(string.Empty);
+
+         var exec = ServiceProvider.GetService<IExecutor>();
+         if (exec.CurrentAgent != null && exec.CurrentAgent.Metadata.ProcessId == res.Id)
+             return new Markup($"[cyan]{value}[/]");
+
+         return new Markup(value);
+     }
 
 
-        public class LSResult
-        {
-            public long Length { get; set; }
-            public string Name { get; set; }
-            public bool IsFile { get; set; }
-        }
+     public class LSResult
+     {
+         public long Length { get; set; }
+         public string Name { get; set; }
+         public bool IsFile { get; set; }
+     }
 
-        public class PSResult
-        {
-            public string Name { get; set; }
-            public int Id { get; set; }
-            public int ParentId { get; set; }
-            public int SessionId { get; set; }
-            public string ProcessPath { get; set; }
-            public string Owner { get; set; }
-            public string Arch { get; set; }
-        }*/
+     public class PSResult
+     {
+         public string Name { get; set; }
+         public int Id { get; set; }
+         public int ParentId { get; set; }
+         public int SessionId { get; set; }
+         public string ProcessPath { get; set; }
+         public string Owner { get; set; }
+         public string Arch { get; set; }
+     }*/
     }
 }

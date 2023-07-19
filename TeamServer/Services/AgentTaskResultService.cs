@@ -24,7 +24,14 @@ namespace TeamServer.Services
             if (!_results.ContainsKey(res.Id))
                 _results.Add(res.Id, res);
             else
-                _results[res.Id] = res;
+            {
+                var existing = _results[res.Id];
+                existing.Status = res.Status;
+                existing.Output += res.Output;
+                existing.Error = res.Error;
+                existing.Info = res.Info;
+                existing.Objects = res.Objects;
+            }
         }
 
         public AgentTaskResult GetAgentTaskResult(string id)

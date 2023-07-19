@@ -1,0 +1,25 @@
+19/07/2023 08:14:43 | Info | User | Fropops-da91deaf-c7b3-4af7-b0c0-f9dcbf9141e2 |  | Connexion to TeamServer
+19/07/2023 08:14:44 | Info | User | Fropops-da91deaf-c7b3-4af7-b0c0-f9dcbf9141e2 |  | Connexion to TeamServer
+19/07/2023 08:17:15 | Info | User | Fropops-51b458d2-a1be-4854-aea6-0850902dc776 |  | Connexion to TeamServer
+19/07/2023 08:17:16 | Info | User | Fropops-51b458d2-a1be-4854-aea6-0850902dc776 |  | Connexion to TeamServer
+19/07/2023 08:17:37 | Info | User | Fropops-51b458d2-a1be-4854-aea6-0850902dc776 | ba6401e808 | Command tasked to agent : Powershell
+19/07/2023 08:18:23 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 |  | Connexion to TeamServer
+19/07/2023 08:18:24 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 |  | Connexion to TeamServer
+19/07/2023 08:18:31 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:18:41 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:19:00 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:19:28 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:19:49 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:20:39 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:21:51 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:22:24 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:23:01 | Info | User | Fropops-1369a49d-7c9e-4fa1-8e75-6161469cf751 | 90273a17c0 | Command tasked to agent : Powershell
+19/07/2023 08:27:29 | Info | User | Fropops-f0114e28-cbde-437e-ad36-03026c05b879 |  | Connexion to TeamServer
+19/07/2023 08:27:52 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a |  | Connexion to TeamServer
+19/07/2023 08:27:53 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a |  | Connexion to TeamServer
+19/07/2023 08:28:01 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a | b6a808c93f | Command tasked to agent : Powershell
+19/07/2023 08:28:18 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a | b6a808c93f | Command tasked to agent : Powershell
+19/07/2023 08:28:31 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a | b6a808c93f | Command tasked to agent : Powershell
+19/07/2023 08:29:08 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a | b6a808c93f | Command tasked to agent : Powershell
+19/07/2023 08:32:19 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a | b6a808c93f | Command tasked to agent : PowershellImport
+19/07/2023 08:33:18 | Info | User | Fropops-c20f262d-9c13-4044-8051-5308c11f459a | b6a808c93f | Command tasked to agent : Powershell

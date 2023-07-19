@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Shared;
 
 namespace Common.Models
 {
@@ -12,6 +13,8 @@ namespace Common.Models
 
         public string AgentId { get; set; }
 
+        public CommandId CommandId { get; set; }
+
         public string Command { get;set; }
 
         public DateTime RequestDate { get; set; }
@@ -20,10 +23,11 @@ namespace Common.Models
         {
 
         }
-        public TeamServerAgentTask(string id, string agentId, string command, DateTime requestDate)
+        public TeamServerAgentTask(string id, CommandId commandId,string agentId, string command, DateTime requestDate)
         {
             this.Id = id;
             this.AgentId = agentId;
+            this.CommandId = commandId;
             this.Command = command;
             this.RequestDate = requestDate;
         }

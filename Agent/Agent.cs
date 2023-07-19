@@ -83,6 +83,11 @@ namespace Agent
             {
                 while (!_tokenSource.IsCancellationRequested)
                 {
+                    if(ShouldStop)
+                    {
+                        this.EgressCommunicator.DoCheckIn().Wait();
+                        this.Stop();
+                    }
                     this.HandleFrames().Wait();
                     Thread.Sleep(10);
                 }
@@ -94,6 +99,13 @@ namespace Agent
 #endif
                 this.Stop();
             }
+        }
+
+        private bool ShouldStop = false;
+
+        public void AskToStop()
+        {
+            this.ShouldStop = true;
         }
 
         public void Stop()
@@ -120,8 +132,8 @@ namespace Agent
 
                 case NetFrameType.Task:
                     {
-                        var framesData = this._frameService.GetData(frame);
-                        var task = await frame.Data.BinaryDeserializeAsync<AgentTask>();
+                        var frameData = this._frameService.GetData(frame);
+                        var task = await frameData.BinaryDeserializeAsync<AgentTask>();
                         await HandleTask(task);
                         break;
                     }

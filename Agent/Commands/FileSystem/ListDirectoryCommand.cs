@@ -1,42 +1,37 @@
 ﻿using Agent.Models;
+using BinarySerializer;
+using Shared;
+using Shared.ResultObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
-    public class LSResult
+    public class ListiDirectoryCommand : AgentCommand
     {
-        public long Length { get; set; }
-        public string Name { get; set; }
-        public bool IsFile { get; set; }
-    }
+        public override CommandId Command => CommandId.Ls;
 
-    public class ListirectoryCommand : AgentCommand
-    {
-        public override string Name => "ls";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            var list = new List<LSResult>();
             string path;
-            if (task.SplittedArgs.Length == 0)
-            {
-                path = Directory.GetCurrentDirectory();
-            }
-            else
-            {
-                path = task.SplittedArgs[0];
-            }
 
+            if (!task.HasParameter(ParameterId.Path))
+                path = Directory.GetCurrentDirectory();
+            else
+                path = task.GetParameter<string>(ParameterId.Path);
+
+            var list = new List<ListDirectoryResult>();
             var directories = Directory.GetDirectories(path);
             foreach (var dir in directories)
             {
                 var dirInfo = new DirectoryInfo(dir);
-                list.Add(new LSResult()
+                list.Add(new ListDirectoryResult()
                 {
                     Name = dirInfo.Name,
                     Length = 0,
@@ -45,10 +40,10 @@ namespace Agent.Commands
             }
 
             var files = Directory.GetFiles(path);
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 var fileInfo = new FileInfo(file);
-                list.Add(new LSResult()
+                list.Add(new ListDirectoryResult()
                 {
                     Name = Path.GetFileName(fileInfo.FullName),
                     Length = fileInfo.Length,
@@ -57,8 +52,7 @@ namespace Agent.Commands
             }
 
             context.AppendResult($"Listing of {path}");
-            context.Objects(list);
+            context.Objects(await list.BinarySerializeAsync());
         }
-
     }
 }

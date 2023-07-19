@@ -7,15 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\Laucher\**" />
     <Compile Remove="Internal\**" />
+    <EmbeddedResource Remove="Commands\Laucher\**" />
     <EmbeddedResource Remove="Internal\**" />
+    <None Remove="Commands\Laucher\**" />
     <None Remove="Internal\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Commands\Agent\AgentWebHostCommand.cs" />
     <Compile Remove="Commands\Agent\CaptureCommand.cs" />
-    <Compile Remove="Commands\Agent\DeleteAgentCommand.cs" />
     <Compile Remove="Commands\Agent\DownloadCommand.cs" />
     <Compile Remove="Commands\Agent\EndPoint\EndPointCommand-Simple.cs" />
     <Compile Remove="Commands\Agent\Execute\ExecuteAssemblyCommand.cs" />
@@ -25,7 +27,6 @@
     <Compile Remove="Commands\Agent\Inject\MigrateCommand.cs" />
     <Compile Remove="Commands\Agent\Inject\RevShellCommand.cs" />
     <Compile Remove="Commands\Agent\KillAgentCommand.cs" />
-    <Compile Remove="Commands\Agent\ListTasksCommand.cs" />
     <Compile Remove="Commands\Agent\Module\MimikatzCommand.cs" />
     <Compile Remove="Commands\Agent\Module\PrintSpooferCommand.cs" />
     <Compile Remove="Commands\Agent\Module\RegKeyPersistence.cs" />

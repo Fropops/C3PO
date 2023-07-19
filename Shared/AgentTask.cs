@@ -15,5 +15,17 @@ namespace Shared
         public CommandId CommandId { get; set; }
         [FieldOrder(2)]
         public ParameterDictionary Parameters { get; set; } = new ParameterDictionary();
+
+
+        public bool HasParameter(ParameterId id)
+        {
+            if(Parameters == null)
+                return false;
+            return Parameters.ContainsKey(id);
+        }
+        public T GetParameter<T>(ParameterId id)
+        {
+            return Parameters[id].BinaryDeserializeAsync<T>().Result;
+        }
     }
 }

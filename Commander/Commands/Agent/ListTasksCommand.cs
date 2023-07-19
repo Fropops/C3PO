@@ -2,6 +2,7 @@
 using Commander.Executor;
 using Commander.Models;
 using Commander.Terminal;
+using Shared;
 using Spectre.Console;
 using System;
 using System.Collections.Generic;
@@ -52,14 +53,9 @@ namespace Commander.Commands.Agent
 
                 var result = context.CommModule.GetTaskResult(task.Id);
                 if (result == null)
-                {
                     context.Terminal.WriteInfo($"Task : {task.Command} is queued.");
-                }
                 else
-                {
-                    task.Print(result, context.Terminal, true);
-                }
-
+                    TaskPrinter.Print(task, result, context.Terminal);
 
                 return true;
             }
@@ -77,7 +73,7 @@ namespace Commander.Commands.Agent
 
 
                 int take = context.Options.Top ?? 10;
-                var tasks = context.CommModule.GetTasks(context.Executor.CurrentAgent.Metadata.Id).Take(take);
+                var tasks = context.CommModule.GetTasks(context.Executor.CurrentAgent.Id).Take(take);
 
                 if (tasks.Count() == 0)
                 {
@@ -93,7 +89,7 @@ namespace Commander.Commands.Agent
                     table.AddRow(
                         index.ToString(),
                         task.Id,
-                        task.DisplayCommand ?? string.Empty,
+                        task.Command ?? string.Empty,
                         //Arguments = task.Arguments,
                         result == null ? string.Empty : result.Info ?? string.Empty,
                         result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),

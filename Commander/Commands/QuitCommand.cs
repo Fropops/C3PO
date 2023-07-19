@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Commander.Commands.Listener
 {
-    public class ExitCommand : ExecutorCommand
+    public class QuitCommand : ExecutorCommand
     {
         public override string Category => CommandCategory.Commander;
         public override string Description => "Close the Commander";
-        public override string Name => "exit";
+        public override string Name => "quit";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
         protected override void InnerExecute(CommandContext context)

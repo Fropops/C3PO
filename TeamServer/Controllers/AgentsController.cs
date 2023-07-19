@@ -108,7 +108,7 @@ namespace TeamServer.Controllers
             var task = ser.BinaryDeserializeAsync<AgentTask>().Result;
 
             agent.QueueTask(task);
-            agent.TaskHistory.Add(new TeamServerAgentTask(ctr.Id, agentId, ctr.Command, DateTime.Now));
+            agent.TaskHistory.Add(new TeamServerAgentTask(ctr.Id, task.CommandId, agentId, ctr.Command, DateTime.Now));
             this._changeService.TrackChange(ChangingElement.Task, task.Id);
 
 

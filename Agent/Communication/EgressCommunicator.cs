@@ -59,9 +59,7 @@ namespace Agent.Communication
                     //    this.MessageService.EnqueueTasks(messages);
 
 
-                    var frames = await CheckIn(this.NetworkeService.GetFrames(String.Empty));
-                    if (frames != null)
-                        frames.ForEach(frame => this.NetworkeService.EnqueueFrame(frame));
+                    await this.DoCheckIn();
 
                 }
                 catch (Exception ex)
@@ -83,5 +81,12 @@ namespace Agent.Communication
 
             this.IsRunning = false;
         }
-    }
+
+        public async Task DoCheckIn()
+        {
+            var frames = await CheckIn(this.NetworkeService.GetFrames(String.Empty));
+            if (frames != null)
+                frames.ForEach(frame => this.NetworkeService.EnqueueFrame(frame));
+        }
+}
 }

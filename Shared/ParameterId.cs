@@ -10,5 +10,7 @@ namespace Shared
     {
         Cmd = 0x00,
         File = 0x01,
+        Path = 0x02,
+        Payload = 0x03,
     }
 }

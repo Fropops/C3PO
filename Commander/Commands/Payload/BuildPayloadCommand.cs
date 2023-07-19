@@ -46,7 +46,7 @@ namespace Commander.Commands
     {
 
 
-        public override string Category => CommandCategory.Core;
+        public override string Category => CommandCategory.Commander;
         public override string Description => "Create a payload file";
         public override string Name => "payload";
 

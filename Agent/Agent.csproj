@@ -129,6 +129,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
+    <Compile Include="Commands\Core\ExitCommand.cs" />
+    <Compile Include="Commands\Execution\PowerShellCommand.cs" />
+    <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
+    <Compile Include="Commands\Execution\PowershellRunner.cs" />
+    <Compile Include="Commands\FileSystem\CatCommand.cs" />
+    <Compile Include="Commands\FileSystem\ChangeDirectoryCommand.cs" />
+    <Compile Include="Commands\FileSystem\ListDirectoryCommand.cs" />
+    <Compile Include="Commands\FileSystem\PrintWorkingDirectoryCommand.cs" />
     <Compile Include="Communication\CommunicationType.cs" />
     <Compile Include="Communication\EgressCommunicator.cs" />
     <Compile Include="Commands\Core\CheckinCommand.cs" />
@@ -184,8 +192,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\Execution\" />
-    <Folder Include="Commands\FileSystem\" />
     <Folder Include="Commands\Injection\" />
     <Folder Include="Commands\Server\" />
     <Folder Include="Commands\Services\" />

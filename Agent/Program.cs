@@ -92,6 +92,7 @@ namespace EntryPoint
             var cryptoService = new CryptoService(configService);
             ServiceProvider.RegisterSingleton<ICryptoService>(cryptoService);
             ServiceProvider.RegisterSingleton<IFrameService>(new FrameService(cryptoService, configService));
+            ServiceProvider.RegisterSingleton<IJobService>(new JobService());
 
             //ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             //ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());

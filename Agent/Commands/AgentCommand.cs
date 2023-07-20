@@ -41,7 +41,12 @@ namespace Agent.Commands
                 Result.Output += Environment.NewLine;
         }
 
-        public void Error(string message, bool addEndLine = true)
+        public void ClearResult()
+        {
+            Result.Output = string.Empty;
+        }
+
+            public void Error(string message, bool addEndLine = true)
         {
             if (string.IsNullOrEmpty(this.Result.Error))
                 Result.Error = message;
@@ -60,7 +65,7 @@ namespace Agent.Commands
 
     public abstract class AgentCommand
     {
-
+        public int? JobId { get; set; }
         public AgentCommandContext Context { get; set; }
 
         protected bool SendMetadataWithResult = false;
@@ -104,6 +109,10 @@ namespace Agent.Commands
                     context.Result.Status = AgentResultStatus.Completed;
                 if (context.ParentContext == null) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
+
+                if(JobId.HasValue)
+                    ServiceProvider.GetService<IJobService>().RemoveJob(JobId.Value);
+
             }
 #if DEBUG
             Debug.WriteLine($"{task.CommandId} Executed ({context.Result.Status}).");

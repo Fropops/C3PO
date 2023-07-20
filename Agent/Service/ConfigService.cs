@@ -18,6 +18,8 @@ namespace Agent.Service
         //WinAPI.Wrapper.InjectionMethod APIInjectionMethod { get; set; }
 
         bool EncryptFrames { get; set; }
+
+        int JobResultDelay { get; set; }
     }
     public class ConfigService : IConfigService
     {
@@ -25,6 +27,8 @@ namespace Agent.Service
         public string SpawnToX64 { get; set; } = @"c:\windows\system32\dllhost.exe";
 
         public bool EncryptFrames { get; set; } = true;
+
+        public int JobResultDelay { get; set; } = 5000;
 
         //public WinAPI.Wrapper.APIAccessType APIAccessType { get; set; } = WinAPI.Wrapper.APIAccessType.DInvoke;
 

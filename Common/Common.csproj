@@ -12,11 +12,13 @@
     <Compile Include="..\Shared\AgentTask.cs" Link="Shared\AgentTask.cs" />
     <Compile Include="..\Shared\AgentTaskResult.cs" Link="Shared\AgentTaskResult.cs" />
     <Compile Include="..\Shared\Commands.cs" Link="Shared\Commands.cs" />
+    <Compile Include="..\Shared\Job.cs" Link="Shared\Job.cs" />
     <Compile Include="..\Shared\NetFrame.cs" Link="Shared\NetFrame.cs" />
     <Compile Include="..\Shared\NetFrameType.cs" Link="Shared\NetFrameType.cs" />
     <Compile Include="..\Shared\ParameterDictionary.cs" Link="Shared\ParameterDictionary.cs" />
     <Compile Include="..\Shared\ParameterId.cs" Link="Shared\ParameterId.cs" />
     <Compile Include="..\Shared\ResultObjects\ListDirectoryResult.cs" Link="Shared\ResultObjects\ListDirectoryResult.cs" />
+    <Compile Include="..\Shared\ServiceVerb.cs" Link="Shared\ServiceVerb.cs" />
   </ItemGroup>
 
   <ItemGroup>

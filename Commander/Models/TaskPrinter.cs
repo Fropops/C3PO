@@ -16,26 +16,35 @@ namespace Commander.Models
             var status = result.Status;
 
 
-            if (result.Status == AgentResultStatus.Running && !string.IsNullOrEmpty(result.Info))
+            if (result.Status == AgentResultStatus.Running)
             {
-                terminal.WriteLine($"Task is {result.Status} : {result.Info}");
-                return;
+                var txt = $"Task is {result.Status}";
+                if (!string.IsNullOrEmpty(result.Info))
+                    txt += $" : { result.Info}";
+                terminal.WriteInfo(txt);
+                terminal.WriteInfo($"-------------------------------------------");
             }
-
-            terminal.WriteInfo($"Task {cmd} is {status}");
 
             if (result.Status == AgentResultStatus.Completed || result.Status == AgentResultStatus.Error)
             {
+                terminal.WriteInfo($"Task {cmd} is {status}");
                 terminal.WriteInfo($"-------------------------------------------");
-                if (!string.IsNullOrEmpty(result.Output))
-                    terminal.WriteLine(result.Output);
-                //this.WriteObjects(result, terminal);
-
-                if (!string.IsNullOrEmpty(result.Error))
-                    terminal.WriteError(result.Error);
-
-                WriteObjects(task, result, terminal);
             }
+
+            if (result.Status == AgentResultStatus.Queued)
+            {
+                terminal.WriteInfo($"Task {cmd} is {status}");
+                return;
+            }
+
+
+            if (!string.IsNullOrEmpty(result.Output))
+                terminal.WriteLine(result.Output);
+
+            if (!string.IsNullOrEmpty(result.Error))
+                terminal.WriteError(result.Error);
+
+            WriteObjects(task, result, terminal);
             return;
         }
 
@@ -46,16 +55,23 @@ namespace Commander.Models
 
             switch (task.CommandId)
             {
-                case CommandId.Ls:  PrintLs(task, result, terminal);
+                case CommandId.Ls:
+                    PrintLs(task, result, terminal);
+                    break;
+
+                case CommandId.Job:
+                    PrintJobs(task, result, terminal);
                     break;
 
                 default: break;
             }
+
+            terminal.WriteLine();
         }
 
         private static void PrintLs(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
         {
-           var list = result.Objects.BinaryDeserializeAsync<List<ListDirectoryResult>>().Result;
+            var list = result.Objects.BinaryDeserializeAsync<List<ListDirectoryResult>>().Result;
             var table = new Table();
             table.Border(TableBorder.Rounded);
             // Add some columns
@@ -82,38 +98,23 @@ namespace Commander.Models
             terminal.Write(table);
         }
 
-        /* if (this.Command == EndPointCommand.LS)
-         {
-             var json = result.ObjectsAsJson;
-             var list = JsonConvert.DeserializeObject<List<LSResult>>(json);
-             var table = new Table();
-             table.Border(TableBorder.Rounded);
-             // Add some columns
-             table.AddColumn(new TableColumn("Name").LeftAligned());
-             table.AddColumn(new TableColumn("Type").LeftAligned());
-             table.AddColumn(new TableColumn("Length").LeftAligned());
-             foreach (var item in list)
-             {
-                 long lengthInBytes = item.Length;
-                 double lengthInKb = lengthInBytes / 1024.0;
-                 double lengthInMb = lengthInKb / 1024.0;
-                 double lengthInGb = lengthInMb / 1024.0;
+        private static void PrintJobs(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
+        {
+            var list = result.Objects.BinaryDeserializeAsync<List<Job>>().Result;
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Id").LeftAligned());
+            table.AddColumn(new TableColumn("Name").LeftAligned());
+            table.AddColumn(new TableColumn("ProcessId").LeftAligned());
+            foreach (var item in list)
+                table.AddRow(item.Id.ToString(), item.Name, item.ProcessId.ToString());
 
-                 string lengthString = lengthInBytes < 1024
-                 ? $"{item.Length} bytes"
-                 : lengthInKb < 1024
-                     ? $"{lengthInKb:F1} KB"
-                     : lengthInMb < 1024
-                         ? $"{lengthInMb:F1} MB"
-                         : $"{lengthInGb:F1} GB";
-                 table.AddRow(item.Name, item.IsFile ? "File" : "Dirrectory", lengthString);
-             }
+            terminal.Write(table);
+        }
 
-             terminal.Write(table);
-             return;
-         }
 
-         if (this.Command == EndPointCommand.PS)
+        /* if (this.Command == EndPointCommand.PS)
          {
              var json = result.ObjectsAsJson;
              var list = JsonConvert.DeserializeObject<List<PSResult>>(json);

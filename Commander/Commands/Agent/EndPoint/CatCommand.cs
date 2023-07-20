@@ -27,12 +27,9 @@ namespace Commander.Commands.Agent.EndPoint
                 new Argument<string>("path", "Path of the file to display"),
             };
 
-        protected override ParameterDictionary SpecifyParameters(CommandContext<CatCommandOptions> context)
+        protected override void SpecifyParameters(CommandContext<CatCommandOptions> context)
         {
-           
-            var parameters = new ParameterDictionary();
-            parameters.Add(ParameterId.Path, context.Options.path.BinarySerializeAsync().Result);
-            return parameters;
+            context.AddParameter(ParameterId.Path, context.Options.path);
         }
     }
 }

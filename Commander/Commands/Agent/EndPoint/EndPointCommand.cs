@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common;
 using Shared;
+using BinarySerializer;
 
 namespace Commander.Commands.Agent
 {
@@ -24,10 +25,7 @@ namespace Commander.Commands.Agent
         protected async Task CallEndPointCommand(CommandContext<T> context)
         {
             var agent = context.Executor.CurrentAgent;
-
-            
-
-            await context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, this.SpecifyParameters(context));
+            await context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, context.Parameters);
 
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
@@ -37,15 +35,16 @@ namespace Commander.Commands.Agent
             return true;
         }
 
-        protected virtual ParameterDictionary SpecifyParameters(CommandContext<T> context)
+      
+        protected virtual void SpecifyParameters(CommandContext<T> context)
         {
-            return null;
         }
 
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
         {
             if (!await this.CheckParams(context))
                 return false;
+            this.SpecifyParameters(context);
             await this.CallEndPointCommand(context);
             return true;
         }

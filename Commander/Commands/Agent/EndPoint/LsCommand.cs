@@ -27,16 +27,10 @@ namespace Commander.Commands.Agent.EndPoint
                 new Argument<string>("path", () => string.Empty, "Path of the new directory"),
             };
 
-        protected override ParameterDictionary SpecifyParameters(CommandContext<AgentCdCommandOptions> context)
+        protected override void SpecifyParameters(CommandContext<AgentCdCommandOptions> context)
         {
             if (!string.IsNullOrEmpty(context.Options.path))
-            {
-                var parameters = new ParameterDictionary();
-                parameters.Add(ParameterId.Path, context.Options.path.BinarySerializeAsync().Result);
-                return parameters;
-            }
-            else
-                return null;
+                context.AddParameter(ParameterId.Path, context.Options.path);
         }
     }
 }

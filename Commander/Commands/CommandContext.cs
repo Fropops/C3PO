@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Spectre.Console;
+using Shared;
+using BinarySerializer;
 
 namespace Commander.Commands
 {
@@ -24,6 +26,15 @@ namespace Commander.Commands
         public string CommandLabel { get; set; }
 
         public string CommandParameters { get; set; }
+
+        public ParameterDictionary Parameters = null;
+
+        public void AddParameter<T>(ParameterId id, T item)
+        {
+            if (this.Parameters == null)
+                this.Parameters = new ParameterDictionary();
+            this.Parameters.Add(id, item.BinarySerializeAsync().Result);
+        }
     }
 
     public class CommandContext<T> : CommandContext

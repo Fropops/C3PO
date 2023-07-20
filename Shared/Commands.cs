@@ -19,6 +19,9 @@ namespace Shared
 
         Powershell = 0x07,
         PowershellImport = 0x08,
+        Shell = 0x09,
+
+        Job = 0x10,
 
     }
 }

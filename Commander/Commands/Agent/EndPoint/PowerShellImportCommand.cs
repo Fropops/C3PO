@@ -28,16 +28,13 @@ namespace Commander.Commands.Agent.EndPoint
                 new Argument<string>("path", () => null, "Path of the file script to import"),
             };
 
-        protected override ParameterDictionary SpecifyParameters(CommandContext<PowershellImportCommandOptions> context)
+        protected override void SpecifyParameters(CommandContext<PowershellImportCommandOptions> context)
         {
-
-            var parameters = new ParameterDictionary();
             string script = string.Empty;
             if (!string.IsNullOrEmpty(context.Options.path))
                 script = File.ReadAllText(context.Options.path);
 
-            parameters.Add(ParameterId.File, script.BinarySerializeAsync().Result);
-            return parameters;
+            context.AddParameter(ParameterId.File, script);
         }
 
         protected override async Task<bool> CheckParams(CommandContext<PowershellImportCommandOptions> context)

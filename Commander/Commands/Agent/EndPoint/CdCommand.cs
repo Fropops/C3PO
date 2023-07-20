@@ -27,16 +27,10 @@ namespace Commander.Commands.Agent.EndPoint
                 new Argument<string>("path", () => string.Empty, "Path of the directory to list"),
             };
 
-        protected override ParameterDictionary SpecifyParameters(CommandContext<LsCommandOptions> context)
+        protected override void SpecifyParameters(CommandContext<LsCommandOptions> context)
         {
             if (!string.IsNullOrEmpty(context.Options.path))
-            {
-                var parameters = new ParameterDictionary();
-                parameters.Add(ParameterId.Path, context.Options.path.BinarySerializeAsync().Result);
-                return parameters;
-            }
-            else
-                return null;
+                context.AddParameter(ParameterId.Path, context.Options.path);
         }
     }
 }

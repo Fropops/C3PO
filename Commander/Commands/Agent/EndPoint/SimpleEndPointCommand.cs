@@ -21,14 +21,20 @@ namespace Commander.Commands.Agent.EndPoint
         protected void CallEndPointCommand(CommandContext context)
         {
             var agent = context.Executor.CurrentAgent;
-            context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, this.SpecifyParameters(context)).Wait();
+            this.CheckParams(context);
+            this.SpecifyParameters(context);
+            context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, context.Parameters);
 
             context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
         }
 
-        protected virtual ParameterDictionary SpecifyParameters(CommandContext context)
+        protected virtual void SpecifyParameters(CommandContext context)
         {
-            return null;
+        }
+
+        protected virtual bool CheckParams(CommandContext context)
+        {
+            return true;
         }
     }
 }

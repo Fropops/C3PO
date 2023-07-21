@@ -22,6 +22,8 @@ namespace Shared
         Shell = 0x09,
 
         Job = 0x10,
+        ForkAndRun = 0x11,
+        Assembly = 0x12,
 
     }
 }

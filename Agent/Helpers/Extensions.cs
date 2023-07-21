@@ -31,6 +31,9 @@ namespace Agent
 
         public static string[] GetArgs(this string src)
         {
+            if(src == null)
+                return new string[0];
+
             var res = new List<string>();
             src = src.Trim();
 

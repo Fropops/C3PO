@@ -115,3 +115,17 @@
 20/07/2023 11:10:26 | Info | User | Fropops-dda91a13-227a-48fa-bef6-2309faad086b |  | Connexion to TeamServer
 20/07/2023 11:10:52 | Info | User | Fropops-dda91a13-227a-48fa-bef6-2309faad086b | 2cc5ed7581 | Command tasked to agent : Shell
 20/07/2023 11:12:10 | Info | User | Fropops-dda91a13-227a-48fa-bef6-2309faad086b |  | Exit TeamServer
+20/07/2023 11:45:03 | Info | User | Fropops-55011b53-e8ae-4485-9ea3-90008acb7a14 |  | Connexion to TeamServer
+20/07/2023 11:45:04 | Info | User | Fropops-55011b53-e8ae-4485-9ea3-90008acb7a14 |  | Connexion to TeamServer
+20/07/2023 11:45:47 | Info | User | Fropops-55011b53-e8ae-4485-9ea3-90008acb7a14 | 3d957b825c | Command tasked to agent : Job
+20/07/2023 11:48:25 | Info | User | Fropops-55011b53-e8ae-4485-9ea3-90008acb7a14 | 3d957b825c | Command tasked to agent : ForkAndRun
+20/07/2023 11:49:40 | Info | User | Fropops-55011b53-e8ae-4485-9ea3-90008acb7a14 | 3d957b825c | Command tasked to agent : ForkAndRun
+20/07/2023 11:52:16 | Info | User | Fropops-55011b53-e8ae-4485-9ea3-90008acb7a14 |  | Exit TeamServer
+20/07/2023 11:52:28 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb |  | Connexion to TeamServer
+20/07/2023 11:52:29 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb |  | Connexion to TeamServer
+20/07/2023 11:52:44 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb | f12d97fdf3 | Command tasked to agent : ForkAndRun
+20/07/2023 11:54:47 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb | da0c1b10b1 | Command tasked to agent : Job
+20/07/2023 11:55:10 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb | da0c1b10b1 | Command tasked to agent : ForkAndRun
+20/07/2023 11:55:29 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb | da0c1b10b1 | Command tasked to agent : Job
+20/07/2023 12:02:49 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb | da0c1b10b1 | Command tasked to agent : ForkAndRun
+20/07/2023 12:02:58 | Info | User | Fropops-7972a649-3672-4a5d-9138-33824cc12abb | da0c1b10b1 | Command tasked to agent : Job

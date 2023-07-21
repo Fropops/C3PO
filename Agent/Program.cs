@@ -64,7 +64,7 @@ namespace EntryPoint
                 serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2";
             }
 
-            //connUrl = "https://192.168.48.128:443";
+            connUrl = "https://192.168.48.128:443";
 
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);

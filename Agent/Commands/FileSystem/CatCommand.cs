@@ -15,12 +15,8 @@ namespace Agent.Commands
         public override CommandId Command => CommandId.Cat;
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (!task.HasParameter(ParameterId.Path))
-            {
-                context.Error($"Path is mandatory!");
-                return;
-            }
-
+            task.ThrowIfParameterMissing(ParameterId.Path);
+ 
             string path = task.GetParameter<string>(ParameterId.Path);
 
             if (!File.Exists(path))

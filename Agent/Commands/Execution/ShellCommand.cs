@@ -21,13 +21,9 @@ namespace Agent.Commands
 
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (!task.HasParameter(ParameterId.Cmd))
-            {
-                context.Error($"Command is mandatory!");
-                return;
-            }
+            task.ThrowIfParameterMissing(ParameterId.Command);
 
-            var arg = task.GetParameter<string>(ParameterId.Cmd);
+            var arg = task.GetParameter<string>(ParameterId.Command);
             var cmd = $@"c:\windows\system32\cmd.exe /c {arg}";
 
             var creationParms = new ProcessCreationParameters()
@@ -50,15 +46,19 @@ namespace Agent.Commands
                 return;
             }
 
-            this.JobId = procResult.ProcessId;
             var jobService = ServiceProvider.GetService<IJobService>();
-            jobService.RegisterJob(procResult.ProcessId, "Shell " + arg);
+            this.JobId = jobService.RegisterJob(procResult.ProcessId, "Shell " + arg, task.Id).Id;
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             if (creationParms.RedirectOutput)
                 APIWrapper.ReadPipeToEnd(procResult.OutPipeHandle, output =>
                 {
+                    if(token.IsCancellationRequested)
+                    {
+                        Thread.CurrentThread.Abort();
+                    }
+
                     context.AppendResult(output, false);
                     if (stopwatch.ElapsedMilliseconds > context.ConfigService.JobResultDelay)
                     {

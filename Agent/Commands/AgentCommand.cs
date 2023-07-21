@@ -29,6 +29,8 @@ namespace Agent.Commands
 
         public AgentTaskResult Result { get; set; }
 
+        public CancellationTokenSource TokenSource { get; set; }
+
 
         public void AppendResult(string message, bool addEndLine = true)
         {
@@ -112,6 +114,12 @@ namespace Agent.Commands
 
                 if(JobId.HasValue)
                     ServiceProvider.GetService<IJobService>().RemoveJob(JobId.Value);
+
+                if (context.Agent.TaskTokens.ContainsKey(task.Id))
+                {
+                    context.Agent.TaskTokens[task.Id].Dispose();
+                    context.Agent.TaskTokens.Remove(task.Id);
+                }
 
             }
 #if DEBUG

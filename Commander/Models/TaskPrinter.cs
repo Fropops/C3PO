@@ -106,9 +106,10 @@ namespace Commander.Models
             // Add some columns
             table.AddColumn(new TableColumn("Id").LeftAligned());
             table.AddColumn(new TableColumn("Name").LeftAligned());
+            table.AddColumn(new TableColumn("Type").LeftAligned());
             table.AddColumn(new TableColumn("ProcessId").LeftAligned());
             foreach (var item in list)
-                table.AddRow(item.Id.ToString(), item.Name, item.ProcessId.ToString());
+                table.AddRow(item.Id.ToString(), item.Name, item.JobType.ToString() ,item.ProcessId.ToString());
 
             terminal.Write(table);
         }

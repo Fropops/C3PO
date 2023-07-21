@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Shared;
 
@@ -10,10 +11,11 @@ namespace Agent.Service
 {
     internal interface IJobService
     {
-        void RegisterJob(int processId, string name);
-        bool RemoveJob(int processId);
-        Job GetJob(int processId);
-        Job GetJobById(int id);
+        Job RegisterJob(int processId, string name, string taskId);
+
+        Job RegisterJob(CancellationTokenSource token, string name, string taskId);
+        bool RemoveJob(int id);
+        Job GetJob(int id);
         List<Job> GetJobs();
     }
     internal class JobService : IJobService
@@ -21,26 +23,29 @@ namespace Agent.Service
         private int NextId = 0;
         private ConcurrentDictionary<int, Job> Jobs = new ConcurrentDictionary<int, Job>();
 
-        public void RegisterJob(int processId, string name)
+        public Job RegisterJob(int processId, string name, string taskId)
         {
-            var job = new Job(this.NextId++, processId, name);
-            this.Jobs.AddOrUpdate(job.ProcessId, job, (key, value) => value);
-        }
-
-        public bool RemoveJob(int processId)
-        {
-            return this.Jobs.TryRemove(processId, out Job _);
-        }
-
-        public Job GetJob(int processId)
-        {
-            this.Jobs.TryGetValue(processId, out Job job);
+            var job = new Job(this.NextId++, processId, name, taskId);
+            this.Jobs.AddOrUpdate(job.Id, job, (key, value) => value);
             return job;
         }
 
-        public Job GetJobById(int id)
+        public Job RegisterJob(CancellationTokenSource token, string name, string taskId)
         {
-            return this.Jobs.Values.FirstOrDefault(j => j.Id == id);
+            var job = new Job(this.NextId++, token, name, taskId);
+            this.Jobs.AddOrUpdate(job.Id, job, (key, value) => value);
+            return job;
+        }
+
+        public bool RemoveJob(int id)
+        {
+            return this.Jobs.TryRemove(id, out Job _);
+        }
+
+        public Job GetJob(int id)
+        {
+            this.Jobs.TryGetValue(id, out Job job);
+            return job;
         }
 
         public List<Job> GetJobs()

@@ -24,7 +24,7 @@ namespace Agent
         //private IProxyService _proxyService;
         public AgentMetadata MetaData { get; protected set; }
 
-        private readonly Dictionary<string, CancellationTokenSource> _taskTokens = new Dictionary<string, CancellationTokenSource>();
+        public readonly Dictionary<string, CancellationTokenSource> TaskTokens = new Dictionary<string, CancellationTokenSource>();
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
@@ -106,6 +106,8 @@ namespace Agent
         public void AskToStop()
         {
             this.ShouldStop = true;
+            foreach (var token in TaskTokens.Values)
+                token.Cancel();
         }
 
         public void Stop()
@@ -177,6 +179,7 @@ namespace Agent
                 //ProxyService = _proxyService,
                 ConfigService = _configService,
                 Result = new AgentTaskResult(),
+                TokenSource = new CancellationTokenSource()
             };
             await clone.Execute(task, ctxt, CancellationToken.None);
         }
@@ -187,7 +190,7 @@ namespace Agent
             var tokenSource = new CancellationTokenSource();
 
             // add to dict
-            _taskTokens.Add(task.Id, tokenSource);
+            TaskTokens.Add(task.Id, tokenSource);
 
             // get the current identity
             using (var identity = ImpersonationToken == IntPtr.Zero
@@ -214,6 +217,7 @@ namespace Agent
                                 //ProxyService = _proxyService,
                                 ConfigService = _configService,
                                 Result = new AgentTaskResult(),
+                                TokenSource = tokenSource,
                             };
                             await clone.Execute(task, ctxt, tokenSource.Token);
 
@@ -237,11 +241,7 @@ namespace Agent
                         //finally
                         //{
                             // make sure the token is disposed and removed
-                            if (_taskTokens.ContainsKey(task.Id))
-                            {
-                                _taskTokens[task.Id].Dispose();
-                                _taskTokens.Remove(task.Id);
-                            }
+                            
                         //}
                     });
 

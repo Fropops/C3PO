@@ -18,11 +18,9 @@ namespace Commander.Commands.Agent.EndPoint
         public override string[] Alternate { get => new string[1] { "powerpick" }; }
         public override CommandId CommandId => CommandId.Powershell;
 
-        protected override ParameterDictionary SpecifyParameters(CommandContext context)
+        protected override void SpecifyParameters(CommandContext context)
         {
-            ParameterDictionary parameters = new ParameterDictionary();
-            parameters.Add(ParameterId.Cmd, context.CommandParameters.BinarySerializeAsync().Result);
-            return parameters;
+            context.AddParameter(ParameterId.Command, context.CommandParameters.BinarySerializeAsync().Result);
         }
     }
 

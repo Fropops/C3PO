@@ -17,11 +17,9 @@ namespace Commander.Commands.Agent.EndPoint
         public override string Description => "Send a command to be executed by the agent";
         public override CommandId CommandId => CommandId.Shell;
 
-        protected override ParameterDictionary SpecifyParameters(CommandContext context)
+        protected override void SpecifyParameters(CommandContext context)
         {
-            ParameterDictionary parameters = new ParameterDictionary();
-            parameters.Add(ParameterId.Cmd, context.CommandParameters.BinarySerializeAsync().Result);
-            return parameters;
+            context.AddParameter(ParameterId.Command, context.CommandParameters.BinarySerializeAsync().Result);
         }
     }
 

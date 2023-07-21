@@ -29,6 +29,7 @@ namespace Commander.Commands.Agent.Service
         {
             base.RegisterVerbs();
             this.Register(ServiceVerb.Kill, this.Kill);
+            //this.Register(ServiceVerb.Show, this.Show);
         }
 
         protected bool Kill(CommandContext<JobCommandOptions> context)

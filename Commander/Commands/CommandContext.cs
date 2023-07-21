@@ -35,6 +35,13 @@ namespace Commander.Commands
                 this.Parameters = new ParameterDictionary();
             this.Parameters.Add(id, item.BinarySerializeAsync().Result);
         }
+
+        public void AddParameter(ParameterId id, byte[] item)
+        {
+            if (this.Parameters == null)
+                this.Parameters = new ParameterDictionary();
+            this.Parameters.Add(id, item);
+        }
     }
 
     public class CommandContext<T> : CommandContext

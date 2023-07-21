@@ -44,7 +44,7 @@ namespace Commander.Commands.Agent
             if (context.Options.index.HasValue)
             {
                 //Show Result of the Task
-                var task = context.CommModule.GetTasks(context.Executor.CurrentAgent.Metadata.Id).Skip(context.Options.index.Value).FirstOrDefault();
+                var task = context.CommModule.GetTasks(context.Executor.CurrentAgent.Id).Skip(context.Options.index.Value).FirstOrDefault();
                 if (task == null)
                 {
                     context.Terminal.WriteError($"No task at index {context.Options.index}");

@@ -25,7 +25,7 @@ namespace Commander.Commands.Agent.EndPoint
             this.SpecifyParameters(context);
             context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, context.Parameters);
 
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+            context.WriteTaskSendToAgent(this);
         }
 
         protected virtual void SpecifyParameters(CommandContext context)

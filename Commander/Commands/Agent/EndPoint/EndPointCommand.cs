@@ -24,10 +24,8 @@ namespace Commander.Commands.Agent
 
         protected async Task CallEndPointCommand(CommandContext<T> context)
         {
-            var agent = context.Executor.CurrentAgent;
-            await context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, context.Parameters);
-
-            context.Terminal.WriteSuccess($"Command {this.Name} tasked to agent {agent.Metadata.Id}.");
+            await context.CommModule.TaskAgent(context.CommandLabel, context.Executor.CurrentAgent.Id, this.CommandId, context.Parameters);
+            context.WriteTaskSendToAgent(this);
         }
 
         protected virtual async Task<bool> CheckParams(CommandContext<T> context)

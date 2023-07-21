@@ -49,7 +49,7 @@ namespace Commander.Commands.Agent
 
             foreach (var agent in agents)
             {
-                var result = await context.CommModule.StopAgent(agent.Metadata.Id);
+                var result = await context.CommModule.StopAgent(agent.Id);
 
                 if (!result.IsSuccessStatusCode)
                 {
@@ -57,7 +57,7 @@ namespace Commander.Commands.Agent
                     cmdRes = false;
                 }
                 else
-                    context.Terminal.WriteSuccess($"{agent.Metadata.Id} was deleted.");
+                    context.Terminal.WriteSuccess($"{agent.Id} was deleted.");
             }
 
             return cmdRes;

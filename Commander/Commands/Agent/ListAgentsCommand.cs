@@ -94,7 +94,7 @@ namespace Commander.Commands.Agent
             if (string.IsNullOrEmpty(value))
                 return new Markup(string.Empty);
 
-            if(ctxt.Executor.CurrentAgent != null && ctxt.Executor.CurrentAgent.Metadata.Id == agent.Metadata.Id)
+            if(ctxt.Executor.CurrentAgent != null && ctxt.Executor.CurrentAgent.Id == agent.Id)
                 return new Markup($"[cyan]{value}[/]");
 
             if (agent.IsActive != true)

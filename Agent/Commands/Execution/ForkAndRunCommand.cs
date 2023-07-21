@@ -22,7 +22,6 @@ namespace Agent.Commands
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
             task.ThrowIfParameterMissing(ParameterId.File, $"ShellCode is mandatory!");
-            task.ThrowIfParameterMissing(ParameterId.Name, $"Executable name is mandatory!");
 
             var waitOutput = task.GetParameter<bool>(ParameterId.Output);
 

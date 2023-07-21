@@ -388,6 +388,9 @@ namespace Commander.Communication
 
                 var metadata = JsonConvert.DeserializeObject<AgentMetadata>(response);
 
+                if (metadata == null)
+                    return;
+
                 var agent = new Agent()
                 {
                     Id = metadata.Id,

@@ -42,6 +42,11 @@ namespace Commander.Commands
                 this.Parameters = new ParameterDictionary();
             this.Parameters.Add(id, item);
         }
+
+        public void WriteTaskSendToAgent(ExecutorCommand cmd)
+        {
+            this.Terminal.WriteSuccess($"Command {cmd.Name} tasked to agent {this.Executor.CurrentAgent.Id}.");
+        }
     }
 
     public class CommandContext<T> : CommandContext

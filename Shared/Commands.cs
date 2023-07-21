@@ -24,6 +24,7 @@ namespace Shared
         Job = 0x10,
         ForkAndRun = 0x11,
         Assembly = 0x12,
+        Inject = 0x13,
 
     }
 }

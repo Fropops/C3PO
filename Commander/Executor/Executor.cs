@@ -115,7 +115,7 @@ namespace Commander.Executor
                 };
                 this.CommModule.AddTask(task);*/
             }
-            if (this.CurrentAgent == null || task.AgentId != this.CurrentAgent.Metadata.Id)
+            if (this.CurrentAgent == null || task.AgentId != this.CurrentAgent.Id)
                 return;
 
             this.Terminal.Interrupt();

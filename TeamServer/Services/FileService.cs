@@ -205,7 +205,7 @@ namespace TeamServer.Services
             {
                 var task = agent.TaskHistory.FirstOrDefault(t => t.Id == res.Id);
 
-                var filename = GetAgentPath(agent.Metadata.Id, Path.Combine("Tasks", res.Id));
+                var filename = GetAgentPath(agent.Id, Path.Combine("Tasks", res.Id));
                 var dirName = Path.GetDirectoryName(filename);
                 if (!Directory.Exists(dirName))
                     Directory.CreateDirectory(dirName);

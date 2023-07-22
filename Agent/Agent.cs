@@ -16,7 +16,7 @@ namespace Agent
 {
     public class Agent
     {
-        private EgressCommunicator EgressCommunicator { get; set; }
+        private Communicator MasterCommunicator { get; set; }
         private IConfigService _configService;
         private INetworkService _networkService;
         private IFileService _fileService;
@@ -58,10 +58,10 @@ namespace Agent
 
         }
 
-        internal Agent(AgentMetadata metadata, EgressCommunicator communicator)
+        internal Agent(AgentMetadata metadata, Communicator communicator)
         {
             this.MetaData = metadata;
-            this.EgressCommunicator = communicator;
+            this.MasterCommunicator = communicator;
             this._networkService = ServiceProvider.GetService<INetworkService>();
             this._fileService = ServiceProvider.GetService<IFileService>();
             //this._proxyService = ServiceProvider.GetService<IProxyService>();
@@ -71,28 +71,30 @@ namespace Agent
             LoadCommands();
 
 
-            communicator.Agent = this;
+            communicator.Init(this);
         }
 
         public void Run()
         {
-            Thread commThread = new Thread(this.EgressCommunicator.Start);
+            Thread commThread = new Thread(this.MasterCommunicator.Start);
             commThread.Start(this._tokenSource);
 
             try
             {
                 while (!_tokenSource.IsCancellationRequested)
                 {
-                    if(ShouldStop)
+                    if (ShouldStop)
                     {
-                        this.EgressCommunicator.DoCheckIn().Wait();
+                        var comm = this.MasterCommunicator as EgressCommunicator; //send awaiting frames before exiting
+                        if (comm != null)
+                            comm.DoCheckIn().Wait();
                         this.Stop();
                     }
                     this.HandleFrames().Wait();
                     Thread.Sleep(10);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 #if DEBUG
                 Console.WriteLine(ex.ToString());
@@ -121,12 +123,12 @@ namespace Agent
             var frames = this._networkService.GetFrames(this.MetaData.Id);
             foreach (var frame in frames)
                 await this.HandleFrame(frame);
-               
+
         }
 
         private async Task HandleFrame(NetFrame frame)
         {
-            switch(frame.FrameType)
+            switch (frame.FrameType)
             {
                 case NetFrameType.CheckIn:
                 case NetFrameType.TaskResult:
@@ -206,20 +208,20 @@ namespace Agent
                     {
                         //try
                         //{
-                            // this blocks inside the thread
-                            var clone = Activator.CreateInstance(command.GetType()) as AgentCommand;
-                            var ctxt = new AgentCommandContext()
-                            {
-                                ParentContext = null,
-                                Agent = this,
-                                NetworkService = _networkService,
-                                FileService = _fileService,
-                                //ProxyService = _proxyService,
-                                ConfigService = _configService,
-                                Result = new AgentTaskResult(),
-                                TokenSource = tokenSource,
-                            };
-                            await clone.Execute(task, ctxt, tokenSource.Token);
+                        // this blocks inside the thread
+                        var clone = Activator.CreateInstance(command.GetType()) as AgentCommand;
+                        var ctxt = new AgentCommandContext()
+                        {
+                            ParentContext = null,
+                            Agent = this,
+                            NetworkService = _networkService,
+                            FileService = _fileService,
+                            //ProxyService = _proxyService,
+                            ConfigService = _configService,
+                            Result = new AgentTaskResult(),
+                            TokenSource = tokenSource,
+                        };
+                        await clone.Execute(task, ctxt, tokenSource.Token);
 
                         //}
                         //catch (TaskCanceledException)
@@ -240,8 +242,8 @@ namespace Agent
                         //}
                         //finally
                         //{
-                            // make sure the token is disposed and removed
-                            
+                        // make sure the token is disposed and removed
+
                         //}
                     });
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared;
 
 namespace Agent.Communication
 {
@@ -14,12 +15,9 @@ namespace Agent.Communication
             this.CommunicationType = CommunicationType.Egress;
         }
 
-        public virtual Agent Agent { get; set; }
-
-        public override async void Start(object otoken)
+        public override void Start(object otoken)
         {
             this.IsRunning = false;
-
             this._tokenSource = (CancellationTokenSource)otoken;
 
             this.IsRunning = true;
@@ -59,7 +57,7 @@ namespace Agent.Communication
                     //    this.MessageService.EnqueueTasks(messages);
 
 
-                    await this.DoCheckIn();
+                    this.DoCheckIn().Wait();
 
                 }
                 catch (Exception ex)
@@ -71,7 +69,7 @@ namespace Agent.Communication
 
                 try
                 {
-                    await Task.Delay(this.GetDelay());
+                    Task.Delay(this.GetDelay()).Wait();
                 }
                 catch (TaskCanceledException ex)
                 {
@@ -88,5 +86,16 @@ namespace Agent.Communication
             if (frames != null)
                 frames.ForEach(frame => this.NetworkeService.EnqueueFrame(frame));
         }
-}
+
+        protected abstract Task<List<NetFrame>> CheckIn(List<NetFrame> frames);
+
+        protected virtual int GetDelay()
+        {
+            return 10;
+            //int jit = (int)Math.Round(this.MessageService.AgentMetaData.SleepInterval * 1000 * (this.MessageService.AgentMetaData.SleepJitter / 100.0));
+            //var delta = random.Next(0, jit);
+            //return Math.Max(100,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
+        }
+
+    }
 }

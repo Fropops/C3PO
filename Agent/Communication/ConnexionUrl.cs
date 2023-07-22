@@ -126,7 +126,9 @@ namespace Agent.Communication
     public enum ConnexionType
     {
         Http,
+        ReverseTcp,
         Tcp,
         NamedPipe,
+        ReverseNamedPipe,
     }
 }

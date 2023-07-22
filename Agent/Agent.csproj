@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Agent</RootNamespace>
     <AssemblyName>Agent</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -144,11 +144,14 @@
     <Compile Include="Commands\Services\JobCommand.cs" />
     <Compile Include="Commands\Services\RunningServiceCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />
+    <Compile Include="Communication\CommunicationModuleMode.cs" />
     <Compile Include="Communication\CommunicationType.cs" />
     <Compile Include="Communication\EgressCommunicator.cs" />
     <Compile Include="Commands\Core\CheckinCommand.cs" />
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\ConnexionUrl.cs" />
+    <Compile Include="Communication\P2PCommunicator.cs" />
+    <Compile Include="Communication\PipeCommModule.cs" />
     <Compile Include="Helpers\HttpExtensions.cs" />
     <Compile Include="Helpers\PipeExtensions.cs" />
     <Compile Include="Helpers\TcpExtensions.cs" />

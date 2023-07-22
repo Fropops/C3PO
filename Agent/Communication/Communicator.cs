@@ -10,12 +10,17 @@ using System.Threading.Tasks;
 
 namespace Agent.Communication
 {
+
+   
     public abstract class Communicator
     {
+
         public CommunicationType CommunicationType { get; protected set; }
 
         public bool IsRunning { get; protected set; } = false;
  
+        public Agent Agent { get; protected set; }
+
         private Random random = new Random();
 
         public string ServerKey { get; private set; }
@@ -37,12 +42,9 @@ namespace Agent.Communication
             //this.ProxyService =ServiceProvider.GetService<IProxyService>();
         }
 
-        protected virtual int GetDelay()
+        public virtual void Init(Agent agent)
         {
-            return 10;
-            //int jit = (int)Math.Round(this.MessageService.AgentMetaData.SleepInterval * 1000 * (this.MessageService.AgentMetaData.SleepJitter / 100.0));
-            //var delta = random.Next(0, jit);
-            //return Math.Max(100,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
+            this.Agent = agent;
         }
 
         public abstract void Start(object otoken);
@@ -53,12 +55,10 @@ namespace Agent.Communication
                 return;
 
             this._tokenSource.Cancel();
+            this.IsRunning = false;
         }
 
         protected CancellationTokenSource _tokenSource;
 
-        
-
-        protected abstract Task<List<NetFrame>> CheckIn(List<NetFrame> frames);
     }
 }

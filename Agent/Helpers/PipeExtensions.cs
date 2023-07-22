@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,49 +12,48 @@ namespace Agent.Helpers
 {
     public static class PipeExtensions
     {
+        [DllImport("kernel32.dll", EntryPoint = "PeekNamedPipe", SetLastError = true)]
+        static extern bool PeekNamedPipe(IntPtr hNamedPipe, IntPtr lpBuffer,
+           IntPtr nBufferSize, IntPtr lpBytesRead, ref uint lpTotalBytesAvail,
+           IntPtr lpBytesLeftThisMessage);
 
-        const int PipeChunckSize = 20000;
-
-        public static void SendMessage(this PipeStream self, byte[] bytes)
+        public static bool DataAvailable(this PipeStream pipe)
         {
-            InnerSendByChuncks(Convert.ToBase64String(bytes), self);
+            var hPipe = pipe.SafePipeHandle.DangerousGetHandle();
+            uint nb = 0;
+            return PeekNamedPipe(hPipe, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, ref nb, IntPtr.Zero);
         }
 
-        public static byte[] ReceivedMessage(this PipeStream self, bool wait = true)
+        public static async Task WriteStream(this Stream stream, byte[] data)
         {
-            return Convert.FromBase64String(InnerReceiveByChuncks(self));
-        }
-        private static void InnerSendByChuncks(string b64, PipeStream stream)
-        {
-            var writer = new StreamWriter(stream);
-            for (int i = 0; i < b64.Length; i += PipeChunckSize)
+            // format data as [length][value]
+            var lengthBuf = BitConverter.GetBytes(data.Length);
+            var lv = new byte[lengthBuf.Length + data.Length];
+
+            Buffer.BlockCopy(lengthBuf, 0, lv, 0, lengthBuf.Length);
+            Buffer.BlockCopy(data, 0, lv, lengthBuf.Length, data.Length);
+
+            using (var ms = new MemoryStream(lv))
             {
-                var tosend = b64.Substring(i, Math.Min(PipeChunckSize, b64.Length - i));
-                //Debug.WriteLine(tosend);
-                writer.WriteLine(tosend);
-                writer.Flush();
-            }
-            writer.WriteLine(); //Empty line to close the sending
-            writer.Flush();
-        }
 
-        private static string InnerReceiveByChuncks(PipeStream stream)
-        {
-            string mess = string.Empty;
-            var reader = new StreamReader(stream);
-            string line = string.Empty;
-            while (true)
-            {
-                line = reader.ReadLine();
-                //if (line == "<<EOF>>")
-                //    break;
-                if (!string.IsNullOrEmpty(line))
-                    mess += line;
-                else
-                    break;
-            }
+                // write in chunks
+                var bytesRemaining = lv.Length;
+                do
+                {
+                    var lengthToSend = bytesRemaining < 1024 ? bytesRemaining : 1024;
+                    var buf = new byte[lengthToSend];
 
-            return mess;
+                    var read = await ms.ReadAsync(buf, 0, lengthToSend);
+
+                    if (read != lengthToSend)
+                        throw new Exception("Could not read data from stream");
+
+                    await stream.WriteAsync(buf, 0, buf.Length);
+
+                    bytesRemaining -= lengthToSend;
+                }
+                while (bytesRemaining > 0);
+            }
         }
 
     }

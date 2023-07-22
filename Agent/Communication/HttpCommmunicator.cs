@@ -22,8 +22,6 @@ namespace Agent.Communication
             return 2000;
         }
 
-
-
         private HttpClient _client;
         public HttpCommmunicator(ConnexionUrl conn) : base(conn)
         {
@@ -47,15 +45,12 @@ namespace Agent.Communication
 
         }
 
-        public override Agent Agent
+
+        public override void Init(Agent agent)
         {
-            get => base.Agent;
-            set
-                { 
-                base.Agent=value;
-                _client.DefaultRequestHeaders.Add("Authorization", this.Agent.MetaData.Id);
-                this.Agent.SendMetaData().Wait();
-            }
+            this.Agent = agent;
+            _client.DefaultRequestHeaders.Add("Authorization", this.Agent.MetaData.Id);
+            this.Agent.SendMetaData().Wait();
         }
 
         bool lastCallError = true;

@@ -36,7 +36,7 @@ namespace Agent.Commands
                 return;
             }
 
-            context.Objects(jobs.BinarySerializeAsync().Result);
+            context.Objects(jobs);
             return;
         }
 

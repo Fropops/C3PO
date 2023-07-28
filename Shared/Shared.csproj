@@ -63,7 +63,9 @@
     <Compile Include="AgentTask.cs" />
     <Compile Include="AgentTaskResult.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="ConnexionUrl.cs" />
     <Compile Include="Job.cs" />
+    <Compile Include="LinkInfo.cs" />
     <Compile Include="NetFrame.cs" />
     <Compile Include="NetFrameType.cs" />
     <Compile Include="ParameterDictionary.cs" />

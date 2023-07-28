@@ -41,4 +41,35 @@ namespace Agent.Commands.Services
 
         protected abstract void Show(AgentTask task, AgentCommandContext context);
     }
+
+
+    public abstract class ServiceCommand : AgentCommand
+    {
+        protected Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>> dico = new Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>>();
+        public ServiceCommand()
+        {
+            this.RegisterVerbs();
+        }
+
+        protected virtual void RegisterVerbs()
+        {
+            this.Register(ServiceVerb.Show, this.Show);
+        }
+
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
+        {
+            var verb = task.GetParameter<ServiceVerb>(ParameterId.Verb);
+            if (dico.TryGetValue(verb, out var action))
+                await action(task, context);
+            else
+                context.Error($"Verb {verb} not found !");
+        }
+
+        public void Register(ServiceVerb verb, Func<AgentTask, AgentCommandContext, Task> action)
+        {
+            dico.Add(verb, action);
+        }
+
+        protected abstract Task Show(AgentTask task, AgentCommandContext context);
+    }
 }

@@ -20,8 +20,12 @@ namespace Agent.Helpers
         public static bool DataAvailable(this PipeStream pipe)
         {
             var hPipe = pipe.SafePipeHandle.DangerousGetHandle();
-            uint nb = 0;
-            return PeekNamedPipe(hPipe, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, ref nb, IntPtr.Zero);
+            uint nb = 0;       
+            bool result = PeekNamedPipe(hPipe, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, ref nb, IntPtr.Zero);
+            if(result == false)
+                throw new System.ComponentModel.Win32Exception("Named Pipe is not available.");
+
+            return nb > 0;
         }
 
         public static async Task WriteStream(this Stream stream, byte[] data)

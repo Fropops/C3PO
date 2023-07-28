@@ -11,5 +11,8 @@ namespace Shared
         CheckIn = 0x00,
         Task = 0x01,
         TaskResult = 0x02,
+        Link = 0x03,
+        Unlink = 0x04,
+        LinkRelay = 0x05,
     }
 }

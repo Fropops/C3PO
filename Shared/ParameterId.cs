@@ -20,5 +20,6 @@ namespace Shared
         Name = 0x09,
         Parameters = 0x10,
         Output = 0x11,
+        Bind = 0x12,
     }
 }

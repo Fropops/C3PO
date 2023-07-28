@@ -22,12 +22,12 @@ namespace Agent.Models
     {
         public PipeCommModule(ConnexionUrl conn) : base(conn)
         {
-            if(conn.Protocol == ConnexionType.NamedPipe)
+            if (conn.Protocol == ConnexionType.NamedPipe)
             {
                 CommunicationMode = CommunicationModuleMode.Server;
                 return;
             }
-            if(conn.Protocol == ConnexionType.ReverseNamedPipe)
+            if (conn.Protocol == ConnexionType.ReverseNamedPipe)
             {
                 CommunicationMode = CommunicationModuleMode.Client;
                 return;
@@ -44,8 +44,14 @@ namespace Agent.Models
 
         public override void Init(Agent agent)
         {
+            base.Init(agent);
             _tokenSource = new CancellationTokenSource();
 
+            
+        }
+
+        public override async Task Start()
+        {
             switch (this.CommunicationMode)
             {
                 case CommunicationModuleMode.Server:
@@ -72,25 +78,27 @@ namespace Agent.Models
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
 
-        public override async Task Start(object otoken)
-        {
             switch (this.CommunicationMode)
             {
                 case CommunicationModuleMode.Server:
                     {
-                        _pipeServer.WaitForConnectionAsync().Wait();
+                        await _pipeServer.WaitForConnectionAsync();
+#if DEBUG
+                        Debug.WriteLine("Pipe : Comm connected (server mode)");
+#endif
                         break;
                     }
 
                 case CommunicationModuleMode.Client:
                     {
                         var timeout = new CancellationTokenSource(new TimeSpan(0, 0, 30));
-                        _pipeClient.ConnectAsync(timeout.Token).Wait();
+                        await _pipeClient.ConnectAsync(timeout.Token);
 
                         _pipeClient.ReadMode = PipeTransmissionMode.Byte;
-
+#if DEBUG
+                        Debug.WriteLine("Pipe : Comm connected (client mode)");
+#endif
                         break;
                     }
 
@@ -99,10 +107,14 @@ namespace Agent.Models
             }
 
             this.IsRunning = true;
-      
+
+        }
+
+        public override async Task Run()
+        {
             PipeStream pipeStream;
-            
-            switch(this.CommunicationMode)
+
+            switch (this.CommunicationMode)
             {
                 case CommunicationModuleMode.Server:
                     pipeStream = _pipeServer; break;
@@ -116,21 +128,30 @@ namespace Agent.Models
             {
                 try
                 {
-                    if (pipeStream.DataAvailable())
+                    while (pipeStream.DataAvailable())
                     {
-                        var data = pipeStream.ReadStream().Result;
-                        var frame = data.BinaryDeserializeAsync<NetFrame>().Result;
 
-                        this.FrameReceived?.Invoke(frame);
+                        var data = await pipeStream.ReadStream();
+
+//#if DEBUG
+//                        var base64 = Convert.ToBase64String(data);
+//                        Debug.WriteLine($"Pipe : Received Frame(s) : {base64}");
+//#endif
+                        var frame = await data.BinaryDeserializeAsync<NetFrame>();
+                        await this.FrameReceived?.Invoke(frame);
+
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+#if DEBUG
+                    Debug.WriteLine($"Pipe : Error reading pipe : {ex}");
+#endif
                     this.OnException?.Invoke();
                     return;
                 }
 
-                Task.Delay(100).Wait();
+                await Task.Delay(100);
             }
 
             _pipeServer?.Dispose();
@@ -150,15 +171,22 @@ namespace Agent.Models
 
                 default: throw new ArgumentOutOfRangeException();
             };
-           
+
             try
             {
                 var data = await frame.BinarySerializeAsync();
+//#if DEBUG
+//                var base64 = Convert.ToBase64String(data);
+//                Debug.WriteLine($"Pipe : Send Frame {frame.FrameType} : {base64}");
+//#endif
                 await pipeStream.WriteStream(data);
             }
-            catch
+            catch (Exception ex)
             {
-                OnException?.Invoke();
+#if DEBUG
+                Debug.WriteLine($"Pipe : Error writing pipe : {ex}");
+#endif
+                this.OnException?.Invoke();
             }
         }
 

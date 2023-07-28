@@ -145,8 +145,11 @@ namespace TeamServer.Models
                 string agentId = Request.Headers[AuthorizationHeader];
                 var agent = this.GetOrCreateAgent(agentId);
 
-                agent.CheckIn();
-                this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
+                foreach (var relayedAgent in this._agentService.GetAgentToRelay(agentId))
+                {
+                    relayedAgent.CheckIn();
+                    this._changeTrackingService.TrackChange(ChangingElement.Agent, relayedAgent.Id);
+                }
 
 
                 string body;
@@ -159,6 +162,8 @@ namespace TeamServer.Models
 
                 foreach (var frame in frames)
                 {
+                    Logger.Log($"Frame {frame.FrameType} received through {agentId} | Src = {frame.Source}, Dest = {frame.Destination}");
+
                     switch (frame.FrameType)
                     {
                         case NetFrameType.TaskResult:
@@ -171,7 +176,7 @@ namespace TeamServer.Models
                         case NetFrameType.CheckIn:
                             {
                                 var metaData = await this.ExtractFrameData<Shared.AgentMetadata>(frame);
-                                var ag = this.GetOrCreateAgent(agentId);
+                                var ag = this.GetOrCreateAgent(frame.Source);
                                 if (ag.Id != agent.Id)
                                     ag.RelayId = agent.Id;
 
@@ -179,7 +184,49 @@ namespace TeamServer.Models
                                 this._changeTrackingService.TrackChange(ChangingElement.Metadata, metaData.Id);
                                 break;
                             }
+                        case NetFrameType.Link:
+                            {
+                                var link = await this.ExtractFrameData<Shared.LinkInfo>(frame);
+                                var parent = this.GetOrCreateAgent(link.ParentId);
+                                var child = this.GetOrCreateAgent(link.ChildId);
+                                if (!parent.Links.ContainsKey(child.Id))
+                                {
+                                    parent.Links.Add(child.Id, link);
+                                    this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
+                                }
+                                break;
+                            }
+                        case NetFrameType.Unlink:
+                            {
+                                var link = await this.ExtractFrameData<Shared.LinkInfo>(frame);
+                                var parent = this.GetOrCreateAgent(link.ParentId);
+                                var child = this.GetOrCreateAgent(link.ChildId);
+                                if (parent.Links.ContainsKey(child.Id))
+                                {
+                                    parent.Links.Remove(child.Id);
+                                    this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
+                                }
+                                break;
+                            }
+                        case NetFrameType.LinkRelay:
+                            {
+                                var relayIds = await this.ExtractFrameData<List<string>>(frame);
 
+                                foreach(var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
+                                {
+                                    if (relayedAgent.Id == agent.Id)
+                                        continue;
+
+                                    relayedAgent.RelayId = null;
+                                }
+
+                                foreach (var relayId in relayIds)
+                                {
+                                    var relay = GetOrCreateAgent(relayId);
+                                    relay.RelayId = agent.Id;
+                                }
+                                break;
+                            }
                         default:
                             break;
                     }
@@ -199,8 +246,11 @@ namespace TeamServer.Models
                 //    list.Add(new NetFrame(string.Empty, agentId, NetFrameType.Task, await task.BinarySerializeAsync()));
                 //}
 
-                foreach (var t in agent.GetPendingTaks())
-                    returnedFrames.Add(await this.CreateTaskFrame(agent.Id, t));
+                foreach (var reayedAgent in this._agentService.GetAgentToRelay(agent.Id))
+                {
+                    foreach (var t in reayedAgent.GetPendingTaks())
+                        returnedFrames.Add(await this.CreateTaskFrame(reayedAgent.Id, t));
+                }
 
 
                 var ser = await returnedFrames.BinarySerializeAsync();

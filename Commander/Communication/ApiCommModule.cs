@@ -263,12 +263,14 @@ namespace Commander.Communication
                     Id = ar.Id,
                     FirstSeen = ar.FirstSeen,
                     LastSeen = ar.LastSeen,
+                    Links = ar.Links,
                 };
 
                 bool isNew = !this._agents.ContainsKey(agent.Id);
                 this._agents.AddOrUpdate(ar.Id, agent, (key, current) =>
                 {
                     current.LastSeen = agent.LastSeen;
+                    current.Links = agent.Links;
                     return current;
                 });
 

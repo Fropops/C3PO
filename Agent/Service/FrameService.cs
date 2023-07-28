@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BinarySerializer;
 using Shared;
 
 namespace Agent.Service
 {
     internal interface IFrameService
     {
+        NetFrame CreateFrame<T>(string source, string destination, NetFrameType typ, T item);
         NetFrame CreateFrame(string source, string destination, NetFrameType typ, byte[] data);
+
+        NetFrame CreateFrame<T>(string source, NetFrameType typ, T item);
         NetFrame CreateFrame(string source, NetFrameType typ, byte[] data);
 
         byte[] GetData(NetFrame frame);
+        T GetData<T>(NetFrame frame);
     }
     internal class FrameService : IFrameService
     {
@@ -40,6 +45,22 @@ namespace Agent.Service
         {
             var data = frame.Data;
             return this._configService.EncryptFrames ? this._cryptoService.Decrypt(data) : data;
+        }
+
+        public T GetData<T>(NetFrame frame)
+        {
+            var raw = GetData(frame);
+            return raw.BinaryDeserializeAsync<T>().Result;
+        }
+
+        public NetFrame CreateFrame<T>(string source, string destination, NetFrameType typ, T item)
+        {
+            return this.CreateFrame(source, destination, typ, item.BinarySerializeAsync().Result);
+        }
+
+        public NetFrame CreateFrame<T>(string source, NetFrameType typ, T item)
+        {
+            return this.CreateFrame(source, string.Empty, typ, item);
         }
     }
 

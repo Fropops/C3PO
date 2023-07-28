@@ -25,6 +25,7 @@ namespace Shared
         ForkAndRun = 0x11,
         Assembly = 0x12,
         Inject = 0x13,
+        Link = 0x14,
 
     }
 }

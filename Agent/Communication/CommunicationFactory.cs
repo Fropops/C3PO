@@ -1,5 +1,6 @@
 ﻿using Agent.Models;
 using Agent.Service;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

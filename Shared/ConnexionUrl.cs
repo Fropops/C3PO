@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common
+namespace Shared
 {
     public class ConnexionUrl
     {
         public ConnexionType Protocol { get; set; }
+        public string Address { get; set; }
+        public int Port { get; set; }
 
         public string ProtocolString
         {
@@ -20,8 +22,6 @@ namespace Common
                 return str;
             }
         }
-        public string Address { get; set; }
-        public int Port { get; set; }
 
         public string PipeName { get; set; }
         public bool IsSecure { get; set; }
@@ -54,8 +54,8 @@ namespace Common
                     conn.Protocol = ConnexionType.Http;
                     conn.IsSecure = false;
                     conn.Address = address;
-                    conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
                     conn.IsValid = true;
+                    conn.Port = string.IsNullOrEmpty(complement.Trim()) ? 80 : int.Parse(complement);
                     return conn;
                 }
 
@@ -79,9 +79,29 @@ namespace Common
                     return conn;
                 }
 
+                if (protocol == "rtcp")
+                {
+                    conn.Protocol = ConnexionType.ReverseTcp;
+                    conn.IsSecure = false;
+                    conn.Address = address;
+                    conn.Port = int.Parse(complement);
+                    conn.IsValid = true;
+                    return conn;
+                }
+
                 if (protocol == "pipe")
                 {
-                    conn.Protocol = ConnexionType.Pipe;
+                    conn.Protocol = ConnexionType.NamedPipe;
+                    conn.IsSecure = false;
+                    conn.Address = address;
+                    conn.PipeName = complement.Trim();
+                    conn.IsValid = !string.IsNullOrEmpty(complement.Trim());
+                    return conn;
+                }
+
+                if (protocol == "rpipe")
+                {
+                    conn.Protocol = ConnexionType.ReverseNamedPipe;
                     conn.IsSecure = false;
                     conn.Address = address;
                     conn.PipeName = complement.Trim();
@@ -107,15 +127,26 @@ namespace Common
                             prot += "s";
                         return $"{prot}://{this.Address}:{this.Port}";
                     }
-                case ConnexionType.Pipe:
+                case ConnexionType.NamedPipe:
                     {
                         var prot = "pipe";
                         return $"{prot}://{this.Address}:{this.PipeName}";
                     }
-                    break;
+
+                case ConnexionType.ReverseNamedPipe:
+                    {
+                        var prot = "rpipe";
+                        return $"{prot}://{this.Address}:{this.PipeName}";
+                    }
                 case ConnexionType.Tcp:
                     {
                         var prot = "tcp";
+                        return $"{prot}://{this.Address}:{this.Port}";
+                    }
+
+                case ConnexionType.ReverseTcp:
+                    {
+                        var prot = "rtcp";
                         return $"{prot}://{this.Address}:{this.Port}";
                     }
             }
@@ -126,7 +157,9 @@ namespace Common
     public enum ConnexionType
     {
         Http,
+        ReverseTcp,
         Tcp,
-        Pipe,
+        NamedPipe,
+        ReverseNamedPipe,
     }
 }

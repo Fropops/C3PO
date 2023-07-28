@@ -49,10 +49,12 @@ namespace EntryPoint
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
+            //connUrl = "https://192.168.48.128:443";
+            //connUrl = "pipe://127.0.0.1:C3PO";
+
             if (_args.Count() > 0)
             {
                 connUrl = _args[0];
-                
             }
 
             if (_args.Count() > 1)
@@ -64,8 +66,7 @@ namespace EntryPoint
                 serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2";
             }
 
-            //connUrl = "https://192.168.48.128:443";
-            connUrl = "pipe://127.0.0.1:C3PO";
+           
 
 #endif
             var connexion = ConnexionUrl.FromString(connUrl);
@@ -102,6 +103,9 @@ namespace EntryPoint
 
             var commModule = CommunicationFactory.CreateCommunicator(connexion);
             var agent = new Agent.Agent(metaData, commModule);
+#if DEBUG
+            Debug.WriteLine($"AgentId is {metaData.Id}");
+#endif
 
 
             var s_agentThread = new Thread(agent.Run);

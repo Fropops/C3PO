@@ -12,7 +12,7 @@ namespace TeamServer.Models
         public string Id { get; set; }
         public string RelayId { get; set; }
 
-        public List<string> Path { get; set; } = new List<string>();
+        public Dictionary<string, LinkInfo> Links { get; protected set; } = new Dictionary<string, LinkInfo>();
         public Shared.AgentMetadata Metadata { get; set; }
 
         public DateTime LastSeen { get; protected set; }

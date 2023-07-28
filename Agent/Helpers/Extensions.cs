@@ -140,7 +140,7 @@ namespace Agent
 
                 do
                 {
-                    var buf = new byte[1024];
+                    var buf = length - totalRead >= 1024 ? new byte[1024] : new byte[length - totalRead];
                     read = await stream.ReadAsync(buf, 0, buf.Length);
 
                     await ms.WriteAsync(buf, 0, read);

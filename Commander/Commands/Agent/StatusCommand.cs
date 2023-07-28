@@ -50,7 +50,7 @@ namespace Commander.Commands.Agent
             table.AddRow("Integrity", agent.Metadata?.Integrity ?? string.Empty);
             table.AddRow("EndPoint", agent.Metadata?.EndPoint ?? string.Empty);
             table.AddRow("Version", agent.Metadata?.Version ?? string.Empty);
-            table.AddRow("Sleep", agent.Metadata?.Sleep ?? string.Empty);
+            //table.AddRow("Sleep", agent.Metadata?.Sleep ?? string.Empty);
             table.AddRow("First Seen", agent.FirstSeen.ToLocalTime().ToString());
             table.AddRow("Last Seen", Math.Round(agent.LastSeenDelta.TotalSeconds,2).ToString() + "s" ?? string.Empty);
             

@@ -10,7 +10,7 @@ namespace Common.Models
     public class TeamServerAgent
     {
         public string Id { get; set; }
-        public string RelayId { get; set; }
+        public List<LinkInfo> Links { get; set; }
         public DateTime LastSeen { get; set; }
         public DateTime FirstSeen { get; set; }
     }

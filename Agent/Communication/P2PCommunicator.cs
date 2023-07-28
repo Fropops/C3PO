@@ -15,9 +15,5 @@ namespace Agent.Communication
             this.CommunicationType = CommunicationType.P2p;
         }
 
-        public abstract event Func<NetFrame, Task> FrameReceived;
-        public abstract event Action OnException;
-
-        public abstract Task SendFrame(NetFrame frame);
     }
 }

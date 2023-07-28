@@ -52,7 +52,7 @@ namespace Agent.Commands
             }
 
             context.AppendResult($"Listing of {path}");
-            context.Objects(await list.BinarySerializeAsync());
+            context.Objects(list);
         }
     }
 }

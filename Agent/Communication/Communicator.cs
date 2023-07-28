@@ -17,6 +17,9 @@ namespace Agent.Communication
 
         public CommunicationType CommunicationType { get; protected set; }
 
+        public abstract event Func<NetFrame, Task> FrameReceived;
+        public abstract event Action OnException;
+
         public bool IsRunning { get; protected set; } = false;
  
         public Agent Agent { get; protected set; }
@@ -45,9 +48,12 @@ namespace Agent.Communication
         public virtual void Init(Agent agent)
         {
             this.Agent = agent;
+            this._tokenSource = agent.TokenSource;
         }
 
-        public abstract void Start(object otoken);
+        public abstract Task Start();
+
+        public abstract Task Run();
 
         public virtual async Task Stop()
         {
@@ -59,6 +65,8 @@ namespace Agent.Communication
         }
 
         protected CancellationTokenSource _tokenSource;
+
+        public abstract Task SendFrame(NetFrame frame);
 
     }
 }

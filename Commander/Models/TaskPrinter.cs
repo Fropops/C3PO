@@ -63,6 +63,11 @@ namespace Commander.Models
                     PrintJobs(task, result, terminal);
                     break;
 
+                case CommandId.Link:
+                    PrintLinks(task, result, terminal);
+                    break;
+
+
                 default: break;
             }
 
@@ -110,6 +115,21 @@ namespace Commander.Models
             table.AddColumn(new TableColumn("ProcessId").LeftAligned());
             foreach (var item in list)
                 table.AddRow(item.Id.ToString(), item.Name, item.JobType.ToString() ,item.ProcessId.ToString());
+
+            terminal.Write(table);
+        }
+
+        private static void PrintLinks(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
+        {
+            var list = result.Objects.BinaryDeserializeAsync<List<LinkInfo>>().Result;
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Agent Id").LeftAligned());
+            table.AddColumn(new TableColumn("Binding").LeftAligned());
+
+            foreach (var item in list)
+                table.AddRow(item.ChildId.ToString(), item.Binding?.ToString());
 
             terminal.Write(table);
         }

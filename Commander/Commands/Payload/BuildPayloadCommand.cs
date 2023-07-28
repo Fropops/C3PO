@@ -8,6 +8,7 @@ using System.IO;
 using Common;
 using Common.Payload;
 using Common.Models;
+using Shared;
 
 namespace Commander.Commands
 {

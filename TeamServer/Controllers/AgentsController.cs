@@ -56,7 +56,7 @@ namespace TeamServer.Controllers
                 Id = agent.Id,
                 FirstSeen = agent.FirstSeen,
                 LastSeen = agent.LastSeen,
-                RelayId = agent.RelayId,
+                Links = agent.Links.Values.ToList(),
             });
         }
 
@@ -110,10 +110,6 @@ namespace TeamServer.Controllers
             agent.QueueTask(task);
             agent.TaskHistory.Add(new TeamServerAgentTask(ctr.Id, task.CommandId, agentId, ctr.Command, DateTime.Now));
             this._changeService.TrackChange(ChangingElement.Task, task.Id);
-
-
-            //if (!string.IsNullOrEmpty(request.FileId))
-            //    agent.QueueDownload(this._fileService.GetFileChunksForAgent(request.FileId));
 
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";
             var path = $"{root}/tasks/{task.Id}";

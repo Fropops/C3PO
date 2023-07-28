@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common;
 using Spectre.Console;
+using Shared;
 
 namespace Commander.Commands.Agent
 {
@@ -84,17 +85,22 @@ namespace Commander.Commands.Agent
 
             foreach (var agent in allAgents)
             {
-                var node = allNodes[agent.Metadata.Id];
+                var node = allNodes[agent.Id];
                 var conn = ConnexionUrl.FromString(agent.Metadata.EndPoint);
                 node.LinkToParent = conn.ProtocolString;
 
-                if (agent.Path.Count == 1)
+                Models.Agent parent = null;
+                foreach(var potParent in allAgents.Where(a => a.Id != agent.Id))
+                {
+                    if(potParent.Links.Any(l => l.ChildId == agent.Id))
+                        parent = potParent;
+                    break;
+                }
+
+                if(parent == null)
                     root.Children.Add(node);
                 else
-                {
-                    var parId = agent.Path[agent.Path.Count - 2];
-                    allNodes[parId].Children.Add(node);
-                }
+                    allNodes[parent.Id].Children.Add(node);
             }
 
             return root;

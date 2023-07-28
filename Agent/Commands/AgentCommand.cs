@@ -63,6 +63,11 @@ namespace Agent.Commands
         {
             this.Result.Objects = data;
         }
+
+        public void Objects<T>(T item)
+        {
+            this.Result.Objects = item.BinarySerializeAsync().Result;
+        }
     }
 
     public abstract class AgentCommand

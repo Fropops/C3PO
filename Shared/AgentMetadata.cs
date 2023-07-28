@@ -31,5 +31,17 @@ namespace Shared
 
         public int SleepInterval { get; set; }
         public int SleepJitter { get; set; }
+
+        public string Desc
+        {
+            get
+            {
+                string desc = UserName;
+                if (Integrity == "High")
+                    desc += "*";
+                desc += "@" + Hostname;
+                return desc;
+            }
+        }
     }
 }

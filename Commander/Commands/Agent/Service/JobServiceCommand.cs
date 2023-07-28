@@ -21,7 +21,7 @@ namespace Commander.Commands.Agent.Service
         public override CommandId CommandId => CommandId.Job;
         public override RootCommand Command => new RootCommand(this.Description)
         {
-            new Argument<string>("verb", "show | kill").FromAmong("show", "kill"),
+            new Argument<string>("verb", () => "show", "show | kill").FromAmong("show", "kill"),
             new Option<int?>(new[] { "--id", "-i" }, () => null, "Id of the job (Kill)"),
         };
 

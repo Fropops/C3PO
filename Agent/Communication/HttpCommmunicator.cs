@@ -48,7 +48,7 @@ namespace Agent.Communication
 
         public override void Init(Agent agent)
         {
-            this.Agent = agent;
+            base.Init(agent);
             _client.DefaultRequestHeaders.Add("Authorization", this.Agent.MetaData.Id);
             this.Agent.SendMetaData().Wait();
         }

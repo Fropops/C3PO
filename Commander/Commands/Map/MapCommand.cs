@@ -77,10 +77,10 @@ namespace Commander.Commands.Agent
             {
                 var node = new MapTreeNode();
                 node.Name = agent.Metadata?.Desc;
-                node.Id = agent.Metadata.Id;
-                node.ShortId = agent.Metadata.Id;
+                node.Id = agent.Id;
+                node.ShortId = agent.Id;
                 node.IsAlive = agent.IsActive == true;
-                allNodes.Add(agent.Metadata.Id, node);
+                allNodes.Add(agent.Id, node);
             }
 
             foreach (var agent in allAgents)

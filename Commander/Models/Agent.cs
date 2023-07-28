@@ -17,7 +17,7 @@ namespace Commander.Models
 
         public DateTime FirstSeen { get; set; }
 
-        public List<LinkInfo> Links { get; set; } = new List<LinkInfo>();
+        public List<string> Links { get; set; } = new List<string>();
 
         public bool? IsActive
         {

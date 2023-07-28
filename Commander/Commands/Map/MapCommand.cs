@@ -76,7 +76,7 @@ namespace Commander.Commands.Agent
             foreach (var agent in allAgents)
             {
                 var node = new MapTreeNode();
-                node.Name = agent.Metadata.Desc;
+                node.Name = agent.Metadata?.Desc;
                 node.Id = agent.Metadata.Id;
                 node.ShortId = agent.Metadata.Id;
                 node.IsAlive = agent.IsActive == true;
@@ -92,9 +92,11 @@ namespace Commander.Commands.Agent
                 Models.Agent parent = null;
                 foreach(var potParent in allAgents.Where(a => a.Id != agent.Id))
                 {
-                    if(potParent.Links.Any(l => l.ChildId == agent.Id))
+                    if (potParent.Links.Any(childId => childId == agent.Id))
+                    {
                         parent = potParent;
-                    break;
+                        break;
+                    }
                 }
 
                 if(parent == null)

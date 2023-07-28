@@ -56,7 +56,7 @@ namespace TeamServer.Controllers
                 Id = agent.Id,
                 FirstSeen = agent.FirstSeen,
                 LastSeen = agent.LastSeen,
-                Links = agent.Links.Values.ToList(),
+                Links = agent.Links.Values.Select(c => c.ChildId).ToList(),
             });
         }
 

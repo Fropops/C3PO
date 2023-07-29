@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BinarySerializer;
 using Commander.Executor;
@@ -13,6 +14,17 @@ namespace Commander.Models
 {
     public class TaskPrinter
     {
+
+        private static Dictionary<CommandId, Action<TeamServerAgentTask, AgentTaskResult, ITerminal>> _printObjectsFunctions = new Dictionary<CommandId, Action<TeamServerAgentTask, AgentTaskResult, ITerminal>>();
+
+        static TaskPrinter()
+        {
+            _printObjectsFunctions.Add(CommandId.Ls, PrintLs);
+            _printObjectsFunctions.Add(CommandId.Job, PrintJobs);
+            _printObjectsFunctions.Add(CommandId.Link, PrintLinks);
+            _printObjectsFunctions.Add(CommandId.ListProcess, PrintProcessList);
+        }
+
         public static void Print(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal, bool fullLabel = false)
         {
             var cmd = task.Command;
@@ -51,31 +63,17 @@ namespace Commander.Models
             return;
         }
 
+        
+
         private static void WriteObjects(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
         {
             if (result.Objects == null || result.Objects.Length == 0)
                 return;
 
-            switch (task.CommandId)
-            {
-                case CommandId.Ls:
-                    PrintLs(task, result, terminal);
-                    break;
+            if (!_printObjectsFunctions.ContainsKey(task.CommandId))
+                return;
 
-                case CommandId.Job:
-                    PrintJobs(task, result, terminal);
-                    break;
-
-                case CommandId.Link:
-                    PrintLinks(task, result, terminal);
-                    break;
-                case CommandId.ListProcess:
-                    PrintProcessList(task, result, terminal);
-                    break;
-
-
-                default: break;
-            }
+            _printObjectsFunctions[task.CommandId](task, result, terminal);
 
             terminal.WriteLine();
         }
@@ -91,19 +89,7 @@ namespace Commander.Models
             table.AddColumn(new TableColumn("Length").LeftAligned());
             foreach (var item in list)
             {
-                long lengthInBytes = item.Length;
-                double lengthInKb = lengthInBytes / 1024.0;
-                double lengthInMb = lengthInKb / 1024.0;
-                double lengthInGb = lengthInMb / 1024.0;
-
-                string lengthString = lengthInBytes < 1024
-                ? $"{item.Length} bytes"
-                : lengthInKb < 1024
-                    ? $"{lengthInKb:F1} KB"
-                    : lengthInMb < 1024
-                        ? $"{lengthInMb:F1} MB"
-                        : $"{lengthInGb:F1} GB";
-                table.AddRow(item.Name, item.IsFile ? "File" : "Dir", lengthString);
+                table.AddRow(item.Name, item.IsFile ? "File" : "Dir", StringHelper.FileLengthToString(item.Length));
             }
 
             terminal.Write(table);

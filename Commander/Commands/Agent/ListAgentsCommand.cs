@@ -1,5 +1,6 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
+using Commander.Models;
 using Commander.Terminal;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -51,6 +52,7 @@ namespace Commander.Commands.Agent
             table.AddColumn(new TableColumn("Active").LeftAligned());
             table.AddColumn(new TableColumn("User").LeftAligned());
             table.AddColumn(new TableColumn("Host").LeftAligned());
+            table.AddColumn(new TableColumn("Address").LeftAligned());
             table.AddColumn(new TableColumn("Integrity").LeftAligned());
             table.AddColumn(new TableColumn("Process").LeftAligned());
             table.AddColumn(new TableColumn("Arch.").LeftAligned());
@@ -71,11 +73,12 @@ namespace Commander.Commands.Agent
                         SurroundIfDeadOrSelf(agent, context, agent.IsActive == true ? "Yes" : "No"),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.UserName),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Hostname),
-                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Integrity),
+                        SurroundIfDeadOrSelf(agent, context, StringHelper.IpAsString(agent.Metadata?.Address)),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Integrity.ToString()),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.ProcessName + " (" + agent.Metadata?.ProcessId + ")"),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Architecture),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.EndPoint),
-                        SurroundIfDeadOrSelf(agent, context, Math.Round(agent.LastSeenDelta.TotalSeconds, 2) + "s")
+                        SurroundIfDeadOrSelf(agent, context, StringHelper.FormatElapsedTime(Math.Round(agent.LastSeenDelta.TotalSeconds, 2)))
                         //Version = agent.Metadata.Version,
                         //Listener = listenerName,
                     );

@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\Agent\Token\**" />
     <Compile Remove="Commands\Laucher\**" />
     <Compile Remove="Internal\**" />
+    <EmbeddedResource Remove="Commands\Agent\Token\**" />
     <EmbeddedResource Remove="Commands\Laucher\**" />
     <EmbeddedResource Remove="Internal\**" />
+    <None Remove="Commands\Agent\Token\**" />
     <None Remove="Commands\Laucher\**" />
     <None Remove="Internal\**" />
   </ItemGroup>
@@ -19,21 +22,12 @@
     <Compile Remove="Commands\Agent\AgentWebHostCommand.cs" />
     <Compile Remove="Commands\Agent\CaptureCommand.cs" />
     <Compile Remove="Commands\Agent\DownloadCommand.cs" />
+    <Compile Remove="Commands\Agent\EndPoint\CaptureCommand.cs" />
     <Compile Remove="Commands\Agent\EndPoint\EndPointCommand-Simple.cs" />
-    <Compile Remove="Commands\Agent\Inject\InjectCommand.cs" />
-    <Compile Remove="Commands\Agent\Inject\MigrateAsCommand.cs" />
-    <Compile Remove="Commands\Agent\Inject\MigrateCommand.cs" />
-    <Compile Remove="Commands\Agent\Inject\RevShellCommand.cs" />
     <Compile Remove="Commands\Agent\KillAgentCommand.cs" />
-    <Compile Remove="Commands\Agent\Module\MimikatzCommand.cs" />
-    <Compile Remove="Commands\Agent\Module\PrintSpooferCommand.cs" />
-    <Compile Remove="Commands\Agent\Module\RegKeyPersistence.cs" />
-    <Compile Remove="Commands\Agent\Module\RegKeyPersistenceCommand.cs" />
-    <Compile Remove="Commands\Agent\Module\UACBypassCommand.cs" />
-    <Compile Remove="Commands\Agent\Module\winPEASCommand.cs" />
+    <Compile Remove="Commands\Agent\LateralMovement\JumpWinRMCommand.cs" />
     <Compile Remove="Commands\Agent\PathCommand.cs" />
     <Compile Remove="Commands\Agent\ProxyCommand.cs" />
-    <Compile Remove="Commands\Agent\SideLoad\SiteLoadCommand.cs" />
     <Compile Remove="Commands\Agent\UploadCommand.cs" />
     <Compile Remove="Commands\Base64Command.cs" />
     <Compile Remove="Commands\Composite\AgentTask.cs" />
@@ -75,8 +69,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Agent\Module\" />
-    <Folder Include="Commands\Agent\Token\" />
+    <Folder Include="Commands\Agent\LateralMovement\" />
     <Folder Include="Commands\Composite\" />
   </ItemGroup>
 

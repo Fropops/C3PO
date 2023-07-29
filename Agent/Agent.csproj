@@ -142,6 +142,7 @@
     <Compile Include="Commands\FileSystem\PrintWorkingDirectoryCommand.cs" />
     <Compile Include="Commands\Execution\InjectCommand.cs" />
     <Compile Include="Commands\Link\LinkCommand.cs" />
+    <Compile Include="Commands\ListProcessCommand.cs" />
     <Compile Include="Commands\Services\JobCommand.cs" />
     <Compile Include="Commands\Services\RunningServiceCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />

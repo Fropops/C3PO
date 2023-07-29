@@ -1,39 +1,35 @@
 ﻿using Agent.Models;
+using Shared;
+using Shared.ResultObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WinAPI.Data.AdvApi;
 using WinAPI.DInvoke;
+using static WinAPI.DInvoke.Data.Native;
 
 namespace Agent.Commands
 {
 
-    public class PSResult
-    {
-        public string Name { get; set; }
-        public int Id { get; set; }
-        public int ParentId { get; set; }
-        public int SessionId { get; set; }
-        public string ProcessPath { get; set; }
-        public string Owner { get; set; }
-        public string Arch { get; set; }
-    }
+   
     public class ListProcessCommand : AgentCommand
     {
-        public override string Name => "ps";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.ListProcess;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            var list = new List<PSResult>();
+            var list = new List<ListProcessResult>();
             string filter = null;
-            if (task.SplittedArgs.Length == 1)
+            if (task.HasParameter(ParameterId.Path))
             {
-                filter = task.SplittedArgs[0];
+                filter = task.GetParameter<string>(ParameterId.Path); ;
             }
 
             var processes = Process.GetProcesses();
@@ -42,11 +38,11 @@ namespace Agent.Commands
 
             foreach (var process in processes)
             {
-                var res = new PSResult()
+                var res = new ListProcessResult()
                 {
                     Name = process.ProcessName,
                     Id = process.Id,
-                    ParentId = GetParentId(process.Id),
+                    ParentId = GetProcessParent(process),
                     SessionId = process.SessionId,
                     ProcessPath = GetProcessPath(process),
                     Owner = GetProcessOwner(process),
@@ -140,7 +136,30 @@ namespace Agent.Commands
             }
         }
 
-        private int GetParentId(int processId)
+        public static PROCESS_BASIC_INFORMATION QueryProcessBasicInformation(IntPtr hProcess)
+        {
+            WinAPI.DInvoke.Native.NtQueryInformationProcess(
+                hProcess,
+                WinAPI.DInvoke.Data.Native.PROCESSINFOCLASS.ProcessBasicInformation,
+                out var pProcInfo);
+
+            return (PROCESS_BASIC_INFORMATION)Marshal.PtrToStructure(pProcInfo, typeof(PROCESS_BASIC_INFORMATION));
+        }
+
+        private static int GetProcessParent(Process process)
+        {
+            try
+            {
+                var pbi = QueryProcessBasicInformation(process.Handle);
+                return pbi.InheritedFromUniqueProcessId;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /*private int GetParentId(int processId)
         {
             try
             {
@@ -156,7 +175,7 @@ namespace Agent.Commands
             {
                 return 0;
             }
-        }
+        }*/
 
 
 

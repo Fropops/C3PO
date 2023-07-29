@@ -72,6 +72,7 @@
     <Compile Include="ParameterId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultObjects\ListDirectoryResult.cs" />
+    <Compile Include="ResultObjects\ListProcessResult.cs" />
     <Compile Include="ServiceVerb.cs" />
   </ItemGroup>
   <ItemGroup>

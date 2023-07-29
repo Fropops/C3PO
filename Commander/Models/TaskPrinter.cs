@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BinarySerializer;
+using Commander.Executor;
 using Commander.Terminal;
 using Common.Models;
 using Shared;
 using Shared.ResultObjects;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace Commander.Models
 {
@@ -66,6 +69,9 @@ namespace Commander.Models
                 case CommandId.Link:
                     PrintLinks(task, result, terminal);
                     break;
+                case CommandId.ListProcess:
+                    PrintProcessList(task, result, terminal);
+                    break;
 
 
                 default: break;
@@ -114,7 +120,7 @@ namespace Commander.Models
             table.AddColumn(new TableColumn("Type").LeftAligned());
             table.AddColumn(new TableColumn("ProcessId").LeftAligned());
             foreach (var item in list)
-                table.AddRow(item.Id.ToString(), item.Name, item.JobType.ToString() ,item.ProcessId.ToString());
+                table.AddRow(item.Id.ToString(), item.Name, item.JobType.ToString(), item.ProcessId.ToString());
 
             terminal.Write(table);
         }
@@ -134,96 +140,73 @@ namespace Commander.Models
             terminal.Write(table);
         }
 
+        private static void PrintProcessList(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
+        {
+            var list = result.Objects.BinaryDeserializeAsync<List<ListProcessResult>>().Result;
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Name").LeftAligned());
+            table.AddColumn(new TableColumn("Id").LeftAligned());
+            table.AddColumn(new TableColumn("ParentId").LeftAligned());
+            table.AddColumn(new TableColumn("Owner").LeftAligned());
+            table.AddColumn(new TableColumn("Arch.").LeftAligned());
+            table.AddColumn(new TableColumn("Session").LeftAligned());
+            table.AddColumn(new TableColumn("Path").LeftAligned());
 
-        /* if (this.Command == EndPointCommand.PS)
-         {
-             var json = result.ObjectsAsJson;
-             var list = JsonConvert.DeserializeObject<List<PSResult>>(json);
+            RenderPSTree(list, table);
 
-             var table = new Table();
-             table.Border(TableBorder.Rounded);
-             // Add some columns
-             table.AddColumn(new TableColumn("Name").LeftAligned());
-             table.AddColumn(new TableColumn("Id").LeftAligned());
-             table.AddColumn(new TableColumn("ParentId").LeftAligned());
-             table.AddColumn(new TableColumn("Owner").LeftAligned());
-             table.AddColumn(new TableColumn("Arch.").LeftAligned());
-             table.AddColumn(new TableColumn("Session").LeftAligned());
-             table.AddColumn(new TableColumn("Path").LeftAligned());
-
-             this.RenderPSTree(list, table);
-
-             terminal.Write(table);
-             return;
-         }
-     }
-
-     private void RenderPSTree(List<PSResult> nodes, Table table)
-     {
-
-         var rootsNodes = new List<PSResult>();
-         foreach (var node in nodes)
-         {
-             if (node.Name == "brave")
-             {
-                 int i = 0;
-             }
-             if (node.Id == 0)
-                 continue;
-             if (node.ParentId == 0)
-                 rootsNodes.Add(node);
-             if (!nodes.Any(p => p.Id == node.ParentId))
-                 rootsNodes.Add(node);
-         }
-
-         foreach (var child in rootsNodes.OrderBy(n => n.Name))
-             RenderNode(nodes, child, table, 0);
-
-     }
-
-     private void RenderNode(List<PSResult> nodes, PSResult node, Table table, int indent)
-     {
-         table.AddRow(
-             SurroundIfSelf(node, node.Name.PadLeft(indent + node.Name.Length)),
-             SurroundIfSelf(node, node.Id.ToString()),
-             SurroundIfSelf(node, node.ParentId.ToString()),
-             SurroundIfSelf(node, node.Owner),
-             SurroundIfSelf(node, node.Arch),
-             SurroundIfSelf(node, node.SessionId.ToString()),
-             SurroundIfSelf(node, node.ProcessPath));
-         foreach (var child in nodes.Where(p => p.ParentId == node.Id).OrderBy(n => n.Name))
-             RenderNode(nodes, child, table, indent + 3);
-     }
-
-     private IRenderable SurroundIfSelf(PSResult res, string value)
-     {
-         if (string.IsNullOrEmpty(value))
-             return new Markup(string.Empty);
-
-         var exec = ServiceProvider.GetService<IExecutor>();
-         if (exec.CurrentAgent != null && exec.CurrentAgent.Metadata.ProcessId == res.Id)
-             return new Markup($"[cyan]{value}[/]");
-
-         return new Markup(value);
-     }
+            terminal.Write(table);
+        }
 
 
-     public class LSResult
-     {
-         public long Length { get; set; }
-         public string Name { get; set; }
-         public bool IsFile { get; set; }
-     }
+        private static void RenderPSTree(List<ListProcessResult> nodes, Table table)
+        {
 
-     public class PSResult
-     {
-         public string Name { get; set; }
-         public int Id { get; set; }
-         public int ParentId { get; set; }
-         public int SessionId { get; set; }
-         public string ProcessPath { get; set; }
-         public string Owner { get; set; }
-         public string Arch { get; set; }
-     }*/
+            var rootsNodes = new List<ListProcessResult>();
+            foreach (var node in nodes)
+            {
+                //if (node.Name == "brave")
+                //{
+                //    int i = 0;
+                //}
+                if (node.Id == 0)
+                    continue;
+                if (node.ParentId == 0)
+                    rootsNodes.Add(node);
+                if (!nodes.Any(p => p.Id == node.ParentId))
+                    rootsNodes.Add(node);
+            }
+
+            foreach (var child in rootsNodes.OrderBy(n => n.Name))
+                RenderNode(nodes, child, table, 0);
+
+        }
+
+        private static void RenderNode(List<ListProcessResult> nodes, ListProcessResult node, Table table, int indent)
+        {
+            table.AddRow(
+                SurroundIfSelf(node, node.Name.PadLeft(indent + node.Name.Length)),
+                SurroundIfSelf(node, node.Id.ToString()),
+                SurroundIfSelf(node, node.ParentId.ToString()),
+                SurroundIfSelf(node, node.Owner),
+                SurroundIfSelf(node, node.Arch),
+                SurroundIfSelf(node, node.SessionId.ToString()),
+                SurroundIfSelf(node, node.ProcessPath));
+            foreach (var child in nodes.Where(p => p.ParentId == node.Id).OrderBy(n => n.Name))
+                RenderNode(nodes, child, table, indent + 3);
+        }
+
+        private static IRenderable SurroundIfSelf(ListProcessResult res, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return new Markup(string.Empty);
+
+            var exec = ServiceProvider.GetService<IExecutor>();
+            if (exec.CurrentAgent != null && exec.CurrentAgent.Metadata.ProcessId == res.Id)
+                return new Markup($"[cyan]{value}[/]");
+
+            return new Markup(value);
+        }
     }
 }

@@ -27,5 +27,7 @@ namespace Shared
         Inject = 0x13,
         Link = 0x14,
 
+        ListProcess = 0x15,
+
     }
 }

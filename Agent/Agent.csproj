@@ -143,6 +143,7 @@
     <Compile Include="Commands\Execution\InjectCommand.cs" />
     <Compile Include="Commands\Link\LinkCommand.cs" />
     <Compile Include="Commands\ListProcessCommand.cs" />
+    <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Services\JobCommand.cs" />
     <Compile Include="Commands\Services\RunningServiceCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />
@@ -204,7 +205,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\Server\" />
     <Folder Include="Commands\Token\" />
     <Folder Include="Service\Pivoting\" />
   </ItemGroup>

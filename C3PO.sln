@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamServer", "TeamServer\TeamServer.csproj", "{99CDB51E-5094-4262-9B1A-C6C9682F29A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiModels", "ApiModels\ApiModels.csproj", "{929FAA02-5222-47DC-BA0B-229A9885B98D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent", "Agent\Agent.csproj", "{FC662017-E51E-4704-9BBB-19B8E021C94A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Commander", "Commander\Commander.csproj", "{8146A4C3-2DEF-424A-BDA8-580DF242A885}"
@@ -78,24 +76,6 @@ Global
 		{99CDB51E-5094-4262-9B1A-C6C9682F29A3}.ReleaseButDebug|x64.Build.0 = ReleaseButDebug|Any CPU
 		{99CDB51E-5094-4262-9B1A-C6C9682F29A3}.ReleaseButDebug|x86.ActiveCfg = ReleaseButDebug|Any CPU
 		{99CDB51E-5094-4262-9B1A-C6C9682F29A3}.ReleaseButDebug|x86.Build.0 = ReleaseButDebug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Debug|x64.Build.0 = Debug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Debug|x86.Build.0 = Debug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Release|x64.ActiveCfg = Release|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Release|x64.Build.0 = Release|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Release|x86.ActiveCfg = Release|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.Release|x86.Build.0 = Release|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.ReleaseButDebug|Any CPU.ActiveCfg = ReleaseButDebug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.ReleaseButDebug|Any CPU.Build.0 = ReleaseButDebug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.ReleaseButDebug|x64.ActiveCfg = ReleaseButDebug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.ReleaseButDebug|x64.Build.0 = ReleaseButDebug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.ReleaseButDebug|x86.ActiveCfg = ReleaseButDebug|Any CPU
-		{929FAA02-5222-47DC-BA0B-229A9885B98D}.ReleaseButDebug|x86.Build.0 = ReleaseButDebug|Any CPU
 		{FC662017-E51E-4704-9BBB-19B8E021C94A}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{FC662017-E51E-4704-9BBB-19B8E021C94A}.Debug|x64.ActiveCfg = Debug|x64
 		{FC662017-E51E-4704-9BBB-19B8E021C94A}.Debug|x64.Build.0 = Debug|x64

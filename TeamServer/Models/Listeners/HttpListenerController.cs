@@ -11,6 +11,7 @@ using BinarySerializer;
 using Shared;
 using Common.APIModels;
 using Common.APIModels.WebHost;
+using System.Linq;
 
 namespace TeamServer.Models
 {
@@ -28,8 +29,9 @@ namespace TeamServer.Models
         private readonly IWebHostService _webHostService;
         private readonly ICryptoService _cryptoService;
         private readonly IAuditService _auditService;
-        private readonly IAgentTaskResultService _agentTaskResultService;
+        private readonly ITaskResultService _agentTaskResultService;
         private readonly IFrameService _frameService;
+        private readonly IServerService _serverService;
         public HttpListenerController(IAgentService agentService,
             IFileService fileService,
             IListenerService listenerService,
@@ -39,8 +41,9 @@ namespace TeamServer.Models
             IWebHostService webHostService,
             ICryptoService cryptoService,
             IAuditService auditService,
-            IAgentTaskResultService agentTaskResultService,
-            IFrameService frameService)
+            ITaskResultService agentTaskResultService,
+            IFrameService frameService,
+            IServerService serverService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -53,8 +56,8 @@ namespace TeamServer.Models
             this._auditService = auditService;
             this._agentTaskResultService = agentTaskResultService;
             this._frameService = frameService;
+            this._serverService=serverService; 
         }
-
 
         private async Task<IActionResult> WebHost(string path)
         {
@@ -108,33 +111,6 @@ namespace TeamServer.Models
             }
         }
 
-        private Agent GetOrCreateAgent(string agentId)
-        {
-            var agent = this._agentService.GetAgent(agentId);
-            if (agent == null)
-            {
-                agent = new Agent(agentId);
-                this._agentService.AddAgent(agent);
-                this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
-            }
-            return agent;
-        }
-
-        private async Task<NetFrame> CreateTaskFrame(string destination, AgentTask task)
-        {
-
-            var taskSer = await task.BinarySerializeAsync();
-            return this._frameService.CreateFrame(destination, NetFrameType.Task, taskSer);
-        }
-
-        private async Task<T> ExtractFrameData<T>(NetFrame frame)
-        {
-            var data = this._frameService.GetData(frame);
-            return await data.BinaryDeserializeAsync<T>();
-        }
-
-
-
         private async Task<ActionResult> HandleImplant()
         {
             try
@@ -143,14 +119,13 @@ namespace TeamServer.Models
                     return this.NotFound();
 
                 string agentId = Request.Headers[AuthorizationHeader];
-                var agent = this.GetOrCreateAgent(agentId);
+                var agent = this._agentService.GetOrCreateAgent(agentId);
 
                 foreach (var relayedAgent in this._agentService.GetAgentToRelay(agentId))
                 {
                     relayedAgent.CheckIn();
                     this._changeTrackingService.TrackChange(ChangingElement.Agent, relayedAgent.Id);
                 }
-
 
                 string body;
                 using (var sr = new StreamReader(HttpContext.Request.Body))
@@ -160,7 +135,8 @@ namespace TeamServer.Models
                 byte[] data = Convert.FromBase64String(body);
                 var frames = await data.BinaryDeserializeAsync<List<NetFrame>>();
 
-                foreach (var frame in frames)
+                await this._serverService.HandleInboundFrames(frames, agentId);
+                /*foreach (var frame in frames)
                 {
                     Logger.Log($"Frame {frame.FrameType} received through {agentId} | Src = {frame.Source}, Dest = {frame.Destination}");
 
@@ -212,7 +188,7 @@ namespace TeamServer.Models
                             {
                                 var relayIds = await this.ExtractFrameData<List<string>>(frame);
 
-                                foreach(var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
+                                foreach (var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
                                 {
                                     if (relayedAgent.Id == agent.Id)
                                         continue;
@@ -230,28 +206,14 @@ namespace TeamServer.Models
                         default:
                             break;
                     }
-                }
+                }*/
 
                 var returnedFrames = new List<NetFrame>();
 
-                var task = new Shared.AgentTask()
+                foreach (var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    CommandId = CommandId.CheckIn,
-                    Parameters = null
-                };
-
-                //if (!string.IsNullOrEmpty(agentId))
-                //{
-                //    list.Add(new NetFrame(string.Empty, agentId, NetFrameType.Task, await task.BinarySerializeAsync()));
-                //}
-
-                foreach (var reayedAgent in this._agentService.GetAgentToRelay(agent.Id))
-                {
-                    foreach (var t in reayedAgent.GetPendingTaks())
-                        returnedFrames.Add(await this.CreateTaskFrame(reayedAgent.Id, t));
+                    returnedFrames.AddRange(this._frameService.ExtractCachedFrame(relayedAgent.Id));
                 }
-
 
                 var ser = await returnedFrames.BinarySerializeAsync();
                 var b64 = Convert.ToBase64String(ser);

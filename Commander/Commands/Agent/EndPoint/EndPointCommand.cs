@@ -22,7 +22,7 @@ namespace Commander.Commands.Agent
 
         public abstract CommandId CommandId { get; }
 
-        protected async Task CallEndPointCommand(CommandContext<T> context)
+        protected virtual async Task CallEndPointCommand(CommandContext<T> context)
         {
             await context.CommModule.TaskAgent(context.CommandLabel, context.Executor.CurrentAgent.Id, this.CommandId, context.Parameters);
             context.WriteTaskSendToAgent(this);

@@ -4,6 +4,7 @@ using BinarySerializer;
 using Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,7 +20,7 @@ namespace Agent.Communication
     {
         protected override int GetDelay()
         {
-            return 2000;
+            return 100;
         }
 
         private HttpClient _client;
@@ -67,6 +68,9 @@ namespace Agent.Communication
                 if (!response.IsSuccessStatusCode)
                 {
                     System.Diagnostics.Debug.WriteLine($"Response error : {response.StatusCode} (Encryption Key can be invalid).");
+#if DEBUG
+                    Debug.WriteLine($"Error {response.StatusCode}:{await response.Content.ReadAsStringAsync()}");
+#endif
                     if (!lastCallError)
                         await this.Agent.SendMetaData();
                     lastCallError = true;

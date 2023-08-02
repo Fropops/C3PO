@@ -531,6 +531,55 @@ namespace Commander.Communication
                 throw new Exception($"{response}");
         }
 
+        public async Task<ServerConfig> ServerConfig()
+        {
+            var response = await _client.GetAsync($"/Config");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var conf = JsonConvert.DeserializeObject<ServerConfig>(json);
+            return conf;
+        }
+
+        #region Proxy
+        public async Task<bool> StartProxy(string agentId, int port)
+        {
+            var resp = await _client.GetAsync($"/Agents/{agentId}/startproxy?port={port}");
+            if (resp.IsSuccessStatusCode)
+                return true;
+            else
+            {
+                Terminal.WriteError(resp.StatusCode + " " + resp.Content.ReadAsStringAsync().Result);
+                return false;
+            }
+        }
+        public async Task<bool> StopProxy(string agentId)
+        {
+            var resp = await _client.GetAsync($"/Agents/{agentId}/stopproxy");
+            if (resp.IsSuccessStatusCode)
+                return true;
+            else
+            {
+                Terminal.WriteError(resp.StatusCode + " " + resp.Content.ReadAsStringAsync().Result);
+                return false;
+            }
+        }
+
+        public async Task<List<ProxyInfo>> ShowProxy()
+        {
+            var response = await _client.GetAsync($"/Agents/proxy");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var proxies = JsonConvert.DeserializeObject<List<ProxyInfo>>(json);
+            return proxies;
+        }
+        #endregion
+
         /*public async Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null)
         {
             var taskrequest = new TaskAgentRequest()
@@ -687,18 +736,6 @@ namespace Commander.Communication
 
             return desc.Id;
         }*/
-
-        public async Task<ServerConfig> ServerConfig()
-        {
-            var response = await _client.GetAsync($"/Config");
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"{response}");
-
-            var json = await response.Content.ReadAsStringAsync();
-            var conf = JsonConvert.DeserializeObject<ServerConfig>(json);
-            return conf;
-        }
 
         /*public async Task TaskAgentToDownloadFile(string agentId, string fileId)
         {

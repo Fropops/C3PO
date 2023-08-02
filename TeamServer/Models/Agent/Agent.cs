@@ -21,8 +21,6 @@ namespace TeamServer.Models
 
         public string ListenerId { get; set; }
 
-        private ConcurrentQueue<AgentTask> _pendingTasks = new();
-
         public ConcurrentBag<TeamServerAgentTask> TaskHistory { get; private set; } = new();
 
         //private ConcurrentDictionary<string, ConcurrentQueue<SocksMessage>> _InboudSocksMessages = new();
@@ -122,20 +120,6 @@ namespace TeamServer.Models
         public void CheckIn()
         {
             LastSeen = DateTime.UtcNow;
-        }
-
-        public void QueueTask(AgentTask task)
-        {
-            this._pendingTasks.Enqueue(task);
-        }
-
-        public IEnumerable<AgentTask> GetPendingTaks()
-        {
-            List<AgentTask> tasks = new();
-            while (_pendingTasks.TryDequeue(out var task))
-                tasks.Add(task);
-
-            return tasks;
         }
 
         //public AgentTaskResult GetTaskResult(string id)

@@ -32,7 +32,7 @@ namespace Commander.Commands.Agent.Service
             //this.Register(ServiceVerb.Show, this.Show);
         }
 
-        protected bool Kill(CommandContext<JobCommandOptions> context)
+        protected async Task<bool> Kill(CommandContext<JobCommandOptions> context)
         {
             if(!context.Options.id.HasValue)
             {

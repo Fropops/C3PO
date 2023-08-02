@@ -18,9 +18,9 @@ namespace TeamServer.Controllers
         private readonly IListenerService _listenerService;
         private readonly IAgentService _agentService;
         private readonly IAuditService _auditService;
-        private readonly IAgentTaskResultService _resultService;
+        private readonly ITaskResultService _resultService;
 
-        public SessionController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService, IAuditService auditService, IAgentTaskResultService resultService)
+        public SessionController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService, IAuditService auditService, ITaskResultService resultService)
         {
             _changeTrackingService = trackService;
             _listenerService = listenerService;

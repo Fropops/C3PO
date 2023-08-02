@@ -1,18 +1,235 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TeamServer.Models;
+using BinarySerializer;
+using Common;
+using Shared;
+using TeamServer.Helper;
+using TeamServer.Services;
 
-namespace TeamServer.Services
+namespace TeamServer.Forwarding
 {
-    public static class TcpClientExtensions
+    public sealed class SocksClient
+    {
+        public string Id { get; private set; }
+        public TcpClient Tcp { get; private set; }
+        private readonly ManualResetEvent _signal = new ManualResetEvent(false);
+        public Queue<byte[]> DataQueue { get; private set; } = new Queue<byte[]>();
+        public bool? ConnexionResult { get; private set; } = null;
+        
+
+
+        public SocksClient(TcpClient client)
+        {
+            this.Id = ShortGuid.NewGuid();
+            this.Tcp = client;
+        }
+
+        public void QueueData(byte[] data)
+        {
+            DataQueue.Enqueue(data);
+        }
+
+        public void Unblock(bool connectionSucceed)
+        {
+            ConnexionResult = connectionSucceed;
+            _signal.Set();
+        }
+
+        public void WaitConnectionResult()
+        {
+            _signal.WaitOne();
+        }
+    }
+
+
+    public sealed class SocksProxy
+    {
+        public string AgentId { get; set; }
+        public int BindPort { get; set; }
+
+        public bool IsRunning { get; private set; }
+
+        private readonly IFrameService _frameService;
+
+        private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
+
+        private Dictionary<string, SocksClient> _socksClients = new Dictionary<string, SocksClient>();
+
+        public SocksClient GetSocksClient(string socksProxyId)
+        {
+            if(!_socksClients.ContainsKey(socksProxyId))
+                return null;
+
+            return _socksClients[socksProxyId];
+        }
+
+        public SocksProxy(string agentId, int port, IFrameService frameService)
+        {
+            this.AgentId = agentId;
+            this.BindPort = port;
+            this._frameService = frameService;
+        }
+
+        public async Task Start()
+        {
+            this.IsRunning = true;
+            var listener = new TcpListener(new IPEndPoint(IPAddress.Any, BindPort));
+            listener.Start(100);
+
+            while (!_tokenSource.IsCancellationRequested)
+            {
+                // wait for client
+                // this will throw an OperationCancelledException if the token is cancelled
+                try
+                {
+                    var client = await listener.AcceptTcpClientAsync(_tokenSource.Token);
+
+                    // handle client in new thread
+                    var thread = new Thread(HandleClient);
+
+                    var sockClient = new SocksClient(client);
+                    this._socksClients.Add(sockClient.Id, sockClient);
+
+                    thread.Start(sockClient);
+                }
+                catch (OperationCanceledException)
+                {
+                    // ignore and proceed to stop the listener
+                }
+            }
+
+            listener.Stop();
+            this.IsRunning = false;
+        }
+
+       
+
+        private async void HandleClient(object obj)
+        {
+            if (obj is not SocksClient client)
+                return;
+
+            var stream = client.Tcp.GetStream();
+
+            // first thing is to read the connect request
+            var connectReq = await ReadConnectRequest(client);
+
+            // if not version 4, send error
+            if (connectReq.Version != 4)
+            {
+                await SendConnectReply(stream, false);
+                return;
+            }
+
+            // otherwise, send "connect" task to drone
+            var packet = new Socks4Packet(client.Id, Socks4Packet.PacketType.CONNECT, connectReq.BinarySerializeAsync().Result);
+            _frameService.CacheFrame(AgentId, Shared.NetFrameType.Socks, packet);
+
+            // wait for confirmation from drone
+            client.WaitConnectionResult();
+
+            if(client.ConnexionResult != true)
+            {
+                client.Tcp.Close();
+                client.Tcp.Dispose();
+                _socksClients.Remove(client.Id);
+                return;
+            }
+
+            // send success back to client
+            await SendConnectReply(stream, true);
+
+            // drop into a loop
+            while (!_tokenSource.IsCancellationRequested)
+            {
+                // if client has data
+                if (client.Tcp.DataAvailable())
+                {
+                    // read it
+                    var data = await stream.ReadStream();
+
+                    // send to the drone
+                    packet = new Socks4Packet(client.Id, Socks4Packet.PacketType.DATA, data);
+                    _frameService.CacheFrame(AgentId, Shared.NetFrameType.Socks, packet);
+
+                    // wait for response
+                    byte[] response;
+                    while (!client.DataQueue.TryDequeue(out response))
+                    {
+                        await Task.Delay(100);
+
+                        if (_tokenSource.IsCancellationRequested)
+                            break;
+                    }
+
+                    await stream.WriteStream(response);
+                }
+
+                await Task.Delay(100);
+            }
+
+            // send a disconnect
+            packet = new Socks4Packet(client.Id, Socks4Packet.PacketType.DISCONNECT);
+            _frameService.CacheFrame(AgentId, NetFrameType.Socks, packet);
+
+            _socksClients.Remove(client.Id);
+            client.Tcp.Dispose();
+        }
+
+        private async Task<Socks4ConnectRequest> ReadConnectRequest(SocksClient client)
+        {
+            var data = await client.Tcp.GetStream().ReadStream();
+            return new Socks4ConnectRequest(data) { Id = client.Id };
+        }
+
+        private static async Task SendConnectReply(Stream stream, bool success)
+        {
+            var reply = new byte[]
+            {
+            0x00,
+            success ? (byte)0x5a : (byte)0x5b,
+            0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00
+            };
+
+            await stream.WriteStream(reply);
+        }
+
+        public async Task Stop()
+        {
+            _tokenSource.Cancel();
+        }
+
+        /*public static implicit operator SocksProxy(SocksRequest request)
+        {
+            return new SocksProxy
+            {
+                Id = Helpers.GenerateShortGuid(),
+                DroneId = request.DroneId,
+                BindPort = request.BindPort
+            };
+        }
+
+        public static implicit operator SocksResponse(SocksProxy socksProxy)
+        {
+            return new SocksResponse
+            {
+                Id = socksProxy.Id,
+                DroneId = socksProxy.DroneId,
+                BindPort = socksProxy.BindPort
+            };
+        }*/
+    }
+
+
+
+
+    /*public static class TcpClientExtensions
     {
         public static bool DataAvailable(this TcpClient client)
         {
@@ -63,13 +280,6 @@ namespace TeamServer.Services
             if (stream.DataAvailable)
             {
                 // Read data from the stream
-                /*var buffer = new byte[1024];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-
-                // Return the data that was read
-                var data = new byte[bytesRead];
-                Array.Copy(buffer, 0, data, 0, bytesRead);
-                return data;*/
                 //Logger.Log($"StreamSize = {stream.Length}");
                 // Read data from the stream
 
@@ -154,62 +364,6 @@ namespace TeamServer.Services
                 var t = new Thread(async () => await HandleClient(client));
                 t.Start();
 
-                /* try
-                 {
-                     //Init
-                     var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
-                     var src = endpoint.Address + ":" + endpoint.Port;
-
-                     //Console.WriteLine($"{id} : Connected");
-
-                     //// read data from client
-                     var data = client.ReceivedData();
-
-                     if (data == null || data.Length == 0)
-                     {
-                         continue;
-                     }
-
-                     //// read the first byte, which is the SOCKS version
-                     var version = Convert.ToInt32(data[0]);
-
-                     // read connect request
-                     var request = Socks4Request.FromBytes(data);
-
-                     // connect to destination
-                     //var destination = new TcpClient();
-                     //await destination.ConnectAsync(request.DestinationAddress, request.DestinationPort);
-
-                     var id = src + "|" +  request.DestinationAddress + ":" + request.DestinationPort;
-
-
-                     agent.SendProxyRequest(new SocksMessage()
-                     {
-                         Source = id,
-                         ConnexionState = true
-                     });
-
-                     if (this.Clients.TryAdd(id, new ClientWrapper() { TcpClient = client, Id = id }))
-                     {
-                         Logger.Log($"Socks5 : new client {id} added");
-                     }
-                     else
-                     {
-                         Logger.Log($"Socks5 : cannot add new client {id}");
-                     }
-
-                 }
-                 catch (Exception ex)
-                 {
-                     Logger.Log($"Socks5 : Error {ex.ToString()}");
-                     continue;
-                 }*/
-
-
-
-                // do something with the connected client
-                //var thread = new Thread(async () => await HandleClient(client));
-                //thread.Start();
             }
             // handle client in new thread
 
@@ -422,162 +576,6 @@ namespace TeamServer.Services
         }
 
 
-        #region old
-        /*  private async Task HandleClient(TcpClient client)
-          {
-              if (client == null)
-                  return;
-
-              bool ackReceived = false;
-
-              var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
-              var src = endpoint.Address + ":" + endpoint.Port;
-              try
-              {
-
-                  //Console.WriteLine($"{id} : Connected");
-
-                  //// read data from client
-                  var data = client.ReceivedData();
-
-                  if (data == null || data.Length == 0)
-                      return;
-
-                  //// read the first byte, which is the SOCKS version
-                  var version = Convert.ToInt32(data[0]);
-
-                  // read connect request
-                  var request = Socks4Request.FromBytes(data);
-
-                  // connect to destination
-                  //var destination = new TcpClient();
-                  //await destination.ConnectAsync(request.DestinationAddress, request.DestinationPort);
-
-                  var id = src + "|" +  request.DestinationAddress + ":" + request.DestinationPort;
-
-                  Logger.Log($"Socks5 : {src} Connection requested to {id}");
-
-                  agent.SendProxyRequest(new SocksMessage()
-                  {
-                      Source = id,
-                      ConnexionState = true
-                  });
-
-                  while (!_tokenSource.IsCancellationRequested)
-                  {
-                      var receivedMessages = this.agent.GetProxyResponses(id);
-                      if (!ackReceived)
-                      {
-                          //Logger.Log($"Socks5 : {id} No ack");
-                          if (receivedMessages.Any())
-                          {
-                              //Logger.Log($"Socks5 : {id} Messages received");
-                              ackReceived = true;
-                              if (receivedMessages.Any(r => r.ConnexionState))
-                              {
-                                  SendConnectReply(client, true);
-                                  Logger.Log($"Socks5 : {id} Connection accepted");
-                              }
-                              else
-                              {
-                                  SendConnectReply(client, false);
-                                  Logger.Log($"Socks5 : {id} Connection refused");
-                                  break;
-                              }
-                          }
-                          else //no message, no ack => waiting
-                              continue;
-                      }
-
-
-
-
-                      if (!client.IsAlive())
-                      {
-                          agent.SendProxyRequest(new SocksMessage()
-                          {
-                              Source = id,
-                              ConnexionState = false
-                          });
-                          Logger.Log($"Socks5 : {id} Connection closed (source)");
-                          break;
-                      }
-
-
-                      // read from client
-                      if (client.DataAvailable())
-                      {
-                          var req = client.ReceivedData();
-
-                          // send to destination
-                          //destination.SendData(req);
-                          //Should send data to the agent
-                          agent.SendProxyRequest(new SocksMessage()
-                          {
-                              Source = id,
-                              ConnexionState = true,
-                              Data = Convert.ToBase64String(req)
-                          });
-
-                          Logger.Log($"Socks5 : {id} Client => Dest {req.Length}");
-
-                      }
-
-                      // read from destination
-                      //should read from the agent responses
-                      bool shouldleave = false;
-                      while (receivedMessages.Any())
-                      {
-                          var mess = receivedMessages.Dequeue();
-                          if (!mess.ConnexionState)
-                          {
-                              Logger.Log($"Socks5 : {id} Connection closed (dest)");
-                              shouldleave = true;
-                          }
-
-                          if (!string.IsNullOrEmpty(mess.Data))
-                          {
-                              var resp = Convert.FromBase64String(mess.Data);
-                              client.SendData(resp);
-                              Logger.Log($"Socks5 : {id} Dest => Client {resp.Length}");
-                          }
-                      }
-
-                      if (shouldleave)
-                          break;
-                      //if (destination.DataAvailable())
-                      //{
-                      //    var resp = destination.ReceivedData();
-
-                      //    // send back to client
-                      //    client.SendData(resp);
-
-                      //    Console.WriteLine($"{id} : Dest => Client {resp.Length}");
-                      //}
-
-                      // sos cpu
-                      await Task.Delay(10);
-                  }
-              }
-              catch (Exception ex)
-              {
-      #if DEBUG
-                      Console.WriteLine(ex);
-      #endif
-                  try
-                  {
-                      SendConnectReply(client, false);
-                  }
-                  catch { }
-              }
-              finally
-              {
-                  //Console.WriteLine($"{id} : disconnected");
-              }
-          }
-        */
-        #endregion
-
         private void SendConnectReply(TcpClient client, bool success)
         {
             var reply = new byte[]
@@ -636,5 +634,5 @@ namespace TeamServer.Services
             StreamConnection = 0x01,
             PortBinding = 0x02
         }
-    }
+    }*/
 }

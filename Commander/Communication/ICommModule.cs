@@ -1,4 +1,5 @@
 ﻿using Commander.Models;
+using Common.APIModels;
 using Common.Models;
 using Shared;
 using System;
@@ -55,8 +56,9 @@ namespace Commander.Communication
         //Task ClearWebHosts();
 
 
-        //Task<bool> StartProxy(string agentId, int port);
-        //Task<bool> StopProxy(string agentId);
+        Task<bool> StartProxy(string agentId, int port);
+        Task<bool> StopProxy(string agentId);
+        Task<List<ProxyInfo>> ShowProxy();
 
         Task CloseSession();
 

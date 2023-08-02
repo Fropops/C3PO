@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Configurations>Debug;Release;ReleaseButDebug</Configurations>
   </PropertyGroup>
 
@@ -27,7 +27,6 @@
     <Compile Remove="Commands\Agent\KillAgentCommand.cs" />
     <Compile Remove="Commands\Agent\LateralMovement\JumpWinRMCommand.cs" />
     <Compile Remove="Commands\Agent\PathCommand.cs" />
-    <Compile Remove="Commands\Agent\ProxyCommand.cs" />
     <Compile Remove="Commands\Base64Command.cs" />
     <Compile Remove="Commands\Composite\AgentTask.cs" />
     <Compile Remove="Commands\Composite\CompositeCommand.cs" />

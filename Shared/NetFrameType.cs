@@ -14,5 +14,7 @@ namespace Shared
         Link = 0x03,
         Unlink = 0x04,
         LinkRelay = 0x05,
+        Socks = 0x06,
+
     }
 }

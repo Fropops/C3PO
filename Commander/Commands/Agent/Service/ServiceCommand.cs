@@ -14,7 +14,7 @@ namespace Commander.Commands.Agent.Service
     }
     public abstract class ServiceCommand<T> : EndPointCommand<T> where T : ServiceCommandOptions
     {
-        protected Dictionary<ServiceVerb, Func<CommandContext<T>, bool>> dico = new Dictionary<ServiceVerb, Func<CommandContext<T>, bool>>();
+        protected Dictionary<ServiceVerb, Func<CommandContext<T>, Task<bool>>> dico = new Dictionary<ServiceVerb, Func<CommandContext<T>, Task<bool>>>();
         public override string Category => CommandCategory.Services;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
         public override CommandId CommandId => CommandId.Job;
@@ -28,7 +28,7 @@ namespace Commander.Commands.Agent.Service
         {
         }
 
-        public void Register(ServiceVerb verb, Func<CommandContext<T>, bool> action)
+        public void Register(ServiceVerb verb, Func<CommandContext<T>, Task<bool>> action)
         {
             dico.Add(verb, action);
         }
@@ -42,7 +42,7 @@ namespace Commander.Commands.Agent.Service
             context.AddParameter(ParameterId.Verb, verb);
 
             if (dico.TryGetValue(verb, out var action))
-                if(!action(context))
+                if(!await action(context))
                     return false;
 
             this.SpecifyParameters(context);

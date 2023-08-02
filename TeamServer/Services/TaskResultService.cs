@@ -8,14 +8,14 @@ using TeamServer.Models;
 namespace TeamServer.Services
 {
 
-    public interface IAgentTaskResultService
+    public interface ITaskResultService
     {
         void AddTaskResult(AgentTaskResult res);
         IEnumerable<AgentTaskResult> GetAgentTaskResults();
         AgentTaskResult GetAgentTaskResult(string id);
         void RemoveAgentTaskResults(AgentTaskResult res);
     }
-    public class AgentTaskResultService : IAgentTaskResultService
+    public class TaskResultService : ITaskResultService
     {
         private readonly Dictionary<string, AgentTaskResult> _results = new();
 

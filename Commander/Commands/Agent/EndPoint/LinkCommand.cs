@@ -39,7 +39,7 @@ namespace Commander.Commands.Agent.EndPoint
             //this.Register(ServiceVerb.Show, this.Show);
         }
 
-        protected bool Start(CommandContext<LinkCommandOptions> context)
+        protected async Task<bool> Start(CommandContext<LinkCommandOptions> context)
         {
             var url = context.Options.bindto;
 
@@ -55,7 +55,7 @@ namespace Commander.Commands.Agent.EndPoint
             return true;
         }
 
-        protected bool Stop(CommandContext<LinkCommandOptions> context)
+        protected async Task<bool> Stop(CommandContext<LinkCommandOptions> context)
         {
             var url = context.Options.bindto;
 

@@ -181,6 +181,7 @@
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\FrameService.cs" />
     <Compile Include="Service\JobService.cs" />
+    <Compile Include="Service\ProxyService.cs" />
     <Compile Include="Service\WebHostService.cs" />
     <Compile Include="Service\NetworkService.cs" />
     <Compile Include="Service\FileChunk.cs" />

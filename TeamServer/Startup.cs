@@ -16,6 +16,7 @@ using TeamServer.MiddleWare;
 using TeamServer.Models;
 using TeamServer.Services;
 using TeamServer.Ext;
+using TeamServer.Helper;
 
 namespace TeamServer
 {
@@ -44,7 +45,7 @@ namespace TeamServer
 
             services.AddSingleton<IListenerService, ListenerService>();
             services.AddSingleton<IAgentService, AgentService>();
-            services.AddSingleton<IAgentTaskResultService, AgentTaskResultService>();
+            services.AddSingleton<ITaskResultService, TaskResultService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
             services.AddSingleton<ISocksService, SocksService>();
@@ -55,6 +56,7 @@ namespace TeamServer
             services.AddSingleton<ICryptoService, CryptoService>();
             services.AddSingleton<IAuditService, AuditService>();
             services.AddSingleton<IFrameService, FrameService>();
+            services.AddSingleton<IServerService, ServerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -147,7 +149,7 @@ namespace TeamServer
         {
             var listenerService = app.ApplicationServices.GetService<IListenerService>();
             var agentService = app.ApplicationServices.GetService<IAgentService>();
-            var resultService = app.ApplicationServices.GetService<IAgentTaskResultService>();
+            var resultService = app.ApplicationServices.GetService<ITaskResultService>();
             var fileService = app.ApplicationServices.GetService<IFileService>();
             var binMakerService = app.ApplicationServices.GetService<IBinMakerService>();
             var config = app.ApplicationServices.GetService<IConfiguration>();
@@ -156,6 +158,7 @@ namespace TeamServer
             var crypto = app.ApplicationServices.GetService<ICryptoService>();
             var audit = app.ApplicationServices.GetService<IAuditService>();
             var frame = app.ApplicationServices.GetService<IFrameService>();
+            var server = app.ApplicationServices.GetService<IServerService>();
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
@@ -165,7 +168,7 @@ namespace TeamServer
             foreach (var listenerConf in listeners)
             {
                 var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
-                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame);
+                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame, server);
                 listener.Start();
                 listenerService.AddListener(listener);
             }

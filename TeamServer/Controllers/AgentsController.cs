@@ -25,9 +25,10 @@ namespace TeamServer.Controllers
         private readonly ISocksService _socksService;
         private readonly IChangeTrackingService _changeService;
         private readonly IAuditService _auditService;
-        private readonly IAgentTaskResultService _agentTaskResultService;
+        private readonly ITaskResultService _agentTaskResultService;
+        private readonly IFrameService _frameService;
 
-        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService, IAuditService auditService, IAgentTaskResultService agentTaskResultService)
+        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService, IAuditService auditService, ITaskResultService agentTaskResultService, IFrameService frameService)
         {
             this._agentService = agentService;
             this._fileService = fileService;
@@ -35,6 +36,7 @@ namespace TeamServer.Controllers
             this._changeService = changeService;
             this._auditService = auditService;
             this._agentTaskResultService = agentTaskResultService;
+            this._frameService = frameService;
         }
 
         [HttpGet]
@@ -107,7 +109,7 @@ namespace TeamServer.Controllers
             byte[] ser = Convert.FromBase64String(ctr.TaskBin);
             var task = ser.BinaryDeserializeAsync<AgentTask>().Result;
 
-            agent.QueueTask(task);
+            this._frameService.CacheFrame(agentId, NetFrameType.Task, task);
             agent.TaskHistory.Add(new TeamServerAgentTask(ctr.Id, task.CommandId, agentId, ctr.Command, DateTime.Now));
             this._changeService.TrackChange(ChangingElement.Task, task.Id);
 
@@ -145,21 +147,40 @@ namespace TeamServer.Controllers
         }
 
         [HttpGet("{agentId}/startproxy")]
-        public ActionResult StartProxy(string agentId, int port)
+        public async Task<ActionResult> StartProxy(string agentId, int port)
         {
-            if (!this._socksService.StartProxy(agentId, port))
+            if (this._socksService.Contains(agentId))
+                return this.Problem($"Socks Proxy is already running for this agent !");
+
+            if (!await this._socksService.StartProxy(agentId, port))
                 return this.Problem($"Cannot start proxy on port {port}!");
 
             return Ok();
         }
 
         [HttpGet("{agentId}/stopproxy")]
-        public ActionResult StopProxy(string agentId)
+        public async Task<ActionResult> StopProxy(string agentId)
         {
-            if (!this._socksService.StopProxy(agentId))
+            if (!await this._socksService.StopProxy(agentId))
                 return this.Problem($"Cannot stop proxy!");
 
             return Ok();
+        }
+
+        [HttpGet("proxy")]
+        public async Task<ActionResult> ShowProxy()
+        {
+            List<ProxyInfo> list = new List<ProxyInfo>();
+            foreach (var pair in this._socksService.GetProxies())
+            {
+                list.Add(new ProxyInfo()
+                {
+                    AgentId = pair.Key,
+                    Port = pair.Value.BindPort
+                });
+            }
+
+            return Ok(list);
         }
 
     }

@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Configurations>Debug;Release;ReleaseButDebug</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions.cs" />
     <Compile Remove="Models\Agent\AgentMetadata.cs" />
     <Compile Remove="Models\Agent\AgentTask.cs" />
     <Compile Remove="Models\Agent\AgentTaskResult.cs" />

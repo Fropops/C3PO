@@ -1,45 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using TeamServer.Forwarding;
 
 namespace TeamServer.Services
 {
     public interface ISocksService
     {
-        bool StartProxy(string agentId, int port);
-        bool StopProxy(string agentId);
+        Task<bool> StartProxy(string agentId, int port);
+        Task<bool> StopProxy(string agentId);
+
+        bool Contains(string agentId);
+
+        SocksClient GetClientById(string agentId, string socksProxyId);
+        List<KeyValuePair<string, SocksProxy>> GetProxies();
     }
     public class SocksService : ISocksService
     {
-        private readonly IAgentService agentService;
-        public SocksService(IAgentService _agentService)
+        private readonly IAgentService _agentService;
+        private readonly IFrameService _frameService;
+        public SocksService(IAgentService agentService, IFrameService frameService)
         {
-            this.agentService = _agentService;
+            this._agentService = agentService;
+            this._frameService = frameService;
         }
-        private Dictionary<string, Socks4Proxy> Proxies { get; set; } = new Dictionary<string, Socks4Proxy>();
+        private Dictionary<string, SocksProxy> Proxies { get; set; } = new Dictionary<string, SocksProxy>();
 
-        public bool StartProxy(string agentId, int port)
+        public bool Contains(string agentId)
+        {
+            return this.Proxies.ContainsKey(agentId);
+        }
+
+        public List<KeyValuePair<string, SocksProxy>> GetProxies()
+        {
+            return Proxies.ToList();
+        }
+
+        public SocksClient GetClientById(string agentId, string socksProxyId)
+        {
+            var proxy = Proxies[agentId];
+            return proxy.GetSocksClient(socksProxyId);
+        }
+
+        public async Task<bool> StartProxy(string agentId, int port)
         {
             if (this.Proxies.ContainsKey(agentId))
                 return false;
 
-            var agent = this.agentService.GetAgent(agentId);
+            var agent = this._agentService.GetAgent(agentId);
 
-            var proxy = new Socks4Proxy(null, port);
+            var proxy = new SocksProxy(agent.Id, port, this._frameService);
             this.Proxies.Add(agentId, proxy);
-            proxy.Start(agent);
-            Thread.Sleep(1000);
+            _ = proxy.Start();
+
+            await Task.Delay(1000);
+            
             return proxy.IsRunning;
         }
-        public bool StopProxy(string agentId)
+        public async Task<bool> StopProxy(string agentId)
         {
             if(!this.Proxies.ContainsKey(agentId))
                 return false;
 
             var proxy = this.Proxies[agentId];
-            proxy.Stop();
+            await proxy.Stop();
+
+            this.Proxies.Remove(agentId);
             return true;
         }
     }

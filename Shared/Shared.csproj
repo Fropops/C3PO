@@ -74,6 +74,7 @@
     <Compile Include="ResultObjects\ListDirectoryResult.cs" />
     <Compile Include="ResultObjects\ListProcessResult.cs" />
     <Compile Include="ServiceVerb.cs" />
+    <Compile Include="Socks.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sign.snk" />

@@ -20,7 +20,7 @@ namespace TeamServer.Models
         public virtual string Protocol { get; protected set; }
 
         protected IAgentService _agentService;
-        protected IAgentTaskResultService _resultService;
+        protected ITaskResultService _resultService;
         protected IFileService _fileService;
         protected IBinMakerService _binMakerService;
         protected IListenerService _listenerService;
@@ -30,6 +30,7 @@ namespace TeamServer.Models
         protected ICryptoService _cryptoService;
         protected IAuditService _auditService;
         protected IFrameService _frameService;
+        protected IServerService _serverService;
 
         public Listener(string name, int bindPort, string Ip)
         {
@@ -40,13 +41,14 @@ namespace TeamServer.Models
             this.Id = Guid.NewGuid().ToString();
         }
 
-        public void Init(IAgentService service, 
-            IAgentTaskResultService resultService,
+        public void Init(IAgentService service,
+            ITaskResultService resultService,
             IFileService fileService, IBinMakerService binMakerService, IListenerService listenerService, ILogger logger, IChangeTrackingService changeTrackingService,
             IWebHostService webHostService,
             ICryptoService cryptoService,
             IAuditService auditService,
-            IFrameService frameService)
+            IFrameService frameService,
+            IServerService serverService)
         {
             this._agentService = service;
             this._fileService = fileService;
@@ -59,6 +61,7 @@ namespace TeamServer.Models
             this._auditService = auditService;
             this._resultService = resultService;
             this._frameService = frameService;
+            this._serverService = serverService;
         }
 
         public abstract Task Start();

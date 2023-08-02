@@ -10,9 +10,9 @@ namespace TeamServer.Controllers
     [Authorize]
     public class ResultsController : ControllerBase
     {
-        private readonly IAgentTaskResultService _resultService;
+        private readonly ITaskResultService _resultService;
 
-        public ResultsController(IAgentTaskResultService resultService)
+        public ResultsController(ITaskResultService resultService)
         {
             this._resultService = resultService;
         }

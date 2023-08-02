@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.APIModels;
 using TeamServer.Models;
 
 namespace TeamServer.Services
@@ -14,9 +15,16 @@ namespace TeamServer.Services
         Agent GetAgent(string id);
         void RemoveAgent(Agent agent);
         List<Agent> GetAgentToRelay(string id);
+        Agent GetOrCreateAgent(string agentId);
     }
     public class AgentService : IAgentService
     {
+        private readonly IChangeTrackingService _changeTrackingService;
+        public AgentService(IChangeTrackingService changeTrackingService)
+        {
+            _changeTrackingService = changeTrackingService;
+        }
+
         private readonly Dictionary<string, Agent> _agents = new();
 
         public void AddAgent(Agent agent)
@@ -47,6 +55,18 @@ namespace TeamServer.Services
         public void RemoveAgent(Agent agent)
         {
             _agents.Remove(agent.Id);
+        }
+
+        public Agent GetOrCreateAgent(string agentId)
+        {
+            var agent = this.GetAgent(agentId);
+            if (agent == null)
+            {
+                agent = new Agent(agentId);
+                this.AddAgent(agent);
+                this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
+            }
+            return agent;
         }
     }
 }

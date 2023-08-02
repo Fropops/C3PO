@@ -30,7 +30,9 @@ namespace Shared
         ListProcess = 0x15,
 
         Upload = 0x16,
-        Dowload = 0x17,
+        Download = 0x17,
+
+        Proxy = 0x18,
 
     }
 }

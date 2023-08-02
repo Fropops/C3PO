@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using TeamServer.Models;
 
-namespace TeamServer.Services
+namespace TeamServer.Helper
 {
     public interface IJwtUtils
     {
@@ -19,11 +19,11 @@ namespace TeamServer.Services
     {
         public UserContext(User user, string session)
         {
-            this.User = user;
-            this.Session = session;
+            User = user;
+            Session = session;
         }
         public User User { get; set; }
-        public string Session { get;private set; }
+        public string Session { get; private set; }
     }
 
     public class JwtUtils : IJwtUtils

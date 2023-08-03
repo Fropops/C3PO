@@ -66,11 +66,17 @@ namespace Commander.Commands.Agent
                 //var listenerName = listeners.FirstOrDefault(l => l.Id == agent.ListenerId)?.Name ?? string.Empty;
                 //if (string.IsNullOrEmpty(context.Options.listenerName) || listenerName.ToLower().Equals(context.Options.listenerName.ToLower()))
                 //{
+                var activ = context.IsAgentAlive(agent);
+                var activStr = "Unknown";
+                if (activ == true)
+                    activStr = "Yes";
+                if(activ == false)
+                    activStr = "No";
 
-                    table.AddRow(
+                table.AddRow(
                         SurroundIfDeadOrSelf(agent, context, index.ToString()),
                         SurroundIfDeadOrSelf(agent, context, agent.Id),
-                        SurroundIfDeadOrSelf(agent, context, agent.IsActive == true ? "Yes" : "No"),
+                        SurroundIfDeadOrSelf(agent, context, activStr),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.UserName),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Hostname),
                         SurroundIfDeadOrSelf(agent, context, StringHelper.IpAsString(agent.Metadata?.Address)),
@@ -100,7 +106,7 @@ namespace Commander.Commands.Agent
             if(ctxt.Executor.CurrentAgent != null && ctxt.Executor.CurrentAgent.Id == agent.Id)
                 return new Markup($"[cyan]{value}[/]");
 
-            if (agent.IsActive != true)
+            if (ctxt.IsAgentAlive(agent) != true)
                 return new Markup($"[grey]{value}[/]");
             else
                 return new Markup(value);

@@ -109,6 +109,9 @@ namespace Agent.Service
 
         private async Task HandleSocksData(Socks4Packet inbound, Agent agent)
         {
+#if DEBUG
+            Debug.WriteLine($"Handling Socks Data [{inbound.Data.Length}]");
+#endif
             if (_socksClients.TryGetValue(inbound.Id, out var client))
             {
                 try
@@ -124,6 +127,9 @@ namespace Agent.Service
                     var packet = new Socks4Packet(inbound.Id, Socks4Packet.PacketType.DATA, response);
                     var frame = this._frameService.CreateFrame(agent.MetaData.Id, NetFrameType.Socks, packet);
                     await agent.SendFrame(frame);
+#if DEBUG
+                    Debug.WriteLine($"Handling Socks Data, Reponse sent [{packet.Data.Length}]");
+#endif
                 }
                 catch
                 {

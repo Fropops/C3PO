@@ -47,6 +47,28 @@ namespace Commander.Commands
         {
             this.Terminal.WriteSuccess($"Command {cmd.Name} tasked to agent {this.Executor.CurrentAgent.Id}.");
         }
+
+        public bool? IsAgentAlive(Models.Agent agent)
+        {
+            if (agent.Metadata == null)
+                return null;
+
+            int delta = 0;
+            if (!string.IsNullOrEmpty(agent.RelayId))
+            {
+                var relay = this.CommModule.GetAgent(agent.RelayId);
+                if (relay == null)
+                    return null;
+                delta = Math.Min(1, relay.Metadata.SleepInterval) * 3;
+            }
+            else
+                delta = Math.Min(1, agent.Metadata.SleepInterval) * 3;
+
+            if (agent.LastSeen.AddSeconds(delta) >= DateTime.UtcNow)
+                return true;
+
+            return false;
+        }
     }
 
     public class CommandContext<T> : CommandContext

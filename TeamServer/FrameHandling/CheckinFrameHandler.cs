@@ -13,7 +13,10 @@ public class CheckinFrameHandler : FrameHandler
         var metaData = await this.ExtractFrameData<AgentMetadata>(frame);
         var ag = this.Server.AgentService.GetOrCreateAgent(frame.Source);
         if (ag.Id != relay)
+        {
             ag.RelayId = relay;
+            this.Server.ChangeTrackingService.TrackChange(ChangingElement.Agent, ag.Id);
+        }
 
         ag.Metadata = metaData;
         this.Server.ChangeTrackingService.TrackChange(ChangingElement.Metadata, metaData.Id);

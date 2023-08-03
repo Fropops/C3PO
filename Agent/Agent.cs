@@ -17,7 +17,7 @@ namespace Agent
 {
     public class Agent
     {
-        private Communicator MasterCommunicator { get; set; }
+        public Communicator MasterCommunicator { get; private set; }
         private IConfigService _configService;
         private INetworkService _networkService;
         private IFileService _fileService;

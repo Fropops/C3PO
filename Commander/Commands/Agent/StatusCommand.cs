@@ -26,13 +26,18 @@ namespace Commander.Commands.Agent
 
         public override RootCommand Command => new RootCommand(this.Description);
 
+       
+
         protected async override Task<bool> HandleCommand(CommandContext<StatusCommandOptions> context)
         {
             var agent = context.Executor.CurrentAgent;
-            if (agent.IsActive == true)
+            var activ = context.IsAgentAlive(agent);
+            if (activ == true)
                 context.Terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
-            else
+            if(activ == false)
                 context.Terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
+            if(activ == null)
+                context.Terminal.WriteInfo($"Agent {agent.Metadata.Id} response time is unknown!");
 
             var table = new Table();
             table.Border(TableBorder.Rounded);
@@ -51,16 +56,17 @@ namespace Commander.Commands.Agent
             table.AddRow("Integrity", agent.Metadata?.Integrity.ToString() ?? string.Empty);
             table.AddRow("EndPoint", agent.Metadata?.EndPoint ?? string.Empty);
             table.AddRow("Version", agent.Metadata?.Version ?? string.Empty);
-            //table.AddRow("Sleep", agent.Metadata?.Sleep ?? string.Empty);
+            if (string.IsNullOrEmpty(agent.RelayId))
+                table.AddRow("Sleep", agent.Metadata?.Sleep ?? string.Empty);
             table.AddRow("First Seen", agent.FirstSeen.ToLocalTime().ToString());
             table.AddRow("Last Seen", StringHelper.FormatElapsedTime(Math.Round(agent.LastSeenDelta.TotalSeconds, 2)) ?? string.Empty);
-            
+
 
             context.Terminal.Write(table);
             return true;
         }
 
 
-        
+
     }
 }

@@ -147,6 +147,7 @@
     <Compile Include="Commands\Services\JobCommand.cs" />
     <Compile Include="Commands\Services\RunningServiceCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />
+    <Compile Include="Commands\SleepCommand.cs" />
     <Compile Include="Communication\CommunicationModuleMode.cs" />
     <Compile Include="Communication\CommunicationType.cs" />
     <Compile Include="Communication\EgressCommunicator.cs" />

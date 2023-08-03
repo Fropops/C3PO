@@ -58,6 +58,7 @@ namespace TeamServer.Controllers
                 Id = agent.Id,
                 FirstSeen = agent.FirstSeen,
                 LastSeen = agent.LastSeen,
+                RelayId = agent.RelayId,
                 Links = agent.Links.Values.Select(c => c.ChildId).ToList(),
             });
         }

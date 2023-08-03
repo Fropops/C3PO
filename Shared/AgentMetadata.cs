@@ -39,8 +39,15 @@ namespace Shared
         [FieldOrder(9)]
         public byte[] Address { get; set; }
 
+        [FieldOrder(10)]
         public int SleepInterval { get; set; }
+        [FieldOrder(11)]
         public int SleepJitter { get; set; }
+
+        public string Sleep
+        {
+            get { return $"{this.SleepInterval}s - {this.SleepJitter}%"; } 
+        }
 
         public bool HasElevatePrivilege()
         {

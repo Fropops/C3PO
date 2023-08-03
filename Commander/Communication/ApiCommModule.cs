@@ -263,6 +263,7 @@ namespace Commander.Communication
                     Id = ar.Id,
                     FirstSeen = ar.FirstSeen,
                     LastSeen = ar.LastSeen,
+                    RelayId = ar.RelayId,
                     Links = ar.Links,
                 };
 
@@ -270,6 +271,7 @@ namespace Commander.Communication
                 this._agents.AddOrUpdate(ar.Id, agent, (key, current) =>
                 {
                     current.LastSeen = agent.LastSeen;
+                    current.RelayId = agent.RelayId;
                     current.Links = agent.Links;
                     return current;
                 });

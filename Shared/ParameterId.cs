@@ -21,5 +21,7 @@ namespace Shared
         Parameters = 0x10,
         Output = 0x11,
         Bind = 0x12,
+        Delay = 0x13,
+        Jitter = 0x14,
     }
 }

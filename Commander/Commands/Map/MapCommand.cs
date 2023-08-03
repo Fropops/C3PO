@@ -79,7 +79,7 @@ namespace Commander.Commands.Agent
                 node.Name = agent.Metadata?.Desc;
                 node.Id = agent.Id;
                 node.ShortId = agent.Id;
-                node.IsAlive = agent.IsActive == true;
+                node.IsAlive = context.IsAgentAlive(agent) == true;
                 allNodes.Add(agent.Id, node);
             }
 

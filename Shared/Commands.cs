@@ -33,6 +33,6 @@ namespace Shared
         Download = 0x17,
 
         Proxy = 0x18,
-
+        Sleep = 0x19
     }
 }

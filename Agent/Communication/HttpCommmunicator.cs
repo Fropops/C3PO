@@ -18,11 +18,6 @@ namespace Agent.Communication
 {
     internal class HttpCommmunicator : EgressCommunicator
     {
-        protected override int GetDelay()
-        {
-            return 100;
-        }
-
         private HttpClient _client;
         public HttpCommmunicator(ConnexionUrl conn) : base(conn)
         {

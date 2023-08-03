@@ -36,6 +36,12 @@ public class SocksFrameHandler : FrameHandler
                     break;
                 }
 
+            case Socks4Packet.PacketType.DISCONNECT:
+                {
+                    socks.Disconnect();
+                    break;
+                }
+
             default:
                 throw new ArgumentOutOfRangeException();
         }

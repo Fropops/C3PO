@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MiscUtil.Conversion;
 
 namespace Agent.Helpers
 {
@@ -20,45 +22,12 @@ namespace Agent.Helpers
         public static bool DataAvailable(this PipeStream pipe)
         {
             var hPipe = pipe.SafePipeHandle.DangerousGetHandle();
-            uint nb = 0;       
+            uint nb = 0;
             bool result = PeekNamedPipe(hPipe, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, ref nb, IntPtr.Zero);
-            if(result == false)
+            if (result == false)
                 throw new System.ComponentModel.Win32Exception("Named Pipe is not available.");
 
             return nb > 0;
         }
-
-        public static async Task WriteStream(this Stream stream, byte[] data)
-        {
-            // format data as [length][value]
-            var lengthBuf = BitConverter.GetBytes(data.Length);
-            var lv = new byte[lengthBuf.Length + data.Length];
-
-            Buffer.BlockCopy(lengthBuf, 0, lv, 0, lengthBuf.Length);
-            Buffer.BlockCopy(data, 0, lv, lengthBuf.Length, data.Length);
-
-            using (var ms = new MemoryStream(lv))
-            {
-
-                // write in chunks
-                var bytesRemaining = lv.Length;
-                do
-                {
-                    var lengthToSend = bytesRemaining < 1024 ? bytesRemaining : 1024;
-                    var buf = new byte[lengthToSend];
-
-                    var read = await ms.ReadAsync(buf, 0, lengthToSend);
-
-                    if (read != lengthToSend)
-                        throw new Exception("Could not read data from stream");
-
-                    await stream.WriteAsync(buf, 0, buf.Length);
-
-                    bytesRemaining -= lengthToSend;
-                }
-                while (bytesRemaining > 0);
-            }
-        }
-
     }
 }

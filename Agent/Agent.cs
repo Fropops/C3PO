@@ -432,6 +432,10 @@ namespace Agent
 
         private async Task OnFrameReceivedFromChild(NetFrame frame)
         {
+#if DEBUG
+            Debug.WriteLine($"Child : Received Frame : {frame.FrameType}");
+#endif
+
             if (frame.FrameType == NetFrameType.Link)
             {
                 var link = _frameService.GetData<LinkInfo>(frame);

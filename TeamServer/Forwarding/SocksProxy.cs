@@ -131,7 +131,7 @@ namespace TeamServer.Forwarding
 
     public sealed class SocksProxy
     {
-        private bool _log = true;
+        private bool _log = false;
         public string AgentId { get; set; }
         public int BindPort { get; set; }
 
@@ -162,8 +162,17 @@ namespace TeamServer.Forwarding
         {
             this.IsRunning = true;
             var listener = new TcpListener(new IPEndPoint(IPAddress.Any, BindPort));
-            listener.Start(100);
+            try
+            {
+                listener.Start(100);
+            }
+            catch
+            {
+                this.IsRunning = false;
+                return;
+            }
 
+            
             while (!_tokenSource.IsCancellationRequested)
             {
                 // wait for client

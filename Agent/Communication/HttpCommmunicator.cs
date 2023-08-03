@@ -62,8 +62,9 @@ namespace Agent.Communication
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Response error : {response.StatusCode} (Encryption Key can be invalid).");
+
 #if DEBUG
+                    System.Diagnostics.Debug.WriteLine($"Response error : {response.StatusCode} (Encryption Key can be invalid).");
                     Debug.WriteLine($"Error {response.StatusCode}:{await response.Content.ReadAsStringAsync()}");
 #endif
                     if (!lastCallError)

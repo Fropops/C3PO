@@ -68,6 +68,7 @@ namespace Commander.Commands.Agent
             if (!res)
             {
                 context.Terminal.WriteError("[X] Cannot stop proxy on the server!");
+                return false;
             }
             context.Terminal.WriteSuccess("[*] Proxy server stopped !");
             return true;

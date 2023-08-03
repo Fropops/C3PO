@@ -53,11 +53,14 @@ namespace TeamServer.Services
             var agent = this._agentService.GetAgent(agentId);
 
             var proxy = new SocksProxy(agent.Id, port, this._frameService);
-            this.Proxies.Add(agentId, proxy);
+            
             _ = proxy.Start();
 
             await Task.Delay(1000);
             
+            if(proxy.IsRunning)
+                this.Proxies.Add(agentId, proxy);
+
             return proxy.IsRunning;
         }
         public async Task<bool> StopProxy(string agentId)

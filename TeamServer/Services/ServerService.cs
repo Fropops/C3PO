@@ -59,7 +59,15 @@ public class ServerService : IServerService
     public async Task HandleInboundFrame(NetFrame frame, string relay)
     {
         var handler = _handlers.First(m => m.FrameType == frame.FrameType);
-        await handler.ProcessFrame(frame, relay);
+        try
+        {
+            await handler.ProcessFrame(frame, relay);
+        }
+        catch(Exception ex)
+        {
+            Logger.Log($"Error While Handling Frame : {ex}");
+        }
+        
     }
 
     private void LoadModules()

@@ -15,6 +15,7 @@ using BinarySerializer;
 using Shared;
 using System.Security.Principal;
 using System.Security.AccessControl;
+using MiscUtil.Conversion;
 
 namespace Agent.Models
 {
@@ -128,16 +129,22 @@ namespace Agent.Models
             {
                 try
                 {
-                    while (pipeStream.DataAvailable())
+//#if DEBUG
+//                    Debug.WriteLine($"Pipe : Read Loop");
+//#endif
+                    if (pipeStream.DataAvailable())
                     {
 
-                        var data = await pipeStream.ReadStream();
+                        var data = await this.ReadStream(pipeStream);
 
-//#if DEBUG
-//                        var base64 = Convert.ToBase64String(data);
-//                        Debug.WriteLine($"Pipe : Received Frame(s) : {base64}");
-//#endif
                         var frame = await data.BinaryDeserializeAsync<NetFrame>();
+
+#if DEBUG
+                        //                        var base64 = Convert.ToBase64String(data);
+                        //                        Debug.WriteLine($"Pipe : Received Frame(s) : {base64}");
+                        Debug.WriteLine($"Pipe : Received Frame(s) : {frame.FrameType}");
+#endif
+                        
                         await this.FrameReceived?.Invoke(frame);
 
                     }
@@ -153,6 +160,10 @@ namespace Agent.Models
 
                 await Task.Delay(100);
             }
+
+#if DEBUG
+            Debug.WriteLine($"Pipe : Closing");
+#endif
 
             _pipeServer?.Dispose();
             _pipeClient?.Dispose();
@@ -175,11 +186,12 @@ namespace Agent.Models
             try
             {
                 var data = await frame.BinarySerializeAsync();
-//#if DEBUG
-//                var base64 = Convert.ToBase64String(data);
-//                Debug.WriteLine($"Pipe : Send Frame {frame.FrameType} : {base64}");
-//#endif
-                await pipeStream.WriteStream(data);
+#if DEBUG
+                //var base64 = Convert.ToBase64String(data);
+                //Debug.WriteLine($"Pipe : Send Frame {frame.FrameType} : {base64}");
+                Debug.WriteLine($"Pipe : Send Frame {frame.FrameType}");
+#endif
+                await this.WriteStream(pipeStream, data);
             }
             catch (Exception ex)
             {
@@ -187,6 +199,94 @@ namespace Agent.Models
                 Debug.WriteLine($"Pipe : Error writing pipe : {ex}");
 #endif
                 this.OnException?.Invoke();
+            }
+        }
+
+        object writeLock = new object();
+
+        private async Task WriteStream(Stream stream, byte[] data)
+        {
+            lock (writeLock)
+            {
+//#if DEBUG
+//                Debug.WriteLine($"Pipe : Send Length : {data.Length}");
+//#endif
+                // format data as [length][value]
+                var lengthBuf = new BigEndianBitConverter().GetBytes(data.Length);
+                stream.Write(lengthBuf, 0, lengthBuf.Length);
+
+                using (var ms = new MemoryStream(data))
+                {
+
+
+                    // write in chunks
+                    var bytesRemaining = data.Length;
+                    do
+                    {
+                        var lengthToSend = bytesRemaining < 1024 ? bytesRemaining : 1024;
+//#if DEBUG
+//                        Debug.WriteLine($"Pipe : Write : {lengthToSend} / {bytesRemaining} / {data.Length}");
+//#endif
+                        var buf = new byte[lengthToSend];
+
+                        var read = ms.Read(buf, 0, lengthToSend);
+
+                        if (read != lengthToSend)
+                            throw new Exception("Could not read data from stream");
+
+                        stream.Write(buf, 0, buf.Length);
+
+                        bytesRemaining -= lengthToSend;
+                    }
+                    while (bytesRemaining > 0);
+                }
+            }
+        }
+
+        private async Task<byte[]> ReadStream(Stream stream)
+        {
+            // read length
+            var lengthBuf = new byte[4];
+            var read = await stream.ReadAsync(lengthBuf, 0, 4);
+
+            if (read != 4)
+                throw new Exception("Failed to read length");
+
+            var length = new BigEndianBitConverter().ToInt32(lengthBuf, 0);
+
+//#if DEBUG
+//            Debug.WriteLine($"Pipe : Received Length : {length}");
+//#endif
+
+            // read rest of data
+            using (var ms = new MemoryStream())
+            {
+                var totalRead = 0;
+
+                do
+                {
+                    try
+                    {
+                        var buf = length - totalRead >= 1024 ? new byte[1024] : new byte[length - totalRead];
+//#if DEBUG
+//                        Debug.WriteLine($"Pipe : Read : {buf.Length} / {totalRead} / {length}");
+//#endif
+
+
+                        read = await stream.ReadAsync(buf, 0, buf.Length);
+
+                        await ms.WriteAsync(buf, 0, read);
+                        totalRead += read;
+                    }
+                    catch (Exception ex)
+                    {
+                        int i = 0;
+                    }
+
+                }
+                while (totalRead < length);
+
+                return ms.ToArray();
             }
         }
 

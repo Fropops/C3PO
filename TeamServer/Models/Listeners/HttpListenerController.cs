@@ -136,78 +136,7 @@ namespace TeamServer.Models
                 var frames = await data.BinaryDeserializeAsync<List<NetFrame>>();
 
                 await this._serverService.HandleInboundFrames(frames, agentId);
-                /*foreach (var frame in frames)
-                {
-                    Logger.Log($"Frame {frame.FrameType} received through {agentId} | Src = {frame.Source}, Dest = {frame.Destination}");
-
-                    switch (frame.FrameType)
-                    {
-                        case NetFrameType.TaskResult:
-                            {
-                                var taskOutput = await this.ExtractFrameData<Shared.AgentTaskResult>(frame);
-                                this._agentTaskResultService.AddTaskResult(taskOutput);
-                                this._changeTrackingService.TrackChange(ChangingElement.Result, taskOutput.Id);
-                                break;
-                            }
-                        case NetFrameType.CheckIn:
-                            {
-                                var metaData = await this.ExtractFrameData<Shared.AgentMetadata>(frame);
-                                var ag = this.GetOrCreateAgent(frame.Source);
-                                if (ag.Id != agent.Id)
-                                    ag.RelayId = agent.Id;
-
-                                ag.Metadata = metaData;
-                                this._changeTrackingService.TrackChange(ChangingElement.Metadata, metaData.Id);
-                                break;
-                            }
-                        case NetFrameType.Link:
-                            {
-                                var link = await this.ExtractFrameData<Shared.LinkInfo>(frame);
-                                var parent = this.GetOrCreateAgent(link.ParentId);
-                                var child = this.GetOrCreateAgent(link.ChildId);
-                                if (!parent.Links.ContainsKey(child.Id))
-                                {
-                                    parent.Links.Add(child.Id, link);
-                                    this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
-                                }
-                                break;
-                            }
-                        case NetFrameType.Unlink:
-                            {
-                                var link = await this.ExtractFrameData<Shared.LinkInfo>(frame);
-                                var parent = this.GetOrCreateAgent(link.ParentId);
-                                var child = this.GetOrCreateAgent(link.ChildId);
-                                if (parent.Links.ContainsKey(child.Id))
-                                {
-                                    parent.Links.Remove(child.Id);
-                                    this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
-                                }
-                                break;
-                            }
-                        case NetFrameType.LinkRelay:
-                            {
-                                var relayIds = await this.ExtractFrameData<List<string>>(frame);
-
-                                foreach (var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
-                                {
-                                    if (relayedAgent.Id == agent.Id)
-                                        continue;
-
-                                    relayedAgent.RelayId = null;
-                                }
-
-                                foreach (var relayId in relayIds)
-                                {
-                                    var relay = GetOrCreateAgent(relayId);
-                                    relay.RelayId = agent.Id;
-                                }
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                }*/
-
+               
                 var returnedFrames = new List<NetFrame>();
 
                 foreach (var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
@@ -222,6 +151,7 @@ namespace TeamServer.Models
             }
             catch (Exception ex)
             {
+                Logger.Log($"Error While Handling Agent : {ex}");
                 throw ex;
             }
 

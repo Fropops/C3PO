@@ -21,6 +21,8 @@
     <Compile Include="..\Shared\ParameterId.cs" Link="Shared\ParameterId.cs" />
     <Compile Include="..\Shared\ResultObjects\ListDirectoryResult.cs" Link="Shared\ResultObjects\ListDirectoryResult.cs" />
     <Compile Include="..\Shared\ResultObjects\ListProcessResult.cs" Link="Shared\ResultObjects\ListProcessResult.cs" />
+    <Compile Include="..\Shared\ResultObjects\ReversePortForwarResult.cs" Link="Shared\ResultObjects\ReversePortForwarResult.cs" />
+    <Compile Include="..\Shared\ReversePortForward.cs" Link="Shared\ReversePortForward.cs" />
     <Compile Include="..\Shared\ServiceVerb.cs" Link="Shared\ServiceVerb.cs" />
     <Compile Include="..\Shared\Socks.cs" Link="Shared\Socks.cs" />
   </ItemGroup>

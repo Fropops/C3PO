@@ -13,7 +13,7 @@ namespace Agent.Commands.Services
     public abstract class ServiceCommand<T> : AgentCommand
     {
         protected T Service;
-        protected Dictionary<ServiceVerb, Action<AgentTask, AgentCommandContext>> dico = new Dictionary<ServiceVerb, Action<AgentTask, AgentCommandContext>>();
+        protected Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>> dico = new Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>>();
         public ServiceCommand()
         {
             Service = ServiceProvider.GetService<T>();
@@ -29,17 +29,17 @@ namespace Agent.Commands.Services
         {
             var verb = task.GetParameter<ServiceVerb>(ParameterId.Verb);
             if (dico.TryGetValue(verb, out var action))
-                action(task, context);
+                await action(task, context);
             else
                 context.Error($"Verb {verb} not found !");
         }
 
-        public void Register(ServiceVerb verb, Action<AgentTask, AgentCommandContext> action)
+        public void Register(ServiceVerb verb, Func<AgentTask, AgentCommandContext, Task> action)
         {
             dico.Add(verb, action);
         }
 
-        protected abstract void Show(AgentTask task, AgentCommandContext context);
+        protected abstract Task Show(AgentTask task, AgentCommandContext context);
     }
 
 

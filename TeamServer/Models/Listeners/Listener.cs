@@ -31,6 +31,7 @@ namespace TeamServer.Models
         protected IAuditService _auditService;
         protected IFrameService _frameService;
         protected IServerService _serverService;
+        protected IReversePortForwardService _rportfwdService;
 
         public Listener(string name, int bindPort, string Ip)
         {
@@ -48,7 +49,8 @@ namespace TeamServer.Models
             ICryptoService cryptoService,
             IAuditService auditService,
             IFrameService frameService,
-            IServerService serverService)
+            IServerService serverService,
+            IReversePortForwardService pfwdService)
         {
             this._agentService = service;
             this._fileService = fileService;
@@ -62,6 +64,7 @@ namespace TeamServer.Models
             this._resultService = resultService;
             this._frameService = frameService;
             this._serverService = serverService;
+            this._rportfwdService = pfwdService;
         }
 
         public abstract Task Start();

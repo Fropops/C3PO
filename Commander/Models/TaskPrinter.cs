@@ -23,6 +23,7 @@ namespace Commander.Models
             _printObjectsFunctions.Add(CommandId.Job, PrintJobs);
             _printObjectsFunctions.Add(CommandId.Link, PrintLinks);
             _printObjectsFunctions.Add(CommandId.ListProcess, PrintProcessList);
+            _printObjectsFunctions.Add(CommandId.RportFwd, PrintRportFwd);
         }
 
         public static void Print(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal, bool fullLabel = false)
@@ -194,5 +195,22 @@ namespace Commander.Models
 
             return new Markup(value);
         }
+
+        private static void PrintRportFwd(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
+        {
+            var list = result.Objects.BinaryDeserializeAsync<List<ReversePortForwarResult>>().Result;
+            var table = new Table();
+            table.Border(TableBorder.Rounded);
+            // Add some columns
+            table.AddColumn(new TableColumn("Local Port").LeftAligned());
+            table.AddColumn(new TableColumn("Destination Host").LeftAligned());
+            table.AddColumn(new TableColumn("Destination Port").LeftAligned());
+
+            foreach (var item in list)
+                table.AddRow(item.Port.ToString(), item.DestHost, item.DestPort.ToString());
+
+            terminal.Write(table);
+        }
+        
     }
 }

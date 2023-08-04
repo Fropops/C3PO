@@ -142,10 +142,10 @@
     <Compile Include="Commands\FileSystem\PrintWorkingDirectoryCommand.cs" />
     <Compile Include="Commands\Execution\InjectCommand.cs" />
     <Compile Include="Commands\Link\LinkCommand.cs" />
-    <Compile Include="Commands\ListProcessCommand.cs" />
+    <Compile Include="Commands\Core\ListProcessCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
+    <Compile Include="Commands\Services\RportFwdCommand.cs" />
     <Compile Include="Commands\Services\JobCommand.cs" />
-    <Compile Include="Commands\Services\RunningServiceCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />
     <Compile Include="Commands\SleepCommand.cs" />
     <Compile Include="Communication\CommunicationModuleMode.cs" />
@@ -182,6 +182,7 @@
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\FrameService.cs" />
     <Compile Include="Service\JobService.cs" />
+    <Compile Include="Service\RevertPortForwardService.cs" />
     <Compile Include="Service\ProxyService.cs" />
     <Compile Include="Service\WebHostService.cs" />
     <Compile Include="Service\NetworkService.cs" />
@@ -190,7 +191,6 @@
     <None Include="Communication\Pipe\SimplePipeServer.cs.old" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\RunningService\RunningService.cs" />
     <Compile Include="Service\ServiceProvider.cs" />
     <Compile Include="SharpSploitResult.cs" />
     <Compile Include="Helpers\ShortGuid.cs" />
@@ -209,6 +209,7 @@
   <ItemGroup>
     <Folder Include="Commands\Token\" />
     <Folder Include="Service\Pivoting\" />
+    <Folder Include="Service\RunningService\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj">

@@ -22,19 +22,5 @@ namespace Agent.Service
         {
             return (T)instances[typeof(T)];
         }
-
-        public static List<RunningService> GetRunningServices()
-        {
-            var list = new List<RunningService>();
-            foreach(var obj in instances.Values)
-            {
-                if(obj is RunningService)
-                {
-                    list.Add(obj as RunningService);
-                }
-            }
-
-            return list;
-        }
     }
 }

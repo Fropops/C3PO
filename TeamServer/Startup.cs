@@ -57,6 +57,7 @@ namespace TeamServer
             services.AddSingleton<IAuditService, AuditService>();
             services.AddSingleton<IFrameService, FrameService>();
             services.AddSingleton<IServerService, ServerService>();
+            services.AddSingleton<IReversePortForwardService, ReversePortForwardService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -159,6 +160,7 @@ namespace TeamServer
             var audit = app.ApplicationServices.GetService<IAuditService>();
             var frame = app.ApplicationServices.GetService<IFrameService>();
             var server = app.ApplicationServices.GetService<IServerService>();
+            var rportfwd = app.ApplicationServices.GetService<IReversePortForwardService>();
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
@@ -168,7 +170,7 @@ namespace TeamServer
             foreach (var listenerConf in listeners)
             {
                 var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
-                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame, server);
+                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame, server, rportfwd);
                 listener.Start();
                 listenerService.AddListener(listener);
             }

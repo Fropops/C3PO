@@ -15,6 +15,7 @@ namespace Shared
         Unlink = 0x04,
         LinkRelay = 0x05,
         Socks = 0x06,
+        ReversePortForward = 0x07,
 
     }
 }

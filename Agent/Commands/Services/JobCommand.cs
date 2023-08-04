@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using WinAPI;
 using WinAPI.Wrapper;
-using static Agent.Service.RunningService;
 
 namespace Agent.Commands
 {
@@ -27,7 +26,7 @@ namespace Agent.Commands
             this.Register(ServiceVerb.Kill, this.Kill);
         }
 
-        protected override void Show(AgentTask task, AgentCommandContext context)
+        protected override async Task Show(AgentTask task, AgentCommandContext context)
         {
             var jobs = this.Service.GetJobs();
             if (!jobs.Any())
@@ -40,7 +39,7 @@ namespace Agent.Commands
             return;
         }
 
-        protected void Kill(AgentTask task, AgentCommandContext context)
+        protected async Task Kill(AgentTask task, AgentCommandContext context)
         {
             task.ThrowIfParameterMissing(ParameterId.Id);
 

@@ -18,6 +18,7 @@ public interface IServerService
     IChangeTrackingService ChangeTrackingService { get; }
     ITaskResultService TaskResultService { get; }
 
+    IReversePortForwardService ReversePortForwardService { get; }
     ISocksService SocksService { get; }
     Task HandleInboundFrames(IEnumerable<NetFrame> frames, string relay);
 }
@@ -31,17 +32,21 @@ public class ServerService : IServerService
 
     public ISocksService SocksService { get; }
 
+    public IReversePortForwardService ReversePortForwardService { get; }
+
     public ServerService(IAgentService agentService,
         IFrameService frameService,
         ITaskResultService taskResultService,
         IChangeTrackingService changeTrackingService,
-        ISocksService socksService)
+        ISocksService socksService,
+        IReversePortForwardService reversePortForwardService)
     {
         this.AgentService = agentService;
         this.FrameService=frameService;
         this.TaskResultService= taskResultService;
         this.ChangeTrackingService = changeTrackingService;
         this.SocksService=socksService;
+        this.ReversePortForwardService = reversePortForwardService;
 
 
         this.LoadModules();

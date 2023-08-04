@@ -97,6 +97,7 @@ namespace TeamServer.Models
             services.AddSingleton(this._resultService);
             services.AddSingleton(this._frameService);
             services.AddSingleton(this._serverService);
+            services.AddSingleton(this._rportfwdService);
         }
 
         private void ConfigureApp(IApplicationBuilder app)

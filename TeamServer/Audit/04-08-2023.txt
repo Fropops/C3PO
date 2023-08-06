@@ -63,3 +63,7 @@
 04/08/2023 06:06:43 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | cc3c6bb660 | Command tasked to agent : RportFwd
 04/08/2023 06:06:46 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | cc3c6bb660 | Command tasked to agent : RportFwd
 04/08/2023 06:06:50 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | cc3c6bb660 | Command tasked to agent : Exit
+04/08/2023 07:42:19 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | d026116ac3 | Command tasked to agent : Sleep
+04/08/2023 07:43:04 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | d026116ac3 | Command tasked to agent : Link
+04/08/2023 07:46:22 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | 4120cb1525 | Command tasked to agent : RportFwd
+04/08/2023 07:46:59 | Info | User | Fropops-b99023ee-c2ae-4435-94a1-de7349fd1c59 | 4120cb1525 | Command tasked to agent : RportFwd

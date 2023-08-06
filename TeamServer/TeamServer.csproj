@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <None Remove="data.db" />
+    <None Remove="log.log" />
   </ItemGroup>
 
   <ItemGroup>

@@ -24,15 +24,15 @@ namespace TeamServer.Models
             Secured = secured;
         }
 
+        public HttpListener(string id, string name, int bindPort, string ip, bool secured = true) : base(name, bindPort, ip)
+        {
+            Secured = secured;
+        }
+
         private CancellationTokenSource _tokenSource;
 
         public override async Task Start()
         {
-            if(_logger != null)
-            {
-                _logger.LogInformation($"Starting HTTP Listener {this.Name} : {this.Protocol}://{this.Ip}:{this.BindPort}");
-            }
-
             var port = this.BindPort;
             bool shouldStart = false;
             if (ListenersByPorts.ContainsKey(port))

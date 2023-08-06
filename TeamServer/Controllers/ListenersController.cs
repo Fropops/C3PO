@@ -75,10 +75,10 @@ namespace TeamServer.Controllers
         {
             var listener = new HttpListener(request.Name, request.BindPort, request.Ip, request.Secured);
             var logger = _loggerFactory.CreateLogger($"Listener {request.Name} Start");
-            listener.Init(this._agentService, this._resultService , this._fileService, this._binMakerService, this._listenerService, logger, _changeTrackingService, this._webHostService, this._cryptoService, this._auditService, this._frameService, this._serverService, this._reversePortForwardService);
+            _listenerService.AddListener(listener); // should be added before starting cause it is initialiezd there
             listener.Start();
 
-            _listenerService.AddListener(listener);
+            
 
             this._changeTrackingService.TrackChange(ChangingElement.Listener, listener.Id);
 

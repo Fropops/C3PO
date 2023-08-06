@@ -15,7 +15,7 @@ namespace Commander.Commands.Listener
 
     public class StopListenerCommand : EnhancedCommand<StopListenerCommandOptions>
     {
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Listeners;
         public override string Description => "Stop a listener";
         public override string Name => "stop";
         public override ExecutorMode AvaliableIn => ExecutorMode.Listener;

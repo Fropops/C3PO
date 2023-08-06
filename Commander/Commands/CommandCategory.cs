@@ -19,8 +19,9 @@ namespace Commander.Commands
         public static string Media { get; set; } = "Media";
 
 
-        public static string Launcher { get; set; } = "Launcher";
+        public static string Listeners { get; set; } = "Listeners";
 
-        public static List<string> All { get; }  = new List<string> { Commander, Network, Core, Services, Media, Launcher, Module, Others };
+        
+        public static List<string> All { get; }  = new List<string> { Commander, Network, Core, Services, Media, Listeners, Module, Others };
     }
 }

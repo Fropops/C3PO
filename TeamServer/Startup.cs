@@ -17,6 +17,7 @@ using TeamServer.Models;
 using TeamServer.Services;
 using TeamServer.Ext;
 using TeamServer.Helper;
+using TeamServer.Service;
 
 namespace TeamServer
 {
@@ -43,6 +44,7 @@ namespace TeamServer
 
             services.AddLogging();
 
+            services.AddSingleton<IDatabaseService, DatabaseService>();
             services.AddSingleton<IListenerService, ListenerService>();
             services.AddSingleton<IAgentService, AgentService>();
             services.AddSingleton<ITaskResultService, TaskResultService>();
@@ -87,15 +89,21 @@ namespace TeamServer
 
             //this.StartHttpHost(app);
             this.PopulateUsers(app);
-            this.StartDefaultListener(app);
+            //this.StartDefaultListener(app);
 
+            this.LoadFromDB(app);
+        }
+
+        private void LoadFromDB(IApplicationBuilder app)
+        {
+            app.ApplicationServices.GetService<IListenerService>().LoadFromDB();
         }
 
 
         private IListenerService ls;
         private IFileService fs;
 
-        private void StartHttpHost(IApplicationBuilder app)
+       /* private void StartHttpHost(IApplicationBuilder app)
         {
             ls = app.ApplicationServices.GetService<IListenerService>();
             fs = app.ApplicationServices.GetService<IFileService>();
@@ -109,7 +117,7 @@ namespace TeamServer
                 });
             var host = hostBuilder.Build();
             host.RunAsync();
-        }
+        }*/
 
 
         private void ConfigureHttpHostServices(IServiceCollection services)
@@ -146,7 +154,7 @@ namespace TeamServer
 
         }
 
-        private void StartDefaultListener(IApplicationBuilder app)
+        /*private void StartDefaultListener(IApplicationBuilder app)
         {
             var listenerService = app.ApplicationServices.GetService<IListenerService>();
             var agentService = app.ApplicationServices.GetService<IAgentService>();
@@ -161,19 +169,22 @@ namespace TeamServer
             var frame = app.ApplicationServices.GetService<IFrameService>();
             var server = app.ApplicationServices.GetService<IServerService>();
             var rportfwd = app.ApplicationServices.GetService<IReversePortForwardService>();
+            var db = app.ApplicationServices.GetService<IDatabaseService>()
 
             var factory = app.ApplicationServices.GetService<ILoggerFactory>();
             var logger = factory.CreateLogger("Default Listener Start");
 
             var defaultListenersConfig = config.GetValue<string>("ListenersConfig");
+            if(defaultListenersConfig == null)
+                return;
             IEnumerable<ListenerConfig> listeners = JsonConvert.DeserializeObject<IEnumerable<ListenerConfig>>(defaultListenersConfig);
             foreach (var listenerConf in listeners)
             {
                 var listener = new HttpListener(listenerConf.Name, listenerConf.BindPort, listenerConf.Address, listenerConf.Secured);
-                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame, server, rportfwd);
+                listener.Init(agentService, resultService, fileService, binMakerService, listenerService, logger, change, webHost, crypto, audit, frame, server, rportfwd, db);
                 listener.Start();
                 listenerService.AddListener(listener);
             }
-        }
+        }*/
     }
 }

@@ -21,7 +21,7 @@ namespace Commander.Commands.Listener
 
     public class InteractAgentCommand : EnhancedCommand<CreateListenersCommandOptions>
     {
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Listeners;
         public override string Description => "Start a new listener";
         public override string Name => "start";
         public override ExecutorMode AvaliableIn => ExecutorMode.Listener;

@@ -386,3 +386,71 @@
 08/08/2023 10:51:17 | Info | User | Fropops-8a6dd56d-753a-4f73-8b7b-b3aa4cbe16f3 |  | Connexion to TeamServer
 08/08/2023 10:53:19 | Info | User | Fropops-8a6dd56d-753a-4f73-8b7b-b3aa4cbe16f3 | 79c17e4a61 | Command tasked to agent : Exit
 08/08/2023 10:53:21 | Info | User | Fropops-8a6dd56d-753a-4f73-8b7b-b3aa4cbe16f3 |  | Exit TeamServer
+08/08/2023 11:26:27 | Info | User | Fropops-6b9fe77c-4af5-4a63-a75a-d622e9729338 |  | Connexion to TeamServer
+08/08/2023 11:26:28 | Info | User | Fropops-6b9fe77c-4af5-4a63-a75a-d622e9729338 |  | Connexion to TeamServer
+08/08/2023 11:27:16 | Info | User | Fropops-6b9fe77c-4af5-4a63-a75a-d622e9729338 | e7ff107404 | Command tasked to agent : Shell
+08/08/2023 11:27:27 | Info | User | Fropops-6b9fe77c-4af5-4a63-a75a-d622e9729338 | e7ff107404 | Command tasked to agent : Whoami
+08/08/2023 11:28:35 | Info | User | Fropops-6b9fe77c-4af5-4a63-a75a-d622e9729338 | e7ff107404 | Command tasked to agent : Whoami
+08/08/2023 11:29:59 | Info | User | Fropops-d4f07d90-ae4c-4b59-8341-be6f110ce926 |  | Connexion to TeamServer
+08/08/2023 11:30:00 | Info | User | Fropops-d4f07d90-ae4c-4b59-8341-be6f110ce926 |  | Connexion to TeamServer
+08/08/2023 11:30:08 | Info | User | Fropops-d4f07d90-ae4c-4b59-8341-be6f110ce926 | 66688fd056 | Command tasked to agent : Whoami
+08/08/2023 11:30:16 | Info | User | Fropops-d4f07d90-ae4c-4b59-8341-be6f110ce926 | 66688fd056 | Command tasked to agent : Shell
+08/08/2023 11:30:23 | Info | User | Fropops-d4f07d90-ae4c-4b59-8341-be6f110ce926 |  | Exit TeamServer
+08/08/2023 11:30:41 | Info | User | Fropops-2da3b487-8d3a-414f-a1b1-73dba23a6bb3 |  | Connexion to TeamServer
+08/08/2023 11:30:42 | Info | User | Fropops-2da3b487-8d3a-414f-a1b1-73dba23a6bb3 |  | Connexion to TeamServer
+08/08/2023 11:31:13 | Info | User | Fropops-2da3b487-8d3a-414f-a1b1-73dba23a6bb3 |  | Exit TeamServer
+08/08/2023 11:31:36 | Info | User | Fropops-d276ce4a-e5e2-4863-85c9-d3491a2b3ef4 |  | Connexion to TeamServer
+08/08/2023 11:31:36 | Info | User | Fropops-d276ce4a-e5e2-4863-85c9-d3491a2b3ef4 |  | Connexion to TeamServer
+08/08/2023 11:32:11 | Info | User | Fropops-0b3a061e-ac0e-4448-b26c-2af0e60cfc50 |  | Connexion to TeamServer
+08/08/2023 11:32:11 | Info | User | Fropops-0b3a061e-ac0e-4448-b26c-2af0e60cfc50 |  | Connexion to TeamServer
+08/08/2023 11:33:56 | Info | User | Fropops-d276ce4a-e5e2-4863-85c9-d3491a2b3ef4 | 4e43307901 | Command tasked to agent : Whoami
+08/08/2023 11:35:36 | Info | User | Fropops-27eb02dc-1ec5-40af-9894-3ed148dfbee3 |  | Connexion to TeamServer
+08/08/2023 11:35:37 | Info | User | Fropops-27eb02dc-1ec5-40af-9894-3ed148dfbee3 |  | Connexion to TeamServer
+08/08/2023 11:36:10 | Info | User | Fropops-27eb02dc-1ec5-40af-9894-3ed148dfbee3 | f5b3c39f89 | Command tasked to agent : Shell
+08/08/2023 11:36:19 | Info | User | Fropops-27eb02dc-1ec5-40af-9894-3ed148dfbee3 |  | Exit TeamServer
+08/08/2023 11:37:27 | Info | User | Fropops-2ccd4e95-006a-4d5a-b5ed-3566c9fb80cf |  | Connexion to TeamServer
+08/08/2023 11:37:35 | Info | User | Fropops-2ccd4e95-006a-4d5a-b5ed-3566c9fb80cf |  | Connexion to TeamServer
+08/08/2023 11:37:41 | Info | User | Fropops-2ccd4e95-006a-4d5a-b5ed-3566c9fb80cf |  | Connexion to TeamServer
+08/08/2023 11:37:52 | Info | User | Fropops-2ccd4e95-006a-4d5a-b5ed-3566c9fb80cf |  | Connexion to TeamServer
+08/08/2023 11:37:55 | Info | User | Fropops-2ccd4e95-006a-4d5a-b5ed-3566c9fb80cf |  | Connexion to TeamServer
+08/08/2023 11:37:55 | Info | User | Fropops-2ccd4e95-006a-4d5a-b5ed-3566c9fb80cf |  | Connexion to TeamServer
+08/08/2023 11:38:04 | Info | User | Fropops-84d9b386-e2de-433d-9d55-289442584b2e |  | Connexion to TeamServer
+08/08/2023 11:38:05 | Info | User | Fropops-84d9b386-e2de-433d-9d55-289442584b2e |  | Connexion to TeamServer
+08/08/2023 11:40:56 | Info | User | Fropops-986ec293-ea5c-426d-8155-106d759a454e |  | Connexion to TeamServer
+08/08/2023 11:41:05 | Info | User | Fropops-986ec293-ea5c-426d-8155-106d759a454e |  | Connexion to TeamServer
+08/08/2023 11:41:07 | Info | User | Fropops-986ec293-ea5c-426d-8155-106d759a454e |  | Connexion to TeamServer
+08/08/2023 11:42:19 | Info | User | Fropops-5de6123d-d4cc-4013-8755-4aa4a6dcf99d |  | Connexion to TeamServer
+08/08/2023 11:42:25 | Info | User | Fropops-5de6123d-d4cc-4013-8755-4aa4a6dcf99d |  | Connexion to TeamServer
+08/08/2023 11:42:27 | Info | User | Fropops-5de6123d-d4cc-4013-8755-4aa4a6dcf99d |  | Connexion to TeamServer
+08/08/2023 11:42:41 | Info | User | Fropops-5de6123d-d4cc-4013-8755-4aa4a6dcf99d | 214f8f77d4 | Command tasked to agent : Whoami
+08/08/2023 11:43:09 | Info | User | Fropops-5de6123d-d4cc-4013-8755-4aa4a6dcf99d |  | Exit TeamServer
+08/08/2023 11:43:25 | Info | User | Fropops-0f035246-2c3c-4cba-8fe5-e92155dd50c9 |  | Connexion to TeamServer
+08/08/2023 11:43:30 | Info | User | Fropops-0f035246-2c3c-4cba-8fe5-e92155dd50c9 |  | Connexion to TeamServer
+08/08/2023 11:43:31 | Info | User | Fropops-0f035246-2c3c-4cba-8fe5-e92155dd50c9 |  | Connexion to TeamServer
+08/08/2023 11:43:55 | Info | User | Fropops-0f035246-2c3c-4cba-8fe5-e92155dd50c9 |  | Exit TeamServer
+08/08/2023 11:44:01 | Info | User | Fropops-db7624fa-219f-437b-a2b1-64146f60e081 |  | Connexion to TeamServer
+08/08/2023 11:44:12 | Info | User | Fropops-db7624fa-219f-437b-a2b1-64146f60e081 |  | Connexion to TeamServer
+08/08/2023 11:44:20 | Info | User | Fropops-db7624fa-219f-437b-a2b1-64146f60e081 |  | Connexion to TeamServer
+08/08/2023 11:44:30 | Info | User | Fropops-db7624fa-219f-437b-a2b1-64146f60e081 |  | Connexion to TeamServer
+08/08/2023 11:44:32 | Info | User | Fropops-db7624fa-219f-437b-a2b1-64146f60e081 |  | Connexion to TeamServer
+08/08/2023 11:45:01 | Info | User | Fropops-db7624fa-219f-437b-a2b1-64146f60e081 |  | Exit TeamServer
+08/08/2023 11:45:50 | Info | User | Fropops-58670f06-222c-4733-a491-a064c45c7795 |  | Connexion to TeamServer
+08/08/2023 11:46:48 | Info | User | Fropops-a2af26da-de33-4c2c-a07c-842b46e02202 |  | Connexion to TeamServer
+08/08/2023 11:46:49 | Info | User | Fropops-a2af26da-de33-4c2c-a07c-842b46e02202 |  | Connexion to TeamServer
+08/08/2023 11:47:33 | Info | User | Fropops-a2af26da-de33-4c2c-a07c-842b46e02202 | 2035ced66f | Command tasked to agent : Whoami
+08/08/2023 11:47:56 | Info | User | Fropops-a2af26da-de33-4c2c-a07c-842b46e02202 |  | Exit TeamServer
+08/08/2023 11:48:03 | Info | User | Fropops-94849bce-e005-4bc9-a2b2-bf1daa375ee4 |  | Connexion to TeamServer
+08/08/2023 11:48:13 | Info | User | Fropops-94849bce-e005-4bc9-a2b2-bf1daa375ee4 |  | Connexion to TeamServer
+08/08/2023 11:49:23 | Info | User | Fropops-94849bce-e005-4bc9-a2b2-bf1daa375ee4 |  | Exit TeamServer
+08/08/2023 11:49:41 | Info | User | Fropops-d1d3c0b0-d9a1-4be6-83ad-fa1b3268a941 |  | Connexion to TeamServer
+08/08/2023 11:49:45 | Info | User | Fropops-d1d3c0b0-d9a1-4be6-83ad-fa1b3268a941 |  | Connexion to TeamServer
+08/08/2023 11:50:17 | Info | User | Fropops-6a695338-4a61-40de-864f-0a60a5faf98e |  | Connexion to TeamServer
+08/08/2023 12:07:00 | Info | User | Fropops-02c1105f-be8d-47ea-b8c1-f6eeeefaec7b |  | Connexion to TeamServer
+08/08/2023 12:07:01 | Info | User | Fropops-02c1105f-be8d-47ea-b8c1-f6eeeefaec7b |  | Connexion to TeamServer
+08/08/2023 12:07:39 | Info | User | Fropops-02c1105f-be8d-47ea-b8c1-f6eeeefaec7b | bc0dc40f90 | Command tasked to agent : Shell
+08/08/2023 12:08:31 | Info | User | Fropops-02c1105f-be8d-47ea-b8c1-f6eeeefaec7b |  | Exit TeamServer
+08/08/2023 12:08:37 | Info | User | Fropops-86f9758f-bd61-4b53-a549-390d48cc42d0 |  | Connexion to TeamServer
+08/08/2023 12:08:38 | Info | User | Fropops-86f9758f-bd61-4b53-a549-390d48cc42d0 |  | Connexion to TeamServer
+08/08/2023 12:09:02 | Info | User | Fropops-6abf6c3a-28e3-4649-9ab9-40f3c6bb5b2b |  | Connexion to TeamServer
+08/08/2023 12:09:03 | Info | User | Fropops-6abf6c3a-28e3-4649-9ab9-40f3c6bb5b2b |  | Connexion to TeamServer
+08/08/2023 12:09:16 | Info | User | Fropops-6abf6c3a-28e3-4649-9ab9-40f3c6bb5b2b |  | Exit TeamServer

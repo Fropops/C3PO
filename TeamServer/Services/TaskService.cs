@@ -12,6 +12,8 @@ public interface ITaskService : IStorable
 
     TeamServerAgentTask Get(string id);
 
+    List<TeamServerAgentTask> RemoveAgent(string agentId);
+
     List<TeamServerAgentTask> GetForAgent(string agentId);
 }
 
@@ -35,7 +37,7 @@ public class TaskService : ITaskService
         else
             _agentTasks[task.AgentId].Add(task);
 
-        this._dbService.Insert((TaskDao)task);
+        this._dbService.Insert((TaskDao)task).Wait();
     }
 
     public TeamServerAgentTask Get(string id)
@@ -54,12 +56,39 @@ public class TaskService : ITaskService
         return _agentTasks[agentId];
     }
 
+    public List<TeamServerAgentTask> RemoveAgent(string agentId)
+    {
+        var tasks = _agentTasks[agentId];
+        _agentTasks.Remove(agentId);
+        foreach(var task in tasks)
+        {
+            var dao = (TaskDao)task;
+            dao.IsDeleted = true;
+            this._dbService.Update(dao).Wait();
+            this._tasks.Remove(task.Id);
+        }
+        return tasks;
+    }
+
     public async Task LoadFromDB()
     {
+        this.Clear();
         var tasks = await _dbService.Load<TaskDao>();
         foreach(var task in tasks)
         {
-            this.Add(task);
+            if(task.IsDeleted) continue;
+
+            _tasks.Add(task.Id, task);
+            if (!_agentTasks.ContainsKey(task.AgentId))
+                _agentTasks.Add(task.AgentId, new List<TeamServerAgentTask>() { task });
+            else
+                _agentTasks[task.AgentId].Add(task);
         }
+    }
+
+    public void Clear()
+    {
+        this._tasks.Clear();
+        this._agentTasks.Clear();
     }
 }

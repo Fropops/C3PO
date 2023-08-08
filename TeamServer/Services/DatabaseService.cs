@@ -33,6 +33,7 @@ public class DatabaseService : IDatabaseService
             conn.CreateTable<HttpListenerDao>();
             conn.CreateTable<AgentDao>();
             conn.CreateTable<TaskDao>();
+            conn.CreateTable<ResultDao>();
         }
 
         // open connections

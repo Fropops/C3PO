@@ -21,6 +21,8 @@ public sealed class TaskDao : TeamServerDao
     public string Command { get; set; }
     [Column("date")]
     public DateTime RequestDate { get; set; }
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
 
     public static implicit operator TaskDao(TeamServerAgentTask task)
     {

@@ -146,6 +146,15 @@ namespace TeamServer.Controllers
                 return NotFound("Agent not found");
 
             this._agentService.RemoveAgent(agent);
+
+            var tasks = this._taskService.GetForAgent(agent.Id);
+            foreach(var task in _taskService.RemoveAgent(agent.Id))
+            {
+                var res = _agentTaskResultService.GetAgentTaskResult(task.Id);
+                if (res != null)
+                    _agentTaskResultService.Remove(res);
+            }
+
             this._changeService.TrackChange(ChangingElement.Agent, agentId);
 
             return Ok();

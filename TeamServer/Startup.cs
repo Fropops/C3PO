@@ -97,6 +97,7 @@ namespace TeamServer
             app.ApplicationServices.GetService<IListenerService>().LoadFromDB();
             app.ApplicationServices.GetService<IAgentService>().LoadFromDB();
             app.ApplicationServices.GetService<ITaskService>().LoadFromDB();
+            app.ApplicationServices.GetService<ITaskResultService>().LoadFromDB();
         }
 
 

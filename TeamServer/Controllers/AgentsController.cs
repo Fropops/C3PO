@@ -10,6 +10,7 @@ using BinarySerializer;
 using Shared;
 using Common.APIModels;
 using Common.Models;
+using TeamServer.Service;
 
 namespace TeamServer.Controllers
 {
@@ -27,8 +28,9 @@ namespace TeamServer.Controllers
         private readonly IAuditService _auditService;
         private readonly ITaskResultService _agentTaskResultService;
         private readonly IFrameService _frameService;
+        private readonly ITaskService _taskService;
 
-        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService, IAuditService auditService, ITaskResultService agentTaskResultService, IFrameService frameService)
+        public AgentsController(IAgentService agentService, IFileService fileService, ISocksService socksService, IChangeTrackingService changeService, IAuditService auditService, ITaskResultService agentTaskResultService, IFrameService frameService, ITaskService taskService)
         {
             this._agentService = agentService;
             this._fileService = fileService;
@@ -37,6 +39,7 @@ namespace TeamServer.Controllers
             this._auditService = auditService;
             this._agentTaskResultService = agentTaskResultService;
             this._frameService = frameService;
+            this._taskService= taskService;
         }
 
         [HttpGet]
@@ -111,7 +114,8 @@ namespace TeamServer.Controllers
             var task = ser.BinaryDeserializeAsync<AgentTask>().Result;
 
             this._frameService.CacheFrame(agentId, NetFrameType.Task, task);
-            agent.TaskHistory.Add(new TeamServerAgentTask(ctr.Id, task.CommandId, agentId, ctr.Command, DateTime.Now));
+            var teamTask = new TeamServerAgentTask(ctr.Id, task.CommandId, agentId, ctr.Command, DateTime.Now);
+            this._taskService.Add(teamTask);
             this._changeService.TrackChange(ChangingElement.Task, task.Id);
 
             var root = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.Path}";

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using TeamServer.Helper;
+using TeamServer.Service;
 using TeamServer.Services;
 
 namespace TeamServer.Controllers
@@ -19,14 +20,16 @@ namespace TeamServer.Controllers
         private readonly IAgentService _agentService;
         private readonly IAuditService _auditService;
         private readonly ITaskResultService _resultService;
+        private readonly ITaskService _taskService;
 
-        public SessionController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService, IAuditService auditService, ITaskResultService resultService)
+        public SessionController(IChangeTrackingService trackService, IListenerService listenerService, IAgentService agentService, IAuditService auditService, ITaskResultService resultService, ITaskService taskService)
         {
             _changeTrackingService = trackService;
             _listenerService = listenerService;
             _agentService = agentService;
             _auditService = auditService;
             _resultService = resultService;
+            _taskService = taskService;
         }
 
         [HttpGet("changes")]
@@ -49,7 +52,7 @@ namespace TeamServer.Controllers
                 {
                     changes.Add(new Change(ChangingElement.Agent, agent.Id));
                     changes.Add(new Change(ChangingElement.Metadata, agent.Id));
-                    foreach (var task in agent.TaskHistory)
+                    foreach (var task in this._taskService.GetForAgent(agent.Id))
                     {
                         changes.Add(new Change(ChangingElement.Task, task.Id));
                         var res = _resultService.GetAgentTaskResult(task.Id);

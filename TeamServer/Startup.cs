@@ -41,12 +41,12 @@ namespace TeamServer
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TeamServer", Version = "v1" });
             });
 
-
             services.AddLogging();
 
             services.AddSingleton<IDatabaseService, DatabaseService>();
             services.AddSingleton<IListenerService, ListenerService>();
             services.AddSingleton<IAgentService, AgentService>();
+            services.AddSingleton<ITaskService, TaskService>();
             services.AddSingleton<ITaskResultService, TaskResultService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IBinMakerService, BinMakerService>();
@@ -69,8 +69,6 @@ namespace TeamServer
 
             if (env.IsDevelopment())
             {
-                
-
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamServer v1"));
             }
@@ -98,6 +96,7 @@ namespace TeamServer
         {
             app.ApplicationServices.GetService<IListenerService>().LoadFromDB();
             app.ApplicationServices.GetService<IAgentService>().LoadFromDB();
+            app.ApplicationServices.GetService<ITaskService>().LoadFromDB();
         }
 
 

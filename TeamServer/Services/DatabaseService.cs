@@ -32,18 +32,7 @@ public class DatabaseService : IDatabaseService
         {
             conn.CreateTable<HttpListenerDao>();
             conn.CreateTable<AgentDao>();
-            //conn.CreateTable<SmbHandlerDao>();
-            //conn.CreateTable<TcpHandlerDao>();
-            //conn.CreateTable<ExtHandlerDao>();
-            //conn.CreateTable<WebLogDao>();
-            //conn.CreateTable<HostedFileDao>();
-            //conn.CreateTable<CryptoDao>();
-            //conn.CreateTable<DroneDao>();
-            //conn.CreateTable<TaskRecordDao>();
-            //conn.CreateTable<ReversePortForwardDao>();
-            //conn.CreateTable<SocksDao>();
-            //conn.CreateTable<SlackWebhookDao>();
-            //conn.CreateTable<CustomWebhookDao>();
+            conn.CreateTable<TaskDao>();
         }
 
         // open connections

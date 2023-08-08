@@ -13,7 +13,6 @@ namespace TeamServer.Services
 {
     public interface IFileService
     {
-
         FileDescriptor GetFile(string id);
 
         void AddFile(FileDescriptor desc);
@@ -31,8 +30,6 @@ namespace TeamServer.Services
         public string GetListenerPath(string listenerName);
 
         public string GetWebHostPath(string fileName);
-
-        void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results);
 
         public List<AgentFileChunck> GetFileChunksForAgent(string id);
 
@@ -197,30 +194,5 @@ namespace TeamServer.Services
         }
         #endregion
 
-
-        public void SaveResults(Agent agent, IEnumerable<AgentTaskResult> results)
-        {
-            //Logger.Log($"Nb of results to save : {results.Count()}");
-            foreach (var res in results)
-            {
-                var task = agent.TaskHistory.FirstOrDefault(t => t.Id == res.Id);
-
-                var filename = GetAgentPath(agent.Id, Path.Combine("Tasks", res.Id));
-                var dirName = Path.GetDirectoryName(filename);
-                if (!Directory.Exists(dirName))
-                    Directory.CreateDirectory(dirName);
-
-                //Logger.Log($"Filename = {filename}");
-
-                using (var sw = new StreamWriter(File.OpenWrite(filename)))
-                {
-                    sw.WriteLine(JsonConvert.SerializeObject(agent.Metadata));
-                    if (task != null)
-                        sw.WriteLine(JsonConvert.SerializeObject(task));
-                    sw.WriteLine(JsonConvert.SerializeObject(res));
-                }
-
-            }
-        }
     }
 }

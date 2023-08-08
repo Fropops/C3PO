@@ -21,7 +21,7 @@ namespace TeamServer.Models
 
         public string ListenerId { get; set; }
 
-        public ConcurrentBag<TeamServerAgentTask> TaskHistory { get; private set; } = new();
+        //public ConcurrentBag<TeamServerAgentTask> TaskHistory { get; private set; } = new();
 
         //private ConcurrentDictionary<string, ConcurrentQueue<SocksMessage>> _InboudSocksMessages = new();
         //private ConcurrentQueue<SocksMessage>_OutboundSocksMessages = new();
@@ -101,7 +101,7 @@ namespace TeamServer.Models
         {
             this.Metadata = null;
             this.Id = id;
-            this.FirstSeen = DateTime.Now;
+            this.FirstSeen = DateTime.UtcNow;
         }
 
         //public void QueueDownload(List<AgentFileChunck> chunks)

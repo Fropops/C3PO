@@ -123,7 +123,7 @@ namespace TeamServer.Models
 
                 foreach (var relayedAgent in this._agentService.GetAgentToRelay(agentId))
                 {
-                    relayedAgent.CheckIn();
+                    this._agentService.Checkin(relayedAgent);
                     this._changeTrackingService.TrackChange(ChangingElement.Agent, relayedAgent.Id);
                 }
 

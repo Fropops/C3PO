@@ -11,7 +11,7 @@ namespace Commander.Commands.Listener
 {
     public class HomeCommand : ExecutorCommand
     {
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Navigation;
         public override string Description => "Return to home mode";
         public override string Name => "home";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;

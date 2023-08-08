@@ -66,7 +66,7 @@ namespace TeamServer.Services
             _listeners.Add(listener);
             if (listener is HttpListener httpListener)
             {
-                this._dbService.Insert((HttpListenerDAO)listener).Wait();
+                this._dbService.Insert((HttpListenerDao)listener).Wait();
             }
         }
 
@@ -82,7 +82,7 @@ namespace TeamServer.Services
 
         public async Task LoadFromDB()
         {
-            var httpListeners = await this._dbService.Load<HttpListenerDAO>();
+            var httpListeners = await this._dbService.Load<HttpListenerDao>();
             foreach (var dbHttpListener in httpListeners)
             {
                 HttpListener listener = dbHttpListener;

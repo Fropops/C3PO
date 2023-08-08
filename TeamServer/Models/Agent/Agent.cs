@@ -9,15 +9,15 @@ namespace TeamServer.Models
 {
     public class Agent
     {
-        public string Id { get; set; }
+        public string Id { get; protected set; }
         public string RelayId { get; set; }
 
         public Dictionary<string, LinkInfo> Links { get; protected set; } = new Dictionary<string, LinkInfo>();
         public Shared.AgentMetadata Metadata { get; set; }
 
-        public DateTime LastSeen { get; protected set; }
+        public DateTime LastSeen { get; set; }
 
-        public DateTime FirstSeen { get; protected set; }
+        public DateTime FirstSeen { get; set; }
 
         public string ListenerId { get; set; }
 
@@ -116,11 +116,6 @@ namespace TeamServer.Models
         //{
         //    this.Metadata = metadata;
         //}
-
-        public void CheckIn()
-        {
-            LastSeen = DateTime.UtcNow;
-        }
 
         //public AgentTaskResult GetTaskResult(string id)
         //{

@@ -1,11 +1,10 @@
-using Common.Payload;
 using SQLite;
 using TeamServer.Models;
 
 namespace TeamServer.Database;
 
 [Table("http_handlers")]
-public sealed class HttpListenerDAO : TeamServerDAO
+public sealed class HttpListenerDao : TeamServerDao
 {
     [PrimaryKey, Column("id")]
     public string Id { get; set; }
@@ -22,9 +21,9 @@ public sealed class HttpListenerDAO : TeamServerDAO
     [Column("secure")]
     public bool Secure { get; set; }
 
-    public static implicit operator HttpListenerDAO(HttpListener handler)
+    public static implicit operator HttpListenerDao(HttpListener handler)
     {
-        return new HttpListenerDAO
+        return new HttpListenerDao
         {
             Id = handler.Id,
             Name = handler.Name,
@@ -34,7 +33,7 @@ public sealed class HttpListenerDAO : TeamServerDAO
         };
     }
 
-    public static implicit operator HttpListener(HttpListenerDAO dao)
+    public static implicit operator HttpListener(HttpListenerDao dao)
     {
         return new HttpListener(dao.Id, dao.Name, dao.BindPort, dao.Address, dao.Secure);
     }

@@ -12,7 +12,7 @@ namespace Commander.Commands
         public static string Core { get; set; } = "Agent Core";
 
         public static string Services { get; set; } = "Agent Services";
-        public static string Module { get; set; } = "Modules";
+        public static string Navigation { get; set; } = "Navigation";
         public static string Commander { get; set; } = "Commander";
 
         public static string Network { get; set; } = "Network";
@@ -22,6 +22,6 @@ namespace Commander.Commands
         public static string Listeners { get; set; } = "Listeners";
 
         
-        public static List<string> All { get; }  = new List<string> { Commander, Network, Core, Services, Media, Listeners, Module, Others };
+        public static List<string> All { get; }  = new List<string> { Commander, Network, Core, Services, Media, Listeners, Navigation, Others };
     }
 }

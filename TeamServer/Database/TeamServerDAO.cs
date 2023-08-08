@@ -1,4 +1,4 @@
-public class TeamServerDAO
+public class TeamServerDao
 {
 
 }

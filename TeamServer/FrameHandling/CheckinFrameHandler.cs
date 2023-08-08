@@ -18,7 +18,7 @@ public class CheckinFrameHandler : FrameHandler
             this.Server.ChangeTrackingService.TrackChange(ChangingElement.Agent, ag.Id);
         }
 
-        ag.Metadata = metaData;
+        this.Server.AgentService.Checkin(ag, metaData);
         this.Server.ChangeTrackingService.TrackChange(ChangingElement.Metadata, metaData.Id);
     }
 }

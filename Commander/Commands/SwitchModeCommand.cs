@@ -11,7 +11,7 @@ namespace Commander.Commands
 {
     public abstract class SwitchModeCommand : ExecutorCommand
     {
-        public override string Category => CommandCategory.Commander;
+        public override string Category => CommandCategory.Navigation;
         public override string Description => $"Switch to {this.TargetMode} mode";
         public override ExecutorMode AvaliableIn => ExecutorMode.None;
 

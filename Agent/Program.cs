@@ -51,7 +51,7 @@ namespace EntryPoint
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            //connUrl = "https://192.168.48.128:443";
+            connUrl = "https://192.168.48.128:443";
             //connUrl = "pipe://127.0.0.1:C3PO";
 
             if (_args.Count() > 0)

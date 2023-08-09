@@ -10,7 +10,7 @@ using Shared.ResultObjects;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace Commander.Models
+namespace Commander.Helper
 {
     public class TaskPrinter
     {
@@ -36,7 +36,7 @@ namespace Commander.Models
             {
                 var txt = $"Task is {result.Status}";
                 if (!string.IsNullOrEmpty(result.Info))
-                    txt += $" : { result.Info}";
+                    txt += $" : {result.Info}";
                 terminal.WriteInfo(txt);
                 terminal.WriteInfo($"-------------------------------------------");
             }
@@ -64,7 +64,7 @@ namespace Commander.Models
             return;
         }
 
-        
+
 
         private static void WriteObjects(TeamServerAgentTask task, AgentTaskResult result, ITerminal terminal)
         {
@@ -211,6 +211,6 @@ namespace Commander.Models
 
             terminal.Write(table);
         }
-        
+
     }
 }

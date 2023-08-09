@@ -1,5 +1,6 @@
 ﻿using Commander.Models;
 using Common.APIModels;
+using Common.APIModels.WebHost;
 using Common.Models;
 using Shared;
 using System;
@@ -40,20 +41,16 @@ namespace Commander.Communication
         Task<HttpResponseMessage> StopListener(string id, bool clean);
         IEnumerable<TeamServerListener> GetListeners();
         Task TaskAgent(string label, string agentId, CommandId commandId, ParameterDictionary parms = null);
-        //Task TaskAgent(string label, string taskId, string agentId, string cmd, string fileId, string fileName, string parms = null);
-
-        //Task TaskAgentToDownloadFile(string agentId, string fileId);
 
         //Task<Byte[]> Download(string id, Action<int> OnCompletionChanged = null);
 
         //Task<string> Upload(byte[] fileBytes, string filename, Action<int> OnCompletionChanged = null);
 
-        //Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description);
-        //Task<List<WebHostLog>> GetWebHostLogs();
-        //Task<List<FileWebHost>> GetWebHosts();
-
-        //Task RemoveWebHost(string path);
-        //Task ClearWebHosts();
+        Task WebHost(string path, byte[] fileContent, bool isPowerShell, string description);
+        Task<List<WebHostLog>> GetWebHostLogs();
+        Task<List<FileWebHost>> GetWebHosts();
+        Task RemoveWebHost(string path);
+        Task ClearWebHosts();
 
 
         Task<bool> StartProxy(string agentId, int port);

@@ -1,6 +1,6 @@
-﻿using Commander.Commands.Agent.Service;
-using Commander.Communication;
+﻿using Commander.Communication;
 using Commander.Executor;
+using Commander.Helper;
 using Commander.Models;
 using Commander.Terminal;
 using Shared;
@@ -12,34 +12,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands.Agent
+namespace Commander.Commands.Network
 {
-    public class ProxyCommandOptions : ServiceCommandOptions
+    public class ProxyCommandOptions : VerbAwareCommandOptions
     {
         public int? port { get; set; }
     }
 
-    public class ProxyCommand : ServiceCommand<ProxyCommandOptions>
+    public class ProxyCommand : VerbAwareCommand<ProxyCommandOptions>
     {
-        public override string Category => CommandCategory.Core;
+        public override string Category => CommandCategory.Network;
         public override string Description => "Start a Socks4 Proxy on the agent";
         public override string Name => "proxy";
 
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
         public override CommandId CommandId => CommandId.Proxy;
 
-        public override RootCommand Command => new RootCommand(this.Description)
+        public override RootCommand Command => new RootCommand(Description)
             {
-                new Argument<string>("verb", "start | stop | show").FromAmong("start", "stop", "show"),
+                new Argument<string>("verb", () => CommandVerbs.Show.Command()).FromAmong(CommandVerbs.Start.Command(), CommandVerbs.Stop.Command(), CommandVerbs.Show.Command()),
                 new Option<int?>(new[] { "--port", "-p" }, () => 1080, "port to use on the server"),
             };
 
         protected override void RegisterVerbs()
         {
             base.RegisterVerbs();
-            this.Register(ServiceVerb.Start, this.Start);
-            this.Register(ServiceVerb.Stop, this.Stop);
-            this.Register(ServiceVerb.Show, this.Show);
+            Register(CommandVerbs.Start, Start);
+            Register(CommandVerbs.Stop, Stop);
+            Register(CommandVerbs.Show, Show);
         }
 
         protected async Task<bool> Start(CommandContext<ProxyCommandOptions> context)

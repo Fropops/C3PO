@@ -12,6 +12,7 @@
     <Compile Include="..\Shared\AgentTask.cs" Link="Shared\AgentTask.cs" />
     <Compile Include="..\Shared\AgentTaskResult.cs" Link="Shared\AgentTaskResult.cs" />
     <Compile Include="..\Shared\Commands.cs" Link="Shared\Commands.cs" />
+    <Compile Include="..\Shared\CommandVerbs.cs" Link="Shared\CommandVerbs.cs" />
     <Compile Include="..\Shared\ConnexionUrl.cs" Link="Shared\ConnexionUrl.cs" />
     <Compile Include="..\Shared\Job.cs" Link="Shared\Job.cs" />
     <Compile Include="..\Shared\LinkInfo.cs" Link="Shared\LinkInfo.cs" />
@@ -23,7 +24,6 @@
     <Compile Include="..\Shared\ResultObjects\ListProcessResult.cs" Link="Shared\ResultObjects\ListProcessResult.cs" />
     <Compile Include="..\Shared\ResultObjects\ReversePortForwarResult.cs" Link="Shared\ResultObjects\ReversePortForwarResult.cs" />
     <Compile Include="..\Shared\ReversePortForward.cs" Link="Shared\ReversePortForward.cs" />
-    <Compile Include="..\Shared\ServiceVerb.cs" Link="Shared\ServiceVerb.cs" />
     <Compile Include="..\Shared\Socks.cs" Link="Shared\Socks.cs" />
   </ItemGroup>
 

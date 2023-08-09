@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands.Listener
+namespace Commander.Commands.Navigation
 {
     public class HomeCommand : ExecutorCommand
     {

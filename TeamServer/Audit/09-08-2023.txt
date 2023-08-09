@@ -1,0 +1,49 @@
+09/08/2023 02:41:47 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a |  | Connexion to TeamServer
+09/08/2023 02:41:48 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a |  | Connexion to TeamServer
+09/08/2023 02:43:38 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a |  | Web hosting a - Payload Executable x64 https://127.0.0.1:443
+09/08/2023 02:44:23 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a |  | Web hosting b - Payload PowerShell x64 https://127.0.0.1:443
+09/08/2023 02:46:43 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a |  | Web hosting b - Payload PowerShell x64 https://192.168.48.128:443
+09/08/2023 02:48:45 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a | cc5e4aa911 | Command tasked to agent : Sleep
+09/08/2023 02:50:04 | Info | User | Fropops-fdba7bec-b489-494b-89a6-8c531c804d1a |  | Exit TeamServer
+09/08/2023 02:58:07 | Info | User | Fropops-054ab2bd-56d7-4c67-b362-de0348f2795e |  | Connexion to TeamServer
+09/08/2023 02:58:07 | Info | User | Fropops-054ab2bd-56d7-4c67-b362-de0348f2795e |  | Connexion to TeamServer
+09/08/2023 03:03:06 | Info | User | Fropops-054ab2bd-56d7-4c67-b362-de0348f2795e |  | Exit TeamServer
+09/08/2023 09:03:44 | Info | User | Fropops-43d5c7fc-3893-4f5a-b4d0-da97bb26e256 |  | Connexion to TeamServer
+09/08/2023 09:03:45 | Info | User | Fropops-43d5c7fc-3893-4f5a-b4d0-da97bb26e256 |  | Connexion to TeamServer
+09/08/2023 03:22:43 | Info | User | Fropops-edb6af51-5ae1-43dc-aaff-96ea5824cc6e |  | Connexion to TeamServer
+09/08/2023 03:22:44 | Info | User | Fropops-edb6af51-5ae1-43dc-aaff-96ea5824cc6e |  | Connexion to TeamServer
+09/08/2023 03:23:55 | Info | User | Fropops-edb6af51-5ae1-43dc-aaff-96ea5824cc6e |  | Exit TeamServer
+09/08/2023 03:24:03 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d |  | Connexion to TeamServer
+09/08/2023 03:24:04 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d |  | Connexion to TeamServer
+09/08/2023 03:24:40 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Shell
+09/08/2023 04:02:50 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Sleep
+09/08/2023 04:03:12 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:03:52 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:05:06 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d |  | Web hosting p - Payload PowerShell x64 pipe://127.0.0.1:C3PO
+09/08/2023 04:07:10 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Link
+09/08/2023 04:07:38 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Link
+09/08/2023 04:08:25 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:08:50 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:12:08 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Link
+09/08/2023 04:13:01 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Link
+09/08/2023 04:18:01 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | 417f578b15 | Command tasked to agent : Link
+09/08/2023 04:18:28 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | 417f578b15 | Command tasked to agent : Link
+09/08/2023 04:18:42 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d | cc5e4aa911 | Command tasked to agent : Link
+09/08/2023 04:19:46 | Info | User | Fropops-3344dc59-bfe5-44ae-9d3b-00dde1ffeb1d |  | Exit TeamServer
+09/08/2023 04:20:02 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce |  | Connexion to TeamServer
+09/08/2023 04:20:03 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce |  | Connexion to TeamServer
+09/08/2023 04:20:19 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 21d36f2354 | Command tasked to agent : Exit
+09/08/2023 04:20:36 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | cc5e4aa911 | Command tasked to agent : Sleep
+09/08/2023 04:21:13 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:22:07 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:25:02 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | cc5e4aa911 | Command tasked to agent : RportFwd
+09/08/2023 04:28:04 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | cc5e4aa911 | Command tasked to agent : Link
+09/08/2023 04:30:49 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 0dc4bc77b5 | Command tasked to agent : Exit
+09/08/2023 04:33:27 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce |  | Web hosting r - Payload PowerShell x64 http://127.0.0.1:8080
+09/08/2023 04:33:59 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | ef8a78e3c5 | Command tasked to agent : CheckIn
+09/08/2023 04:35:05 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | ef8a78e3c5 | Command tasked to agent : Exit
+09/08/2023 04:35:10 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | cc5e4aa911 | Command tasked to agent : Exit
+09/08/2023 04:42:31 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : Sleep
+09/08/2023 04:44:21 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : RportFwd
+09/08/2023 04:44:28 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : RportFwd
+09/08/2023 04:48:33 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : Exit

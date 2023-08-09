@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Commander.Executor;
+﻿using System.Threading.Tasks;
 using Shared;
-using System.Security.Cryptography;
-using BinarySerializer;
 using System.CommandLine;
-using Commander.Commands.Agent.Service;
-using Common;
 
 namespace Commander.Commands.Agent.EndPoint
 {
-    public class LinkCommandOptions : ServiceCommandOptions
+    public class LinkCommandOptions : VerbAwareCommandOptions
     {
         public string bindto { get; set; }
     }
-    public class LinkCommand : ServiceCommand<LinkCommandOptions>
+    public class LinkCommand : VerbAwareCommand<LinkCommandOptions>
     {
         public override string Category => CommandCategory.Core;
         public override string Description => "Link to another Agent";
@@ -34,8 +25,8 @@ namespace Commander.Commands.Agent.EndPoint
         protected override void RegisterVerbs()
         {
             base.RegisterVerbs();
-            this.Register(ServiceVerb.Start, this.Start);
-            this.Register(ServiceVerb.Stop, this.Stop);
+            this.Register(CommandVerbs.Start, this.Start);
+            this.Register(CommandVerbs.Stop, this.Stop);
             //this.Register(ServiceVerb.Show, this.Show);
         }
 

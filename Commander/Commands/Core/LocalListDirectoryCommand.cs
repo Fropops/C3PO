@@ -4,7 +4,7 @@ using System.CommandLine;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Commander.Commands
+namespace Commander.Commands.Core
 {
     public class LocalListDirectoryCommandOptions
     {
@@ -19,7 +19,7 @@ namespace Commander.Commands
 
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        public override RootCommand Command => new RootCommand(this.Description)
+        public override RootCommand Command => new RootCommand(Description)
             {
                 new Argument<string>("path" ,() => string.Empty, "directory to list"),
             };

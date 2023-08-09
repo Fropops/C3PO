@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands
+namespace Commander.Commands.Navigation
 {
     public abstract class SwitchModeCommand : ExecutorCommand
     {
         public override string Category => CommandCategory.Navigation;
-        public override string Description => $"Switch to {this.TargetMode} mode";
+        public override string Description => $"Switch to {TargetMode} mode";
         public override ExecutorMode AvaliableIn => ExecutorMode.None;
 
         public abstract ExecutorMode TargetMode { get; }
@@ -20,10 +20,10 @@ namespace Commander.Commands
         {
             context.Executor.CurrentAgent = null;
             context.Executor.Mode = TargetMode;
-            if (TargetMode  == ExecutorMode.None)
+            if (TargetMode == ExecutorMode.None)
                 context.Terminal.Prompt = Terminal.Terminal.DefaultPrompt;
             else
-                context.Terminal.Prompt = $"${this.TargetMode}> ";
+                context.Terminal.Prompt = $"${TargetMode}> ";
         }
     }
 

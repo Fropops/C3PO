@@ -3,51 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Commander.Commands.Agent;
 using Commander.Executor;
 using Shared;
 
-namespace Commander.Commands.Agent.Service
+namespace Commander.Commands
 {
-    public class ServiceCommandOptions
+    public class VerbAwareCommandOptions
     {
         public string verb { get; set; }
+
+        public CommandVerbs CommandVerb { get { return (CommandVerbs)Enum.Parse(typeof(CommandVerbs), verb, true); } }
     }
-    public abstract class ServiceCommand<T> : EndPointCommand<T> where T : ServiceCommandOptions
+    public abstract class VerbAwareCommand<T> : EndPointCommand<T> where T : VerbAwareCommandOptions
     {
-        protected Dictionary<ServiceVerb, Func<CommandContext<T>, Task<bool>>> dico = new Dictionary<ServiceVerb, Func<CommandContext<T>, Task<bool>>>();
+        protected Dictionary<CommandVerbs, Func<CommandContext<T>, Task<bool>>> dico = new Dictionary<CommandVerbs, Func<CommandContext<T>, Task<bool>>>();
         public override string Category => CommandCategory.Services;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
         public override CommandId CommandId => CommandId.Job;
 
-        public ServiceCommand()
+        public VerbAwareCommand()
         {
-            this.RegisterVerbs();
+            RegisterVerbs();
         }
 
         protected virtual void RegisterVerbs()
         {
         }
 
-        public void Register(ServiceVerb verb, Func<CommandContext<T>, Task<bool>> action)
+        public void Register(CommandVerbs verb, Func<CommandContext<T>, Task<bool>> action)
         {
             dico.Add(verb, action);
         }
 
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
         {
-            if (!await this.CheckParams(context))
+            if (!await CheckParams(context))
                 return false;
-            
-            var verb = (ServiceVerb)Enum.Parse(typeof(ServiceVerb), context.Options.verb, true);
+
+            var verb = context.Options.CommandVerb;
             context.AddParameter(ParameterId.Verb, verb);
 
             if (dico.TryGetValue(verb, out var action))
-                if(!await action(context))
+                if (!await action(context))
                     return false;
 
-            this.SpecifyParameters(context);
+            SpecifyParameters(context);
 
-            await this.CallEndPointCommand(context);
+            await CallEndPointCommand(context);
             return true;
         }
 

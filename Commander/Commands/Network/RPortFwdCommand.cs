@@ -1,6 +1,6 @@
-﻿using Commander.Commands.Agent.Service;
-using Commander.Communication;
+﻿using Commander.Communication;
 using Commander.Executor;
+using Commander.Helper;
 using Commander.Models;
 using Commander.Terminal;
 using Shared;
@@ -12,27 +12,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands.Agent
+namespace Commander.Commands.Network
 {
-    public class RPortFwdCommandOptions : ServiceCommandOptions
+    public class RPortFwdCommandOptions : VerbAwareCommandOptions
     {
         public int? port { get; set; }
         public string destHost { get; set; }
         public int? destPort { get; set; }
     }
 
-    public class RPortFwdCommand : ServiceCommand<RPortFwdCommandOptions>
+    public class RPortFwdCommand : VerbAwareCommand<RPortFwdCommandOptions>
     {
-        public override string Category => CommandCategory.Core;
+        public override string Category => CommandCategory.Network;
         public override string Description => "Start a Reverse Port Forward on the agent";
         public override string Name => "rportfwd";
 
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
         public override CommandId CommandId => CommandId.RportFwd;
 
-        public override RootCommand Command => new RootCommand(this.Description)
+        public override RootCommand Command => new RootCommand(Description)
             {
-                new Argument<string>("verb", () => "show", "start | stop | show").FromAmong("start", "stop", "show"),
+                new Argument<string>("verb", () => CommandVerbs.Show.Command()).FromAmong(CommandVerbs.Start.Command(), CommandVerbs.Stop.Command(), CommandVerbs.Show.Command()),
                 new Option<int?>(new[] { "--port", "-p" }, () => null, "port to use on the agent"),
                 new Option<string>(new[] { "--destHost", "-h" }, () => null, "host to use as destination"),
                 new Option<int?>(new[] { "--destPort", "-d" }, () => null, "port to use as destination"),
@@ -41,8 +41,8 @@ namespace Commander.Commands.Agent
         protected override void RegisterVerbs()
         {
             base.RegisterVerbs();
-            this.Register(ServiceVerb.Start, this.Start);
-            this.Register(ServiceVerb.Stop, this.Stop);
+            Register(CommandVerbs.Start, Start);
+            Register(CommandVerbs.Stop, Stop);
         }
 
         protected async Task<bool> Start(CommandContext<RPortFwdCommandOptions> context)

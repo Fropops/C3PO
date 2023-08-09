@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands
+namespace Commander.Commands.Core
 {
     public class HelpCommand : ExecutorCommand
     {

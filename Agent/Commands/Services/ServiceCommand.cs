@@ -13,7 +13,7 @@ namespace Agent.Commands.Services
     public abstract class ServiceCommand<T> : AgentCommand
     {
         protected T Service;
-        protected Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>> dico = new Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>>();
+        protected Dictionary<CommandVerbs, Func<AgentTask, AgentCommandContext, Task>> dico = new Dictionary<CommandVerbs, Func<AgentTask, AgentCommandContext, Task>>();
         public ServiceCommand()
         {
             Service = ServiceProvider.GetService<T>();
@@ -22,19 +22,19 @@ namespace Agent.Commands.Services
 
         protected virtual void RegisterVerbs()
         {
-            this.Register(ServiceVerb.Show, this.Show);
+            this.Register(CommandVerbs.Show, this.Show);
         }
 
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            var verb = task.GetParameter<ServiceVerb>(ParameterId.Verb);
+            var verb = task.GetParameter<CommandVerbs>(ParameterId.Verb);
             if (dico.TryGetValue(verb, out var action))
                 await action(task, context);
             else
                 context.Error($"Verb {verb} not found !");
         }
 
-        public void Register(ServiceVerb verb, Func<AgentTask, AgentCommandContext, Task> action)
+        public void Register(CommandVerbs verb, Func<AgentTask, AgentCommandContext, Task> action)
         {
             dico.Add(verb, action);
         }
@@ -45,7 +45,7 @@ namespace Agent.Commands.Services
 
     public abstract class ServiceCommand : AgentCommand
     {
-        protected Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>> dico = new Dictionary<ServiceVerb, Func<AgentTask, AgentCommandContext, Task>>();
+        protected Dictionary<CommandVerbs, Func<AgentTask, AgentCommandContext, Task>> dico = new Dictionary<CommandVerbs, Func<AgentTask, AgentCommandContext, Task>>();
         public ServiceCommand()
         {
             this.RegisterVerbs();
@@ -53,19 +53,19 @@ namespace Agent.Commands.Services
 
         protected virtual void RegisterVerbs()
         {
-            this.Register(ServiceVerb.Show, this.Show);
+            this.Register(CommandVerbs.Show, this.Show);
         }
 
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            var verb = task.GetParameter<ServiceVerb>(ParameterId.Verb);
+            var verb = task.GetParameter<CommandVerbs>(ParameterId.Verb);
             if (dico.TryGetValue(verb, out var action))
                 await action(task, context);
             else
                 context.Error($"Verb {verb} not found !");
         }
 
-        public void Register(ServiceVerb verb, Func<AgentTask, AgentCommandContext, Task> action)
+        public void Register(CommandVerbs verb, Func<AgentTask, AgentCommandContext, Task> action)
         {
             dico.Add(verb, action);
         }

@@ -1,6 +1,6 @@
 ﻿using Commander.Communication;
 using Commander.Executor;
-using Commander.Models;
+using Commander.Helper;
 using Commander.Terminal;
 using Spectre.Console;
 using Spectre.Console.Rendering;

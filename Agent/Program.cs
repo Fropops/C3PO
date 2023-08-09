@@ -53,6 +53,7 @@ namespace EntryPoint
 
             //connUrl = "https://192.168.48.128:443";
             //connUrl = "pipe://127.0.0.1:C3PO";
+            //connUrl = "http://127.0.0.1:8080";
 
             if (_args.Count() > 0)
             {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Models
+namespace Commander.Helper
 {
     internal static class StringHelper
     {

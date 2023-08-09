@@ -19,8 +19,8 @@ namespace Agent.Commands
         protected override void RegisterVerbs()
         {
             base.RegisterVerbs();
-            this.Register(ServiceVerb.Start, this.Start);
-            this.Register(ServiceVerb.Stop, this.Stop);
+            this.Register(CommandVerbs.Start, this.Start);
+            this.Register(CommandVerbs.Stop, this.Stop);
         }
 
         protected async Task Start(AgentTask task, AgentCommandContext context)

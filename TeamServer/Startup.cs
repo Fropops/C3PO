@@ -98,6 +98,7 @@ namespace TeamServer
             app.ApplicationServices.GetService<IAgentService>().LoadFromDB();
             app.ApplicationServices.GetService<ITaskService>().LoadFromDB();
             app.ApplicationServices.GetService<ITaskResultService>().LoadFromDB();
+            app.ApplicationServices.GetService<IWebHostService>().LoadFromDB();
         }
 
 

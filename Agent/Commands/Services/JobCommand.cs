@@ -23,7 +23,7 @@ namespace Agent.Commands
         protected override void RegisterVerbs()
         {
             base.RegisterVerbs();
-            this.Register(ServiceVerb.Kill, this.Kill);
+            this.Register(CommandVerbs.Kill, this.Kill);
         }
 
         protected override async Task Show(AgentTask task, AgentCommandContext context)

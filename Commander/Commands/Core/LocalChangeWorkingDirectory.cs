@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Commander.Commands
+namespace Commander.Commands.Core
 {
     public class ChangeWorkingDirectoryCommandOptions
     {
@@ -26,7 +26,7 @@ namespace Commander.Commands
 
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
-        public override RootCommand Command => new RootCommand(this.Description)
+        public override RootCommand Command => new RootCommand(Description)
             {
                 new Argument<string>("path" ,() => string.Empty, "path on the local machine to go into."),
             };
@@ -34,7 +34,7 @@ namespace Commander.Commands
 
         protected override async Task<bool> HandleCommand(CommandContext<ChangeWorkingDirectoryCommandOptions> context)
         {
-            if(!string.IsNullOrEmpty(context.Options.path))
+            if (!string.IsNullOrEmpty(context.Options.path))
             {
                 Directory.SetCurrentDirectory(context.Options.path);
             }

@@ -1,5 +1,6 @@
 ﻿using Commander.Commands;
 using Commander.Communication;
+using Commander.Helper;
 using Commander.Models;
 using Commander.Terminal;
 using Common.Models;

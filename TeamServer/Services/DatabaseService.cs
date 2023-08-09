@@ -14,6 +14,10 @@ public interface IDatabaseService
 
     public Task Update<T>(T item) where T : TeamServerDao, new();
 
+    public Task<int> Remove<T>(T item) where T : TeamServerDao, new();
+
+    Task<int> Clear<T>() where T : TeamServerDao, new();
+
     public Task<T> Get<T>(System.Linq.Expressions.Expression<Func<T, bool>> expr) where T : TeamServerDao, new();
 }
 
@@ -34,6 +38,8 @@ public class DatabaseService : IDatabaseService
             conn.CreateTable<AgentDao>();
             conn.CreateTable<TaskDao>();
             conn.CreateTable<ResultDao>();
+            conn.CreateTable<WebHostFileDao>();
+            conn.CreateTable<WebHostLogDao>();
         }
 
         // open connections
@@ -66,5 +72,15 @@ public class DatabaseService : IDatabaseService
     async Task<T> IDatabaseService.Get<T>(System.Linq.Expressions.Expression<Func<T, bool>> expr)
     {
         return await this._asyncConnection.Table<T>().FirstOrDefaultAsync(expr);
+    }
+
+    async Task<int> IDatabaseService.Remove<T>(T item)
+    {
+        return await this._asyncConnection.DeleteAsync(item);
+    }
+
+    async Task<int> IDatabaseService.Clear<T>()
+    {
+        return await this._asyncConnection.DeleteAllAsync<T>();
     }
 }

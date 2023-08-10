@@ -40,6 +40,7 @@ public class DatabaseService : IDatabaseService
             conn.CreateTable<ResultDao>();
             conn.CreateTable<WebHostFileDao>();
             conn.CreateTable<WebHostLogDao>();
+            conn.CreateTable<FileDao>();
         }
 
         // open connections

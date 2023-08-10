@@ -22,7 +22,7 @@ namespace TeamServer.Services
     }
     public class ReversePortForwardService : IReversePortForwardService
     {
-        private bool _log = false;
+        private bool _log = true;
 
         private readonly IAgentService _agentService;
         private readonly IFrameService _frameService;

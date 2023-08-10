@@ -647,5 +647,31 @@ namespace Commander.Communication
 
 
         #endregion
+
+        #region files
+        public async Task<List<TeamServerDownloadFile>> GetFiles()
+        {
+            var response = await _client.GetAsync($"/DownloadFile/");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var list = JsonConvert.DeserializeObject<List<TeamServerDownloadFile>>(json);
+            return list;
+        }
+
+        public async Task<TeamServerDownloadFile> GetFile(string id)
+        {
+            var response = await _client.GetAsync($"/DownloadFile/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"{response}");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var file = JsonConvert.DeserializeObject<TeamServerDownloadFile>(json);
+            return file;
+        }
+        #endregion
     }
 }

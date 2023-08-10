@@ -16,6 +16,7 @@ namespace Shared
         Remove = 0x06,
         Log = 0x07,
         Script = 0x08,
-        Clear = 0x09
+        Clear = 0x09,
+        Get = 0x10,
     }
 }

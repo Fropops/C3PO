@@ -143,6 +143,7 @@
     <Compile Include="Commands\Execution\InjectCommand.cs" />
     <Compile Include="Commands\Link\LinkCommand.cs" />
     <Compile Include="Commands\Core\ListProcessCommand.cs" />
+    <Compile Include="Commands\Server\DownloadCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Services\RportFwdCommand.cs" />
     <Compile Include="Commands\Services\JobCommand.cs" />

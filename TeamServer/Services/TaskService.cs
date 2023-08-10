@@ -58,6 +58,8 @@ public class TaskService : ITaskService
 
     public List<TeamServerAgentTask> RemoveAgent(string agentId)
     {
+        if(!_agentTasks.ContainsKey(agentId))
+            return new List<TeamServerAgentTask>();
         var tasks = _agentTasks[agentId];
         _agentTasks.Remove(agentId);
         foreach(var task in tasks)

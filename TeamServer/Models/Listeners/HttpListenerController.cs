@@ -12,6 +12,7 @@ using Shared;
 using Common.APIModels;
 using Common.APIModels.WebHost;
 using System.Linq;
+using TeamServer.Service;
 
 namespace TeamServer.Models
 {
@@ -32,6 +33,7 @@ namespace TeamServer.Models
         private readonly ITaskResultService _agentTaskResultService;
         private readonly IFrameService _frameService;
         private readonly IServerService _serverService;
+        private readonly IDownloadFileService _downloadFileService;
         public HttpListenerController(IAgentService agentService,
             IFileService fileService,
             IListenerService listenerService,
@@ -43,7 +45,8 @@ namespace TeamServer.Models
             IAuditService auditService,
             ITaskResultService agentTaskResultService,
             IFrameService frameService,
-            IServerService serverService)
+            IServerService serverService,
+            IDownloadFileService downloadFileService)
         {
             this._agentService=agentService;
             this._fileService = fileService;
@@ -56,7 +59,8 @@ namespace TeamServer.Models
             this._auditService = auditService;
             this._agentTaskResultService = agentTaskResultService;
             this._frameService = frameService;
-            this._serverService=serverService; 
+            this._serverService=serverService;
+            this._downloadFileService = downloadFileService;
         }
 
         private async Task<IActionResult> WebHost(string path)
@@ -136,7 +140,7 @@ namespace TeamServer.Models
                 var frames = await data.BinaryDeserializeAsync<List<NetFrame>>();
 
                 await this._serverService.HandleInboundFrames(frames, agentId);
-               
+
                 var returnedFrames = new List<NetFrame>();
 
                 foreach (var relayedAgent in this._agentService.GetAgentToRelay(agent.Id))
@@ -154,127 +158,7 @@ namespace TeamServer.Models
                 Logger.Log($"Error While Handling Agent : {ex}");
                 throw ex;
             }
-
-            //string json = null;
-            //try
-            //{
-            //    json = _cryptoService.DecryptFromBase64(body);
-
-            //}
-            //catch
-            //{
-            //    Logger.Log($"Error decrypting agent messages.");
-            //    //Decrypt failed
-            //    return NotFound();
-            //}
-
-            //try
-            //{
-            //    result = JsonConvert.DeserializeObject<List<MessageResult>>(json);
-            //}
-            //catch
-            //{
-            //    Logger.Log($"Error deserializing agent messages.");
-            //    //json in bad format
-            //    return NotFound();
-            //}
-
-
-            //foreach (var messRes in result)
-            //{
-            //    if (messRes.Header.Path.Count() == 1)
-            //    {
-            //        id = messRes.Header.Owner;
-            //        break;
-            //    }
-            //}
-
-            //if(string.IsNullOrEmpty(id))
-            //{
-            //    //no main agent
-            //    return NotFound();
-            //}
-
-            //var messages = new List<MessageTask>();
-            //try
-            //{
-            //    foreach (var messRes in result)
-            //    {
-            //        var agentId = messRes.Header.Owner;
-            //        var messAgent = this.CheckIn(messRes.Header.Owner);
-
-            //        if (messRes.MetaData != null)
-            //        {
-            //            messAgent.Metadata = messRes.MetaData;
-            //            this._changeTrackingService.TrackChange(ChangingElement.Agent, messAgent.Id);
-            //        }
-
-            //        messAgent.AddTaskResults(messRes.Items);
-            //        foreach (var res in messRes.Items)
-            //            this._changeTrackingService.TrackChange(ChangingElement.Result, res.Id);
-
-            //        messAgent.RelayId = id;
-            //        if (messAgent.Path != messRes.Header.Path)
-            //        {
-            //            messAgent.Path = messRes.Header.Path;
-            //            this._changeTrackingService.TrackChange(ChangingElement.Agent, messAgent.Id);
-            //        }
-            //        if (messRes.FileChunk != null)
-            //            _fileService.AddAgentFileChunk(messRes.FileChunk);
-
-            //        messAgent.AddProxyResponses(messRes.ProxyMessages);
-
-            //        ////Logger.Log($"Saving resulst of {messAgent.Metadata.Id}");
-            //        _fileService.SaveResults(messAgent, messRes.Items);
-            //    }
-
-
-
-            //    foreach (var ag in this._agentService.GetAgentToRelay(id))
-            //    {
-            //        var mess = ag.GetNextMessage();
-            //        if (mess != null)
-            //            messages.Add(mess);
-            //    }
-            //}
-            //catch(Exception ex)
-            //{
-            //    System.Diagnostics.Debug.WriteLine(ex.ToString());
-            //    throw;
-            //}
-
-            //var camelSettings = new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() };
-            //var ret = JsonConvert.SerializeObject(messages, camelSettings);
-            //var enc = this._cryptoService.EncryptAsBase64(ret);
-
-            //if (enc.Length == 0)
-            //{
-            //    int i = 0;
-            //}
-
-            //return Ok(enc);
         }
-
-        //private Agent CheckIn(string agentId)
-        //{
-        //    var agent = this._agentService.GetAgent(agentId);
-
-        //    this._changeTrackingService.TrackChange(ChangingElement.Agent, agentId);
-
-        //    if (agent == null)
-        //    {
-        //        agent = new Agent(agentId);
-        //        this._agentService.AddAgent(agent);
-        //        var meta = new AgentTask() { Command = "meta", Id = Guid.NewGuid().ToString(), Label = "MetaData", RequestDate = DateTime.UtcNow };
-        //        agent.QueueTask(meta);
-        //        this._changeTrackingService.TrackChange(ChangingElement.Task, meta.Id);
-
-        //        this._auditService.Record(AuditType.Info, AuditCategory.Agent, agentId, string.Empty, $"Agent Checking In");
-        //    }
-
-        //    agent.CheckIn();
-
-        //    return agent;
-        //}
+           
     }
 }

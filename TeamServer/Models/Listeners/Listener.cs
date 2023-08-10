@@ -33,6 +33,7 @@ namespace TeamServer.Models
         protected IServerService _serverService;
         protected IReversePortForwardService _rportfwdService;
         protected IDatabaseService _dbService;
+        protected IDownloadFileService _downloadFileService;
 
         public Listener(string name, int bindPort, string Ip)
         {
@@ -61,7 +62,8 @@ namespace TeamServer.Models
             IFrameService frameService,
             IServerService serverService,
             IReversePortForwardService pfwdService,
-            IDatabaseService dbService)
+            IDatabaseService dbService,
+            IDownloadFileService downloadFileService)
         {
             this._agentService = service;
             this._fileService = fileService;
@@ -76,6 +78,7 @@ namespace TeamServer.Models
             this._serverService = serverService;
             this._rportfwdService = pfwdService;
             this._dbService = dbService;
+            this._downloadFileService = downloadFileService;
         }
 
         public abstract Task Start();

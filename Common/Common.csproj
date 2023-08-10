@@ -14,6 +14,7 @@
     <Compile Include="..\Shared\Commands.cs" Link="Shared\Commands.cs" />
     <Compile Include="..\Shared\CommandVerbs.cs" Link="Shared\CommandVerbs.cs" />
     <Compile Include="..\Shared\ConnexionUrl.cs" Link="Shared\ConnexionUrl.cs" />
+    <Compile Include="..\Shared\DownloadFile.cs" Link="Shared\DownloadFile.cs" />
     <Compile Include="..\Shared\Job.cs" Link="Shared\Job.cs" />
     <Compile Include="..\Shared\LinkInfo.cs" Link="Shared\LinkInfo.cs" />
     <Compile Include="..\Shared\NetFrame.cs" Link="Shared\NetFrame.cs" />

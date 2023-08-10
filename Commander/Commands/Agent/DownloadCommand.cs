@@ -1,5 +1,5 @@
-﻿using ApiModels.Response;
-using Commander.Executor;
+﻿using Commander.Executor;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -21,6 +21,7 @@ namespace Commander.Commands.Agent
         public override string Category => CommandCategory.Network;
         public override string Description => "Download a file from the agent";
         public override string Name => "download";
+        public override CommandId CommandId => CommandId.Download;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
         public override RootCommand Command => new RootCommand(this.Description)
@@ -29,26 +30,11 @@ namespace Commander.Commands.Agent
                 new Argument<string>("localFile",() => string.Empty, "local file name to downloaded to."),
             };
 
-        protected async override Task<bool> HandleCommand(CommandContext<DownloadCommandOptions> context)
+        protected override void SpecifyParameters(CommandContext<DownloadCommandOptions> context)
         {
-
-            var fileName = context.Options.remotefile;
-            string dest = Path.GetFileName(fileName);
-
-            string parms = fileName;
-
+            context.AddParameter(ParameterId.Path, context.Options.remotefile);
             if (!string.IsNullOrEmpty(context.Options.localfile))
-            {
-                parms += " " + context.Options.localfile;
-
-            }
-                
-
-            await context.CommModule.TaskAgent(context.CommandLabel, Guid.NewGuid().ToString(), context.Executor.CurrentAgent.Metadata.Id, EndPointCommand.UPLOAD, parms);
-           
-            context.Terminal.WriteInfo($"Agent tasked to upload file to server.");
-
-            return true;
+                context.AddParameter(ParameterId.Name, context.Options.localfile);
         }
     }
 }

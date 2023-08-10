@@ -28,39 +28,6 @@ namespace Agent.Commands
             }
 
             context.AppendResult($"File uploaded to {fileName}.");
-
-
-            /*if (!File.Exists(path))
-            {
-                context.Result.Result = $"File {path} not found.";
-                return;
-            }
-
-            byte[] fileBytes = null;
-            using (FileStream fs = File.OpenRead(path))
-            {
-                fileBytes = new byte[fs.Length];
-                fs.Read(fileBytes, 0, (int)fs.Length);
-            }
-
-            if (task.SplittedArgs.Length > 1)
-                filename = task.SplittedArgs[1];
-            else
-                filename = Path.GetFileName(filename);
-
-            var fileId = Guid.NewGuid().ToString();
-            context.FileService.AddFileToUpload(fileId, filename, fileBytes);
-
-            this.CheckFileUploaded(fileId, filename, context);
-
-
-            context.Result.Files.Add(new TaskFileResult()
-            {
-                FileId = fileId,
-                FileName = filename,
-            });*/
-
-
         }
     }
 }

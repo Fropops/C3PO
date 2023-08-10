@@ -31,6 +31,7 @@ namespace TeamServer.Services
         protected IServerService _serverService;
         protected IReversePortForwardService _rportfwdService;
         protected IDatabaseService _dbService;
+        protected IDownloadFileService _downloadFileService;
         public ListenerService(IAgentService service,
             ITaskResultService resultService,
             IFileService fileService, 
@@ -42,7 +43,8 @@ namespace TeamServer.Services
             IFrameService frameService,
             IServerService serverService,
             IReversePortForwardService pfwdService,
-            IDatabaseService dbService)
+            IDatabaseService dbService,
+            IDownloadFileService downloadFileService)
         {
             this._agentService = service;
             this._fileService = fileService;
@@ -56,13 +58,14 @@ namespace TeamServer.Services
             this._serverService = serverService;
             this._rportfwdService = pfwdService;
             this._dbService = dbService;
+            this._downloadFileService=downloadFileService;   
         }
 
         private readonly List<Listener> _listeners = new List<Listener>();
 
         public void AddListener(Listener listener)
         {
-            listener.Init(_agentService, _resultService, _fileService, _binMakerService, this, _changeTrackingService, _webHostService, _cryptoService, _auditService, _frameService, _serverService, _rportfwdService, _dbService);
+            listener.Init(_agentService, _resultService, _fileService, _binMakerService, this, _changeTrackingService, _webHostService, _cryptoService, _auditService, _frameService, _serverService, _rportfwdService, _dbService, _downloadFileService);
             _listeners.Add(listener);
             if (listener is HttpListener httpListener)
             {
@@ -87,7 +90,7 @@ namespace TeamServer.Services
             {
                 HttpListener listener = dbHttpListener;
                 this._listeners.Add(listener);
-                listener.Init(_agentService, _resultService, _fileService, _binMakerService, this, _changeTrackingService, _webHostService, _cryptoService, _auditService, _frameService, _serverService, _rportfwdService, _dbService);
+                listener.Init(_agentService, _resultService, _fileService, _binMakerService, this, _changeTrackingService, _webHostService, _cryptoService, _auditService, _frameService, _serverService, _rportfwdService, _dbService, _downloadFileService);
                 await listener.Start();
             }
         }
@@ -95,6 +98,7 @@ namespace TeamServer.Services
         public void RemoveListener(Listener listener)
         {
             _listeners.Remove(listener);
+            this._dbService.Remove((HttpListenerDao)listener).Wait();
         }
     }
 }

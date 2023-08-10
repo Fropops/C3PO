@@ -47,3 +47,34 @@
 09/08/2023 04:44:21 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : RportFwd
 09/08/2023 04:44:28 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : RportFwd
 09/08/2023 04:48:33 | Info | User | Fropops-330f6509-8622-46b5-9a98-e86c467696ce | 49ac457598 | Command tasked to agent : Exit
+09/08/2023 11:07:22 | Info | User | Fropops-35ca68db-484c-4579-9b35-3c30d5850953 |  | Connexion to TeamServer
+09/08/2023 11:07:23 | Info | User | Fropops-35ca68db-484c-4579-9b35-3c30d5850953 |  | Connexion to TeamServer
+09/08/2023 11:07:32 | Info | User | Fropops-35ca68db-484c-4579-9b35-3c30d5850953 | 21fdd4dc4d | Command tasked to agent : Sleep
+09/08/2023 11:08:07 | Info | User | Fropops-35ca68db-484c-4579-9b35-3c30d5850953 | 21fdd4dc4d | Command tasked to agent : RportFwd
+09/08/2023 11:10:07 | Info | User | Fropops-35ca68db-484c-4579-9b35-3c30d5850953 |  | Exit TeamServer
+09/08/2023 11:11:43 | Info | User | Fropops-f97666fb-63c8-41b0-9ae9-b76ded0a7dc6 |  | Connexion to TeamServer
+09/08/2023 11:11:44 | Info | User | Fropops-f97666fb-63c8-41b0-9ae9-b76ded0a7dc6 |  | Connexion to TeamServer
+09/08/2023 11:13:09 | Info | User | Fropops-f97666fb-63c8-41b0-9ae9-b76ded0a7dc6 | 21fdd4dc4d | Command tasked to agent : RportFwd
+09/08/2023 11:13:24 | Info | User | Fropops-f97666fb-63c8-41b0-9ae9-b76ded0a7dc6 | 51982c792d | Command tasked to agent : RportFwd
+09/08/2023 11:13:34 | Info | User | Fropops-f97666fb-63c8-41b0-9ae9-b76ded0a7dc6 | 51982c792d | Command tasked to agent : RportFwd
+09/08/2023 11:16:25 | Info | User | Fropops-f97666fb-63c8-41b0-9ae9-b76ded0a7dc6 | 51982c792d | Command tasked to agent : Sleep
+09/08/2023 11:35:28 | Info | User | Fropops-54be6864-5056-4b47-841c-e6b8ded9a8a9 |  | Connexion to TeamServer
+09/08/2023 11:35:29 | Info | User | Fropops-54be6864-5056-4b47-841c-e6b8ded9a8a9 |  | Connexion to TeamServer
+09/08/2023 11:37:37 | Info | User | Fropops-54be6864-5056-4b47-841c-e6b8ded9a8a9 | 51982c792d | Command tasked to agent : Sleep
+09/08/2023 11:37:59 | Info | User | Fropops-54be6864-5056-4b47-841c-e6b8ded9a8a9 | 51982c792d | Command tasked to agent : RportFwd
+09/08/2023 11:38:17 | Info | User | Fropops-54be6864-5056-4b47-841c-e6b8ded9a8a9 | 56f44211c1 | Command tasked to agent : Sleep
+09/08/2023 11:38:25 | Info | User | Fropops-54be6864-5056-4b47-841c-e6b8ded9a8a9 | 56f44211c1 | Command tasked to agent : RportFwd
+09/08/2023 11:54:32 | Info | User | Fropops-91e4ea8e-6802-4f81-9b9c-f223a0b76565 |  | Connexion to TeamServer
+09/08/2023 11:54:33 | Info | User | Fropops-91e4ea8e-6802-4f81-9b9c-f223a0b76565 |  | Connexion to TeamServer
+09/08/2023 11:56:01 | Info | User | Fropops-1a017707-bd59-4b94-95bc-56dabdd3f3e3 |  | Connexion to TeamServer
+09/08/2023 11:56:02 | Info | User | Fropops-1a017707-bd59-4b94-95bc-56dabdd3f3e3 |  | Connexion to TeamServer
+09/08/2023 11:58:11 | Info | User | Fropops-de8da826-15e0-496c-a0c6-5b7b99095cd0 |  | Connexion to TeamServer
+09/08/2023 11:58:12 | Info | User | Fropops-de8da826-15e0-496c-a0c6-5b7b99095cd0 |  | Connexion to TeamServer
+09/08/2023 11:58:40 | Info | User | Fropops-922e3c42-4d2a-479d-881a-a5e14ede56d5 |  | Connexion to TeamServer
+09/08/2023 11:58:41 | Info | User | Fropops-922e3c42-4d2a-479d-881a-a5e14ede56d5 |  | Connexion to TeamServer
+09/08/2023 11:58:53 | Info | User | Fropops-922e3c42-4d2a-479d-881a-a5e14ede56d5 | 80698a7f37 | Command tasked to agent : Sleep
+09/08/2023 11:59:15 | Info | User | Fropops-922e3c42-4d2a-479d-881a-a5e14ede56d5 | 80698a7f37 | Command tasked to agent : RportFwd
+09/08/2023 12:01:23 | Info | User | Fropops-c4ced92e-60ff-4cf5-9bd7-4f20e10a6e9b |  | Connexion to TeamServer
+09/08/2023 12:01:24 | Info | User | Fropops-c4ced92e-60ff-4cf5-9bd7-4f20e10a6e9b |  | Connexion to TeamServer
+09/08/2023 12:01:36 | Info | User | Fropops-c4ced92e-60ff-4cf5-9bd7-4f20e10a6e9b | ae5791d3f9 | Command tasked to agent : Sleep
+09/08/2023 12:02:01 | Info | User | Fropops-c4ced92e-60ff-4cf5-9bd7-4f20e10a6e9b | ae5791d3f9 | Command tasked to agent : RportFwd

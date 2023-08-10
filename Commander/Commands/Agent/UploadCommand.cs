@@ -21,8 +21,6 @@ namespace Commander.Commands.Agent
         public override string Category => CommandCategory.Network;
         public override string Description => "Upload a file to the agent";
         public override string Name => "upload";
-
-
         public override CommandId CommandId => CommandId.Upload;
         public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 

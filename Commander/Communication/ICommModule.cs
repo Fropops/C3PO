@@ -57,6 +57,10 @@ namespace Commander.Communication
         Task<bool> StopProxy(string agentId);
         Task<List<ProxyInfo>> ShowProxy();
 
+        Task<List<TeamServerDownloadFile>> GetFiles();
+
+        Task<TeamServerDownloadFile> GetFile(string id);
+
         Task CloseSession();
 
     }

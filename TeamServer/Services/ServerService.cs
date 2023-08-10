@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using TeamServer.FrameHandling;
 using System.Linq;
+using TeamServer.Service;
 
 namespace TeamServer.Services;
 
@@ -17,9 +18,11 @@ public interface IServerService
     IFrameService FrameService { get; }
     IChangeTrackingService ChangeTrackingService { get; }
     ITaskResultService TaskResultService { get; }
+    ITaskService TaskService { get; }
 
     IReversePortForwardService ReversePortForwardService { get; }
     ISocksService SocksService { get; }
+    IDownloadFileService DownloadFileService { get; }
     Task HandleInboundFrames(IEnumerable<NetFrame> frames, string relay);
 }
 
@@ -29,7 +32,8 @@ public class ServerService : IServerService
     public IFrameService FrameService { get; }
     public IChangeTrackingService ChangeTrackingService { get; }
     public ITaskResultService TaskResultService { get; }
-
+    public ITaskService TaskService { get; }
+    public IDownloadFileService DownloadFileService { get; }
     public ISocksService SocksService { get; }
 
     public IReversePortForwardService ReversePortForwardService { get; }
@@ -39,7 +43,9 @@ public class ServerService : IServerService
         ITaskResultService taskResultService,
         IChangeTrackingService changeTrackingService,
         ISocksService socksService,
-        IReversePortForwardService reversePortForwardService)
+        IReversePortForwardService reversePortForwardService,
+        ITaskService taskService,
+        IDownloadFileService downloadFileService)
     {
         this.AgentService = agentService;
         this.FrameService=frameService;
@@ -47,10 +53,10 @@ public class ServerService : IServerService
         this.ChangeTrackingService = changeTrackingService;
         this.SocksService=socksService;
         this.ReversePortForwardService = reversePortForwardService;
-
+        this.TaskService=taskService;
+        this.DownloadFileService=downloadFileService;
 
         this.LoadModules();
-        
     }
 
     public List<FrameHandler> _handlers = new List<FrameHandler>();

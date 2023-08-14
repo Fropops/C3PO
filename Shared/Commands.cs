@@ -34,6 +34,10 @@ namespace Shared
 
         Proxy = 0x18,
         Sleep = 0x19,
-        RportFwd = 0x20
+        RportFwd = 0x20,
+
+        MakeToken,
+        StealToken,
+        RevertSelf
     }
 }

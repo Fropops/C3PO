@@ -148,7 +148,10 @@
     <Compile Include="Commands\Services\RportFwdCommand.cs" />
     <Compile Include="Commands\Services\JobCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />
-    <Compile Include="Commands\SleepCommand.cs" />
+    <Compile Include="Commands\Core\SleepCommand.cs" />
+    <Compile Include="Commands\Token\MakeTokenCommand.cs" />
+    <Compile Include="Commands\Token\RevertToSelfCommand.cs" />
+    <Compile Include="Commands\Token\StealTokenCommand.cs" />
     <Compile Include="Communication\CommunicationModuleMode.cs" />
     <Compile Include="Communication\CommunicationType.cs" />
     <Compile Include="Communication\EgressCommunicator.cs" />
@@ -160,10 +163,8 @@
     <Compile Include="Helpers\PipeExtensions.cs" />
     <Compile Include="Helpers\TcpExtensions.cs" />
     <None Include="dnMerge.config" />
-    <None Include="Internal\Executor.cs.old" />
     <Compile Include="Commands\Core\WhoamiCommand.cs" />
     <Compile Include="Helpers\Extensions.cs" />
-    <None Include="Internal\Injector.cs.old" />
     <Compile Include="Agent.cs" />
     <None Include="Communication\Pipe\CryptoPipeServer.cs.old" />
     <None Include="Communication\Pipe\PipeActions.cs.old" />
@@ -208,7 +209,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\Token\" />
     <Folder Include="Service\Pivoting\" />
     <Folder Include="Service\RunningService\" />
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace Agent.Commands
 {
     public class IdleCommand : AgentCommand
     {
-        public override CommandId Command => CommandId.Cat;
+        public override CommandId Command => CommandId.Idle;
        
 
         internal struct LASTINPUTINFO

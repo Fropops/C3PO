@@ -130,6 +130,7 @@
   <ItemGroup>
     <Compile Include="Commands\AgentCommand.cs" />
     <Compile Include="Commands\Core\ExitCommand.cs" />
+    <Compile Include="Commands\Core\IdleCommand.cs" />
     <Compile Include="Commands\Execution\AssemblyCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
@@ -209,6 +210,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Commands\ScriptedCommand\" />
     <Folder Include="Service\Pivoting\" />
     <Folder Include="Service\RunningService\" />
   </ItemGroup>

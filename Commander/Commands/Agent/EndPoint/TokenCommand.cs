@@ -17,7 +17,7 @@ public class StealTokenCommandOptions
 }
 public class StealTokenCommand : EndPointCommand<StealTokenCommandOptions>
 {
-    public override string Description => "Steal the token of a process";
+    public override string Description => "Steal the token from a process";
     public override string Name => "steal-token";
 
     public override CommandId CommandId => CommandId.StealToken;
@@ -40,7 +40,7 @@ public class MakeTokenCommandOptions
 }
 public class MakeTokenCommand : EndPointCommand<MakeTokenCommandOptions>
 {
-    public override string Description => "Make token for a specified use";
+    public override string Description => "Make token for a specified user";
     public override string Name => "make-token";
 
     public override CommandId CommandId => CommandId.MakeToken;
@@ -55,7 +55,7 @@ public class MakeTokenCommand : EndPointCommand<MakeTokenCommandOptions>
     {
         if(!context.Options.username.Contains('\\'))
         {
-            context.Terminal.WriteError($"USername is not in a correct format.");
+            context.Terminal.WriteError($"Username is not in a correct format.");
             return false;
         }
         return await base.CheckParams(context);
@@ -75,7 +75,7 @@ public class MakeTokenCommand : EndPointCommand<MakeTokenCommandOptions>
 
 public class Rev2SelfCommand : SimpleEndPointCommand
 {
-    public override string Description => "Make token for a specified user";
+    public override string Description => "Remove Token Impersonation";
     public override string Name => "rervert-self";
     public override CommandId CommandId => CommandId.RevertSelf;
 }

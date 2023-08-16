@@ -33,14 +33,14 @@ namespace Commander.Commands
         {
             if (this.Parameters == null)
                 this.Parameters = new ParameterDictionary();
-            this.Parameters.Add(id, item.BinarySerializeAsync().Result);
+            this.Parameters.AddParameter(id, item.BinarySerializeAsync().Result);
         }
 
         public void AddParameter(ParameterId id, byte[] item)
         {
             if (this.Parameters == null)
                 this.Parameters = new ParameterDictionary();
-            this.Parameters.Add(id, item);
+            this.Parameters.AddParameter(id, item);
         }
 
         public void WriteTaskSendToAgent(ExecutorCommand cmd)

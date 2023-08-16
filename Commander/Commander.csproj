@@ -27,11 +27,8 @@
     <Compile Remove="Commands\Agent\LateralMovement\JumpWinRMCommand.cs" />
     <Compile Remove="Commands\Agent\PathCommand.cs" />
     <Compile Remove="Commands\Base64Command.cs" />
-    <Compile Remove="Commands\Composite\AgentTask.cs" />
-    <Compile Remove="Commands\Composite\CompositeCommand.cs" />
-    <Compile Remove="Commands\Composite\ElevateCommand.cs" />
-    <Compile Remove="Commands\Composite\GetSystemCommand.cs" />
-    <Compile Remove="Commands\Composite\Test.cs" />
+    <Compile Remove="Commands\Scripted\AgentTask.cs" />
+    <Compile Remove="Commands\Scripted\GetSystemCommand.cs" />
     <Compile Remove="Commands\FilesCommand.cs" />
     <Compile Remove="Commands\GetCommand.cs" />
     <Compile Remove="Commands\Payload\JumpWinRMCommand.cs" />
@@ -67,7 +64,6 @@
 
   <ItemGroup>
     <Folder Include="Commands\Agent\LateralMovement\" />
-    <Folder Include="Commands\Composite\" />
   </ItemGroup>
 
   <ItemGroup>

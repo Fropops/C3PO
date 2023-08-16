@@ -1,4 +1,5 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,14 @@ namespace Agent.Commands
 {
     public class EchoCommand : AgentCommand
     {
-        public override string Name => "echo";
-
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Echo;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            context.Result.Result = task.Arguments;
+            task.ThrowIfParameterMissing(ParameterId.Parameters);
+
+            string message = task.GetParameter<string>(ParameterId.Parameters);
+
+            context.AppendResult(message);
         }
     }
 }

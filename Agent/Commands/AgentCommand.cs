@@ -16,7 +16,7 @@ namespace Agent.Commands
 {
     public class AgentCommandContext
     {
-        public AgentCommandContext ParentContext { get; set; }
+        public bool IsScripting { get; set; } = false;
 
         public Agent Agent { get; set; }
 
@@ -48,7 +48,7 @@ namespace Agent.Commands
             Result.Output = string.Empty;
         }
 
-            public void Error(string message, bool addEndLine = true)
+        public void Error(string message, bool addEndLine = true)
         {
             if (string.IsNullOrEmpty(this.Result.Error))
                 Result.Error = message;
@@ -75,6 +75,14 @@ namespace Agent.Commands
         public int? JobId { get; set; }
         public AgentCommandContext Context { get; set; }
 
+        bool IsScriptCommand
+        {
+            get
+            {
+                return this.Command == CommandId.Script;
+            }
+        }
+
         protected bool SendMetadataWithResult = false;
         public virtual CommandId Command { get; protected set; }
 
@@ -92,7 +100,7 @@ namespace Agent.Commands
                 Debug.WriteLine($"Executing {task.CommandId} ...");
 #endif
                 context.Result.Status = AgentResultStatus.Running;
-                if (context.ParentContext == null) //sending will be handled in the composite command
+                if (context.IsScripting && this.IsScriptCommand) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
                 await this.InnerExecute(task, context, token);
             }
@@ -109,15 +117,18 @@ namespace Agent.Commands
             }
             finally
             {
-                context.Result.Info = string.Empty;
-                if (!string.IsNullOrEmpty(context.Result.Error))
-                    context.Result.Status = AgentResultStatus.Error;
-                else
-                    context.Result.Status = AgentResultStatus.Completed;
-                if (context.ParentContext == null) //sending will be handled in the composite command
-                    await context.Agent.SendTaskResult(context.Result);
+                if (!context.IsScripting  || this.IsScriptCommand) //sending will be handled in the composite command
+                {
+                    context.Result.Info = string.Empty;
+                    if (!string.IsNullOrEmpty(context.Result.Error))
+                        context.Result.Status = AgentResultStatus.Error;
+                    else
+                        context.Result.Status = AgentResultStatus.Completed;
 
-                if(JobId.HasValue)
+                    await context.Agent.SendTaskResult(context.Result);
+                }
+
+                if (JobId.HasValue)
                     ServiceProvider.GetService<IJobService>().RemoveJob(JobId.Value);
 
                 if (context.Agent.TaskTokens.ContainsKey(task.Id))

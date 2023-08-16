@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Commander.Commands.Scripted;
 using Commander.Executor;
 using Common;
 using Common.Payload;
@@ -14,10 +15,9 @@ public class TestCommandOptions
 {
     public bool verbose { get; set; }
 }
-public class TestCommand : CompositeCommand<TestCommandOptions>
+public class TestCommand : ScriptCommand<TestCommandOptions>
 {
-
-    public override string Description => "UAC Bypass using FodHelper";
+    public override string Description => "testing scriptiing cmd";
     public override string Name => "test";
     public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
 
@@ -34,8 +34,21 @@ public class TestCommand : CompositeCommand<TestCommandOptions>
              new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
         };
 
-    protected override async Task<bool> CreateComposition(CommandContext<TestCommandOptions> context)
+    protected override void Run(ScriptingAgent<TestCommandOptions> agent, ScriptingCommander<TestCommandOptions> commander, ScriptingTeamServer<TestCommandOptions> teamServer, TestCommandOptions options, CommanderConfig config)
     {
+        int delay = 10;
+        for (int i = 0; i < 4; ++i)
+        {
+            agent.Echo($"[{i}]Waiting {delay}s to evade antivirus");
+            agent.Delay(delay);
+        }
+
+        agent.Echo($"[*] Execution done!");
+        agent.Echo(Environment.NewLine);
+    }
+
+    //protected override async Task<bool> CreateComposition(CommandContext<TestCommandOptions> context)
+    //{
         //var agent = context.Executor.CurrentAgent;
 
         //var endpoint = ConnexionUrl.FromString($"pipe://127.0.0.1:toto");
@@ -72,23 +85,23 @@ public class TestCommand : CompositeCommand<TestCommandOptions>
         //this.Dowload(fileName, fileId, path);
         //this.Delay(1);
 
-        this.Step($"Waiting {30}s to evade antivirus");
-        this.Delay(30);
+    //    this.Step($"Waiting {30}s to evade antivirus");
+    //    this.Delay(30);
 
-        this.Step($"Waiting {30}s to evade antivirus");
-        this.Delay(30);
+    //    this.Step($"Waiting {30}s to evade antivirus");
+    //    this.Delay(30);
 
-        this.Step($"Waiting {30}s to evade antivirus");
-        this.Delay(30);
+    //    this.Step($"Waiting {30}s to evade antivirus");
+    //    this.Delay(30);
 
-        this.Step($"Waiting {30}s to evade antivirus");
-        this.Delay(30);
+    //    this.Step($"Waiting {30}s to evade antivirus");
+    //    this.Delay(30);
 
 
-        this.Echo($"[*] Execution done!");
-        this.Echo(Environment.NewLine);
+    //    this.Echo($"[*] Execution done!");
+    //    this.Echo(Environment.NewLine);
 
-        return true;
-    }
+    //    return true;
+    //}
 }
 

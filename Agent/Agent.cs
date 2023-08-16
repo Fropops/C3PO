@@ -224,11 +224,15 @@ namespace Agent
         }
 
 
+        public AgentCommand GetCommand(AgentTask task)
+        {
+            return this._commands.FirstOrDefault(c => c.Command == task.CommandId);
+        }
+
         private async Task HandleTask(AgentTask task)
         {
             // get the command
-            var command = this._commands.FirstOrDefault(c => c.Command == task.CommandId);
-
+            var command = this.GetCommand(task);
 
             if (command is null)
             {
@@ -251,7 +255,6 @@ namespace Agent
             var clone = Activator.CreateInstance(command.GetType()) as AgentCommand;
             var ctxt = new AgentCommandContext()
             {
-                ParentContext = null,
                 Agent = this,
                 NetworkService = _networkService,
                 FileService = _fileService,
@@ -263,7 +266,7 @@ namespace Agent
             await clone.Execute(task, ctxt, CancellationToken.None);
         }
 
-        private void ExecuteTaskThreaded(AgentCommand command, AgentTask task)
+        public Thread ExecuteTaskThreaded(AgentCommand command, AgentTask task, AgentCommandContext specifiedContext = null)
         {
             // create a new token
             var tokenSource = new CancellationTokenSource();
@@ -287,13 +290,11 @@ namespace Agent
                         //{
                         // this blocks inside the thread
                         var clone = Activator.CreateInstance(command.GetType()) as AgentCommand;
-                        var ctxt = new AgentCommandContext()
+                        var ctxt = specifiedContext ?? new AgentCommandContext()
                         {
-                            ParentContext = null,
                             Agent = this,
                             NetworkService = _networkService,
                             FileService = _fileService,
-                            //ProxyService = _proxyService,
                             ConfigService = _configService,
                             Result = new AgentTaskResult(),
                             TokenSource = tokenSource,
@@ -327,6 +328,8 @@ namespace Agent
 
                     // run thread
                     thread.Start();
+
+                    return thread;
                 }
             }
         }

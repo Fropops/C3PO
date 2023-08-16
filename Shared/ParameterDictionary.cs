@@ -45,5 +45,15 @@ namespace Shared
             }
 
         }
+
+        public void AddParameter<T>(ParameterId id, T item)
+        {
+            this.Add(id, item.BinarySerializeAsync().Result);
+        }
+
+        public void AddParameter(ParameterId id, byte[] item)
+        {
+            this.Add(id, item);
+        }
     }
 }

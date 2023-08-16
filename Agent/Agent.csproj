@@ -144,6 +144,9 @@
     <Compile Include="Commands\Execution\InjectCommand.cs" />
     <Compile Include="Commands\Link\LinkCommand.cs" />
     <Compile Include="Commands\Core\ListProcessCommand.cs" />
+    <Compile Include="Commands\ScriptedCommand\ScriptedCommand.cs" />
+    <Compile Include="Commands\ScriptedCommand\DelayCommand.cs" />
+    <Compile Include="Commands\ScriptedCommand\EchoCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
     <Compile Include="Commands\Services\RportFwdCommand.cs" />
@@ -210,7 +213,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\ScriptedCommand\" />
     <Folder Include="Service\Pivoting\" />
     <Folder Include="Service\RunningService\" />
   </ItemGroup>

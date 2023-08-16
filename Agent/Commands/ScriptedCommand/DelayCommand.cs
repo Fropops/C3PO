@@ -1,4 +1,5 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +11,13 @@ namespace Agent.Commands
 {
     public class DelayCommand : AgentCommand
     {
-        public override string Name => "delay";
-
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Delay;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (task.SplittedArgs.Count() == 0)
-            {
-                context.Result.Result = $"Duration is mandatory";
-                return;
-            }
+            task.ThrowIfParameterMissing(ParameterId.Delay);
 
-            int delay = int.Parse(task.SplittedArgs[0]);
+            int delay = task.GetParameter<int>(ParameterId.Delay);
+
             Thread.Sleep(delay*1000);
         }
     }

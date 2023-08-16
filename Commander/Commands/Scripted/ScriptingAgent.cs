@@ -37,10 +37,10 @@ namespace Commander.Commands.Scripted
             task.Parameters.AddParameter(ParameterId.Parameters, message);
         }
 
-        public void Delay(int delaInSecondy)
+        public void Delay(int delayInSecond)
         {
             var task = this.RegisterTask(CommandId.Delay);
-            task.Parameters.AddParameter(ParameterId.Delay, delaInSecondy);
+            task.Parameters.AddParameter(ParameterId.Delay, delayInSecond);
         }
 
         public void Shell(string cmd)

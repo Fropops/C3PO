@@ -13,6 +13,11 @@ namespace Commander.Commands.Scripted
 
         private List<AgentTask> tasks;
 
+        public AgentMetadata Metadata
+        {
+            get { return this.context.Executor.CurrentAgent.Metadata; }
+        }
+
         public ScriptingAgent(CommandContext<T> ctxt, List<AgentTask> taskList)
         {
             context = ctxt;
@@ -67,6 +72,13 @@ namespace Commander.Commands.Scripted
             var task = this.RegisterTask(CommandId.Link);
             task.Parameters.AddParameter(ParameterId.Verb, CommandVerbs.Start);
             task.Parameters.AddParameter(ParameterId.Bind, url.ToString());
+        }
+
+        public void PsExec(string target, string path)
+        {
+            var task = this.RegisterTask(CommandId.PsExec);
+            task.Parameters.AddParameter(ParameterId.Path, path);
+            task.Parameters.AddParameter(ParameterId.Target, target);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace Commander.Commands.Agent
                 table.AddColumn(new TableColumn("Index").Centered());
                 table.AddColumn(new TableColumn("Id").LeftAligned());
                 table.AddColumn(new TableColumn("Command").LeftAligned());
-                table.AddColumn(new TableColumn("Info").LeftAligned());
+                //table.AddColumn(new TableColumn("Info").LeftAligned());
                 table.AddColumn(new TableColumn("Status").LeftAligned());
                 table.AddColumn(new TableColumn("Date").LeftAligned());
 
@@ -91,7 +91,7 @@ namespace Commander.Commands.Agent
                         task.Id,
                         task.Command ?? string.Empty,
                         //Arguments = task.Arguments,
-                        result == null ? string.Empty : result.Info ?? string.Empty,
+                        //result == null ? string.Empty : result.Info ?? string.Empty,
                         result == null ? AgentResultStatus.Queued.ToString() : result.Status.ToString(),
                         task.RequestDate.ToLocalTime().ToString()
                     );

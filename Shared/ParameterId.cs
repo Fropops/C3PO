@@ -24,5 +24,7 @@ namespace Shared
         Delay = 0x13,
         Jitter = 0x14,
         Port = 0x15,
+        Target = 0x16,
+        Service = 0x17,
     }
 }

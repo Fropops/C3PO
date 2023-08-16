@@ -38,9 +38,16 @@ namespace Commander.Commands.Agent
         {
         }
 
+        protected virtual async Task<bool> Body(CommandContext<T> context)
+        {
+            return true;
+        }
+
         protected override async Task<bool> HandleCommand(CommandContext<T> context)
         {
             if (!await this.CheckParams(context))
+                return false;
+            if (!await this.Body(context))
                 return false;
             this.SpecifyParameters(context);
             await this.CallEndPointCommand(context);

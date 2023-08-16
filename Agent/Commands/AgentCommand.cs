@@ -100,7 +100,7 @@ namespace Agent.Commands
                 Debug.WriteLine($"Executing {task.CommandId} ...");
 #endif
                 context.Result.Status = AgentResultStatus.Running;
-                if (context.IsScripting && this.IsScriptCommand) //sending will be handled in the composite command
+                if (!context.IsScripting  || this.IsScriptCommand) //sending will be handled in the composite command
                     await context.Agent.SendTaskResult(context.Result);
                 await this.InnerExecute(task, context, token);
             }

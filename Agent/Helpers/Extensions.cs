@@ -7,11 +7,22 @@ using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Net.Sockets;
 using System.Diagnostics;
+using System.Security;
 
 namespace Agent
 {
     public static class Extensions
     {
+        public static SecureString ToSecureString(this string value)
+        {
+            var secure = new SecureString();
+
+            foreach (var c in value)
+                secure.AppendChar(c);
+
+            return secure;
+        }
+
         public static string[] GetArgs(this string src)
         {
             if(src == null)

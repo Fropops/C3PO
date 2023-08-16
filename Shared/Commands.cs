@@ -48,5 +48,8 @@ namespace Shared
         Delay = 0x27,
         Echo = 0x28,
 
+        Winrm = 0x29,
+        PsExec = 0x30,
+
     }
 }   

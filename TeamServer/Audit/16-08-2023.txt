@@ -68,3 +68,111 @@
 16/08/2023 05:38:26 | Info | User | Fropops-85eb274f-9be2-414b-9518-4a6ec5242f6d | ce6418b9b8 | Command tasked to agent : Link
 16/08/2023 05:42:10 | Info | User | Fropops-85eb274f-9be2-414b-9518-4a6ec5242f6d | 51e5157d34 | Command tasked to agent : Exit
 16/08/2023 05:43:24 | Info | User | Fropops-85eb274f-9be2-414b-9518-4a6ec5242f6d | ce6418b9b8 | Command tasked to agent : Link
+16/08/2023 07:38:38 | Info | User | Fropops-85eb274f-9be2-414b-9518-4a6ec5242f6d |  | Exit TeamServer
+16/08/2023 07:38:59 | Info | User | Fropops-0507eb42-d787-4632-8daf-94c6297b0cfa |  | Connexion to TeamServer
+16/08/2023 07:39:00 | Info | User | Fropops-0507eb42-d787-4632-8daf-94c6297b0cfa |  | Connexion to TeamServer
+16/08/2023 07:40:06 | Info | User | Fropops-0507eb42-d787-4632-8daf-94c6297b0cfa | ebfedef96a | Command tasked to agent : Script
+16/08/2023 07:41:10 | Info | User | Fropops-0507eb42-d787-4632-8daf-94c6297b0cfa | ebfedef96a | Command tasked to agent : Link
+16/08/2023 07:45:53 | Info | User | Fropops-0507eb42-d787-4632-8daf-94c6297b0cfa |  | Exit TeamServer
+16/08/2023 07:46:12 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b |  | Connexion to TeamServer
+16/08/2023 07:46:14 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b |  | Connexion to TeamServer
+16/08/2023 07:47:13 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | ebfedef96a | Command tasked to agent : Link
+16/08/2023 07:47:26 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | ebfedef96a | Command tasked to agent : Link
+16/08/2023 07:47:52 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | ce6418b9b8 | Command tasked to agent : Link
+16/08/2023 09:19:29 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b |  | Web hosting a - Payload PowerShell x64 https://192.168.56.129:443
+16/08/2023 09:21:04 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | f60a751fae | Command tasked to agent : Script
+16/08/2023 09:22:07 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | f60a751fae | Command tasked to agent : Link
+16/08/2023 09:22:24 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | f60a751fae | Command tasked to agent : Link
+16/08/2023 09:23:05 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | f60a751fae | Command tasked to agent : Link
+16/08/2023 09:24:30 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | f60a751fae | Command tasked to agent : Script
+16/08/2023 09:25:57 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 09:26:51 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | 324e2b69ad | Command tasked to agent : ListProcess
+16/08/2023 09:27:09 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | fcc5a72940 | Command tasked to agent : ListProcess
+16/08/2023 09:28:15 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | fcc5a72940 | Command tasked to agent : StealToken
+16/08/2023 09:28:56 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | fcc5a72940 | Command tasked to agent : StealToken
+16/08/2023 09:29:12 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | 324e2b69ad | Command tasked to agent : ListProcess
+16/08/2023 09:29:44 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | 324e2b69ad | Command tasked to agent : StealToken
+16/08/2023 09:30:09 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b | 324e2b69ad | Command tasked to agent : StealToken
+16/08/2023 09:30:58 | Info | User | Fropops-03daf01f-23bb-4201-8f4b-6791c0d1f29b |  | Exit TeamServer
+16/08/2023 09:31:38 | Info | User | Fropops-943139a4-2d35-432f-8678-b56ce4553283 |  | Connexion to TeamServer
+16/08/2023 09:31:39 | Info | User | Fropops-943139a4-2d35-432f-8678-b56ce4553283 |  | Connexion to TeamServer
+16/08/2023 09:33:14 | Info | User | Fropops-943139a4-2d35-432f-8678-b56ce4553283 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:33:41 | Info | User | Fropops-943139a4-2d35-432f-8678-b56ce4553283 | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 09:34:52 | Info | User | Fropops-943139a4-2d35-432f-8678-b56ce4553283 |  | Exit TeamServer
+16/08/2023 09:35:11 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 |  | Connexion to TeamServer
+16/08/2023 09:35:12 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 |  | Connexion to TeamServer
+16/08/2023 09:36:36 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:36:53 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 09:37:28 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:37:36 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:37:48 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:38:31 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 09:39:23 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 09:39:54 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 09:41:20 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:41:32 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:42:08 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 09:43:01 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 09:47:54 | Info | User | Fropops-15e0a11d-7f70-403b-adc5-206cb25d2775 |  | Exit TeamServer
+16/08/2023 09:48:20 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 |  | Connexion to TeamServer
+16/08/2023 09:48:21 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 |  | Connexion to TeamServer
+16/08/2023 09:48:58 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 09:50:07 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Shell
+16/08/2023 09:50:24 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Cd
+16/08/2023 09:50:28 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Cd
+16/08/2023 09:50:33 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Ls
+16/08/2023 09:51:04 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Shell
+16/08/2023 09:51:22 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Shell
+16/08/2023 09:51:28 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Ls
+16/08/2023 09:53:29 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 | 705e7f5a7a | Command tasked to agent : Exit
+16/08/2023 09:53:38 | Info | User | Fropops-30a68392-2c94-402e-b26c-fe0ebf0d9818 |  | Exit TeamServer
+16/08/2023 09:53:47 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 |  | Connexion to TeamServer
+16/08/2023 09:53:48 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 |  | Connexion to TeamServer
+16/08/2023 09:54:24 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 09:55:21 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | 324e2b69ad | Command tasked to agent : Ls
+16/08/2023 09:56:08 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | 324e2b69ad | Command tasked to agent : Shell
+16/08/2023 09:56:37 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | d4f6715bb7 | Command tasked to agent : Cd
+16/08/2023 09:56:44 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | d4f6715bb7 | Command tasked to agent : Ls
+16/08/2023 09:56:52 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | d4f6715bb7 | Command tasked to agent : Shell
+16/08/2023 09:57:34 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | d4f6715bb7 | Command tasked to agent : Exit
+16/08/2023 09:59:08 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | 324e2b69ad | Command tasked to agent : Script
+16/08/2023 10:00:42 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | c584fd1951 | Command tasked to agent : Cd
+16/08/2023 10:00:43 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | c584fd1951 | Command tasked to agent : Ls
+16/08/2023 10:01:45 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 | c584fd1951 | Command tasked to agent : ForkAndRun
+16/08/2023 10:16:52 | Info | User | Fropops-4a5df81a-f684-4259-b1e2-7a559c921d36 |  | Exit TeamServer
+16/08/2023 10:17:05 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba |  | Connexion to TeamServer
+16/08/2023 10:17:06 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba |  | Connexion to TeamServer
+16/08/2023 10:18:42 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:18:55 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:19:03 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:19:14 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:19:24 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:19:41 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:19:54 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:20:01 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:20:10 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:28:49 | Info | User | Fropops-0b97f399-e296-41c5-8025-57280e5d00ba |  | Exit TeamServer
+16/08/2023 10:29:08 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 |  | Connexion to TeamServer
+16/08/2023 10:29:09 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 |  | Connexion to TeamServer
+16/08/2023 10:29:50 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:30:33 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 | 324e2b69ad | Command tasked to agent : Shell
+16/08/2023 10:31:16 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 10:31:26 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 | 324e2b69ad | Command tasked to agent : Shell
+16/08/2023 10:38:07 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 | a1d2988f5b | Command tasked to agent : Exit
+16/08/2023 10:38:23 | Info | User | Fropops-c0500b93-e9e4-4f9c-b341-db4ff93cd538 |  | Exit TeamServer
+16/08/2023 10:38:39 | Info | User | Fropops-4320732d-dc00-422b-83d4-c7228fa7c7ec |  | Connexion to TeamServer
+16/08/2023 10:38:40 | Info | User | Fropops-4320732d-dc00-422b-83d4-c7228fa7c7ec |  | Connexion to TeamServer
+16/08/2023 10:39:52 | Info | User | Fropops-d288922c-6847-4033-b892-b02f0dbcc03b |  | Connexion to TeamServer
+16/08/2023 10:39:53 | Info | User | Fropops-d288922c-6847-4033-b892-b02f0dbcc03b |  | Connexion to TeamServer
+16/08/2023 10:41:03 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 |  | Connexion to TeamServer
+16/08/2023 10:41:05 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 |  | Connexion to TeamServer
+16/08/2023 10:41:50 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:42:54 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 10:43:05 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 01e671222f | Command tasked to agent : Exit
+16/08/2023 10:43:29 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:44:04 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 10:44:17 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 10:46:16 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:48:10 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 10:49:35 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : 41
+16/08/2023 10:49:50 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link

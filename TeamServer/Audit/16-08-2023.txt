@@ -176,3 +176,20 @@
 16/08/2023 10:48:10 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link
 16/08/2023 10:49:35 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : 41
 16/08/2023 10:49:50 | Info | User | Fropops-36c2c59b-e52e-4617-ba5e-8c2958bd7e61 | 324e2b69ad | Command tasked to agent : Link
+16/08/2023 10:52:41 | Info | User | Fropops-6014a539-137a-47cd-a5e8-89089651a1f9 |  | Connexion to TeamServer
+16/08/2023 10:52:42 | Info | User | Fropops-6014a539-137a-47cd-a5e8-89089651a1f9 |  | Connexion to TeamServer
+16/08/2023 10:52:49 | Info | User | Fropops-6014a539-137a-47cd-a5e8-89089651a1f9 | f60a751fae | Command tasked to agent : CheckIn
+16/08/2023 10:53:50 | Info | User | Fropops-5703145d-d9d1-4ea1-b737-92117b52bf05 |  | Connexion to TeamServer
+16/08/2023 10:53:51 | Info | User | Fropops-5703145d-d9d1-4ea1-b737-92117b52bf05 |  | Connexion to TeamServer
+16/08/2023 10:54:14 | Info | User | Fropops-5703145d-d9d1-4ea1-b737-92117b52bf05 |  | Exit TeamServer
+16/08/2023 10:54:21 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a |  | Connexion to TeamServer
+16/08/2023 10:54:21 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a |  | Connexion to TeamServer
+16/08/2023 10:55:50 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a | f60a751fae | Command tasked to agent : CheckIn
+16/08/2023 10:56:06 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a | f60a751fae | Command tasked to agent : Link
+16/08/2023 10:58:04 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a | f60a751fae | Command tasked to agent : Link
+16/08/2023 10:58:11 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a | f60a751fae | Command tasked to agent : Link
+16/08/2023 10:58:27 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a | 1f455022ea | Command tasked to agent : CheckIn
+16/08/2023 10:58:30 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a | fcc5a72940 | Command tasked to agent : CheckIn
+16/08/2023 11:02:15 | Info | User | Fropops-094621f4-677f-4d01-9273-ea6590e77a2a |  | Exit TeamServer
+16/08/2023 11:02:31 | Info | User | Fropops-02fac2ee-9b34-4c31-8e1f-f1e2a0767acb |  | Connexion to TeamServer
+16/08/2023 11:02:32 | Info | User | Fropops-02fac2ee-9b34-4c31-8e1f-f1e2a0767acb |  | Connexion to TeamServer

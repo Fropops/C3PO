@@ -152,6 +152,14 @@ namespace Shared
             }
             return string.Empty;
         }
+
+        public bool IsLoopBack
+        {
+            get
+            {
+                return this.Address == "127.0.0.1" || this.Address.Equals("localhost", StringComparison.OrdinalIgnoreCase);
+            }
+        }
     }
 
     public enum ConnexionType

@@ -36,7 +36,7 @@ namespace Agent.Commands
                 return;
             }
 
-            if (connexion.Protocol != ConnexionType.ReverseNamedPipe)
+            if (connexion.Protocol != ConnexionType.ReverseNamedPipe && connexion.Protocol != ConnexionType.ReverseTcp)
             {
                 context.Error($"{connexion.Protocol} is not a valid link protocol");
                 return;
@@ -45,7 +45,7 @@ namespace Agent.Commands
             //connexion.Protocol = ConnexionType.ReverseNamedPipe;
 
             bool started = false;
-            var commModule = new PipeCommModule(connexion);
+            var commModule = CommunicationFactory.CreateCommunicator(connexion) as P2PCommunicator;
             try
             {
                 started = await context.Agent.AddChildCommModule(task.Id, commModule);
@@ -74,7 +74,7 @@ namespace Agent.Commands
                 return;
             }
 
-            if (connexion.Protocol != ConnexionType.ReverseNamedPipe)
+            if (connexion.Protocol != ConnexionType.ReverseNamedPipe && connexion.Protocol != ConnexionType.ReverseTcp)
             {
                 context.Error($"{connexion.Protocol} is not a valid link protocol");
                 return;

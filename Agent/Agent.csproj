@@ -164,6 +164,7 @@
     <Compile Include="Commands\Core\CheckinCommand.cs" />
     <Compile Include="Communication\Communicator.cs" />
     <Compile Include="Communication\P2PCommunicator.cs" />
+    <Compile Include="Communication\TcpCommModule.cs" />
     <Compile Include="Communication\PipeCommModule.cs" />
     <Compile Include="Helpers\HttpExtensions.cs" />
     <Compile Include="Helpers\PipeExtensions.cs" />

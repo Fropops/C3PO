@@ -19,9 +19,11 @@ namespace Agent.Communication
             {
                 case ConnexionType.Http:
                     return new HttpCommmunicator(conn);
-                //case ConnexionType.Tcp:
-                //    return new TcpCommModule(conn);
+                case ConnexionType.Tcp:
+                    case ConnexionType.ReverseTcp:
+                    return new TcpCommModule(conn);
                 case ConnexionType.NamedPipe:
+                case ConnexionType.ReverseNamedPipe:
                     return new PipeCommModule(conn);
             }
             return null;

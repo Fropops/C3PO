@@ -131,7 +131,7 @@ namespace TeamServer.Forwarding
 
     public sealed class SocksProxy
     {
-        private bool _log = true;
+        private bool _log = false;
         public string AgentId { get; set; }
         public int BindPort { get; set; }
 

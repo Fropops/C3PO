@@ -70,3 +70,9 @@
 17/08/2023 04:13:22 | Info | User | Fropops-5c7bd3b4-bda0-45cd-9f7e-729922886cb8 | 678889c05e | Command tasked to agent : RportFwd
 17/08/2023 04:13:27 | Info | User | Fropops-5c7bd3b4-bda0-45cd-9f7e-729922886cb8 | 678889c05e | Command tasked to agent : Sleep
 17/08/2023 04:13:47 | Info | User | Fropops-5c7bd3b4-bda0-45cd-9f7e-729922886cb8 | 41a2e1ceab | Command tasked to agent : Shell
+17/08/2023 11:07:32 | Info | User | Fropops-6297d9a7-9164-4b7f-97b0-deb88a1ecafb |  | Connexion to TeamServer
+17/08/2023 11:07:33 | Info | User | Fropops-6297d9a7-9164-4b7f-97b0-deb88a1ecafb |  | Connexion to TeamServer
+17/08/2023 11:07:41 | Info | User | Fropops-6297d9a7-9164-4b7f-97b0-deb88a1ecafb | 9ca7e1db09 | Command tasked to agent : KeyLog
+17/08/2023 11:07:53 | Info | User | Fropops-6297d9a7-9164-4b7f-97b0-deb88a1ecafb | 9ca7e1db09 | Command tasked to agent : KeyLog
+17/08/2023 11:08:04 | Info | User | Fropops-6297d9a7-9164-4b7f-97b0-deb88a1ecafb | 9ca7e1db09 | Command tasked to agent : KeyLog
+17/08/2023 11:08:20 | Info | User | Fropops-6297d9a7-9164-4b7f-97b0-deb88a1ecafb | 9ca7e1db09 | Command tasked to agent : KeyLog

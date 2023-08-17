@@ -51,5 +51,7 @@ namespace Shared
         Winrm = 0x29,
         PsExec = 0x30,
 
+        KeyLog = 0x31,
+
     }
 }   

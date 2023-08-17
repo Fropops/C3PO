@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Shared;
 using System.CommandLine;
+using Commander.Helper;
 
 namespace Commander.Commands.Agent.EndPoint
 {
@@ -18,7 +19,7 @@ namespace Commander.Commands.Agent.EndPoint
 
         public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("verb", () => "show", "show | start | stop").FromAmong("show", "start", "stop"),
+                 new Argument<string>("verb", () =>CommandVerbs.Show.Command()).FromAmong(CommandVerbs.Show.Command(), CommandVerbs.Start.Command(), CommandVerbs.Stop.Command()),
                  new Option<string>(new[] { "--bindto", "-b" }, () => null, "Endpoint To bind to"),
             };
 

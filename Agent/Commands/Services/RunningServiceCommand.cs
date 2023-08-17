@@ -14,13 +14,13 @@ namespace Agent.Commands.Services
         public RunningServiceCommand() : base()
         {
             Service = ServiceProvider.GetService<T>();
-            this.Register(ServiceVerb.Start, this.Start);
-            this.Register(ServiceVerb.Stop, this.Stop);
+            this.Register(CommandVerbs.Start, this.Start);
+            this.Register(CommandVerbs.Stop, this.Stop);
         }
        
-        protected abstract void Start(AgentTask task, AgentCommandContext context);
+        protected abstract Task Start(AgentTask task, AgentCommandContext context);
 
-        protected abstract void Stop(AgentTask task, AgentCommandContext context);
+        protected abstract Task Stop(AgentTask task, AgentCommandContext context);
 
 
     }

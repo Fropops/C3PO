@@ -278,7 +278,7 @@ namespace Agent.Service
                     }
                 }
 
-                //lopp until exception
+                //loop until exception
                 client.Socket.BeginReceive(
                     client.Buffer,
                     0,

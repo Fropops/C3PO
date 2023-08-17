@@ -228,7 +228,7 @@ namespace Agent.Service
 
                 //Connect
                 var packet = new ReversePortForwardPacket(client.Id, ReversePortForwardPacket.PacketType.CONNECT, await server.Destination.BinarySerializeAsync());
-                var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.Socks, packet);
+                var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.ReversePortForward, packet);
                 await client.Agent.SendFrame(f);
 
 #if DEBUG
@@ -261,33 +261,31 @@ namespace Agent.Service
             try
             {
                 var received = client.Socket.EndReceive(ar);
-                if (received == 0) return;
-
-
+                if (received != 0)
+                {
 #if DEBUG
-                Debug.WriteLine($"RPORTForward Client Data : {client.Id}");
+                    Debug.WriteLine($"RPORTForward Client Data : {client.Id}");
 #endif
-                // write received into stream
-                client.WriteDataToStream(received);
+                    // write received into stream
+                    client.WriteDataToStream(received);
 
-                // need to read more?
-                if (received >= ReversePortForwardClient.BufferSize)
-                {
-                    client.Socket.BeginReceive(
-                        client.Buffer,
-                        0,
-                        ReversePortForwardClient.BufferSize,
-                        SocketFlags.None,
-                        ClientReceiveCallback,
-                        client);
+                    if (received < ReversePortForwardClient.BufferSize)
+                    {
+                        // send data to TS
+                        var packet = new ReversePortForwardPacket(client.Id, ReversePortForwardPacket.PacketType.DATA, client.GetStreamData());
+                        var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.ReversePortForward, packet);
+                        await client.Agent.SendFrame(f);
+                    }
                 }
-                else
-                {
-                    // send data to TS
-                    var packet = new ReversePortForwardPacket(client.Id, ReversePortForwardPacket.PacketType.DATA, client.GetStreamData());
-                    var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.Socks, packet);
-                    await client.Agent.SendFrame(f);
-                }
+
+                //lopp until exception
+                client.Socket.BeginReceive(
+                    client.Buffer,
+                    0,
+                    ReversePortForwardClient.BufferSize,
+                    SocketFlags.None,
+                    ClientReceiveCallback,
+                    client);
             }
             catch (ObjectDisposedException ex)
             {
@@ -295,7 +293,7 @@ namespace Agent.Service
                 Debug.WriteLine($"RPORTForward Error : {ex}");
 #endif
                 var packet = new ReversePortForwardPacket() { Id = client.Id, Type = ReversePortForwardPacket.PacketType.DISCONNECT };
-                var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.Socks, packet);
+                var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.ReversePortForward, packet);
                 await client.Agent.SendFrame(f);
             }
         }
@@ -324,7 +322,7 @@ namespace Agent.Service
                 catch { }
 
                 var packet = new ReversePortForwardPacket() { Id = client.Id, Type = ReversePortForwardPacket.PacketType.DISCONNECT };
-                var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.Socks, packet);
+                var f = this._frameService.CreateFrame(client.Agent.MetaData.Id, NetFrameType.ReversePortForward, packet);
                 await client.Agent.SendFrame(f);
             }
 

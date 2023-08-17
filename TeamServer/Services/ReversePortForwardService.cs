@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using BinarySerializer;
 using Shared;
 using TeamServer.Forwarding;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TeamServer.Services
 {

@@ -14,6 +14,7 @@ using Shared;
 using BinarySerializer;
 using System.Threading;
 using System.IO;
+using System.Net.NetworkInformation;
 
 namespace Agent.Service
 {
@@ -60,7 +61,7 @@ namespace Agent.Service
 
         public bool IsConnected()
         {
-            return this._tcp.Connected;
+            return _tcp.IsAlive();
         }
 
         public async Task<byte[]> ReadStream()
@@ -268,6 +269,5 @@ namespace Agent.Service
             client.Disconnect();
             _socksClients.Remove(id);
         }
-      
     }
 }

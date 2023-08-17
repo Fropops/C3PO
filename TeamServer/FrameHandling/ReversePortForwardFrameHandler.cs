@@ -8,7 +8,7 @@ namespace TeamServer.FrameHandling;
 
 public class ReversePortForwardFrameHandler : FrameHandler
 {
-    public override NetFrameType FrameType { get => NetFrameType.Socks; }
+    public override NetFrameType FrameType { get => NetFrameType.ReversePortForward; }
     public override async Task ProcessFrame(NetFrame frame, string relay)
     {
         var packet = await this.ExtractFrameData<ReversePortForwardPacket>(frame);

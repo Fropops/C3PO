@@ -65,7 +65,7 @@ namespace TeamServer.Forwarding
 
         public bool IsConnected()
         {
-            return this._tcp.Connected;
+            return this._tcp.IsAlive();
         }
 
         public async Task<byte[]> ReadStream()
@@ -131,7 +131,7 @@ namespace TeamServer.Forwarding
 
     public sealed class SocksProxy
     {
-        private bool _log = false;
+        private bool _log = true;
         public string AgentId { get; set; }
         public int BindPort { get; set; }
 
@@ -253,8 +253,9 @@ namespace TeamServer.Forwarding
             try
             {
                 // drop into a loop
-                while (!_tokenSource.IsCancellationRequested)
+                while (!_tokenSource.IsCancellationRequested && client.IsConnected())
                 {
+
                     // if client has data
                     if (client.DataAvailable())
                     {
@@ -292,11 +293,13 @@ namespace TeamServer.Forwarding
             }
             catch (Exception e)
             {
-                packet = new Socks4Packet(client.Id, Socks4Packet.PacketType.DISCONNECT);
-                _frameService.CacheFrame(AgentId, NetFrameType.Socks, packet);
-
                 if (this._log)
                     Logger.Log($"SOCKS [{client.Id}] : Disconnect from exception {e}.");
+            }
+            finally
+            {
+                packet = new Socks4Packet(client.Id, Socks4Packet.PacketType.DISCONNECT);
+                _frameService.CacheFrame(AgentId, NetFrameType.Socks, packet);
                 _socksClients.Remove(client.Id);
                 client.Dispose();
             }

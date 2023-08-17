@@ -120,7 +120,7 @@ namespace Agent.Models
                     //#if DEBUG
                     //                    Debug.WriteLine($"Tcp : Read Loop");
                     //#endif
-                    if (!IsAlive(_client))
+                    if (!_client.IsAlive())
                         throw new Exception();
 
                     if (_client.DataAvailable())
@@ -261,24 +261,6 @@ namespace Agent.Models
                 return ms.ToArray();
             }
         }
-
-
-        public static bool IsAlive(TcpClient client)
-        {
-            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] tcpConnections = ipProperties.GetActiveTcpConnections().Where(x => x.LocalEndPoint.Equals(client.Client.LocalEndPoint) && x.RemoteEndPoint.Equals(client.Client.RemoteEndPoint)).ToArray();
-            if (tcpConnections != null && tcpConnections.Length > 0)
-            {
-                TcpState stateOfConnection = tcpConnections.First().State;
-                if (stateOfConnection == TcpState.Established)
-                {
-                    return true;
-                    // Connection is OK
-                }
-            }
-            return false;
-        }
-
 
     }
 }

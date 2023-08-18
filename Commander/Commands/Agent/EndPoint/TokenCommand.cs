@@ -68,7 +68,7 @@ public class MakeTokenCommand : EndPointCommand<MakeTokenCommandOptions>
         var username = split[1];
         context.AddParameter(ParameterId.User, username);
         context.AddParameter(ParameterId.Domain, domain);
-        context.AddParameter(ParameterId.Id, context.Options.password);
+        context.AddParameter(ParameterId.Password, context.Options.password);
     }
 }
 

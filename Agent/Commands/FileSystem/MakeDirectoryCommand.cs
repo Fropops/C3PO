@@ -1,44 +1,28 @@
 ﻿using Agent.Models;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Agent.Commands
 {
     public class MakeDirectoryCommand : AgentCommand
     {
-        public override string Name => "mkdir";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.MkDir;
+
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            string path;
-            if (task.SplittedArgs.Length != 1 || task.SplittedArgs.Length != 2)
-            {
-                context.Result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
-                return;
-            }
+            task.ThrowIfParameterMissing(ParameterId.Path);
+            var path = task.GetParameter<string>(ParameterId.Path);
 
-            path = task.SplittedArgs[0];
-            bool recurse = false;
-            if (task.SplittedArgs.Length > 1)
-                if (!bool.TryParse(task.SplittedArgs[1], out recurse))
-                {
-                    context.Result.Result = $"Usage : {this.Name} folder_to_create [recurse (true|false)]";
-                    return;
-                }
 
-            Directory.Delete(path, recurse);
-            if (!Directory.Exists(path))
-            {
-                context.Result.Result = $"{path} deleted";
-                return;
-            }
-
-            context.Result.Result = $"Failed to delete {path}";
+            var dirInfo = Directory.CreateDirectory(path);
+            context.AppendResult($"Folder {dirInfo.FullName} created");
         }
-
-
     }
+
 }

@@ -63,7 +63,4 @@ namespace Commander.Commands.Agent
             return cmdRes;
         }
     }
-
-
-
 }

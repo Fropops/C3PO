@@ -80,5 +80,30 @@ namespace Commander.Commands.Scripted
             task.Parameters.AddParameter(ParameterId.Path, path);
             task.Parameters.AddParameter(ParameterId.Target, target);
         }
+
+        public void RegistryAdd(string path, string key, string value)
+        {
+            var task = this.RegisterTask(CommandId.Reg);
+            task.Parameters.AddParameter(ParameterId.Verb, CommandVerbs.Add);
+            task.Parameters.AddParameter(ParameterId.Path, path);
+            task.Parameters.AddParameter(ParameterId.Key, key);
+            task.Parameters.AddParameter(ParameterId.Value, value);
+        }
+
+        public void RegistryRemove(string path, string key)
+        {
+            var task = this.RegisterTask(CommandId.Reg);
+            task.Parameters.AddParameter(ParameterId.Verb, CommandVerbs.Remove);
+            task.Parameters.AddParameter(ParameterId.Path, path);
+            task.Parameters.AddParameter(ParameterId.Key, key);
+        }
+
+        public void DeleteFile(string path)
+        {
+            var task = this.RegisterTask(CommandId.Del);
+            task.Parameters.AddParameter(ParameterId.Path, path);
+        }
+
+        
     }
 }

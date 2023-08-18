@@ -26,5 +26,8 @@ namespace Shared
         Port = 0x15,
         Target = 0x16,
         Service = 0x17,
+        Recursive = 0x18,
+        Key = 0x19,
+        Value = 0x20,
     }
 }

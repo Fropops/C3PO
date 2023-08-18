@@ -104,7 +104,7 @@ namespace Commander.Commands.Composite
             {
                 agent.Echo($"Removing service");
                 agent.Shell($"sc delete {options.service}");
-                agent.Echo($"[!] Don't forget to remove service binary after use! : shell del {path}");
+                agent.Echo($"[!] Don't forget to remove service binary after use! : del {path}");
             }
             else
             {
@@ -113,7 +113,7 @@ namespace Commander.Commands.Composite
                 agent.Echo($"Removing service");
                 agent.Shell($"sc delete {options.service}");
                 agent.Echo($"Removing injector {path}");
-                agent.Shell($"del {path}");
+                agent.DeleteFile(path);
             }
 
             agent.Echo($"[*] Execution done!");

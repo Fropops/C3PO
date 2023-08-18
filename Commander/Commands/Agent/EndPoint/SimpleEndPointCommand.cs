@@ -21,7 +21,8 @@ namespace Commander.Commands.Agent.EndPoint
         protected void CallEndPointCommand(CommandContext context)
         {
             var agent = context.Executor.CurrentAgent;
-            this.CheckParams(context);
+            if (!this.CheckParams(context))
+                return;
             this.SpecifyParameters(context);
             context.CommModule.TaskAgent(context.CommandLabel, agent.Id, this.CommandId, context.Parameters);
 

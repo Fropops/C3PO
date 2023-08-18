@@ -21,7 +21,6 @@
   <ItemGroup>
     <Compile Remove="Commands\Agent\AgentWebHostCommand.cs" />
     <Compile Remove="Commands\Agent\CaptureCommand.cs" />
-    <Compile Remove="Commands\Agent\EndPoint\CaptureCommand.cs" />
     <Compile Remove="Commands\Agent\EndPoint\EndPointCommand-Simple.cs" />
     <Compile Remove="Commands\Agent\KillAgentCommand.cs" />
     <Compile Remove="Commands\Agent\PathCommand.cs" />

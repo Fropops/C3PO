@@ -52,6 +52,16 @@ namespace Shared
         PsExec = 0x30,
 
         KeyLog = 0x31,
+        Run = 0x32,
+        Start = 0x33,
+        StartAs = 0x34,
+
+        RmDir = 0x35,
+        MkDir = 0x36,
+        Del = 0x37,
+        Reg = 0x38,
+
+        Capture = 0x39
 
     }
 }   

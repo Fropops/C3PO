@@ -18,5 +18,6 @@ namespace Shared
         Script = 0x08,
         Clear = 0x09,
         Get = 0x10,
+        Add = 0x11,
     }
 }

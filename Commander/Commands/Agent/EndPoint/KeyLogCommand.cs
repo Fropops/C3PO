@@ -7,7 +7,6 @@ namespace Commander.Commands.Agent.EndPoint
 {
     public class KeyLogCommandOptions : VerbAwareCommandOptions
     {
-        public string bindto { get; set; }
     }
     public class KeyLogCommand : VerbAwareCommand<KeyLogCommandOptions>
     {

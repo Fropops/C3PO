@@ -76,6 +76,6 @@ public class MakeTokenCommand : EndPointCommand<MakeTokenCommandOptions>
 public class Rev2SelfCommand : SimpleEndPointCommand
 {
     public override string Description => "Remove Token Impersonation";
-    public override string Name => "rervert-self";
+    public override string Name => "rervet-self";
     public override CommandId CommandId => CommandId.RevertSelf;
 }

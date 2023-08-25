@@ -21,7 +21,7 @@ namespace Commands
         public override CommandId Command => CommandId.RevertSelf;
         public override async Task InnerExecute(AgentTask task, AgentCommandContext context, CancellationToken token)
         {
-            if (context.Agent.ImpersonationToken != IntPtr.Zero)
+            if (context.Agent.ImpersonationToken == IntPtr.Zero)
             {
                 context.Error($"No impersonation to revert");
                 return;

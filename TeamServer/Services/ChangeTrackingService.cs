@@ -20,7 +20,7 @@ public class ChangeTrackingService : IChangeTrackingService
         foreach (var session in this.TrackedChanges.Keys)
         {
             var change = new Change(element, id);
-            if (!TrackedChanges[session].Any(c => c.Element == change.Element && c.Id == id))
+            if (!TrackedChanges[session].ToList().Any(c => c.Element == change.Element && c.Id == id))
                 this.TrackedChanges[session].Add(change);
         }
     }

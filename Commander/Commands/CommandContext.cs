@@ -53,6 +53,13 @@ namespace Commander.Commands
             if (agent.Metadata == null)
                 return null;
 
+            if(agent.Metadata.SleepInterval == 0)
+            {
+                if (agent.LastSeen.AddSeconds(1) >= DateTime.UtcNow)
+                    return true;
+                return false;
+            }
+
             int delta = 0;
             if (!string.IsNullOrEmpty(agent.RelayId))
             {

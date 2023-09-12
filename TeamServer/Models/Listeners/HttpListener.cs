@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -69,6 +70,8 @@ namespace TeamServer.Models
                                 listenOptions.UseHttps("certs/ts.pfx", "teamserver");
                             }
                         });
+                        options.Limits.MinRequestBodyDataRate =
+                         new MinDataRate(bytesPerSecond: 100, gracePeriod: TimeSpan.FromSeconds(20));
                     });
                 });
             var host = hostBuilder.Build();

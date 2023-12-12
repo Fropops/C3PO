@@ -1,0 +1,6 @@
+19/09/2023 10:38:07 | Info | User | Fropops-a31c87bc-8fe9-4fb1-8acc-eac07e1fa840 |  | Connexion to TeamServer
+19/09/2023 10:38:08 | Info | User | Fropops-a31c87bc-8fe9-4fb1-8acc-eac07e1fa840 |  | Connexion to TeamServer
+19/09/2023 11:27:23 | Info | User | Fropops-e6d69fc0-5eac-42be-9bad-3009556c5651 |  | Connexion to TeamServer
+19/09/2023 11:27:24 | Info | User | Fropops-e6d69fc0-5eac-42be-9bad-3009556c5651 |  | Connexion to TeamServer
+19/09/2023 18:03:12 | Info | User | Fropops-8a0e2241-af09-4a40-b129-d5bd86f82313 |  | Connexion to TeamServer
+19/09/2023 18:03:13 | Info | User | Fropops-8a0e2241-af09-4a40-b129-d5bd86f82313 |  | Connexion to TeamServer

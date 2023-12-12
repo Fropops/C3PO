@@ -1,0 +1,13 @@
+04/10/2023 02:46:49 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde |  | Connexion to TeamServer
+04/10/2023 02:46:50 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde |  | Connexion to TeamServer
+04/10/2023 02:54:47 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | OEN40GPTSN | Command tasked to agent : Whoami
+04/10/2023 02:54:56 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | OEN40GPTSN | Command tasked to agent : Exit
+04/10/2023 03:04:54 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | I1N7LY59QU | Command tasked to agent : Exit
+04/10/2023 03:05:54 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | PF1EEGEJEM | Command tasked to agent : Exit
+04/10/2023 03:06:49 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | HPRS4P1OOL | Command tasked to agent : Exit
+04/10/2023 03:07:15 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | X49V5ZW46H | Command tasked to agent : Exit
+04/10/2023 03:18:40 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | PJ0UN5YAX7 | Command tasked to agent : Exit
+04/10/2023 03:35:58 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | J6ZC4SSNQ6 | Command tasked to agent : Exit
+04/10/2023 05:44:44 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | V6DPGU0A5A | Command tasked to agent : Exit
+04/10/2023 08:08:54 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | AUDI9PVXBY | Command tasked to agent : Exit
+04/10/2023 08:14:28 | Info | User | Fropops-9e563c41-0a45-4e72-92cf-37e5aa22fcde | MSW7XZ1E6I | Command tasked to agent : Exit

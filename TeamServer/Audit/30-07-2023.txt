@@ -1,8 +1,0 @@
-30/07/2023 09:35:27 | Info | User | Fropops-20c2cd0a-3628-42d8-8f3c-06f66ae64d41 |  | Connexion to TeamServer
-30/07/2023 09:35:28 | Info | User | Fropops-20c2cd0a-3628-42d8-8f3c-06f66ae64d41 |  | Connexion to TeamServer
-30/07/2023 09:36:05 | Info | User | Fropops-20c2cd0a-3628-42d8-8f3c-06f66ae64d41 | 60023f4797 | Command tasked to agent : Job
-30/07/2023 09:37:40 | Info | User | Fropops-20c2cd0a-3628-42d8-8f3c-06f66ae64d41 | 60023f4797 | Command tasked to agent : Upload
-30/07/2023 09:42:49 | Info | User | Fropops-c1948aff-8afe-4e5b-a97c-6feb6d2d8e27 |  | Connexion to TeamServer
-30/07/2023 09:42:50 | Info | User | Fropops-c1948aff-8afe-4e5b-a97c-6feb6d2d8e27 |  | Connexion to TeamServer
-30/07/2023 09:44:12 | Info | User | Fropops-c1948aff-8afe-4e5b-a97c-6feb6d2d8e27 | 8cdd7a5cf1 | Command tasked to agent : Exit
-30/07/2023 09:44:14 | Info | User | Fropops-c1948aff-8afe-4e5b-a97c-6feb6d2d8e27 |  | Exit TeamServer

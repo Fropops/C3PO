@@ -1,0 +1,51 @@
+22/09/2023 06:04:33 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 |  | Connexion to TeamServer
+22/09/2023 06:04:34 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 |  | Connexion to TeamServer
+22/09/2023 06:04:43 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 | RustDroid | Command tasked to agent : Shell
+22/09/2023 06:05:00 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:09:12 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:10:16 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:10:51 | Info | User | Fropops-d0a273e7-bcff-4556-8438-4351859b4e09 | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:16:14 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd |  | Connexion to TeamServer
+22/09/2023 06:16:14 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd |  | Connexion to TeamServer
+22/09/2023 06:16:49 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:53:45 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:53:51 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:54:09 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:55:59 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 06:56:10 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 07:00:17 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 07:00:22 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 07:00:43 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 07:12:59 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 07:49:51 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 07:49:57 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 08:14:31 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 08:14:38 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 08:15:09 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 08:19:15 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 08:32:24 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Shell
+22/09/2023 08:32:31 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Whoami
+22/09/2023 08:32:37 | Info | User | Fropops-666e4404-e9de-4161-8078-90203ef923cd | RustDroid | Command tasked to agent : Exit
+22/09/2023 05:39:53 | Info | User | Fropops-8806d7d3-c0f2-4f9e-a61f-6cd0cf1429ca |  | Connexion to TeamServer
+22/09/2023 05:39:54 | Info | User | Fropops-8806d7d3-c0f2-4f9e-a61f-6cd0cf1429ca |  | Connexion to TeamServer
+22/09/2023 05:40:19 | Info | User | Fropops-8806d7d3-c0f2-4f9e-a61f-6cd0cf1429ca | RustDroid | Command tasked to agent : Whoami
+22/09/2023 05:40:29 | Info | User | Fropops-8806d7d3-c0f2-4f9e-a61f-6cd0cf1429ca | RustDroid | Command tasked to agent : Shell
+22/09/2023 05:40:37 | Info | User | Fropops-8806d7d3-c0f2-4f9e-a61f-6cd0cf1429ca | RustDroid | Command tasked to agent : Exit
+22/09/2023 11:48:31 | Info | User | Fropops-885fb70a-302a-4129-b84f-f3307e30d1fa |  | Connexion to TeamServer
+22/09/2023 11:48:32 | Info | User | Fropops-885fb70a-302a-4129-b84f-f3307e30d1fa |  | Connexion to TeamServer
+22/09/2023 11:49:05 | Info | User | Fropops-885fb70a-302a-4129-b84f-f3307e30d1fa | RustDroid | Command tasked to agent : Exit
+22/09/2023 14:29:27 | Info | User | Fropops-885fb70a-302a-4129-b84f-f3307e30d1fa | RustDroid | Command tasked to agent : ListProcess
+22/09/2023 09:04:46 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 |  | Connexion to TeamServer
+22/09/2023 09:04:49 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 |  | Connexion to TeamServer
+22/09/2023 09:05:50 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | RustDroid | Command tasked to agent : Exit
+22/09/2023 10:16:30 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | RustDroidTest | Command tasked to agent : Whoami
+22/09/2023 10:16:38 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | RustDroidTest | Command tasked to agent : Shell
+22/09/2023 10:16:43 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | RustDroidTest | Command tasked to agent : Exit
+22/09/2023 10:18:12 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | RustDroidTest | Command tasked to agent : Exit
+22/09/2023 10:41:15 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | VIE2BG7DVL | Command tasked to agent : Exit
+22/09/2023 10:55:29 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | W3A4VBT5DI | Command tasked to agent : Exit
+22/09/2023 11:18:03 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | TH4H62UNFA | Command tasked to agent : Shell
+22/09/2023 11:19:12 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | EQSQKVX01J | Command tasked to agent : Shell
+22/09/2023 11:20:12 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | IBQQ7XBJT0 | Command tasked to agent : Shell
+22/09/2023 11:24:41 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | ZLMVSB0FO1 | Command tasked to agent : Shell
+22/09/2023 11:35:36 | Info | User | Fropops-1f215f4c-ce91-4b35-ab74-064fb1d90003 | L0HI32OPS4 | Command tasked to agent : Shell

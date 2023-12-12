@@ -1,0 +1,5 @@
+01/10/2023 06:06:48 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | J5XPGN6YQJ | Command tasked to agent : Assembly
+01/10/2023 06:07:57 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | OU2K4YZEPG | Command tasked to agent : Assembly
+01/10/2023 15:34:19 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | DMJ6EDOOCN | Command tasked to agent : Assembly
+01/10/2023 15:34:29 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | DMJ6EDOOCN | Command tasked to agent : Exit
+01/10/2023 15:35:29 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | HOFXNH540N | Command tasked to agent : Assembly

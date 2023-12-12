@@ -20,7 +20,7 @@ namespace Commander.Commands.Agent.EndPoint
         public override string Description => "Create a folder on the agent.";
         public override string Name => "mkdir";
 
-        public override CommandId CommandId => CommandId.Del;
+        public override CommandId CommandId => CommandId.MkDir;
 
         public override RootCommand Command => new RootCommand(this.Description)
             {

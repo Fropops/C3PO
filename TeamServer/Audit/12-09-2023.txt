@@ -1,0 +1,5 @@
+12/09/2023 11:25:40 | Info | User | Fropops-b9b21e83-f1f9-46ea-89a5-764e2c9858ca |  | Exit TeamServer
+12/09/2023 17:27:02 | Info | User | Fropops-d7e5f738-21ef-4396-b274-18333b8b1d5d |  | Connexion to TeamServer
+12/09/2023 17:27:03 | Info | User | Fropops-d7e5f738-21ef-4396-b274-18333b8b1d5d |  | Connexion to TeamServer
+12/09/2023 11:29:11 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 |  | Connexion to TeamServer
+12/09/2023 11:29:13 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 |  | Connexion to TeamServer

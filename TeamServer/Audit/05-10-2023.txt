@@ -1,0 +1,17 @@
+05/10/2023 02:50:36 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d |  | Connexion to TeamServer
+05/10/2023 02:50:37 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d |  | Connexion to TeamServer
+05/10/2023 02:58:43 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | R0TI0DXODS | Command tasked to agent : Exit
+05/10/2023 03:02:18 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | LYV1LKUG5T | Command tasked to agent : Exit
+05/10/2023 03:04:10 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | VHH9S0TE2C | Command tasked to agent : Exit
+05/10/2023 03:14:02 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | PSZHMF253E | Command tasked to agent : Exit
+05/10/2023 03:30:42 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | OYNIIARMNC | Command tasked to agent : Exit
+05/10/2023 03:34:40 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | G7Q60552KB | Command tasked to agent : Exit
+05/10/2023 03:35:20 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | S3ORO640OV | Command tasked to agent : Exit
+05/10/2023 03:46:25 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | DICU0BU35T | Command tasked to agent : Shell
+05/10/2023 03:47:15 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | DICU0BU35T | Command tasked to agent : Assembly
+05/10/2023 03:50:39 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | QTZGKT0WTV | Command tasked to agent : Shell
+05/10/2023 03:50:46 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | QTZGKT0WTV | Command tasked to agent : Exit
+05/10/2023 09:54:40 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | W8PF5KY4NP | Command tasked to agent : Exit
+05/10/2023 09:55:39 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | Q9FUJYSBQ6 | Command tasked to agent : Exit
+05/10/2023 09:57:11 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | OMFZ0B24JM | Command tasked to agent : Exit
+05/10/2023 09:57:18 | Info | User | Fropops-08ebaeea-e9dd-47d2-a725-885c8186944d | BK2GHAC8YX | Command tasked to agent : Exit

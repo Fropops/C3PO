@@ -10,9 +10,9 @@ namespace Shared
 {
     public enum IntegrityLevel : byte
     {
-        Medium,
-        High,
-        System
+        Medium = 0x00,
+        High = 0x01,
+        System = 0x02
     }
 
     public class AgentMetadata

@@ -17,6 +17,16 @@ namespace Commander.Commands.Agent.EndPoint
         public override string Description => "Send a command to be executed by the agent";
         public override CommandId CommandId => CommandId.Shell;
 
+        protected override bool CheckParams(CommandContext context)
+        {
+            if(string.IsNullOrWhiteSpace(context.CommandParameters))
+            {
+                context.Terminal.WriteError($"Command is required");
+                return false;
+            }
+            return base.CheckParams(context);
+        }
+
         protected override void SpecifyParameters(CommandContext context)
         {
             context.AddParameter(ParameterId.Command, context.CommandParameters.BinarySerializeAsync().Result);

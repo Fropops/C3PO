@@ -20,7 +20,7 @@ namespace Commander.Commands.Agent.EndPoint
         public override string Description => "Delete a folder on the agent.";
         public override string Name => "rmdir";
 
-        public override CommandId CommandId => CommandId.Del;
+        public override CommandId CommandId => CommandId.RmDir;
 
         public override RootCommand Command => new RootCommand(this.Description)
             {

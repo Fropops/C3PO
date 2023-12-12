@@ -40,7 +40,7 @@ namespace Shared
         public string Source { get; set; } = String.Empty;
         [FieldOrder(2)]
         public string Destination { get; set; } = String.Empty;
-        [FieldOrder(2)]
+        [FieldOrder(3)]
         public byte[] Data { get; set; }
     }
 }

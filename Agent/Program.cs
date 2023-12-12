@@ -67,7 +67,7 @@ namespace EntryPoint
             }
             else
             {
-                serverKey = "1yOdEVXef7ljnzrRgINB27Bi4zGwi1v2";
+                serverKey = "MXlPZEVWWGVmN2xqbnpyUg==";
             }
 
            
@@ -88,7 +88,7 @@ namespace EntryPoint
 
 
             var configService = new ConfigService();
-            configService.ServerKey = serverKey;
+            configService.ServerKey = Convert.FromBase64String(serverKey);
             configService.EncryptFrames = true;
 
             ServiceProvider.RegisterSingleton<IConfigService>(configService);

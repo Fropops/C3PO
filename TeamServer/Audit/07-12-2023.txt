@@ -1,0 +1,5 @@
+07/12/2023 09:30:45 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 |  | Connexion to TeamServer
+07/12/2023 09:30:46 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 |  | Connexion to TeamServer
+07/12/2023 09:33:04 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | EQG5NP3RCG | Command tasked to agent : Exit
+07/12/2023 09:33:40 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | LIYESIB1TQ | Command tasked to agent : Ls
+07/12/2023 09:33:50 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | LIYESIB1TQ | Command tasked to agent : Exit

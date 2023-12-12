@@ -14,7 +14,7 @@ namespace Shared
         public async Task DeserializeAsync(EndianBinaryReader reader)
         {
 
-            int count = reader.Read7BitEncodedInt();
+            int count = reader.ReadInt32();
             for(int i = 0; i < count; i++)
             {
                 var paramId = (ParameterId)reader.ReadByte();
@@ -31,7 +31,7 @@ namespace Shared
 
         public async Task SerializeAsync(EndianBinaryWriter writer)
         {
-            writer.Write7BitEncodedInt(this.Count);
+            writer.Write(this.Count);
             foreach (var key in this.Keys)
             {
                 writer.Write((byte)key);

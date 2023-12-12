@@ -1,0 +1,10 @@
+08/12/2023 02:06:19 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | GE24AWGKKK | Command tasked to agent : Exit
+08/12/2023 02:17:31 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | NVTR317MFC | Command tasked to agent : Shell
+08/12/2023 02:18:01 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | NVTR317MFC | Command tasked to agent : Exit
+08/12/2023 02:19:52 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | SS0TTAC1LY | Command tasked to agent : Shell
+08/12/2023 02:19:57 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | SS0TTAC1LY | Command tasked to agent : Shell
+08/12/2023 02:20:02 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | SS0TTAC1LY | Command tasked to agent : Exit
+08/12/2023 02:23:34 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | CMLO8ZCVGA | Command tasked to agent : Shell
+08/12/2023 02:23:36 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | CMLO8ZCVGA | Command tasked to agent : Exit
+08/12/2023 03:24:11 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | PVO7NKH2VR | Command tasked to agent : Shell
+08/12/2023 03:24:12 | Info | User | Fropops-7019d3eb-ef8b-4ff0-a4ce-93b3488b1ea3 | PVO7NKH2VR | Command tasked to agent : Exit

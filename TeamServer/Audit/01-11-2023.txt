@@ -1,0 +1,19 @@
+01/11/2023 04:01:45 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 |  | Connexion to TeamServer
+01/11/2023 04:01:46 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 |  | Connexion to TeamServer
+01/11/2023 04:03:24 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | QX2KXBZNMU | Command tasked to agent : Whoami
+01/11/2023 04:03:30 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | QX2KXBZNMU | Command tasked to agent : Exit
+01/11/2023 04:07:54 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | VB7K791QRI | Command tasked to agent : Exit
+01/11/2023 04:12:42 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | R437L51Z8O | Command tasked to agent : Shell
+01/11/2023 04:12:49 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | R437L51Z8O | Command tasked to agent : Whoami
+01/11/2023 04:13:23 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Shell
+01/11/2023 04:13:32 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Whoami
+01/11/2023 04:13:41 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Ls
+01/11/2023 04:13:54 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Cd
+01/11/2023 04:13:59 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Ls
+01/11/2023 04:14:08 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Cd
+01/11/2023 04:14:13 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Ls
+01/11/2023 04:14:17 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | FZLZ9GR7M7 | Command tasked to agent : Exit
+01/11/2023 04:14:32 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | R437L51Z8O | Command tasked to agent : Ls
+01/11/2023 04:15:03 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | R437L51Z8O | Command tasked to agent : Exit
+01/11/2023 04:29:24 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | QU3WEZN9KZ | Command tasked to agent : Shell
+01/11/2023 04:30:26 | Info | User | Fropops-190d855c-5920-4d98-9f29-ab2e805d9be0 | QU3WEZN9KZ | Command tasked to agent : Exit

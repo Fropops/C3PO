@@ -18,6 +18,15 @@ namespace Commander.Commands.Agent.EndPoint
         public override string[] Alternate { get => new string[1] { "powerpick" }; }
         public override CommandId CommandId => CommandId.Powershell;
 
+        protected override bool CheckParams(CommandContext context)
+        {
+            if (string.IsNullOrWhiteSpace(context.CommandParameters))
+            {
+                context.Terminal.WriteError($"Command is required");
+                return false;
+            }
+            return base.CheckParams(context);
+        }
         protected override void SpecifyParameters(CommandContext context)
         {
             context.AddParameter(ParameterId.Command, context.CommandParameters.BinarySerializeAsync().Result);

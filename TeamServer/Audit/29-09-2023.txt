@@ -1,0 +1,11 @@
+29/09/2023 07:49:16 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | J1DHLFYAZX | Command tasked to agent : Assembly
+29/09/2023 07:49:41 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | AEKHO5JAD6 | Command tasked to agent : Assembly
+29/09/2023 07:57:50 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | U2PMPEOBZO | Command tasked to agent : Assembly
+29/09/2023 08:25:48 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | YBWMSLN651 | Command tasked to agent : Assembly
+29/09/2023 08:26:20 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | YBWMSLN651 | Command tasked to agent : Assembly
+29/09/2023 08:27:19 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | YBWMSLN651 | Command tasked to agent : Shell
+29/09/2023 08:27:31 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | YBWMSLN651 | Command tasked to agent : Exit
+29/09/2023 08:43:10 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | RIN21BQTDH | Command tasked to agent : Exit
+29/09/2023 10:58:40 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | CFHTIIX8ON | Command tasked to agent : Exit
+29/09/2023 12:54:51 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | TUC3AF2PI4 | Command tasked to agent : Exit
+29/09/2023 12:55:47 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | X51ROW9SY1 | Command tasked to agent : Exit

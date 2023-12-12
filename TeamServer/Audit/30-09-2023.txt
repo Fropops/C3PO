@@ -1,0 +1,4 @@
+30/09/2023 02:50:57 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | SG3DYBNPV5 | Command tasked to agent : Exit
+30/09/2023 03:00:32 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | PGRWT0J11G | Command tasked to agent : Assembly
+30/09/2023 03:01:16 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | PGRWT0J11G | Command tasked to agent : Assembly
+30/09/2023 03:01:25 | Info | User | Fropops-5b1a5a13-42ca-4105-923b-1e52fa92221a | PGRWT0J11G | Command tasked to agent : Exit

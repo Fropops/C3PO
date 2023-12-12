@@ -1,0 +1,3 @@
+27/10/2023 03:36:13 | Info | User | Fropops-43e063fb-2320-4f8e-9d5e-f2d1b748ffdb |  | Connexion to TeamServer
+27/10/2023 03:36:14 | Info | User | Fropops-43e063fb-2320-4f8e-9d5e-f2d1b748ffdb |  | Connexion to TeamServer
+27/10/2023 03:36:48 | Info | User | Fropops-43e063fb-2320-4f8e-9d5e-f2d1b748ffdb | Y4C9Q1WIRL | Command tasked to agent : Exit

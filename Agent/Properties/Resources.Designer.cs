@@ -70,7 +70,7 @@ namespace Agent.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 00000000000000000000000000000000.
+        ///   Looks up a localized string similar to MXlPZEVWWGVmN2xqbnpyUg==.
         /// </summary>
         internal static string Key {
             get {

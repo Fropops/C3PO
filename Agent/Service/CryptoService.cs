@@ -22,7 +22,7 @@ namespace Agent.Service
         {
             _configService = configService;
 
-            this.Key = System.Text.Encoding.UTF8.GetBytes(configService.ServerKey);
+            this.Key = configService.ServerKey;
         }
 
         public byte[] Encrypt(byte[] data)

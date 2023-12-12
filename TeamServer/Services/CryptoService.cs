@@ -23,7 +23,7 @@ public class CryptoService : ICryptoService
     {
         _configService = configService;
         
-        Key = System.Text.Encoding.UTF8.GetBytes(configService.GetValue<string>("ServerKey"));
+        Key = Convert.FromBase64String(configService.GetValue<string>("ServerKey"));
         var enc = configService.GetValue<bool?>("EncryptFrames");
         EncryptFrames = !enc.HasValue || enc.Value;
     }

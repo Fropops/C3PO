@@ -41,6 +41,9 @@ namespace TeamServer.Services
 
         public SocksClient GetClientById(string agentId, string socksProxyId)
         {
+            if (!Proxies.ContainsKey(agentId))
+                return null;
+
             var proxy = Proxies[agentId];
             return proxy.GetSocksClient(socksProxyId);
         }

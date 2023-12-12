@@ -1,0 +1,35 @@
+13/09/2023 01:44:57 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 83e89609d0 | Command tasked to agent : Link
+13/09/2023 01:45:07 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 83e89609d0 | Command tasked to agent : Sleep
+13/09/2023 01:56:34 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 |  | Web hosting z - Payload PowerShell x64 https://10.10.14.10:443
+13/09/2023 01:58:42 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 21289720de | Command tasked to agent : Sleep
+13/09/2023 02:00:22 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 21289720de | Command tasked to agent : Sleep
+13/09/2023 02:00:54 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Sleep
+13/09/2023 02:01:16 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Assembly
+13/09/2023 02:01:50 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Assembly
+13/09/2023 02:02:02 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : StealToken
+13/09/2023 02:02:09 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : RevertSelf
+13/09/2023 02:02:22 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Assembly
+13/09/2023 02:02:56 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Assembly
+13/09/2023 02:03:06 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : StealToken
+13/09/2023 02:03:18 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Script
+13/09/2023 02:04:11 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Sleep
+13/09/2023 02:08:55 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 |  | Web hosting s - Payload Service x64 pipe://127.0.0.1:local
+13/09/2023 02:22:15 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:22:42 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:22:45 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:22:58 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Shell
+13/09/2023 02:23:07 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Link
+13/09/2023 02:23:26 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Link
+13/09/2023 02:23:35 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Link
+13/09/2023 02:23:52 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:29:12 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Link
+13/09/2023 02:29:21 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Link
+13/09/2023 02:29:42 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Link
+13/09/2023 02:30:50 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | 56cf2becf5 | Command tasked to agent : Link
+13/09/2023 02:31:15 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:31:35 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:31:58 | Info | User | Fropops-8124fdf3-9597-4120-b794-1a6704c02bc6 |  | Exit TeamServer
+13/09/2023 02:32:16 | Info | User | Fropops-7da34d2e-a502-4878-91f4-93f51af859c7 |  | Connexion to TeamServer
+13/09/2023 02:32:17 | Info | User | Fropops-7da34d2e-a502-4878-91f4-93f51af859c7 |  | Connexion to TeamServer
+13/09/2023 02:32:45 | Info | User | Fropops-7da34d2e-a502-4878-91f4-93f51af859c7 | ab7cfd202f | Command tasked to agent : Shell
+13/09/2023 02:33:01 | Info | User | Fropops-7da34d2e-a502-4878-91f4-93f51af859c7 | ab7cfd202f | Command tasked to agent : Shell

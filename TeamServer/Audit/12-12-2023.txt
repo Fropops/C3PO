@@ -1,0 +1,6 @@
+12/12/2023 09:59:48 | Info | User | Fropops-04d0fb5b-1ea7-4f8f-9f42-839ff1de42e8 |  | Connexion to TeamServer
+12/12/2023 09:59:49 | Info | User | Fropops-04d0fb5b-1ea7-4f8f-9f42-839ff1de42e8 |  | Connexion to TeamServer
+12/12/2023 10:05:30 | Info | User | Fropops-1ed2325d-e248-42dc-b42e-86623a297719 |  | Connexion to TeamServer
+12/12/2023 10:05:31 | Info | User | Fropops-1ed2325d-e248-42dc-b42e-86623a297719 |  | Connexion to TeamServer
+12/12/2023 10:06:16 | Info | User | Fropops-1ed2325d-e248-42dc-b42e-86623a297719 | 389f5a6fa3 | Command tasked to agent : Exit
+12/12/2023 10:06:20 | Info | User | Fropops-1ed2325d-e248-42dc-b42e-86623a297719 |  | Exit TeamServer

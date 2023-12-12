@@ -66,7 +66,7 @@ namespace TeamServer.Services
 
         public List<Agent> GetAgentToRelay(string id)
         {
-            return GetAgents().Where(a => a.Id == id || a.RelayId == id).ToList();
+            return GetAgents().ToList().Where(a => a.Id == id || a.RelayId == id).ToList();
         }
 
         public IEnumerable<Agent> GetAgents()

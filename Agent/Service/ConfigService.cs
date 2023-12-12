@@ -12,7 +12,7 @@ namespace Agent.Service
     {
         string SpawnToX64 { get; set; }
 
-        string ServerKey { get; set; }
+        byte[] ServerKey { get; set; }
         WinAPI.Wrapper.APIAccessType APIAccessType { get; set; }
 
         WinAPI.Wrapper.InjectionMethod APIInjectionMethod { get; set; }
@@ -23,7 +23,7 @@ namespace Agent.Service
     }
     public class ConfigService : IConfigService
     {
-        public string ServerKey { get; set; }
+        public byte[] ServerKey { get; set; }
         public string SpawnToX64 { get; set; } = @"c:\windows\system32\dllhost.exe";
 
         public bool EncryptFrames { get; set; } = true;

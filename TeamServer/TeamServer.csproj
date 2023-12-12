@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Audit\**" />
+    <Content Remove="Audit\**" />
+    <EmbeddedResource Remove="Audit\**" />
+    <None Remove="Audit\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Extensions.cs" />
     <Compile Remove="Models\Agent\AgentMetadata.cs" />
     <Compile Remove="Models\Agent\AgentTask.cs" />
@@ -44,10 +51,6 @@
     <None Update="sslcert.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Audit\" />
   </ItemGroup>
 
 </Project>

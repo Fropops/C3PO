@@ -13,6 +13,7 @@ namespace Common.Config
         public string OutputFolder { get; set; }
         public string WorkingFolder { get; set; }
         public string NimPath { get; set; }
+        public string IncRustPath { get; set; }
         public string DonutPath { get; set; }
         public string ReanimatorPath { get; set; }
 
@@ -24,6 +25,7 @@ namespace Common.Config
             this.NimPath = section.GetValue<string>("NimPath", "/usr/bin/nim");
             this.DonutPath = section.GetValue<string>("DonutPath", "/opt/donut/donut");
             this.ReanimatorPath = section.GetValue<string>("ReanimatorPath", "/mnt/Share/Projects/reaNimator-modif/reaNimator");
+            this.IncRustPath = section.GetValue<string>("IncRustPath", "/mnt/Share/Projects/Rust/incrust/");
         }
     }
 }

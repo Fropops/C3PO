@@ -15,52 +15,52 @@ namespace Common.Payload
             return base64;
         }
 
-        public ExecuteResult GenerateDll(string binPath, string outPath, string processName)
-        {
-            var cmd = this.Config.ReanimatorPath;
-            var inputFile = binPath;
-            var outFile = outPath;
+        //public ExecuteResult GenerateDll(string binPath, string outPath, string processName)
+        //{
+        //    var cmd = this.Config.ReanimatorPath;
+        //    var inputFile = binPath;
+        //    var outFile = outPath;
 
-            List<string> args = new List<string>();
-            args.Add("-f");
-            args.Add(inputFile);
-            args.Add("-t");
-            args.Add("raw");
-            args.Add($"-o");
-            args.Add(outFile);
-            args.Add($"-e");
-            args.Add($"-u");
-            args.Add($"-b");
-            args.Add($"-p");
-            args.Add(processName);
+        //    List<string> args = new List<string>();
+        //    args.Add("-f");
+        //    args.Add(inputFile);
+        //    args.Add("-t");
+        //    args.Add("raw");
+        //    args.Add($"-o");
+        //    args.Add(outFile);
+        //    args.Add($"-e");
+        //    args.Add($"-u");
+        //    args.Add($"-b");
+        //    args.Add($"-p");
+        //    args.Add(processName);
 
-            //Console.WriteLine(String.Join(' ', args));
-            var ret = ExecuteCommand(cmd, args, Path.GetDirectoryName(this.Config.ReanimatorPath));
-            return ret;
-        }
+        //    //Console.WriteLine(String.Join(' ', args));
+        //    var ret = ExecuteCommand(cmd, args, Path.GetDirectoryName(this.Config.ReanimatorPath));
+        //    return ret;
+        //}
 
-        public ExecuteResult GenerateInj(string binPath, string outPath, string processName)
-        {
-            var cmd = this.Config.ReanimatorPath;
-            var inputFile = binPath;
-            var outFile = outPath;
+        //public ExecuteResult GenerateInj(string binPath, string outPath, string processName)
+        //{
+        //    var cmd = this.Config.ReanimatorPath;
+        //    var inputFile = binPath;
+        //    var outFile = outPath;
 
-            List<string> args = new List<string>();
-            args.Add("-f");
-            args.Add(inputFile);
-            args.Add("-t");
-            args.Add("raw");
-            args.Add($"-o");
-            args.Add(outFile);
-            args.Add($"-e");
-            args.Add($"-u");
-            args.Add($"-p");
-            args.Add(processName);
+        //    List<string> args = new List<string>();
+        //    args.Add("-f");
+        //    args.Add(inputFile);
+        //    args.Add("-t");
+        //    args.Add("raw");
+        //    args.Add($"-o");
+        //    args.Add(outFile);
+        //    args.Add($"-e");
+        //    args.Add($"-u");
+        //    args.Add($"-p");
+        //    args.Add(processName);
 
-            //Console.WriteLine(String.Join(' ', args));
-            var ret = ExecuteCommand(cmd, args, Path.GetDirectoryName(this.Config.ReanimatorPath));
-            return ret;
-        }
+        //    //Console.WriteLine(String.Join(' ', args));
+        //    var ret = ExecuteCommand(cmd, args, Path.GetDirectoryName(this.Config.ReanimatorPath));
+        //    return ret;
+        //}
 
         public ExecuteResult GenerateBin(string inputPath, string outFile, bool x86, string dotNetParams = null)
         {
@@ -85,7 +85,7 @@ namespace Common.Payload
             args.Add("-i");
             args.Add(inputPath);
 
-            //Console.WriteLine(String.Join(' ', args));
+            Console.WriteLine(String.Join(' ', args));
 
             //string args = $"'{inputFile}' -f 1 -a 2 -o '{outFile}' -p '{listener.Ip}:{listener.BindPort}'";
             var ret = ExecuteCommand(cmd, args, this.Config.WorkingFolder);

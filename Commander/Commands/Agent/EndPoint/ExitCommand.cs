@@ -12,7 +12,7 @@ namespace Commander.Commands.Agent.EndPoint
     public class ExitCommand : EndPointCommand
     {
         public override string Description => "Ask an agent to exit.";
-        public override string Name => "exit";
+        public override string Name => "quit";
         public override CommandId CommandId => CommandId.Exit;
     }
 }

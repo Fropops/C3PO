@@ -13,7 +13,7 @@ namespace Commander.Commands.Core
     {
         public override string Category => CommandCategory.Commander;
         public override string Description => "Close the Commander";
-        public override string Name => "quit";
+        public override string Name => "exit";
         public override ExecutorMode AvaliableIn => ExecutorMode.All;
 
         protected override void InnerExecute(CommandContext context)

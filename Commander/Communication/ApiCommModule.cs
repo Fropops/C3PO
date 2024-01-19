@@ -543,6 +543,7 @@ namespace Commander.Communication
 
             var json = await response.Content.ReadAsStringAsync();
             var conf = JsonConvert.DeserializeObject<ServerConfig>(json);
+
             return conf;
         }
 

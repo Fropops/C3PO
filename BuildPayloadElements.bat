@@ -3,7 +3,7 @@ cls
 set msbuild="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
 set buildDir=e:\Share\Projects\C3PO\tmpbuild
 
-set agentProj=e:\Share\Projects\C3PO\Agent\Agent.csproj
+set agentProj=e:\Share\Projects\C3PO\Agentv2\Agentv2.csproj
 set decoderProj=E:\Share\Projects\C3PO\Payload\DecoderDll\DecoderDll.csproj
 set patcherProj=E:\Share\Projects\C3PO\Payload\PatcherDll\PatcherDll.csproj
 set injectProj=E:\Share\Projects\C3PO\Payload\InjectDll\InjectDll.csproj
@@ -26,15 +26,15 @@ copy %scriptDir%\*.* %destdebugDir%\
 
 echo Agent
 %msbuild% %agentproj% /p:configuration=release /p:platform=x86 /p:outputpath=%builddir%
-copy %builddir%\Agent.exe %destx86Dir%\
+copy %builddir%\Agentv2.exe %destx86Dir%\Agent.exe
 del %builddir%\* /f /q
 
 %msbuild% %agentproj% /p:configuration=release /p:platform=x64 /p:outputpath=%builddir%
-copy %builddir%\Agent.exe %destx64Dir%\
+copy %builddir%\Agentv2.exe %destx64Dir%\Agent.exe
 del %builddir%\* /f /q
 
 %msbuild% %agentproj% /p:configuration=ReleaseButDebug /p:platform=x64 /p:outputpath=%builddir%
-copy %builddir%\Agent.exe %destdebugDir%\
+copy %builddir%\Agentv2.exe %destdebugDir%\Agent.exe
 del %builddir%\* /f /q
 
 echo Patcher

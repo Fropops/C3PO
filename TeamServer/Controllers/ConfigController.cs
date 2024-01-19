@@ -30,7 +30,7 @@ namespace TeamServer.Controllers
         {
             var config = new ServerConfig()
             {
-                Key = System.Text.Encoding.UTF8.GetString(_cryptoService.Key)
+                Key = Convert.ToBase64String(_cryptoService.Key)
             };
             return Ok(config);
         }

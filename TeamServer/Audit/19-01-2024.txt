@@ -1,0 +1,17 @@
+19/01/2024 02:02:05 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | dd8f2cc954 | Command tasked to agent : Shell
+19/01/2024 02:02:28 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | dd8f2cc954 | Command tasked to agent : Exit
+19/01/2024 02:04:14 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | bb53f7b74d | Command tasked to agent : Shell
+19/01/2024 02:04:20 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | bb53f7b74d | Command tasked to agent : Shell
+19/01/2024 02:05:31 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | bb53f7b74d | Command tasked to agent : Exit
+19/01/2024 08:05:12 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | d6885cbc15 | Command tasked to agent : Exit
+19/01/2024 08:13:14 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 | b606018392 | Command tasked to agent : Exit
+19/01/2024 09:34:19 | Info | User | Fropops-4e5f7040-dde2-4659-ada1-991f15a84f84 |  | Exit TeamServer
+19/01/2024 09:34:33 | Info | User | Fropops-a7d62fb9-4244-4f85-92e1-072cd9dbbbdf |  | Connexion to TeamServer
+19/01/2024 09:34:34 | Info | User | Fropops-a7d62fb9-4244-4f85-92e1-072cd9dbbbdf |  | Connexion to TeamServer
+19/01/2024 09:44:55 | Info | User | Fropops-a7d62fb9-4244-4f85-92e1-072cd9dbbbdf |  | Exit TeamServer
+19/01/2024 09:45:22 | Info | User | Fropops-44188f08-45eb-4d81-b478-4b5ba7052488 |  | Connexion to TeamServer
+19/01/2024 09:45:23 | Info | User | Fropops-44188f08-45eb-4d81-b478-4b5ba7052488 |  | Connexion to TeamServer
+19/01/2024 09:55:10 | Info | User | Fropops-44188f08-45eb-4d81-b478-4b5ba7052488 | 367fc28639 | Command tasked to agent : Shell
+19/01/2024 10:09:26 | Info | User | Fropops-44188f08-45eb-4d81-b478-4b5ba7052488 | 367fc28639 | Command tasked to agent : Exit
+19/01/2024 10:11:26 | Info | User | Fropops-44188f08-45eb-4d81-b478-4b5ba7052488 | 74b089b952 | Command tasked to agent : Shell
+19/01/2024 10:11:35 | Info | User | Fropops-44188f08-45eb-4d81-b478-4b5ba7052488 | 74b089b952 | Command tasked to agent : Shell

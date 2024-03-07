@@ -55,8 +55,9 @@ namespace Common.Payload
 
         public ExecuteResult IncRustBuild(List<string> parameters)
         {
-            this.MessageSent?.Invoke(this, $"[>] Executing: "+ Path.Combine(@"/root/.cargo/bin", "cargo"));
-            return ExecuteCommand(Path.Combine(@"/root/.cargo/bin", "cargo"), parameters, this.Config.IncRustPath);
+            string cargoPath = @$"/home/{Environment.UserName}/.cargo/bin";
+            this.MessageSent?.Invoke(this, $"[>] Executing: "+ Path.Combine(cargoPath, "cargo"));
+            return ExecuteCommand(Path.Combine(cargoPath, "cargo"), parameters, this.Config.IncRustPath);
         }
 
     }

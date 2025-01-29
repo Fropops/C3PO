@@ -19,12 +19,12 @@ namespace Commander.Commands.Agent.Execute
 
         public override CommandId CommandId => CommandId.ForkAndRun;
 
-        protected override async void InnerExecute(CommandContext context)
+        protected override void InnerExecute(CommandContext context)
         {
             var agent = context.Executor.CurrentAgent;
 
             var args = context.CommandParameters.GetArgs();
-            if(args.Length == 0)
+            if (args.Length == 0)
             {
                 context.Terminal.WriteLine($"Usage : {this.Name} ExePath [Arguments]");
                 return;
@@ -37,16 +37,19 @@ namespace Commander.Commands.Agent.Execute
                 context.Terminal.WriteError($"File {exePath} not found");
                 return;
             }
-           
-            string binFileName = string.Empty;
+
             var prms = context.CommandParameters.ExtractAfterParam(0);
-            context.Terminal.WriteLine($"Generating payload with params {prms}...");
+
+            if (string.IsNullOrEmpty(prms))
+                context.Terminal.WriteLine($"Generating payload without params...");
+            else
+                context.Terminal.WriteLine($"Generating payload with params {prms}...");
 
             var generator = new PayloadGenerator(context.Config.PayloadConfig, context.Config.SpawnConfig);
-            binFileName = Path.Combine(context.Config.PayloadConfig.WorkingFolder, ShortGuid.NewGuid() + ".bin");
+            string binFileName = Path.Combine(context.Config.PayloadConfig.WorkingFolder, ShortGuid.NewGuid() + ".bin");
             var result = generator.GenerateBin(exePath, binFileName, agent.Metadata.Architecture == "x86", prms);
 
-            if(result.Result != 0)
+            if (result.Result != 0 || !File.Exists(binFileName))
             {
                 context.Terminal.WriteError($"Unable to generate shellcode : ");
                 context.Terminal.WriteLine(result.Out);
@@ -54,6 +57,7 @@ namespace Commander.Commands.Agent.Execute
             }
 
             byte[] fileBytes = null;
+
 
             using (FileStream fs = File.OpenRead(binFileName))
             {

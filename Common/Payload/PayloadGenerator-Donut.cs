@@ -85,7 +85,7 @@ namespace Common.Payload
             args.Add("-i");
             args.Add(inputPath);
 
-            Console.WriteLine(String.Join(' ', args));
+            //Console.WriteLine(String.Join(' ', args));
 
             //string args = $"'{inputFile}' -f 1 -a 2 -o '{outFile}' -p '{listener.Ip}:{listener.BindPort}'";
             var ret = ExecuteCommand(cmd, args, this.Config.WorkingFolder);

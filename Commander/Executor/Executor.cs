@@ -264,11 +264,6 @@ namespace Commander.Executor
             this.HandleInput(command, parms);
         }
 
-        private void PrintHeader()
-        {
-            this.Terminal.WriteLine("C2Sharp Commander!");
-        }
-
         public void LoadCommands()
         {
             var self = Assembly.GetExecutingAssembly();
@@ -338,7 +333,14 @@ namespace Commander.Executor
                 return;
             }
 
-            cmd.Execute(parms);
+            try
+            {
+                cmd.Execute(parms);
+            }
+            catch(Exception ex)
+            {
+                this.Terminal.WriteError($"An Error occurred : {ex}");
+            }
         }
 
         public void InputHandled(ExecutorCommand cmd, bool cmdResult)

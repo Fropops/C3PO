@@ -182,6 +182,7 @@ namespace Commander
                 currentValue += c;
             }
 
+            strIndex++;
             return src.Substring(strIndex, src.Length - strIndex);
         }
             

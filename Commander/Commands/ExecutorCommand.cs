@@ -39,7 +39,14 @@ namespace Commander.Commands
                 Config = comm.Config
             };
 
-            InnerExecute(context);
+            try
+            {
+                InnerExecute(context);
+            }
+            catch(Exception ex)
+            {
+                context.Terminal.WriteError($"An Error occurred : {ex}");
+            }
             executor.InputHandled(this, true);
         }
 

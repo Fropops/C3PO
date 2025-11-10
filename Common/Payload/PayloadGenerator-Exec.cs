@@ -12,13 +12,28 @@ namespace Common.Payload
     {
         public class ExecuteResult
         {
+            public string FileName { get; set; }
+            public string StartIn { get; set; }
+            public List<string> Args { get; set; }
             public int Result { get; set; }
             public string Out { get; set; }
+            public ExecuteResult()
+            {
+                    Args = new List<string>();
+            }
+
+            public string Command
+            {
+                get
+                {
+                    return this.FileName + " " + string.Concat(this.Args, " ");
+                }
+            } 
         }
 
         public ExecuteResult ExecuteCommand(string fileName, List<string> args, string startIn)
         {
-            ExecuteResult result = new ExecuteResult();
+            ExecuteResult result = new ExecuteResult() { FileName = fileName, Args = args ?? new List<string>(), StartIn = startIn };
             try
             {
                 Collection<string> collection = new Collection<string>(args);

@@ -88,7 +88,10 @@ public partial class PayloadGenerator
         var executionResult = this.GenerateBin(tmpPath, binPath, options.Architecture == PayloadArchitecture.x86);
 
         if (options.IsVerbose)
+        {
+            this.MessageSent?.Invoke(this, executionResult.Command);
             this.MessageSent?.Invoke(this, executionResult.Out);
+        }
 
         File.Delete(tmpPath);
 
@@ -116,7 +119,10 @@ public partial class PayloadGenerator
         executionResult = this.IncRustBuild(parms);
 
         if (options.IsVerbose)
+        {
+            this.MessageSent?.Invoke(this, executionResult.Command);
             this.MessageSent?.Invoke(this, executionResult.Out);
+        }
 
         if (options.IsVerbose)
             if (executionResult.Result == 0)
@@ -147,7 +153,10 @@ public partial class PayloadGenerator
         var executionResult = this.GenerateBin(tmpPath, outPath, options.Architecture == PayloadArchitecture.x86);
 
         if (options.IsVerbose)
+        {
+            this.MessageSent?.Invoke(this, executionResult.Command);
             this.MessageSent?.Invoke(this, executionResult.Out);
+        }
 
         if (options.IsVerbose)
             if (executionResult.Result == 0)
@@ -179,7 +188,10 @@ public partial class PayloadGenerator
         var executionResult = this.GenerateBin(tmpPath, binPath, options.Architecture == PayloadArchitecture.x86);
 
         if (options.IsVerbose)
+        {
+            this.MessageSent?.Invoke(this, executionResult.Command);
             this.MessageSent?.Invoke(this, executionResult.Out);
+        }
 
         File.Delete(tmpPath);
 
@@ -207,7 +219,10 @@ public partial class PayloadGenerator
         executionResult = this.IncRustBuild(parms);
 
         if (options.IsVerbose)
+        {
+            this.MessageSent?.Invoke(this, executionResult.Command);
             this.MessageSent?.Invoke(this, executionResult.Out);
+        }
 
         if (options.IsVerbose)
             if (executionResult.Result == 0)
@@ -340,7 +355,10 @@ public partial class PayloadGenerator
         var executionResult = this.GenerateBin(tmpPath, outPath, options.Architecture == PayloadArchitecture.x86);
 
         if (options.IsVerbose)
+        {
+            this.MessageSent?.Invoke(this, executionResult.Command);
             this.MessageSent?.Invoke(this, executionResult.Out);
+        }
 
         if (options.IsVerbose)
             if (executionResult.Result == 0)

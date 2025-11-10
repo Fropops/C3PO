@@ -22,10 +22,8 @@ curl -L https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/C3PO.zip -
 chmod +x ./TeamServer/TeamServer
 chmod +x ./Commander/Commander
 
-# Create links
-ln -s ./TeamServer/TeamServer ./server
-ln -s ./Commander/Commander ./commander
 
 # Run
-./server&
-./commander
+./TeamServer/TeamServer&
+sleep 1
+./Commander/Commander

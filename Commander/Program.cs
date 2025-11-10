@@ -14,7 +14,7 @@ namespace Commander
         static void Main(string[] args)
         {
             IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("appSettings.json")
+                .AddJsonFile("appsettings.json")
                 .Build();
 
             var c = new CommanderConfig(config);

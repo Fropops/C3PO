@@ -17,15 +17,26 @@ namespace Common.Config
         public string DonutPath { get; set; }
         public string ReanimatorPath { get; set; }
 
-        public void FromSection(IConfigurationSection section)
+        public void FromSection(IConfigurationSection section, bool verbose = false)
         {
-            this.SourceFolder = section.GetValue<string>("SourceFolder");
-            this.OutputFolder = section.GetValue<string>("OutputFolder", "/tmp");
-            this.WorkingFolder = section.GetValue<string>("WorkingFolder", "/tmp");
-            this.NimPath = section.GetValue<string>("NimPath", "/usr/bin/nim");
-            this.DonutPath = section.GetValue<string>("DonutPath", "/opt/donut/donut");
-            this.ReanimatorPath = section.GetValue<string>("ReanimatorPath", "/mnt/Share/Projects/reaNimator-modif/reaNimator");
-            this.IncRustPath = section.GetValue<string>("IncRustPath", "/mnt/Share/Projects/Rust/incrust/");
+            this.SourceFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("SourceFolder"));
+            this.OutputFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("OutputFolder", "/tmp"));
+            this.WorkingFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("WorkingFolder", "/tmp"));
+            this.NimPath = PathHelper.GetAbsolutePath(section.GetValue<string>("NimPath", "/usr/bin/nim"));
+            this.DonutPath = PathHelper.GetAbsolutePath(section.GetValue<string>("DonutPath", "/opt/donut/donut"));
+            this.ReanimatorPath = PathHelper.GetAbsolutePath(section.GetValue<string>("ReanimatorPath", "/mnt/Share/Projects/reaNimator-modif/reaNimator"));
+            this.IncRustPath = PathHelper.GetAbsolutePath(section.GetValue<string>("IncRustPath", "/mnt/Share/Projects/Rust/incrust/"));
+
+            if (verbose)
+            {
+                Console.WriteLine("[CONFIG][PAYLOAD][SourceFolder] : " + this.SourceFolder);
+                Console.WriteLine("[CONFIG][PAYLOAD][OutputFolder] : " + this.OutputFolder);
+                Console.WriteLine("[CONFIG][PAYLOAD][WorkingFolder] : " + this.IncRustPath);
+                Console.WriteLine("[CONFIG][PAYLOAD][DonutPath] : " + this.DonutPath);
+                Console.WriteLine("[CONFIG][PAYLOAD][IncRustPath] : " + this.IncRustPath);
+            }
         }
+
+       
     }
 }

@@ -130,7 +130,9 @@ namespace Commander.Communication
                         {
                             var task1 = ctx.AddTask($"[cyan]Syncing whith TeamServer ({changes.Count} items)[/]");
 
-                            task1.MaxValue = changes.Count;
+                            task1.MaxValue = changes.Count + 1;
+                            task1.Value = 0;
+                            task1.Increment(1);
                             //// Simulate some work
                             //AnsiConsole.MarkupLine("Doing some more work...");
                             //Thread.Sleep(2000);

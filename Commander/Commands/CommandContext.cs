@@ -55,7 +55,7 @@ namespace Commander.Commands
 
             if(agent.Metadata.SleepInterval == 0)
             {
-                if (agent.LastSeen.AddSeconds(1) >= DateTime.UtcNow)
+                if (agent.LastSeen.AddSeconds(3) >= DateTime.UtcNow)
                     return true;
                 return false;
             }
@@ -66,10 +66,10 @@ namespace Commander.Commands
                 var relay = this.CommModule.GetAgent(agent.RelayId);
                 if (relay == null)
                     return null;
-                delta = Math.Min(1, relay.Metadata.SleepInterval) * 3;
+                delta = Math.Min(3, relay.Metadata.SleepInterval) * 3;
             }
             else
-                delta = Math.Min(1, agent.Metadata.SleepInterval) * 3;
+                delta = Math.Min(3, agent.Metadata.SleepInterval) * 3;
 
             if (agent.LastSeen.AddSeconds(delta) >= DateTime.UtcNow)
                 return true;

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Common.Config;
 using Common.APIModels;
 using Common.Models;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Commander
 {
@@ -17,6 +18,8 @@ namespace Commander
         public int Port { get; set; }
         public string User { get; set; }
         public string ApiKey { get; set; }
+
+    
 
         public int Delay { get; set; } = 500;
         public string EndPoint => this.Address + ":" + this.Port;
@@ -39,6 +42,8 @@ namespace Commander
         public ServerConfig ServerConfig { get; set; }
         public string Session { get; private set; }
 
+        public bool Verbose { get; set; } = false;
+
         public CommanderConfig()
         {
             this.ApiConfig = new ApiConfig();
@@ -49,8 +54,9 @@ namespace Commander
 
         public CommanderConfig(IConfiguration config) : this()
         {
+            this.Verbose = config.GetValue<bool>("Verbose");
             this.ApiConfig.FromSection(config.GetSection("Api"));
-            this.PayloadConfig.FromSection(config.GetSection("Payload"));
+            this.PayloadConfig.FromSection(config.GetSection("Payload"), this.Verbose);
             this.SpawnConfig.FromSection(config.GetSection("Spawn"));
         }
 

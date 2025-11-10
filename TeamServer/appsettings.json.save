@@ -15,6 +15,11 @@
 
     "AuditFolder": "Audit",
 
+
+    //"ListenersConfig": "[{ Name: 'Local', BindPort: 443, Address: '192.168.174.128', Secured: true}, { Name: 'AD', BindPort: 443, Address: '192.168.56.129', Secured: true }]",
+    //"ListenersConfig": "[{ Name: 'Local', BindPort: 443, Address: '127.0.0.1', Secured: true}]",
+
+
     "ServerKey": "MXlPZEVWWGVmN2xqbnpyUg==",
     "EncryptFrames": true,
 

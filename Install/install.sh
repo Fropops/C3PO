@@ -24,6 +24,7 @@ chmod +x ./Commander/Commander
 
 
 # Run
-./TeamServer/TeamServer&
+cd TeamServer && ./TeamServer&
+cd ../Commander
 sleep 1
-./Commander/Commander
+./Commander

@@ -13,8 +13,8 @@ namespace Common.Config
         public string OutputFolder { get; set; }
         public string WorkingFolder { get; set; }
         public string NimPath { get; set; }
-        public string IncRustPath { get; set; }
-        public string DonutPath { get; set; }
+        public string IncRustFolder { get; set; }
+        public string DonutFolder { get; set; }
         public string ReanimatorPath { get; set; }
 
         public void FromSection(IConfigurationSection section, bool verbose = false)
@@ -23,18 +23,21 @@ namespace Common.Config
             this.OutputFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("OutputFolder", "/tmp"));
             this.WorkingFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("WorkingFolder", "/tmp"));
             this.NimPath = PathHelper.GetAbsolutePath(section.GetValue<string>("NimPath", "/usr/bin/nim"));
-            this.DonutPath = PathHelper.GetAbsolutePath(section.GetValue<string>("DonutPath", "/opt/donut/donut"));
+            this.DonutFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("DonutPath", "/opt/donut"));
             this.ReanimatorPath = PathHelper.GetAbsolutePath(section.GetValue<string>("ReanimatorPath", "/mnt/Share/Projects/reaNimator-modif/reaNimator"));
-            this.IncRustPath = PathHelper.GetAbsolutePath(section.GetValue<string>("IncRustPath", "/mnt/Share/Projects/Rust/incrust/"));
+            this.IncRustFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("IncRustPath", "/mnt/Share/Projects/Rust/incrust"));
 
             if (verbose)
             {
                 Console.WriteLine("[CONFIG][PAYLOAD][SourceFolder] : " + this.SourceFolder);
                 Console.WriteLine("[CONFIG][PAYLOAD][OutputFolder] : " + this.OutputFolder);
-                Console.WriteLine("[CONFIG][PAYLOAD][WorkingFolder] : " + this.IncRustPath);
-                Console.WriteLine("[CONFIG][PAYLOAD][DonutPath] : " + this.DonutPath);
-                Console.WriteLine("[CONFIG][PAYLOAD][IncRustPath] : " + this.IncRustPath);
+                Console.WriteLine("[CONFIG][PAYLOAD][WorkingFolder] : " + this.WorkingFolder);
+                Console.WriteLine("[CONFIG][PAYLOAD][DonutPath] : " + this.DonutFolder);
+                Console.WriteLine("[CONFIG][PAYLOAD][IncRustPath] : " + this.IncRustFolder);
             }
+
+            if(!Directory.Exists(this.OutputFolder)) { Directory.CreateDirectory(this.OutputFolder); }
+            if (!Directory.Exists(this.WorkingFolder)) { Directory.CreateDirectory(this.WorkingFolder); }
         }
 
        

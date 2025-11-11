@@ -133,7 +133,7 @@ public partial class PayloadGenerator
         if (executionResult.Result != 0)
             return null;
 
-        string outPath = Path.Combine(this.Config.IncRustPath, "target", options.Architecture == PayloadArchitecture.x64 ? "x86_64-pc-windows-gnu" : "i686-pc-windows-gnu", options.IsDebug ? "debug" : "release", "incrust.exe");
+        string outPath = Path.Combine(this.Config.IncRustFolder, "target", options.Architecture == PayloadArchitecture.x64 ? "x86_64-pc-windows-gnu" : "i686-pc-windows-gnu", options.IsDebug ? "debug" : "release", "incrust.exe");
         byte[] bytes = File.ReadAllBytes(outPath);
         File.Delete(outPath);
 
@@ -233,7 +233,7 @@ public partial class PayloadGenerator
         if (executionResult.Result != 0)
             return null;
 
-        string outPath = Path.Combine(this.Config.IncRustPath, "target", options.Architecture == PayloadArchitecture.x64 ? "x86_64-pc-windows-gnu" : "i686-pc-windows-gnu", options.IsDebug ? "debug" : "release", options.Type == PayloadType.Library ? "incrustlib.dll" : "incrust.exe");
+        string outPath = Path.Combine(this.Config.IncRustFolder, "target", options.Architecture == PayloadArchitecture.x64 ? "x86_64-pc-windows-gnu" : "i686-pc-windows-gnu", options.IsDebug ? "debug" : "release", options.Type == PayloadType.Library ? "incrustlib.dll" : "incrust.exe");
         byte[] bytes = File.ReadAllBytes(outPath);
         File.Delete(outPath);
 

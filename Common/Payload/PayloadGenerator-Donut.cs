@@ -64,7 +64,7 @@ namespace Common.Payload
 
         public ExecuteResult GenerateBin(string inputPath, string outFile, bool x86, string dotNetParams = null)
         {
-            var cmd = this.Config.DonutPath;
+            var cmd = this.Config.DonutFolder + "/donut";
 
            
             List<string> args = new List<string>();

@@ -11,6 +11,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rust-install.sh && 
 
 #get donut
 git clone https://github.com/TheWover/donut.git
+cd donut && make && cd ..
 
 #get  incrust
 git clone https://github.com/Fropops/incrust.git
@@ -26,4 +27,3 @@ chmod +x ./Commander/Commander
 # Run
 cd TeamServer && ./TeamServer&
 sleep 1
-cd ../Commander && ./Commander

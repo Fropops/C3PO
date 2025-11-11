@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Spectre.Console;
 using Shared;
 using BinarySerializer;
+using System.IO;
 
 namespace Commander.Commands
 {
@@ -101,6 +102,11 @@ namespace Commander.Commands
 
         internal static byte[] GeneratePayloadAndDisplay(this CommandContext context, PayloadGenerationOptions options, bool verbose = false)
         {
+            if (options.IsDebug)
+            {
+                options.DebugPath = Path.Combine(context.Config.PayloadConfig.WorkingFolder, "agent-debug");
+                if(!Directory.Exists(options.DebugPath)) Directory.CreateDirectory(options.DebugPath);
+            }
             byte[] pay = null;
             AnsiConsole.Status()
                     .Start($"[olive]Generating Payload {options.Type} for Endpoint {options.Endpoint} (arch = {options.Architecture}).[/]", ctx =>

@@ -23,9 +23,9 @@ namespace Common.Config
             this.OutputFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("OutputFolder", "/tmp"));
             this.WorkingFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("WorkingFolder", "/tmp"));
             this.NimPath = PathHelper.GetAbsolutePath(section.GetValue<string>("NimPath", "/usr/bin/nim"));
-            this.DonutFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("DonutPath", "/opt/donut"));
+            this.DonutFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("DonutFolder", "/opt/donut"));
             this.ReanimatorPath = PathHelper.GetAbsolutePath(section.GetValue<string>("ReanimatorPath", "/mnt/Share/Projects/reaNimator-modif/reaNimator"));
-            this.IncRustFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("IncRustPath", "/mnt/Share/Projects/Rust/incrust"));
+            this.IncRustFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("IncRustFolder", "/mnt/Share/Projects/Rust/incrust"));
 
             if (verbose)
             {

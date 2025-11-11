@@ -26,7 +26,7 @@ namespace Common.Payload
             {
                 get
                 {
-                    return this.FileName + " " + string.Concat(this.Args, " ");
+                    return this.FileName + " " + string.Join(" ", this.Args);
                 }
             } 
         }

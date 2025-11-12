@@ -156,7 +156,7 @@ namespace Agent.Models
             Debug.WriteLine($"Tcp : Closing");
 #endif
 
-            _client?.Dispose();
+            //_client?.Dispose();
             _tokenSource.Dispose();
         }
 

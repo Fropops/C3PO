@@ -22,7 +22,7 @@ namespace Agent.Communication
         public HttpCommmunicator(ConnexionUrl conn) : base(conn)
         {
             ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback = new
             RemoteCertificateValidationCallback
             (

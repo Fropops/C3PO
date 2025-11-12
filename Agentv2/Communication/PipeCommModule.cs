@@ -84,7 +84,8 @@ namespace Agent.Models
             {
                 case CommunicationModuleMode.Server:
                     {
-                        await _pipeServer.WaitForConnectionAsync();
+                        await Task.Run(() => _pipeServer.WaitForConnection());
+                        //await _pipeServer.WaitForConnectionAsync();
 #if DEBUG
                         Debug.WriteLine("Pipe : Comm connected (server mode)");
 #endif
@@ -94,7 +95,9 @@ namespace Agent.Models
                 case CommunicationModuleMode.Client:
                     {
                         var timeout = new CancellationTokenSource(new TimeSpan(0, 0, 30));
-                        await _pipeClient.ConnectAsync(timeout.Token);
+
+                        await Task.Run(() => _pipeClient.Connect());
+                        //await _pipeClient.ConnectAsync(timeout.Token);
 
                         _pipeClient.ReadMode = PipeTransmissionMode.Byte;
 #if DEBUG

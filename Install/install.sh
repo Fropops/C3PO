@@ -26,8 +26,10 @@ chmod +x ./Commander/Commander
 
 rm C3PO.zip
 cd TeamServer 
-./TeamServer&
+sudo ./TeamServer&
 
-cd ../Commander
-./Commander
+echo "Server is started."
+echo "To run cli, run : cd C3PO/Commander && ./Commander"
+
+
 

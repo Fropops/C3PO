@@ -95,6 +95,7 @@ del %builddir%\* /f /q
 copy %builddir%\Service.exe %destdebugDir%\
 del %builddir%\* /f /q
 
+rmdir /s /q "%builddir%"
 
 set baseDir=e:\Share\Projects\C3PO\
 rmdir /s /q "%baseDir%Release"
@@ -102,21 +103,22 @@ rmdir /s /q "%baseDir%Release"
 dotnet publish "%baseDir%TeamServer\TeamServer.csproj" ^
   -c Release ^
   -r linux-x64 ^
-  --self-contained true ^
+  --self-contained false ^
   /p:Platform="Any CPU" ^
   /p:DeleteExistingFiles=true ^
   /p:ExcludeApp_Data=false ^
   /p:WebPublishMethod=FileSystem ^
   /p:PublishProvider=FileSystem ^
   /p:PublishDir="%baseDir%Release\TeamServer" ^
-  /p:TargetFramework=net7.0 ^
-  
-copy %baseDir%\TeamServer\appsettings.release.json %baseDir%Release\TeamServer\appsettings.json
+  /p:TargetFramework=net7.0
+
+del %baseDir%Release\TeamServer\appsettings.*
+copy %baseDir%TeamServer\appsettings.release.json %baseDir%Release\TeamServer\appsettings.json
   
 dotnet publish "%baseDir%Commander\Commander.csproj" ^
   -c Release ^
   -r linux-x64 ^
-  --self-contained true ^
+  --self-contained false ^
   /p:Platform="Any CPU" ^
   /p:PublishProtocol=FileSystem ^
   /p:PublishProvider=FileSystem ^
@@ -126,8 +128,8 @@ dotnet publish "%baseDir%Commander\Commander.csproj" ^
   /p:PublishTrimmed=false
   
 
-  
-copy %baseDir%Commander\appsettings.release.json %baseDir%Commander\appsettings.json
+del %baseDir%Release\Commander\appsettings.*
+copy %baseDir%Commander\appsettings.release.json %baseDir%Release\Commander\appsettings.json
 
 
 xcopy "%baseDir%PayloadTemplates" "%baseDir%Release\PayloadTemplates" /E /I /H /Y

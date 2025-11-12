@@ -96,6 +96,6 @@ del %builddir%\* /f /q
 copy %builddir%\Service.exe %destdebugDir%\
 del %builddir%\* /f /q
 
-
+rmdir /s /q "%builddir%"
 
 PAUSE

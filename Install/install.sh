@@ -2,7 +2,7 @@
 mkdir C3PO && cd C3PO
 
 #install dotnet (not needed as Projects are published in stand alone)
-#sudo apt-get install -y dotnet-sdk-7.0
+sudo apt-get install -y dotnet-runtime-7.0
 
 #rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rust-install.sh && chmod +x rust-install.sh && ./rust-install.sh -y && rm rust-install.sh
@@ -25,6 +25,6 @@ chmod +x ./Commander/Commander
 
 
 # Run
-cd TeamServer 
-./TeamServer&
-sleep 1
+#cd TeamServer 
+#./TeamServer&
+#sleep 1

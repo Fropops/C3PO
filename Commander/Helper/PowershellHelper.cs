@@ -9,7 +9,7 @@ namespace Commander.Helper
     internal class PowershellHelper
     {
 
-        public const string PowershellSSlScript = "add-type 'using System.Net;using System.Security.Cryptography.X509Certificates;public class TrustAllCertsPolicy : ICertificatePolicy {public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate,WebRequest request, int certificateProblem) {return true;}}';[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy;";
+        public const string PowershellSSlScript = "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;Add-Type 'using System.Net;using System.Net.Security;using System.Security.Cryptography.X509Certificates;public static class SSLHandler{public static void Ignore(){ServicePointManager.ServerCertificateValidationCallback=(sender,cert,chain,errors)=>true;}}';[SSLHandler]::Ignore();";
 
         public static string GeneratePowershellScript(string url, bool isSecured)
         {

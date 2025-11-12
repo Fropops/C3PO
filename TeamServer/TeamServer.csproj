@@ -23,13 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json.save" />
     <None Remove="data.db" />
     <None Remove="log.log" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.json.save" />
   </ItemGroup>
 
   <ItemGroup>

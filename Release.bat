@@ -1,5 +1,6 @@
 set msbuild="C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
 set buildDir=e:\Share\Projects\C3PO\tmpbuild
+mkdir %buildDir%
 
 set agentProj=e:\Share\Projects\C3PO\Agentv2\Agentv2.csproj
 set decoderProj=E:\Share\Projects\C3PO\Payload\DecoderDll\DecoderDll.csproj
@@ -8,14 +9,20 @@ set injectProj=E:\Share\Projects\C3PO\Payload\InjectDll\InjectDll.csproj
 set starterProj=E:\Share\Projects\C3PO\Payload\Starter\Starter.csproj
 set serviceProj=E:\Share\Projects\C3PO\Payload\Service\Service.csproj
 
-set destx86Dir=E:\Share\Projects\C3PO\Payloads\x86
-set destx64Dir=E:\Share\Projects\C3PO\Payloads\x64
-set destdebugDir=E:\Share\Projects\C3PO\Payloads\debug
-set scriptDir=E:\Share\Projects\C3PO\Payload\Scripts
+set destx86Dir=E:\Share\Projects\C3PO\PayloadTemplates\x86
+set destx64Dir=E:\Share\Projects\C3PO\PayloadTemplates\x64
+set destdebugDir=E:\Share\Projects\C3PO\PayloadTemplates\debug
+set scriptDir=E:\Share\Projects\C3PO\PayloadTemplates\Scripts
 
 del %destx86Dir%\* /f /q
 del %destx64Dir%\* /f /q
 del %destdebugDir%\* /f /q
+del %%scriptDir%\* /f /q
+
+mkdir %destx86Dir%
+mkdir %destx64Dir%
+mkdir %destdebugDir%
+mkdir %scriptDir%
 
 echo Scripts
 copy %scriptDir%\*.* %destx86Dir%\ 
@@ -90,9 +97,9 @@ del %builddir%\* /f /q
 
 
 set baseDir=e:\Share\Projects\C3PO\
-rmdir /s /q "%baseDir%\Release"
+rmdir /s /q "%baseDir%Release"
 
-dotnet publish "%baseDir%\TeamServer\TeamServer.csproj" ^
+dotnet publish "%baseDir%TeamServer\TeamServer.csproj" ^
   -c Release ^
   -r linux-x64 ^
   --self-contained true ^
@@ -101,26 +108,32 @@ dotnet publish "%baseDir%\TeamServer\TeamServer.csproj" ^
   /p:ExcludeApp_Data=false ^
   /p:WebPublishMethod=FileSystem ^
   /p:PublishProvider=FileSystem ^
-  /p:PublishDir="%baseDir%\Release\TeamServer" ^
+  /p:PublishDir="%baseDir%Release\TeamServer" ^
   /p:TargetFramework=net7.0 ^
   
-dotnet publish "%baseDir%\Commander\Commander.csproj" ^
+copy %baseDir%\TeamServer\appsettings.release.json %baseDir%Release\TeamServer\appsettings.json
+  
+dotnet publish "%baseDir%Commander\Commander.csproj" ^
   -c Release ^
   -r linux-x64 ^
   --self-contained true ^
   /p:Platform="Any CPU" ^
   /p:PublishProtocol=FileSystem ^
   /p:PublishProvider=FileSystem ^
-  /p:PublishDir="%baseDir%\Release\Commander" ^
+  /p:PublishDir="%baseDir%Release\Commander" ^
   /p:TargetFramework=net7.0 ^
   /p:PublishSingleFile=false ^
   /p:PublishTrimmed=false
+  
+
+  
+copy %baseDir%Commander\appsettings.release.json %baseDir%Commander\appsettings.json
 
 
-xcopy "%baseDir%\Payloads" "%baseDir%\Release\Payloads" /E /I /H /Y
+xcopy "%baseDir%PayloadTemplates" "%baseDir%Release\PayloadTemplates" /E /I /H /Y
 
-powershell -Command "Compress-Archive -Path '%baseDir%\Release\*' -DestinationPath '%baseDir%\Install\C3PO.zip' -Force"
+powershell -Command "Compress-Archive -Path '%baseDir%Release\*' -DestinationPath '%baseDir%Install\C3PO.zip' -Force"
 
-rmdir /s /q "%baseDir%\Release"
+rmdir /s /q "%baseDir%Release"
 
 Pause

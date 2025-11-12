@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Common;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shared;
 using System;
@@ -48,7 +49,7 @@ namespace TeamServer.Services
 
         public string GetFullPath(string fileName)
         {
-            var root = _configuration.GetValue<string>("FileSystemRoot");
+            var root = PathHelper.GetAbsolutePath(_configuration.GetValue<string>("FilesFolder"));
 
             var actualPath = Path.Combine(root, fileName.Replace("..", string.Empty));
             if (!actualPath.StartsWith(root))

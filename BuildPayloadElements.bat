@@ -18,12 +18,10 @@ set scriptDir=E:\Share\Projects\C3PO\PayloadTemplates\Scripts
 del %destx86Dir%\* /f /q
 del %destx64Dir%\* /f /q
 del %destdebugDir%\* /f /q
-del %%scriptDir%\* /f /q
 
 mkdir %destx86Dir%
 mkdir %destx64Dir%
 mkdir %destdebugDir%
-mkdir %scriptDir%
 
 echo Scripts
 copy %scriptDir%\*.* %destx86Dir%\ 

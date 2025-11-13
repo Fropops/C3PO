@@ -12,6 +12,9 @@ public sealed class AgentDao : TeamServerDao
     [PrimaryKey, Column("id")]
     public string Id { get; set; }
 
+    [Column("implant_id")]
+    public string ImplantId { get; set; }
+
     [Column("first_seen")]
     public DateTime FirstSeen { get; set; }
 
@@ -57,6 +60,7 @@ public sealed class AgentDao : TeamServerDao
 
         if (agent.Metadata != null)
         {
+            dao.ImplantId = agent.Metadata.ImplantId;
             dao.Hostname = agent.Metadata.Hostname;
             dao.UserName = agent.Metadata.UserName;
             dao.ProcessId = agent.Metadata.ProcessId;
@@ -89,6 +93,7 @@ public sealed class AgentDao : TeamServerDao
             var metadata = new AgentMetadata()
             {
                 Id = dao.Id,
+                ImplantId = dao.ImplantId,
                 Hostname = dao.Hostname,
                 UserName = dao.UserName,
                 ProcessId = dao.ProcessId,

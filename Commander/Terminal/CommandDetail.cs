@@ -139,7 +139,11 @@ namespace Commander.Terminal
 
         public void HandleInput(char c)
         {
-            this.PutCharAt(c, CursorValueIndex);
+            try
+            {
+                this.PutCharAt(c, CursorValueIndex);
+            }
+            catch { }
         }
 
         private void PutCharAt(char? c, int index)

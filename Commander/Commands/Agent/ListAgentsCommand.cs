@@ -49,6 +49,7 @@ namespace Commander.Commands.Agent
             // Add some columns
             table.AddColumn(new TableColumn("Index").Centered());
             table.AddColumn(new TableColumn("Id").LeftAligned());
+            table.AddColumn(new TableColumn("Implant").LeftAligned());
             table.AddColumn(new TableColumn("Active").LeftAligned());
             table.AddColumn(new TableColumn("User").LeftAligned());
             table.AddColumn(new TableColumn("Host").LeftAligned());
@@ -76,6 +77,7 @@ namespace Commander.Commands.Agent
                 table.AddRow(
                         SurroundIfDeadOrSelf(agent, context, index.ToString()),
                         SurroundIfDeadOrSelf(agent, context, agent.Id),
+                        SurroundIfDeadOrSelf(agent, context, agent.Metadata?.ImplantId),
                         SurroundIfDeadOrSelf(agent, context, activStr),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.UserName),
                         SurroundIfDeadOrSelf(agent, context, agent.Metadata?.Hostname),

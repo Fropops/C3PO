@@ -9,8 +9,8 @@ namespace Common.Config
 {
     public class PayloadConfig
     {
-        public string SourceFolder { get; set; }
-        public string OutputFolder { get; set; }
+        public string PayloadTemplatesFolder { get; set; }
+        public string ImplantsFolder { get; set; }
         public string WorkingFolder { get; set; }
         public string NimPath { get; set; }
         public string IncRustFolder { get; set; }
@@ -19,8 +19,8 @@ namespace Common.Config
 
         public void FromSection(IConfigurationSection section, bool verbose = false)
         {
-            this.SourceFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("SourceFolder"));
-            this.OutputFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("OutputFolder", "/tmp"));
+            this.PayloadTemplatesFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("PayloadTemplatesFolder"));
+            this.ImplantsFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("ImplantsFolder", "/tmp"));
             this.WorkingFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("WorkingFolder", "/tmp"));
             this.NimPath = PathHelper.GetAbsolutePath(section.GetValue<string>("NimPath", "/usr/bin/nim"));
             this.DonutFolder = PathHelper.GetAbsolutePath(section.GetValue<string>("DonutFolder", "/opt/donut"));
@@ -29,14 +29,14 @@ namespace Common.Config
 
             if (verbose)
             {
-                Console.WriteLine("[CONFIG][PAYLOAD][SourceFolder] : " + this.SourceFolder);
-                Console.WriteLine("[CONFIG][PAYLOAD][OutputFolder] : " + this.OutputFolder);
+                Console.WriteLine("[CONFIG][PAYLOAD][SourceFolder] : " + this.PayloadTemplatesFolder);
+                Console.WriteLine("[CONFIG][PAYLOAD][ImplantsFolder] : " + this.ImplantsFolder);
                 Console.WriteLine("[CONFIG][PAYLOAD][WorkingFolder] : " + this.WorkingFolder);
                 Console.WriteLine("[CONFIG][PAYLOAD][DonutPath] : " + this.DonutFolder);
                 Console.WriteLine("[CONFIG][PAYLOAD][IncRustPath] : " + this.IncRustFolder);
             }
 
-            if(!Directory.Exists(this.OutputFolder)) { Directory.CreateDirectory(this.OutputFolder); }
+            if(!Directory.Exists(this.ImplantsFolder)) { Directory.CreateDirectory(this.ImplantsFolder); }
             if (!Directory.Exists(this.WorkingFolder)) { Directory.CreateDirectory(this.WorkingFolder); }
         }
 

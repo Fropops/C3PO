@@ -33,11 +33,11 @@ namespace Commander.Commands.Agent
             var agent = context.Executor.CurrentAgent;
             var activ = context.IsAgentAlive(agent);
             if (activ == true)
-                context.Terminal.WriteSuccess($"Agent {agent.Metadata.Id} is up and running !");
+                context.Terminal.WriteSuccess($"Agent {agent.Id} is up and running !");
             if(activ == false)
-                context.Terminal.WriteError($"Agent {agent.Metadata.Id} seems to be not responding!");
+                context.Terminal.WriteError($"Agent {agent.Id} seems to be not responding!");
             if(activ == null)
-                context.Terminal.WriteInfo($"Agent {agent.Metadata.Id} response time is unknown!");
+                context.Terminal.WriteInfo($"Agent {agent.Id} response time is unknown!");
 
             var table = new Table();
             table.Border(TableBorder.Rounded);
@@ -46,11 +46,12 @@ namespace Commander.Commands.Agent
             table.AddColumn(new TableColumn("Value").LeftAligned());
             table.HideHeaders();
 
-            table.AddRow("Id", agent.Metadata?.Id ?? string.Empty);
+            table.AddRow("Id", agent.Id ?? string.Empty);
+            table.AddRow("Implant", agent.Metadata?.ImplantId ?? string.Empty);
             table.AddRow("Hostname", agent.Metadata?.Hostname ?? string.Empty);
             table.AddRow("User Name", agent.Metadata?.UserName ?? string.Empty);
             table.AddRow("IP", StringHelper.IpAsString(agent.Metadata?.Address));
-            table.AddRow("Process Id", agent.Metadata?.ProcessId.ToString());
+            table.AddRow("Process Id", agent.Metadata?.ProcessId.ToString() ?? string.Empty);
             table.AddRow("Process Name", agent.Metadata?.ProcessName ?? string.Empty);
             table.AddRow("Architecture", agent.Metadata?.Architecture ?? string.Empty);
             table.AddRow("Integrity", agent.Metadata?.Integrity.ToString() ?? string.Empty);

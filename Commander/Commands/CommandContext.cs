@@ -113,6 +113,7 @@ namespace Commander.Commands
                     {
                         var generator = new PayloadGenerator(context.Config.PayloadConfig, context.Config.SpawnConfig);
                         generator.MessageSent += (object sender, string msg) => { if (verbose) context.Terminal.WriteLine(msg); };
+                        options.ImplantName = Payload.GenerateName();
                         pay = generator.GeneratePayload(options);
                     });
 

@@ -40,8 +40,8 @@ public partial class PayloadGenerator
     private string Source(string fileName, PayloadArchitecture arch, bool debug)
     {
         if(debug)
-            return Path.Combine(this.Config.SourceFolder, "debug", fileName);
-        return Path.Combine(this.Config.SourceFolder, arch.ToString(), fileName);
+            return Path.Combine(this.Config.PayloadTemplatesFolder, "debug", fileName);
+        return Path.Combine(this.Config.PayloadTemplatesFolder, arch.ToString(), fileName);
     }
 
     private string Working(string fileName)
@@ -291,7 +291,8 @@ public partial class PayloadGenerator
         agent = AssemblyEditor.ReplaceRessources(agent, new Dictionary<string, object>()
         {
             { "EndPoint", options.Endpoint.ToString() },
-            { "Key", options.ServerKey ?? String.Empty }
+            { "Key", options.ServerKey ?? String.Empty },
+            { "Implant", options.ImplantName ?? String.Empty }
         });
 
         if(options.IsDebug)

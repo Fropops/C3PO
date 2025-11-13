@@ -155,8 +155,8 @@ namespace Commander.Commands.Network
                     {
                         var url = listener.EndPoint + "/" + item.Path;
                         context.Terminal.WriteLineMarkup($"[grey]{url}[/]");
-                        context.Terminal.WriteLine(PowershellHelper.GeneratePowershellScript(url, listener.Secured));
-                        context.Terminal.WriteLine(PowershellHelper.GeneratePowershellScriptB64(url, listener.Secured));
+                        context.Terminal.WriteLine(ScriptHelper.GeneratePowershellScript(url, listener.Secured));
+                        context.Terminal.WriteLine(ScriptHelper.GeneratePowershellScriptB64(url, listener.Secured));
                     }
                 }
             }

@@ -1,13 +1,9 @@
-+ Agent : Remove SharpSploit
-+ Commander : ReArch Task Printing
-
-+ Terminate without Environement.Exit
-
-Sleep
-
-+ Elevate : other ways
-+ Get-system : Task schedule
-
-+ Improve Audit
+* Ajout nom Payloads
+* Gérer les payloads côté serveur
+* Utils repos
+* Augmenter N° de version au moment de la release
+* Défault action on start (commander?, teamserver?)
+* Pivot ?!
+* Généré des clés au moment de l'install
 
 

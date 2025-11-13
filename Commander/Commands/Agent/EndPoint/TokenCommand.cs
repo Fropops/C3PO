@@ -24,7 +24,7 @@ public class StealTokenCommand : EndPointCommand<StealTokenCommandOptions>
 
     public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<int>("pid", "Id of the process"),
+                new Argument<int>(){Name = "pid", Description = "Id of the process" },
             };
 
     protected override void SpecifyParameters(CommandContext<StealTokenCommandOptions> context)
@@ -47,7 +47,8 @@ public class MakeTokenCommand : EndPointCommand<MakeTokenCommandOptions>
 
     public override RootCommand Command => new RootCommand(this.Description)
             {
-                new Argument<string>("username", "Full username (DOMAIN\\User)"),
+
+                new Option<string>("username", "Full username (DOMAIN\\User)"),
                 new Argument<string>("password", "Password of the account"),
             };
 

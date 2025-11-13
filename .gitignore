@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /TeamServer/data.db
 /TeamServer/data.db.old
+/TeamServer/Audit/

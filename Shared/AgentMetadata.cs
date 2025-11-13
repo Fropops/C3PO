@@ -20,28 +20,30 @@ namespace Shared
         [FieldOrder(0)]
         public string Id { get; set; }
         [FieldOrder(1)]
-        public string Hostname { get; set; }
+        public string ImplantId { get; set; }
         [FieldOrder(2)]
-        public string UserName { get; set; }
+        public string Hostname { get; set; }
         [FieldOrder(3)]
-        public string ProcessName { get; set; }
+        public string UserName { get; set; }
         [FieldOrder(4)]
-        public int ProcessId { get; set; }
+        public string ProcessName { get; set; }
         [FieldOrder(5)]
-        public IntegrityLevel Integrity { get; set; }
+        public int ProcessId { get; set; }
         [FieldOrder(6)]
-        public string Architecture { get; set; }
+        public IntegrityLevel Integrity { get; set; }
         [FieldOrder(7)]
-        public string EndPoint { get; set; }
+        public string Architecture { get; set; }
         [FieldOrder(8)]
+        public string EndPoint { get; set; }
+        [FieldOrder(9)]
         public string Version { get; set; }
 
-        [FieldOrder(9)]
+        [FieldOrder(10)]
         public byte[] Address { get; set; }
 
-        [FieldOrder(10)]
-        public int SleepInterval { get; set; }
         [FieldOrder(11)]
+        public int SleepInterval { get; set; }
+        [FieldOrder(12)]
         public int SleepJitter { get; set; }
 
         public string Sleep

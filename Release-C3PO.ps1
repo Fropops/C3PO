@@ -176,7 +176,7 @@ function Release-C3PO {
 		
 		$destDirs = @($destx86Dir, $destx64Dir, $destdebugDir)
 		foreach ($dest in $destDirs) {
-			Copy-Item "$scriptDir\*" $dest -Recurse -Force
+			Copy-Item "$scriptDir\*.ps1" $dest -Recurse -Force
 		}
     }
 

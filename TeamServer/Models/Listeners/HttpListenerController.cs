@@ -122,6 +122,13 @@ namespace TeamServer.Models
                 if (!Request.Headers.ContainsKey(AuthorizationHeader))
                     return this.NotFound();
 
+                string body;
+                using (var sr = new StreamReader(HttpContext.Request.Body))
+                    body = await sr.ReadToEndAsync();
+
+                byte[] data = Convert.FromBase64String(body);
+                var frames = await data.BinaryDeserializeAsync<List<NetFrame>>();
+
                 string agentId = Request.Headers[AuthorizationHeader];
                 var agent = this._agentService.GetOrCreateAgent(agentId);
 
@@ -130,14 +137,6 @@ namespace TeamServer.Models
                     this._agentService.Checkin(relayedAgent);
                     this._changeTrackingService.TrackChange(ChangingElement.Agent, relayedAgent.Id);
                 }
-
-                string body;
-                using (var sr = new StreamReader(HttpContext.Request.Body))
-                    body = await sr.ReadToEndAsync();
-
-
-                byte[] data = Convert.FromBase64String(body);
-                var frames = await data.BinaryDeserializeAsync<List<NetFrame>>();
 
                 await this._serverService.HandleInboundFrames(frames, agentId);
 

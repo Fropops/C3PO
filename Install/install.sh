@@ -32,8 +32,8 @@ install_TeamServer() {
 	
 	
 	# Mise à jour du appsettings.json
-	APPSETTINGS="TeamServer/appsettings.json"
-	jq --arg key "$USER_API_KEY" '.Users[0].Key = $key' "$APPSETTINGS" > "$APPSETTINGS.tmp" && mv "$APPSETTINGS.tmp" "$APPSETTINGS"
+	TEAMSERVER_APPSETTINGS="TeamServer/appsettings.json"
+	jq --arg key "$USER_API_KEY" '.Users[0].Key = $key' "$TEAMSERVER_APPSETTINGS" > "$TEAMSERVER_APPSETTINGS.tmp" && mv "$TEAMSERVER_APPSETTINGS.tmp" "$TEAMSERVER_APPSETTINGS"
 	jq --arg key "$SERVER_KEY" '.ServerKey = $key' "$TEAMSERVER_APPSETTINGS" > "$TEAMSERVER_APPSETTINGS.tmp" && mv "$TEAMSERVER_APPSETTINGS.tmp" "$TEAMSERVER_APPSETTINGS"
 }
 

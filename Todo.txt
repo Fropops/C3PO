@@ -4,17 +4,7 @@
 * Augmenter N° de version au moment de la release
 * Défault action on start (commander?, teamserver?)
 * Pivot ?!
-* Générer des clés au moment de l'install
 
-$Agent(6fb8a4f92d) htb-student@WS01> view
-System.InvalidOperationException: Could not find color or style 'Net.ServicePointManager'.
-   at Spectre.Console.StyleParser.Parse(String text) in /_/src/Spectre.Console/StyleParser.cs:line 17
-   at Spectre.Console.MarkupParser.Parse(String text, Style style) in /_/src/Spectre.Console/Internal/Text/Markup/MarkupParser.cs:line 59
-   at Spectre.Console.TableExtensions.<>c.<AddRow>b__6_0(String column) in /_/src/Spectre.Console/Extensions/TableExtensions.cs:line 160
-   at System.Linq.Enumerable.SelectArrayIterator`2.ToArray()
-   at Spectre.Console.TableExtensions.AddRow(Table table, String[] columns) in /_/src/Spectre.Console/Extensions/TableExtensions.cs:line 150
-   at Commander.Commands.Agent.ViewTasksCommand.HandleCommand(CommandContext`1 context) in E:\Share\Projects\C3PO\Commander\Commands\Agent\ListTasksCommand.cs:line 89
-   at Commander.Commands.EnhancedCommand`1.HandleCommandWrapper(T options) in E:\Share\Projects\C3PO\Commander\Commands\EnhancedCommand.cs:line 102
+* Agent avec mauvaise clef => ne pas enreigster côté TS + clef Server !
 
-   
 

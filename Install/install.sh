@@ -1,35 +1,87 @@
 #!/bin/bash
-mkdir C3PO && cd C3PO
 
-#install dotnet (not needed as Projects are published in stand alone)
-sudo apt-get install -y dotnet-runtime-7.0
-sudo apt-get install aspnetcore-runtime-7.0
+# Usage: ./install-c3po.sh [All|TeamServer|Commander]
+INSTALL_PART=${1:-All}  # Par défaut tout installer
 
-#rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rust-install.sh && chmod +x rust-install.sh && ./rust-install.sh -y && rm rust-install.sh
-~/.cargo/bin/rustup target add i686-pc-windows-gnu
-~/.cargo/bin/rustup target add x86_64-pc-windows-gnu
+BASE_DIR="$HOME/C3PO"
+mkdir -p "$BASE_DIR" && cd "$BASE_DIR"
 
-#get donut
-git clone https://github.com/TheWover/donut.git
-cd donut && make && cd ..
+# Fonction pour télécharger et dézipper
+install_part() {
+    local name=$1
+    local zip_url=$2
 
-#get  incrust
-git clone https://github.com/Fropops/incrust.git
+    echo "Installing $name..."
+    curl -L "$zip_url" -o "${name}.zip"
+    unzip -o "${name}.zip" -d "$BASE_DIR/$name"
+    rm "${name}.zip"
 
-#get C3PO release & unzip
-curl -L https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/C3PO.zip -o C3PO.zip && unzip C3PO.zip && rm C3PO.zip
+    # Donner les droits d'exécution aux binaires
+    chmod +x "$BASE_DIR/$name/$name"
+}
 
-# Prepare C3PO executables
-chmod +x ./TeamServer/TeamServer
-chmod +x ./Commander/Commander
+install_TeamServer() {
+	# Installer dotnet runtime si nécessaire
+	sudo apt-get update
+	sudo apt-get install -y aspnetcore-runtime-7.0
+	
+	
+	install_part "TeamServer" "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/TeamServer.zip"
+}
 
-rm C3PO.zip
-cd TeamServer 
-sudo ./TeamServer&
+install_Commander() {
+	# Installer dotnet runtime si nécessaire
+	sudo apt-get update
+	sudo apt-get install -y dotnet-runtime-7.0
+	
+	
+	install_part "Commander"  "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/Commander.zip"
+	
+	install_part "PayloadTemplates"  "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/Agent.zip"
+	
+	# Installer Rust pour cross-compilation
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rust-install.sh
+	chmod +x rust-install.sh
+	./rust-install.sh -y
+	rm rust-install.sh
+	~/.cargo/bin/rustup target add i686-pc-windows-gnu
+	~/.cargo/bin/rustup target add x86_64-pc-windows-gnu
 
-echo "Server is started."
-echo "To run cli, run : cd C3PO/Commander && ./Commander"
+	# Cloner les outils
+	git clone https://github.com/TheWover/donut.git
+	cd donut && make && cd ..
+	git clone https://github.com/Fropops/incrust.git
+}
+
+# Installer selon le choix
+case "$INSTALL_PART" in
+    All)
+        install_TeamServer
+		install_Commander
+        ;;
+    TeamServer)
+        install_TeamServer
+        ;;
+    Commander)
+        install_Commander
+        ;;
+    *)
+        echo "Invalid option: $INSTALL_PART"
+        echo "Usage: $0 [All|TeamServer|Commander]"
+        exit 1
+        ;;
+esac
+
+# Lancer TeamServer si présent
+if [ -f "$BASE_DIR/TeamServer/TeamServer" ]; then
+    cd "$BASE_DIR/TeamServer"
+    sudo ./TeamServer &
+    echo "TeamServer started."
+fi
+
+echo "Installation completed."
+echo "To run CLI, run: cd $BASE_DIR/Commander && ./Commander"
+
 
 
 

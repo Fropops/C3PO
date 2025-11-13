@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,8 @@ namespace Commander.Terminal
             .LeftJustified()
             .Color(Color.Green));
 
+            this.WriteLineMarkup($"[grey]Version {Assembly.GetExecutingAssembly().GetName().Version.ToString()}[/]");
+            this.WriteLine();
             this.WriteLineMarkup("[green]C[/][cyan]sharp [/][green]C[/][cyan]ommand and [/][green]C[/][cyan]ontrol for [/][green]P[/][cyan]entesting [/][green]O[/][cyan]perations[/]");
             this.WriteLineMarkup("[green]C[/][cyan]sharp [/][green]C[/][cyan]ommand and [/][green]C[/][cyan]ontrol by  [/][green]P[/][cyan]ottiez    [/][green]O[/][cyan]livier[/]");
 

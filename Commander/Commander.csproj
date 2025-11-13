@@ -1,11 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <Configurations>Debug;Release;ReleaseButDebug</Configurations>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <Version>2.0.3.0</Version>
+    <AssemblyVersion>2.0.3.0</AssemblyVersion>
+    <FileVersion>2.0.3.0</FileVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Commands\Agent\Token\**" />
     <Compile Remove="Commands\Laucher\**" />
@@ -17,7 +20,6 @@
     <None Remove="Commands\Laucher\**" />
     <None Remove="Internal\**" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="Commands\Agent\AgentWebHostCommand.cs" />
     <Compile Remove="Commands\Agent\CaptureCommand.cs" />
@@ -35,14 +37,12 @@
     <Compile Remove="Models\AgentTaskResult.cs" />
     <Compile Remove="Models\Listener.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="Commands\Agent\BuildDropperCommand.cs.save" />
     <None Remove="Commands\Agent\BuildPSDropperCommand.cs.old" />
     <None Remove="Commands\Agent\Execute\ExecuteAssemblyCommand.cs.save" />
     <None Remove="Commands\Agent\Execute\ExecuteAssemblyModuleCommand.cs.save" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
@@ -54,17 +54,14 @@
     <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta3.22114.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.28.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="BinarySerializer">
       <HintPath>..\Dependencies\BinarySerializer.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -73,5 +70,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

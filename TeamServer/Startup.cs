@@ -18,6 +18,7 @@ using TeamServer.Services;
 using TeamServer.Ext;
 using TeamServer.Helper;
 using TeamServer.Service;
+using System.Reflection;
 
 namespace TeamServer
 {
@@ -84,6 +85,12 @@ namespace TeamServer
             {
                 endpoints.MapControllers();
             });
+
+
+            var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var factory = app.ApplicationServices.GetService<ILoggerFactory>();
+            var logger = factory.CreateLogger("C3PO - Team Server");
+            logger.LogInformation($"Version {version}");
 
 
             //this.StartHttpHost(app);

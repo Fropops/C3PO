@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ namespace Common.Config
 
             if(!Directory.Exists(this.ImplantsFolder)) { Directory.CreateDirectory(this.ImplantsFolder); }
             if (!Directory.Exists(this.WorkingFolder)) { Directory.CreateDirectory(this.WorkingFolder); }
+
+            Directory.SetCurrentDirectory(this.WorkingFolder);
         }
 
        

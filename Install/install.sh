@@ -6,6 +6,9 @@ INSTALL_PART=${1:-All}  # Par défaut tout installer
 BASE_DIR="$HOME/C3PO"
 mkdir -p "$BASE_DIR" && cd "$BASE_DIR"
 
+# Génération d'une clé API aléatoire de 64 caractères
+USER_API_KEY=$(openssl rand -base64 48 | tr '+/' '-_' | cut -c1-64)
+
 # Fonction pour télécharger et dézipper
 install_part() {
     local name=$1
@@ -25,6 +28,11 @@ install_TeamServer() {
 	
 	install_part "TeamServer" "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/TeamServer.zip"
     chmod +x "$BASE_DIR/TeamServer/TeamServer"
+	
+	
+	# Mise à jour du appsettings.json
+	APPSETTINGS="TeamServer/appsettings.json"
+	jq --arg key "$API_KEY" '.Users[0].Key = $key' "$APPSETTINGS" > "$APPSETTINGS.tmp" && mv "$APPSETTINGS.tmp" "$APPSETTINGS"
 }
 
 install_Commander() {
@@ -50,6 +58,10 @@ install_Commander() {
 	git clone https://github.com/TheWover/donut.git
 	cd donut && make && cd ..
 	git clone https://github.com/Fropops/incrust.git
+	
+	# Mise à jour du Commander appsettings.json
+	COMMANDER_SETTINGS="$BASE_DIR/Commander/appsettings.json"
+	jq --arg key "$API_KEY" '.Api.ApiKey = $key' "$COMMANDER_SETTINGS" > "$COMMANDER_SETTINGS.tmp" && mv "$COMMANDER_SETTINGS.tmp" "$COMMANDER_SETTINGS"
 }
 
 # Installer selon le choix

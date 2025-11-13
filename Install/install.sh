@@ -15,9 +15,6 @@ install_part() {
     curl -L "$zip_url" -o "${name}.zip"
     unzip -o "${name}.zip" -d "$BASE_DIR/$name"
     rm "${name}.zip"
-
-    # Donner les droits d'exécution aux binaires
-    chmod +x "$BASE_DIR/$name/$name"
 }
 
 install_TeamServer() {
@@ -27,6 +24,7 @@ install_TeamServer() {
 	
 	
 	install_part "TeamServer" "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/TeamServer.zip"
+    chmod +x "$BASE_DIR/TeamServer/TeamServer"
 }
 
 install_Commander() {
@@ -36,6 +34,7 @@ install_Commander() {
 	
 	
 	install_part "Commander"  "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/Commander.zip"
+	chmod +x "$BASE_DIR/Commander/Commander"
 	
 	install_part "PayloadTemplates"  "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/Agent.zip"
 	

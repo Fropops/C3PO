@@ -7,7 +7,7 @@ Utiliser le script pour installer
 
 One liner, full install
 ```
-wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -- All
+wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- All
 ```
 
 One liner, Only Commander

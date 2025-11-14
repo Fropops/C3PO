@@ -2,6 +2,7 @@
 
 # Usage: ./install-c3po.sh [All|TeamServer|Commander]
 INSTALL_PART=${1:-All}  # Par défaut tout installer
+NO_TOOLS=${2:-""}             # Si "noTools", ne pas télécharger Tools.zip
 
 BASE_DIR="$PWD/C3PO"
 mkdir -p "$BASE_DIR" && cd "$BASE_DIR"
@@ -40,6 +41,28 @@ install_TeamServer() {
 	rm "$TEAMSERVER_APPSETTINGS.tmp2"
 }
 
+install_Tools() {
+    echo "Installing Tools..."
+
+    TOOLS_DIR="$BASE_DIR/Tools"
+    mkdir -p "$TOOLS_DIR"
+
+    # Clone uniquement le dossier Install/Tools du repo (sparse checkout)
+    git clone --depth 1 --filter=blob:none \
+        --sparse https://github.com/Fropops/C3PO.git temp_tools_repo
+
+    cd temp_tools_repo
+    git sparse-checkout set Install/Tools
+
+    # Copier les fichiers
+    cp -r Install/Tools/* "$TOOLS_DIR/"
+
+    cd ..
+    rm -rf temp_tools_repo
+
+    echo "Tools installed in $TOOLS_DIR"
+}
+
 install_Commander() {
 	# Installer dotnet runtime si nécessaire
 	sudo apt-get update
@@ -50,6 +73,13 @@ install_Commander() {
 	chmod +x "$BASE_DIR/Commander/Commander"
 	
 	install_part "PayloadTemplates"  "https://github.com/Fropops/C3PO/raw/refs/heads/master/Install/Agent.zip"
+	
+	if [[ "$NO_TOOLS" != "noTools" ]]; then
+        echo "Installing Tools..."
+        install_Tools
+    else
+        echo "Skipping Tools installation (noTools flag detected)"
+    fi
 	
 	# Installer Rust pour cross-compilation
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rust-install.sh

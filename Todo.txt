@@ -1,10 +1,6 @@
-* Ajout nom Payloads
 * Gérer les payloads côté serveur
 * Utils repos
-* Augmenter N° de version au moment de la release
 * Défault action on start (commander?, teamserver?)
 * Pivot ?!
-
-* Agent avec mauvaise clef => ne pas enreigster côté TS + clef Server !
-
-
+* RunAsLoggedOn https://github.com/antonioCoco/RunasCs/blob/master/RunasCs.cs
+* BOF Loader .Net

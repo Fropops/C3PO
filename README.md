@@ -5,14 +5,24 @@ Csharp Command and Control for Pentesting Operations
 ## Installation
 Utiliser le script pour installer
 
-One liner, full install
+One liner, Full install
 ```
 wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- All
+```
+
+One liner, Full install - No Tools
+``` 
+wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- All noTools
 ```
 
 One liner, Only Commander
 ```
 wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- Commander
+```
+
+One liner, Only Commander - No Tools
+```
+wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- Commander noTools
 ```
 
 One liner, Only TeamServer

@@ -56,7 +56,7 @@ namespace Common.Payload
                 var proc = options.InjectionProcess;
                 if (string.IsNullOrEmpty(proc))
                     proc = options.Architecture == PayloadArchitecture.x64 ? Spawn.SpawnToX64 : Spawn.SpawnToX86;
-                parms.Add("--config"); parms.Add($"env.PAYLOAD_FILE_NAME.value='{proc}'");
+                parms.Add("--config"); parms.Add($"env.PROCESS_NAME.value='{proc}'");
             }
 
             parms.Add("--config"); parms.Add($"env.PAYLOAD_FILE_NAME.value='{payloadB64Path}'");

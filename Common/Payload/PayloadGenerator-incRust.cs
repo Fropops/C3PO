@@ -38,7 +38,10 @@ namespace Common.Payload
             string feat = "--features=payload_b64";
             if (!options.IsDebug)
                 feat += ",no_console";
-            feat += ",inject_self";
+            if (!options.IsInjected)
+                feat += ",inject_self";
+            else
+                feat += ",inject_proc_name";
             if (options.Architecture == PayloadArchitecture.x64)
                 feat += ",syscall_indirect";
             else
@@ -48,6 +51,13 @@ namespace Common.Payload
                 feat += ",regsvr";
             parms.Add(feat);
 
+            if (options.IsInjected)
+            {
+                var proc = options.InjectionProcess;
+                if (string.IsNullOrEmpty(proc))
+                    proc = options.Architecture == PayloadArchitecture.x64 ? Spawn.SpawnToX64 : Spawn.SpawnToX86;
+                parms.Add("--config"); parms.Add($"env.PAYLOAD_FILE_NAME.value='{proc}'");
+            }
 
             parms.Add("--config"); parms.Add($"env.PAYLOAD_FILE_NAME.value='{payloadB64Path}'");
             return parms;

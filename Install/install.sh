@@ -3,6 +3,7 @@
 # Usage: ./install-c3po.sh [All|TeamServer|Commander]
 INSTALL_PART=${1:-All}  # Par défaut tout installer
 NO_TOOLS=${2:-""}             # Si "noTools", ne pas télécharger Tools.zip
+NO_RUN=${3:-""}   # Si "noRun", ne pas lancer le TeamServer à la fin
 
 BASE_DIR="$PWD/C3PO"
 mkdir -p "$BASE_DIR" && cd "$BASE_DIR"
@@ -118,15 +119,19 @@ case "$INSTALL_PART" in
         ;;
 esac
 
-# Lancer TeamServer si présent
-if [ -f "$BASE_DIR/TeamServer/TeamServer" ]; then
-    cd "$BASE_DIR/TeamServer"
-    sudo ./TeamServer &
-    echo "TeamServer started."
+# Lancer TeamServer si présent et si noRun n'est pas précisé
+if [[ "$NO_RUN" != "noRun" ]]; then
+    if [ -f "$BASE_DIR/TeamServer/TeamServer" ]; then
+        cd "$BASE_DIR/TeamServer"
+        sudo ./TeamServer &
+        echo "TeamServer started."
+    fi
+else
+    echo "Skipping TeamServer run (noRun flag detected)"
 fi
 
+
 echo "Installation completed."
-echo "To run CLI, run: cd $BASE_DIR/Commander && ./Commander"
 
 
 

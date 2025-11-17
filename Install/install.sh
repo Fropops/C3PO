@@ -84,11 +84,15 @@ install_Commander() {
 	
 	# Installer Rust pour cross-compilation
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rust-install.sh
-	chmod +x rust-install.sh
-	./rust-install.sh -y
-	rm rust-install.sh
-	~/.cargo/bin/rustup target add i686-pc-windows-gnu
-	~/.cargo/bin/rustup target add x86_64-pc-windows-gnu
+chmod +x rust-install.sh
+sudo RUSTUP_INIT_SKIP_PATH_CHECK=yes \
+     ./rust-install.sh -y --no-modify-path --default-toolchain stable \
+     --profile default \
+     --prefix=/usr/local/rust
+rm rust-install.sh
+
+sudo /usr/local/rust/bin/rustup target add i686-pc-windows-gnu
+sudo /usr/local/rust/bin/rustup target add x86_64-pc-windows-gnu
 
 	# Cloner les outils
 	git clone https://github.com/TheWover/donut.git

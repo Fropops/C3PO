@@ -12,7 +12,7 @@ wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Insta
 
 One liner, Full install - Don't run TeamServer  after installing
 ```
-wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- All noRun
+wget -qO- https://raw.githubusercontent.com/Fropops/C3PO/refs/heads/master/Install/install.sh | bash -s -- All "" noRun
 ```
 
 One liner, Full install - No Tools

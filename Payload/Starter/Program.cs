@@ -14,7 +14,7 @@ namespace EntryPoint
     {
        
 
-        static void Main(string[] args)
+        static void Main()
         {
             Start();
         }
